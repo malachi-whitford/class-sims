@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soil Cation Exchange Lab</title>
+<style>
+  :root{
+    --bg:#f6f3ec; --panel:#ffffff; --ink:#2b2a27; --muted:#6b665c; --line:#ddd6c8;
+    --acid:#c0392f; --base:#2a63c4; --clay:#efe9dc; --soil:#8a6a45; --accent:#3d7a4f; --chip:#f1ede4;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;font-size:15px}
+  header{padding:16px 18px 4px}
+  h1{margin:0;font-size:1.35rem}
+  h2{font-size:1.05rem;margin:0 0 8px}
+  h3{font-size:.95rem;margin:10px 0 6px}
+  .sub{color:var(--muted);font-size:.9rem;margin:4px 0 0}
+  nav{display:flex;gap:6px;flex-wrap:wrap;padding:10px 18px 0}
+  nav button{border:1px solid var(--line);background:var(--chip);color:var(--ink);padding:8px 12px;border-radius:999px;font-weight:600;cursor:pointer;font-size:.88rem}
+  nav button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+  main{padding:12px 18px 24px}
+  .tab{display:none}.tab.active{display:block}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+  .muted{color:var(--muted)}
+  .small{font-size:.85rem}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:12px}
+  @media (max-width:760px){.cols{grid-template-columns:1fr}}
+  .btn{border:1px solid var(--line);background:#fff;padding:7px 11px;border-radius:8px;cursor:pointer;font-weight:600;font-size:.86rem;color:var(--ink)}
+  .btn:hover{background:var(--chip)}
+  .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn.acid{border-color:var(--acid);color:var(--acid)}
+  .btn.base{border-color:var(--base);color:var(--base)}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{border:0;background:#fff;padding:6px 10px;cursor:pointer;font-size:.84rem;font-weight:600;color:var(--ink)}
+  .seg button.on{background:var(--ink);color:#fff}
+  label.ctl{display:flex;flex-direction:column;gap:2px;font-size:.84rem;font-weight:600;min-width:150px}
+  label.chk{display:flex;gap:6px;align-items:center;font-size:.88rem}
+  input[type=range]{width:100%}
+  select{padding:6px;border-radius:8px;border:1px solid var(--line);font-size:.88rem}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.84rem}
+  .dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-2px;margin-right:4px}
+  /* Tab 1 cards */
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+  .card{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fffdf9}
+  .card.special{background:#fff6f5;border-style:dashed}
+  .card .hd{display:flex;justify-content:space-between;align-items:center}
+  .card .sym{font-size:1.25rem;font-weight:800}
+  .chip{font-size:.72rem;padding:2px 7px;border-radius:999px;font-weight:700;color:#fff}
+  .ionsvg{width:100%;height:auto;display:block}
+  .kv{display:flex;justify-content:space-between;font-size:.8rem;border-top:1px dotted var(--line);padding:2px 0}
+  .bar{height:8px;background:#eee7da;border-radius:99px;overflow:hidden;margin-top:4px}
+  .bar>i{display:block;height:100%;background:#7a5a2f}
+  .results .r{display:grid;grid-template-columns:60px 1fr 80px;gap:8px;align-items:center;margin:4px 0;font-size:.88rem}
+  .results .track{height:16px;background:#f0ebe1;border-radius:6px;overflow:hidden}
+  .results .track i{display:block;height:100%;transition:width .08s linear}
+  .feedback{margin-top:8px;padding:10px;border-radius:8px;background:#eef6ef;border:1px solid #cfe5d3;display:none}
+  .feedback.show{display:block}
+  /* Tab 2 */
+  #micSvg{width:100%;max-width:380px;height:auto;display:block;margin:auto}
+  #micSvg .ion{cursor:pointer}
+  #micSvg .ion:hover circle{stroke:#000;stroke-width:2}
+  .readout{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin:8px 0}
+  .tile{background:var(--chip);border-radius:8px;padding:8px}
+  .tile b{display:block;font-size:1.15rem}
+  .tile span{font-size:.75rem;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.02em}
+  .classbox{padding:10px;border-radius:8px;background:#f3f0fa;border:1px solid #ddd5ef;font-size:.9rem}
+  .warn{color:#a3361f;font-weight:600}
+  .goal{font-weight:700}
+  .goal.ok{color:var(--accent)}
+  /* Tab 3 */
+  canvas{width:100%;height:auto;display:block;border-radius:10px;border:1px solid var(--line);background:#fff}
+  .tally .r{display:grid;grid-template-columns:56px 1fr 34px;gap:6px;align-items:center;font-size:.85rem;margin:3px 0}
+  .tally .track{height:12px;background:#f0ebe1;border-radius:6px;overflow:hidden}
+  .tally .track i{display:block;height:100%}
+  ol.steps{margin:4px 0 0 18px;padding:0;font-size:.88rem}
+  ol.steps li{margin:2px 0}
+  footer{font-size:.78rem;color:var(--muted);padding:0 18px 18px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Soil Cation Exchange Lab</h1>
+  <p class="sub">Hydrated size &amp; adsorption · CEC &amp; base saturation · root exudate and respiration exchange</p>
+</header>
+<nav>
+  <button class="active" data-tab="t1">1 · Hydrated Size &amp; Adsorption</button>
+  <button data-tab="t2">2 · CEC &amp; Base Saturation</button>
+  <button data-tab="t3">3 · Root Exchange</button>
+</nav>
+
+<main>
+<!-- ================= TAB 1 ================= -->
+<section id="t1" class="tab active">
+  <div class="panel">
+    <h2>Why do some cations stick tighter than others?</h2>
+    <p class="small">Clay and organic matter carry negative charges. A cation's grip on that surface depends on <b>charge</b> (more charge = stronger pull) and <b>hydrated size</b> (a bigger water shell holds the ion farther from the surface, weakening the pull). The brown line in each picture is the distance from the ion's center to the clay surface — thicker line = stronger attraction.</p>
+    <div class="row small">
+      <span><b>Sort by:</b></span>
+      <div class="seg" id="sortSeg">
+        <button class="on" data-k="ads">Adsorption strength</button>
+        <button data-k="hyd">Hydrated size</button>
+        <button data-k="z">Charge</button>
+      </div>
+      <div class="legend">
+        <span><span class="dot" style="background:var(--acid)"></span>Acid cation</span>
+        <span><span class="dot" style="background:var(--base)"></span>Base cation</span>
+        <span><span class="dot" style="background:rgba(120,180,230,.35);border:1px dashed #7fb3dd"></span>Water (hydration) shell</span>
+      </div>
+    </div>
+  </div>
+  <div class="cards" id="cards"></div>
+  <p class="small muted" style="margin-top:8px">Notice Mg²⁺ has a <i>smaller</i> bare ion than Ca²⁺ but a <i>larger</i> hydrated size. Its charge is packed into a smaller space, so it pulls in more water — and that thicker shell keeps it farther from the clay, so it is held less tightly than Ca²⁺.</p>
+
+  <div class="panel" style="margin-top:12px">
+    <h2>Experiment: which cation does H⁺ knock off?</h2>
+    <p class="small">A clay surface holds equal amounts of Al³⁺, Ca²⁺, Mg²⁺, K⁺ and Na⁺. Send in H⁺ ions and count which cation gets displaced each time. The weaker a cation is held, the more likely it is to be replaced.</p>
+    <div class="row">
+      <label class="ctl" style="min-width:200px">Your prediction
+        <select id="pred">
+          <option value="">— choose one —</option>
+          <option value="Al">Al³⁺</option><option value="Ca">Ca²⁺</option><option value="Mg">Mg²⁺</option><option value="K">K⁺</option><option value="Na">Na⁺</option>
+        </select>
+      </label>
+      <button class="btn primary" id="runComp">Send 200 H⁺</button>
+      <button class="btn" id="resetComp">Reset</button>
+    </div>
+    <div class="results" id="compResults" style="margin-top:10px"></div>
+    <div class="feedback" id="compFb"></div>
+  </div>
+</section>
+
+<!-- ================= TAB 2 ================= -->
+<section id="t2" class="tab">
+  <div class="cols">
+    <div class="panel">
+      <svg id="micSvg" viewBox="0 0 360 470" tabindex="-1"></svg>
+      <div class="legend" style="justify-content:center;margin-top:6px">
+        <span><span class="dot" style="background:var(--acid)"></span>Acid cations (H⁺, Al³⁺)</span>
+        <span><span class="dot" style="background:var(--base)"></span>Base cations (Ca²⁺, Mg²⁺, K⁺, Na⁺)</span>
+      </div>
+      <p class="small muted" style="text-align:center;margin:4px 0 0">Each “−” is one unit of negative charge. A 2+ cation uses two, a 3+ cation uses three. Click an ion to remove it.</p>
+    </div>
+    <div>
+      <div class="panel">
+        <h2>Worksheet scenarios</h2>
+        <div class="row">
+          <button class="btn" data-preset="low">Low CEC</button>
+          <button class="btn" data-preset="hlow">High CEC &amp; Low BS</button>
+          <button class="btn" data-preset="hhigh">High CEC &amp; High BS</button>
+        </div>
+        <h3>Or adjust it yourself</h3>
+        <div class="row">
+          <label class="ctl" style="flex:1">CEC (negative sites): <span id="cecVal"></span>
+            <input type="range" id="cecSl" min="6" max="36" value="30"></label>
+          <label class="ctl" style="flex:1">Base saturation target: <span id="bsVal"></span>
+            <input type="range" id="bsSl" min="0" max="100" value="80"></label>
+        </div>
+        <h3>Build mode — add cations one at a time</h3>
+        <div class="row">
+          <button class="btn acid" data-add="H">+ H⁺</button>
+          <button class="btn acid" data-add="Al">+ Al³⁺</button>
+          <button class="btn base" data-add="Ca">+ Ca²⁺</button>
+          <button class="btn base" data-add="Mg">+ Mg²⁺</button>
+          <button class="btn base" data-add="K">+ K⁺</button>
+          <button class="btn base" data-add="Na">+ Na⁺</button>
+          <button class="btn" id="clearMic">Clear all</button>
+        </div>
+        <div class="row small" style="margin-top:8px">
+          <label class="ctl" style="min-width:220px">Challenge goal
+            <select id="goalSel">
+              <option value="">None</option>
+              <option value="low">Build: Low CEC</option>
+              <option value="hlow">Build: High CEC &amp; Low BS</option>
+              <option value="hhigh">Build: High CEC &amp; High BS</option>
+            </select></label>
+          <span id="goalStatus" class="goal"></span>
+        </div>
+        <p id="micMsg" class="small warn" style="min-height:1.2em;margin:6px 0 0"></p>
+      </div>
+      <div class="panel">
+        <div class="readout" id="micReadout"></div>
+        <div class="classbox" id="micClass"></div>
+      </div>
+    </div>
+  </div>
+  <div class="panel small">
+    <b>Key ideas.</b> <b>CEC</b> = how many negative charges the soil has to hold cations (a nutrient “bank account” and pH buffer). <b>Base saturation</b> = % of that CEC occupied by base cations (Ca²⁺, Mg²⁺, K⁺, Na⁺) that don't lower pH. Acid cations (H⁺, Al³⁺) lower pH — Al³⁺ reacts with water and releases more H⁺. Here, CEC below 15 is “low” and BS below 50% is “low”.
+  </div>
+</section>
+
+<!-- ================= TAB 3 ================= -->
+<section id="t3" class="tab">
+  <div class="panel">
+    <canvas id="exCanvas" width="900" height="540"></canvas>
+    <div class="row" style="margin-top:10px">
+      <button class="btn primary" id="playBtn">⏸ Pause</button>
+      <label class="ctl" style="min-width:170px">Starting soil
+        <select id="startSel">
+          <option value="85">High base saturation (85%)</option>
+          <option value="55">Moderate (55%)</option>
+          <option value="25">Low base saturation (25%)</option>
+        </select></label>
+      <button class="btn" id="resetEx">Reset</button>
+      <button class="btn base" id="limeBtn">Add lime (CaCO₃)</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label class="chk"><input type="checkbox" id="exOn" checked> Root exudate H⁺</label>
+      <label class="chk"><input type="checkbox" id="respOn" checked> Cellular respiration CO₂</label>
+      <label class="chk"><input type="checkbox" id="upOn" checked> Plant absorbs released nutrients</label>
+    </div>
+    <div class="row" style="margin-top:6px">
+      <label class="ctl" style="flex:1">Root activity (H⁺ / CO₂ release rate)
+        <input type="range" id="rateSl" min="1" max="10" value="4"></label>
+      <label class="ctl" style="flex:1">Animation speed
+        <input type="range" id="spdSl" min="1" max="4" value="1"></label>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="panel">
+      <h2>Soil change over time</h2>
+      <canvas id="histCanvas" width="900" height="170"></canvas>
+      <div class="readout" id="exReadout"></div>
+    </div>
+    <div class="panel">
+      <h2>Which cations were released?</h2>
+      <div class="tally" id="tally"></div>
+      <h3>Taken up by the plant</h3>
+      <div class="small" id="uptake"></div>
+      <h3>Where the H⁺ came from</h3>
+      <div class="small" id="hsrc"></div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="panel">
+      <h2>Root exudate cation exchange</h2>
+      <ol class="steps">
+        <li>The root pumps H⁺ out of its cells (and releases organic acids).</li>
+        <li>H⁺ swaps onto a negative site on the clay.</li>
+        <li>A base cation (e.g. K⁺) is pushed off into the soil solution.</li>
+        <li>The root absorbs the freed nutrient.</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h2>Cellular respiration cation exchange</h2>
+      <ol class="steps">
+        <li>Root (and microbe) respiration releases CO₂.</li>
+        <li>CO₂ + H₂O → H₂CO₃ (carbonic acid) → H⁺ + HCO₃⁻</li>
+        <li>The H⁺ displaces a cation from the clay.</li>
+        <li>The cation enters the soil solution — taken up by roots or leached.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="panel small">
+    <b>Watch for:</b> each H⁺ that stays on the clay lowers base saturation and pH. Weakly held cations (Na⁺, K⁺) come off most often; Al³⁺ rarely does — but when it does, it reacts with water and releases <i>more</i> H⁺. A 2+ cation needs two H⁺ to replace it (charge must balance).
+  </div>
+</section>
+</main>
+<footer>Simplified teaching model. Hydrated sizes from the class table; bare-ion radii are approximate. H⁺ is placed near Al³⁺ in holding strength because it bonds partly covalently to clay surfaces (lyotropic series: Al³⁺ &gt; H⁺ &gt; Ca²⁺ &gt; Mg²⁺ &gt; K⁺ &gt; Na⁺). pH values are rough estimates from base saturation.</footer>
+
+<script>
+/* ===================== Shared data ===================== */
+const IONS = {
+  Al:{lbl:'Al³⁺', z:3, hyd:475, bare:54,  type:'acid', ads:'Highest'},
+  H: {lbl:'H⁺',  z:1, hyd:280, bare:1,   type:'acid', ads:'Very high*'},
+  Ca:{lbl:'Ca²⁺', z:2, hyd:400, bare:100, type:'base', ads:'High'},
+  Mg:{lbl:'Mg²⁺', z:2, hyd:450, bare:72,  type:'base', ads:'Moderate-High'},
+  K: {lbl:'K⁺',  z:1, hyd:330, bare:138, type:'base', ads:'Moderate'},
+  Na:{lbl:'Na⁺',  z:1, hyd:350, bare:102, type:'base', ads:'Low'}
+};
+const COL = {acid:'#c0392f', base:'#2a63c4'};
+const SPOKEN = {Al:'aluminum, Al 3 plus', H:'hydrogen, H plus', Ca:'calcium, Ca 2 plus', Mg:'magnesium, Mg 2 plus', K:'potassium, K plus', Na:'sodium, Na plus'};
+const col = t => COL[IONS[t].type];
+// holding strength: charge / hydrated size (H+ special case)
+const score = t => t==='H' ? 5.8 : IONS[t].z / IONS[t].hyd * 1000;
+// relative chance of being displaced (weaker hold → much more likely)
+const dispW = t => Math.pow(1/score(t), 3);
+const phFromBS = bs => 4.0 + 0.032*bs;
+
+function pill(cx,cy,W,H){
+  const R=W/2, L=H-W, P=2*L+2*Math.PI*R;
+  return {cx,cy,R,L,P,pt(t,d){
+    let s=(((t%1)+1)%1)*P;
+    if(s<L) return {x:cx+R+d,y:cy-L/2+s,nx:1,ny:0};
+    s-=L; const arc=Math.PI*R;
+    if(s<arc){const a=s/R; return {x:cx+(R+d)*Math.cos(a),y:cy+L/2+(R+d)*Math.sin(a),nx:Math.cos(a),ny:Math.sin(a)};}
+    s-=arc;
+    if(s<L) return {x:cx-R-d,y:cy+L/2-s,nx:-1,ny:0};
+    s-=L; const a=Math.PI+s/R;
+    return {x:cx+(R+d)*Math.cos(a),y:cy-L/2+(R+d)*Math.sin(a),nx:Math.cos(a),ny:Math.sin(a)};
+  }};
+}
+
+/* micelle charge-slot model */
+function makeMic(N){return {N,slots:new Array(N).fill(null),ions:new Map(),nid:1};}
+function placeIon(m,type,start){
+  const z=IONS[type].z;
+  for(let k=0;k<z;k++){ if(start+k>=m.N || m.slots[start+k]!==null) return null; }
+  const id=m.nid++, slots=[];
+  for(let k=0;k<z;k++){ m.slots[start+k]=id; slots.push(start+k); }
+  const ion={id,type,slots,reserved:false}; m.ions.set(id,ion); return ion;
+}
+function addAnywhere(m,type){ for(let s=0;s<m.N;s++){ const r=placeIon(m,type,s); if(r) return r; } return null; }
+function removeIon(m,id){ const i=m.ions.get(id); if(!i) return; i.slots.forEach(s=>m.slots[s]=null); m.ions.delete(id); }
+function pickWeighted(items){ const tot=items.reduce((a,b)=>a+b.w,0); let r=Math.random()*tot; for(const it of items){ r-=it.w; if(r<=0) return it.v; } return items[items.length-1].v; }
+function fillMic(m,bs){
+  m.slots.fill(null); m.ions.clear();
+  const list=[]; let B=Math.round(m.N*bs/100), rem=B;
+  const baseW=[{v:'Ca',w:.55},{v:'Mg',w:.2},{v:'K',w:.15},{v:'Na',w:.1}];
+  const acidW=[{v:'Al',w:.45},{v:'H',w:.55}];
+  while(rem>0){ const t=pickWeighted(baseW.filter(o=>IONS[o.v].z<=rem)); list.push(t); rem-=IONS[t].z; }
+  rem=m.N-B;
+  while(rem>0){ const t=pickWeighted(acidW.filter(o=>IONS[o.v].z<=rem)); list.push(t); rem-=IONS[t].z; }
+  for(let i=list.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [list[i],list[j]]=[list[j],list[i]]; }
+  let pos=0; list.forEach(t=>{ placeIon(m,t,pos); pos+=IONS[t].z; });
+}
+function micStats(m){
+  let base=0,acid=0,al=0,h=0,occ=0;
+  m.ions.forEach(i=>{ const z=IONS[i.type].z; occ+=z; if(IONS[i.type].type==='base') base+=z; else { acid+=z; if(i.type==='Al') al+=z; else h+=z; } });
+  return {N:m.N,occ,base,acid,al,h,bs:base/m.N*100,as:acid/m.N*100,alSat:al/m.N*100};
+}
+
+/* tabs */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('active',x===b));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.id===b.dataset.tab));
+});
+
+/* ===================== TAB 1 ===================== */
+let sortKey='ads';
+function cardSVG(t){
+  const d=IONS[t], W=170, H=150, base=132, rh=d.hyd/9.5, rb=Math.max(2.5,d.bare/9.5), cx=W/2, cy=base-rh;
+  let s=`<svg viewBox="0 0 ${W} ${H}" class="ionsvg" role="img" aria-label="${SPOKEN[t]}: ${d.type} cation with a ${d.z} plus charge and a hydrated size of about ${d.hyd} picometers, drawn above a negatively charged clay surface. Adsorption strength: ${d.ads.replace('*','')}.">`;
+  s+=`<rect x="0" y="${base}" width="${W}" height="${H-base}" fill="#e8dfcd"/>`;
+  for(let x=10;x<W;x+=20) s+=`<text x="${x}" y="${base+14}" font-size="14" font-weight="700" fill="#7a5a2f">−</text>`;
+  s+=`<line x1="${cx}" y1="${cy}" x2="${cx}" y2="${base}" stroke="#7a5a2f" stroke-width="${(score(t)*1.15).toFixed(1)}" stroke-linecap="round" opacity=".6"/>`;
+  s+=`<circle cx="${cx}" cy="${cy}" r="${rh}" fill="rgba(120,180,230,.18)" stroke="#7fb3dd" stroke-dasharray="4 3"/>`;
+  const n=Math.round(2*Math.PI*(rh-5)/10);
+  for(let i=0;i<n;i++){ const a=i/n*2*Math.PI; s+=`<circle cx="${(cx+(rh-5)*Math.cos(a)).toFixed(1)}" cy="${(cy+(rh-5)*Math.sin(a)).toFixed(1)}" r="2.6" fill="#6fa8dc"/>`; }
+  s+=`<circle cx="${cx}" cy="${cy}" r="${rb}" fill="${col(t)}"/>`;
+  s+=`<text x="${W-4}" y="12" font-size="10" text-anchor="end" fill="#6b665c">${d.hyd} pm</text>`;
+  return s+'</svg>';
+}
+function renderCards(){
+  const keys=Object.keys(IONS);
+  const f={ads:t=>score(t),hyd:t=>IONS[t].hyd,z:t=>IONS[t].z+score(t)/100};
+  keys.sort((a,b)=>f[sortKey](b)-f[sortKey](a));
+  document.getElementById('cards').innerHTML=keys.map(t=>{
+    const d=IONS[t];
+    return `<div class="card ${t==='H'?'special':''}">
+      <div class="hd"><span class="sym" style="color:${col(t)}">${d.lbl}</span><span class="chip" style="background:${col(t)}">${d.type} cation</span></div>
+      ${cardSVG(t)}
+      <div class="kv"><span>Charge</span><b>${d.z}+</b></div>
+      <div class="kv"><span>Hydrated size</span><b>~${d.hyd} pm</b></div>
+      <div class="kv"><span>Bare ion size</span><b>${t==='H'?'≈ 0 (a proton)':'~'+d.bare+' pm'}</b></div>
+      <div class="kv"><span>Adsorption</span><b>${d.ads}</b></div>
+      <div class="bar"><i style="width:${(score(t)/6.5*100).toFixed(0)}%"></i></div>
+      ${t==='H'?'<div class="small muted" style="margin-top:4px">*Not in the class table. H⁺ bonds partly covalently to clay surfaces, so it is held almost as tightly as Al³⁺ — that is why it can displace base cations.</div>':''}
+    </div>`;
+  }).join('');
+}
+document.querySelectorAll('#sortSeg button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#sortSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  sortKey=b.dataset.k; renderCards();
+});
+renderCards();
+
+const COMP=['Al','Ca','Mg','K','Na'];
+let comp={}, compTimer=null;
+function renderComp(total){
+  const tot=Math.max(1,total);
+  document.getElementById('compResults').innerHTML=COMP.map(t=>
+    `<div class="r"><b style="color:${col(t)}">${IONS[t].lbl}</b><div class="track"><i style="width:${(comp[t]/tot*100).toFixed(1)}%;background:${col(t)}"></i></div><span>${comp[t]} (${(comp[t]/tot*100).toFixed(0)}%)</span></div>`).join('');
+}
+function resetComp(){ clearInterval(compTimer); COMP.forEach(t=>comp[t]=0); renderComp(0); document.getElementById('compFb').className='feedback'; }
+resetComp();
+document.getElementById('resetComp').onclick=resetComp;
+document.getElementById('runComp').onclick=()=>{
+  const pred=document.getElementById('pred').value;
+  if(!pred){ const fb=document.getElementById('compFb'); fb.innerHTML='<b>Make a prediction first.</b> Choose the cation you think H⁺ will knock off most often, then send the H⁺ ions.'; fb.className='feedback show'; document.getElementById('pred').focus(); return; }
+  resetComp();
+  const items=COMP.map(t=>({v:t,w:dispW(t)}));
+  let done=0;
+  compTimer=setInterval(()=>{
+    for(let k=0;k<5;k++){ comp[pickWeighted(items)]++; done++; }
+    renderComp(done);
+    if(done>=200){
+      clearInterval(compTimer);
+      const top=COMP.reduce((a,b)=>comp[a]>=comp[b]?a:b);
+      const fb=document.getElementById('compFb');
+      fb.innerHTML=(pred===top?'✅ <b>Your prediction matched!</b> ':'🤔 <b>Not quite.</b> ')+
+        `${IONS[top].lbl} was displaced most often. It has a low charge and a large hydrated shell, so it is held most weakly and H⁺ replaces it most easily. Al³⁺ (3+ charge, strongest grip) was almost never displaced. The order of displacement is the reverse of the adsorption order.`;
+      fb.className='feedback show';
+    }
+  },40);
+};
+
+/* ===================== TAB 2 ===================== */
+const svg2=document.getElementById('micSvg');
+const G2=pill(180,235,120,390);
+let mic=makeMic(30);
+const cecSl=document.getElementById('cecSl'), bsSl=document.getElementById('bsSl');
+function r2(t){return IONS[t].hyd/40;}
+function ionT(m,ion){ return ((ion.slots[0]+ion.slots[ion.slots.length-1])/2+0.5)/m.N; }
+function classify(s){ return {cecHigh:s.N>=15, bsHigh:s.bs>=50}; }
+function renderMic(){
+  const m=mic, g=G2;
+  let s=`<path d="M${g.cx+g.R},${g.cy-g.L/2} L${g.cx+g.R},${g.cy+g.L/2} A${g.R},${g.R} 0 0 1 ${g.cx-g.R},${g.cy+g.L/2} L${g.cx-g.R},${g.cy-g.L/2} A${g.R},${g.R} 0 0 1 ${g.cx+g.R},${g.cy-g.L/2} Z" fill="#efe9dc" stroke="#8a7a5f" stroke-width="2.5"/>`;
+  const st=micStats(m), c=classify(st);
+  s+=`<text x="${g.cx}" y="${g.cy-26}" text-anchor="middle" font-size="15" font-weight="700" fill="#5a4c33">Clay</text>`;
+  s+=`<text x="${g.cx}" y="${g.cy-6}" text-anchor="middle" font-size="15" font-weight="700" fill="#5a4c33">micelle</text>`;
+  s+=`<text x="${g.cx}" y="${g.cy+22}" text-anchor="middle" font-size="12" fill="#5a4c33">${c.cecHigh?'High':'Low'} CEC</text>`;
+  s+=`<text x="${g.cx}" y="${g.cy+38}" text-anchor="middle" font-size="12" fill="#5a4c33">${c.bsHigh?'High':'Low'} BS</text>`;
+  for(let i=0;i<m.N;i++){ const p=g.pt((i+.5)/m.N,-10); s+=`<text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-size="15" font-weight="800" fill="#7a5a2f">−</text>`; }
+  m.ions.forEach(ion=>{
+    const r=r2(ion.type), p=g.pt(ionT(m,ion), r+4);
+    s+=`<g class="ion" data-id="${ion.id}" tabindex="0" role="button" aria-label="Remove ${SPOKEN[ion.type]}">`;
+    ion.slots.forEach(sl=>{ const q=g.pt((sl+.5)/m.N,0); s+=`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" stroke="${col(ion.type)}" stroke-opacity=".35" stroke-width="1.5"/>`; });
+    s+=`<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${col(ion.type)}"/>`;
+    s+=`<text x="${p.x}" y="${p.y+3.5}" text-anchor="middle" font-size="${ion.type==='H'||ion.type==='K'?9:8.5}" font-weight="700" fill="#fff" pointer-events="none">${IONS[ion.type].lbl}</text></g>`;
+  });
+  svg2.innerHTML=s;
+  svg2.querySelectorAll('.ion').forEach((el,idx)=>{
+    const go=kb=>{ removeIon(mic,+el.dataset.id); renderMic();
+      if(kb){ const all=svg2.querySelectorAll('.ion'); const nx=all[Math.min(idx,all.length-1)]; if(nx) nx.focus(); else svg2.focus(); } };
+    el.onclick=()=>go(false);
+    el.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); go(true); } };
+  });
+  renderMicReadout(st);
+}
+function renderMicReadout(st){
+  const c=classify(st);
+  document.getElementById('cecVal').textContent=`${mic.N} cmol(+)/kg`;
+  document.getElementById('bsVal').textContent=`${bsSl.value}%`;
+  const ph=phFromBS(st.bs);
+  document.getElementById('micReadout').innerHTML=`
+    <div class="tile"><span>CEC</span><b>${st.N}</b><span>cmol(+)/kg</span></div>
+    <div class="tile"><span>Base saturation</span><b style="color:var(--base)">${st.bs.toFixed(0)}%</b></div>
+    <div class="tile"><span>Acid saturation</span><b style="color:var(--acid)">${st.as.toFixed(0)}%</b></div>
+    <div class="tile"><span>Est. soil pH</span><b>≈ ${ph.toFixed(1)}</b></div>
+    <div class="tile"><span>Al³⁺ saturation</span><b>${st.alSat.toFixed(0)}%</b></div>
+    <div class="tile"><span>Sites filled</span><b>${st.occ}/${st.N}</b></div>`;
+  let msg='';
+  if(!c.cecHigh){
+    msg=`<b>Low CEC.</b> Few negative sites → a small nutrient reservoir and weak pH buffering. pH changes quickly (easy to acidify, but also takes little lime to fix). Typical of sandy, low-organic-matter soils or kaolinite clays. `+
+        (c.bsHigh?'Base saturation is high, so the sites it does have hold mostly nutrients.':'Base saturation is also low, so the few sites are mostly H⁺/Al³⁺ — acidic and nutrient-poor.');
+  } else if(!c.bsHigh){
+    msg=`<b>High CEC &amp; Low base saturation.</b> Many sites, but most hold H⁺ and Al³⁺. The soil is acidic and strongly buffered — it takes a lot of lime to raise the pH. Common in highly weathered, leached soils (e.g. Ultisols).`;
+  } else {
+    msg=`<b>High CEC &amp; High base saturation.</b> Many sites holding mostly Ca²⁺, Mg²⁺ and K⁺ → a large nutrient reserve, near-neutral pH, and strong resistance to acidification. Typical of less-weathered or arid-region soils, smectite clays, or soils rich in organic matter (e.g. Mollisols).`;
+  }
+  if(st.alSat>=30) msg+=` <span class="warn">Al³⁺ saturation is high — aluminum toxicity to roots is likely.</span>`;
+  if(st.occ<st.N) msg+=` <span class="warn">(${st.N-st.occ} empty site${st.N-st.occ>1?'s':''} — in real soil every negative site holds a cation.)</span>`;
+  document.getElementById('micClass').innerHTML=msg;
+  // goal check
+  const goal=document.getElementById('goalSel').value, gs=document.getElementById('goalStatus');
+  if(!goal){ gs.textContent=''; return; }
+  const want={low:{cec:false},hlow:{cec:true,bs:false},hhigh:{cec:true,bs:true}}[goal];
+  const ok=st.occ===st.N && c.cecHigh===want.cec && (want.bs===undefined || c.bsHigh===want.bs);
+  gs.className='goal'+(ok?' ok':'');
+  gs.textContent= ok ? '✓ Goal met!' : (st.occ<st.N ? 'Fill every site…' : 'Not yet — check CEC and BS');
+}
+function setMsg(t){ document.getElementById('micMsg').textContent=t; if(t) setTimeout(()=>{ if(document.getElementById('micMsg').textContent===t) document.getElementById('micMsg').textContent=''; },2500); }
+cecSl.oninput=()=>{ mic=makeMic(+cecSl.value); fillMic(mic,+bsSl.value); renderMic(); };
+bsSl.oninput=()=>{ fillMic(mic,+bsSl.value); renderMic(); };
+document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{
+  const p={low:[8,50],hlow:[30,20],hhigh:[30,90]}[b.dataset.preset];
+  cecSl.value=p[0]; bsSl.value=p[1]; mic=makeMic(p[0]); fillMic(mic,p[1]); renderMic();
+});
+document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{
+  const t=b.dataset.add;
+  if(!addAnywhere(mic,t)) setMsg(`No room for ${IONS[t].lbl} — it needs ${IONS[t].z} free adjacent site${IONS[t].z>1?'s':''}. Remove an ion or raise CEC.`);
+  renderMic();
+});
+document.getElementById('clearMic').onclick=()=>{ mic=makeMic(+cecSl.value); renderMic(); };
+document.getElementById('goalSel').onchange=()=>renderMicReadout(micStats(mic));
+fillMic(mic,80); renderMic();
+
+/* ===================== TAB 3 ===================== */
+const CW=900, CH=540, HW=900, HH=170;
+function setupCanvas(c,w,h){ const dpr=window.devicePixelRatio||1; c.width=w*dpr; c.height=h*dpr; const x=c.getContext('2d'); x.setTransform(dpr,0,0,dpr,0,0); return x; }
+const X=setupCanvas(document.getElementById('exCanvas'),CW,CH);
+const HX=setupCanvas(document.getElementById('histCanvas'),HW,HH);
+const GEO=pill(600,245,100,360);
+const RXN={x:330,y:486};
+const rootX=y=>112-y*0.03;
+const r3=t=>IONS[t].hyd/30;
+const el=id=>document.getElementById(id);
+const S={};
+
+function resetEx(){
+  S.m=makeMic(24); fillMic(S.m,+el('startSel').value);
+  S.parts=[]; S.fx=[]; S.sched=[]; S.frame=0; S.lastPulse=-999; S.toggle=0; S.warned=false; S.hist=[];
+  S.stats={exH:0,respH:0,alH:0,rel:{Al:0,Ca:0,Mg:0,K:0,Na:0},up:{Ca:0,Mg:0,K:0},lime:0};
+  updateDOM();
+}
+function slotPos(i,d){ return GEO.pt((i+.5)/S.m.N,d); }
+function ionPos(ion){ return GEO.pt(((ion.slots[0]+ion.slots[ion.slots.length-1])/2+.5)/S.m.N, r3(ion.type)+3); }
+function route(a,b){
+  const cx=GEO.cx, top=GEO.cy-GEO.L/2-GEO.R-40, bot=GEO.cy+GEO.L/2+GEO.R+40, pts=[];
+  const aR=a.x>cx+5, bR=b.x>cx+5;
+  if(aR!==bR){
+    const y=((a.y+b.y)/2<GEO.cy)?top:bot;
+    pts.push({x:aR?cx+GEO.R+30:cx-GEO.R-30,y}); pts.push({x:bR?cx+GEO.R+30:cx-GEO.R-30,y});
+  }
+  pts.push({x:b.x,y:b.y}); return pts;
+}
+function spawn(o){ const p=Object.assign({path:[],v:2,alpha:1,fade:0,wait:0},o); S.parts.push(p); return p; }
+function fxText(text,x,y,color){ S.fx.push({text,x,y,color:color||'#333',life:90}); }
+function later(frames,fn){ S.sched.push({f:S.frame+frames,fn}); }
+function pickTarget(){
+  const items=[]; S.m.ions.forEach(i=>{ if(!i.reserved && i.type!=='H') items.push({v:i,w:dispW(i.type)}); });
+  return items.length?pickWeighted(items):null;
+}
+function spawnH(o,dest,ev){
+  spawn({kind:'H',x:o.x,y:o.y,path:route(o,dest),v:2.6,onDone:()=>{ ev.got++; if(ev.got===ev.need) swap(ev); }});
+}
+function pulse(src){
+  const tgt=pickTarget();
+  if(!tgt){ if(!S.warned){ fxText('Clay is saturated with H⁺ — try adding lime',GEO.cx,40,'#b33'); S.warned=true; } return; }
+  tgt.reserved=true;
+  const ev={tgt,need:IONS[tgt.type].z,got:0};
+  tgt.slots.forEach((slot,k)=>{
+    const dest=slotPos(slot,r3('H')+3);
+    later(k*14,()=>{
+      if(src==='ex'){
+        S.stats.exH++; const y=130+Math.random()*300; spawnH({x:rootX(y)+6,y},dest,ev);
+      } else if(src==='resp'){
+        S.stats.respH++; const y=400+Math.random()*80;
+        spawn({kind:'CO2',x:rootX(y)+6,y,path:[{x:RXN.x+Math.random()*50-25,y:RXN.y+Math.random()*14-7}],v:2.2,onDone:p=>{
+          fxText('+ H₂O',p.x,p.y-16,'#555');
+          spawn({kind:'H2CO3',x:p.x,y:p.y,wait:30,onDone:q=>{
+            spawn({kind:'HCO3',x:q.x,y:q.y,path:[{x:q.x+40,y:CH+20}],v:.7,fade:.006});
+            spawnH({x:q.x,y:q.y},dest,ev);
+          }});
+        }});
+      } else {
+        S.stats.alH++; spawnH(src.from,dest,ev);
+      }
+    });
+  });
+}
+function swap(ev){
+  const t=ev.tgt; if(!S.m.ions.has(t.id)) return;
+  const pos=ionPos(t), slots=t.slots.slice();
+  const n=GEO.pt(((slots[0]+slots[slots.length-1])/2+.5)/S.m.N,0);
+  removeIon(S.m,t.id); slots.forEach(s=>placeIon(S.m,'H',s));
+  S.stats.rel[t.type]++;
+  const out={x:pos.x+n.nx*70,y:Math.min(CH-40,Math.max(30,pos.y+n.ny*70))};
+  if(t.type==='Al'){
+    spawn({kind:'ion',type:'Al',x:pos.x,y:pos.y,path:[out],v:1.6,onDone:p=>{
+      fxText('Al³⁺ + 3H₂O → Al(OH)₃ + 3H⁺',p.x,p.y-20,'#b33');
+      spawn({kind:'ion',type:'Al',x:p.x,y:p.y,path:[{x:p.x,y:CH+30}],v:.7,fade:.005});
+      later(25,()=>pulse({from:{x:p.x,y:p.y}}));
+    }});
+  } else if(['Ca','Mg','K'].includes(t.type) && el('upOn').checked){
+    const y=150+Math.random()*260, r={x:rootX(y)+8,y};
+    spawn({kind:'ion',type:t.type,x:pos.x,y:pos.y,path:[out,...route(out,r)],v:1.9,onDone:p=>{
+      S.stats.up[t.type]++; fxText(IONS[t.type].lbl+' absorbed',p.x+30,p.y-12,'#2f6fd6');
+    }});
+  } else {
+    spawn({kind:'ion',type:t.type,x:pos.x,y:pos.y,path:[out,{x:out.x+Math.random()*60-30,y:CH+30}],v:1.2,fade:.004});
+    fxText(IONS[t.type].lbl+' leaches',out.x,out.y-14,'#555');
+  }
+}
+function addLime(){
+  const m=S.m; let pairs=0;
+  for(let i=0;i<m.N-1 && pairs<3;i++){
+    const a=m.ions.get(m.slots[i]), b=m.ions.get(m.slots[i+1]);
+    if(a&&b&&a!==b&&a.type==='H'&&b.type==='H'&&!a.reserved&&!b.reserved){
+      a.reserved=b.reserved=true; pairs++;
+      const dest=GEO.pt((i+1)/m.N, r3('Ca')+3), start={x:GEO.cx-150+Math.random()*300,y:-15}, idx=i;
+      spawn({kind:'ion',type:'Ca',x:start.x,y:start.y,path:route(start,dest),v:2.4,onDone:()=>{
+        if(m!==S.m) return;
+        removeIon(m,a.id); removeIon(m,b.id); placeIon(m,'Ca',idx); S.stats.lime++; S.warned=false;
+        fxText('2H⁺ → H₂O + CO₂',dest.x,dest.y-18,'#2f6fd6');
+      }});
+      i++;
+    }
+  }
+  if(!pairs) fxText('No adjacent H⁺ pairs to neutralize',GEO.cx,40,'#555');
+}
+
+function step(){
+  S.frame++;
+  const due=S.sched.filter(s=>s.f<=S.frame); S.sched=S.sched.filter(s=>s.f>S.frame); due.forEach(s=>s.fn());
+  const interval=Math.round(260/+el('rateSl').value);
+  if(S.frame-S.lastPulse>=interval){
+    S.lastPulse=S.frame;
+    const srcs=[]; if(el('exOn').checked) srcs.push('ex'); if(el('respOn').checked) srcs.push('resp');
+    if(srcs.length) pulse(srcs[S.toggle++%srcs.length]);
+  }
+  for(const p of S.parts){
+    if(p.dead) continue;
+    if(p.wait>0){ p.wait--; if(p.wait>0) continue; }
+    if(p.path.length){
+      const tg=p.path[0], dx=tg.x-p.x, dy=tg.y-p.y, d=Math.hypot(dx,dy);
+      if(d<=p.v){ p.x=tg.x; p.y=tg.y; p.path.shift(); } else { p.x+=dx/d*p.v; p.y+=dy/d*p.v; }
+      if(p.fade) p.alpha=Math.max(0,p.alpha-p.fade);
+      if(p.path.length) continue;
+    }
+    p.dead=true; if(p.onDone) p.onDone(p);
+  }
+  S.parts=S.parts.filter(p=>!p.dead);
+  S.fx.forEach(f=>{f.life--; f.y-=.35;}); S.fx=S.fx.filter(f=>f.life>0);
+  if(S.frame%20===0){ const st=micStats(S.m); S.hist.push(st.bs); if(S.hist.length>300) S.hist.shift(); }
+}
+
+function circleLabel(x,y,r,fill,text,alpha,fs){
+  X.globalAlpha=alpha; X.beginPath(); X.arc(x,y,r,0,Math.PI*2); X.fillStyle=fill; X.fill();
+  X.fillStyle='#fff'; X.font=`700 ${fs||10}px system-ui,sans-serif`; X.textAlign='center'; X.textBaseline='middle'; X.fillText(text,x,y+.5);
+  X.globalAlpha=1;
+}
+function drawRoot(){
+  X.beginPath(); X.moveTo(52,0); X.lineTo(rootX(0)+2,0); X.lineTo(rootX(500),500);
+  X.quadraticCurveTo(84,535,66,500); X.closePath();
+  X.fillStyle='#c9a77c'; X.fill(); X.strokeStyle='#8a6a45'; X.lineWidth=2; X.stroke();
+  X.strokeStyle='#a8875c'; X.lineWidth=1.3;
+  for(let y=60;y<480;y+=28){ X.beginPath(); X.moveTo(rootX(y),y); X.lineTo(rootX(y)+14,y-6); X.stroke(); }
+  X.save(); X.translate(78,260); X.rotate(-Math.PI/2); X.fillStyle='#5a4228'; X.font='700 14px system-ui'; X.textAlign='center'; X.fillText('PLANT ROOT',0,0); X.restore();
+}
+function drawClay(){
+  const g=GEO;
+  X.beginPath(); X.moveTo(g.cx+g.R,g.cy-g.L/2); X.lineTo(g.cx+g.R,g.cy+g.L/2);
+  X.arc(g.cx,g.cy+g.L/2,g.R,0,Math.PI); X.lineTo(g.cx-g.R,g.cy-g.L/2); X.arc(g.cx,g.cy-g.L/2,g.R,Math.PI,2*Math.PI); X.closePath();
+  X.fillStyle='#efe9dc'; X.fill(); X.strokeStyle='#8a7a5f'; X.lineWidth=2.5; X.stroke();
+  X.fillStyle='#5a4c33'; X.font='700 18px system-ui'; X.textAlign='center'; X.textBaseline='middle'; X.fillText('Clay',g.cx,g.cy);
+  X.font='800 15px system-ui'; X.fillStyle='#7a5a2f';
+  for(let i=0;i<S.m.N;i++){ const p=g.pt((i+.5)/S.m.N,-10); X.fillText('−',p.x,p.y); }
+  const pulse=(Math.sin(S.frame/6)+1)/2;
+  S.m.ions.forEach(ion=>{
+    const r=r3(ion.type), p=ionPos(ion);
+    X.strokeStyle=col(ion.type); X.globalAlpha=.35; X.lineWidth=1.5;
+    ion.slots.forEach(sl=>{ const q=g.pt((sl+.5)/S.m.N,0); X.beginPath(); X.moveTo(p.x,p.y); X.lineTo(q.x,q.y); X.stroke(); });
+    X.globalAlpha=1;
+    if(ion.reserved){ X.setLineDash([3,3]); X.strokeStyle='#222'; X.lineWidth=1.5; X.beginPath(); X.arc(p.x,p.y,r+3+pulse*3,0,Math.PI*2); X.stroke(); X.setLineDash([]); }
+    circleLabel(p.x,p.y,r,col(ion.type),IONS[ion.type].lbl,1,ion.type==='Al'?11:10);
+  });
+}
+function draw(){
+  const bg=X.createLinearGradient(0,0,0,CH); bg.addColorStop(0,'#f7f1e6'); bg.addColorStop(1,'#e9dcc6');
+  X.fillStyle=bg; X.fillRect(0,0,CW,CH);
+  X.fillStyle='#8b7b60'; X.font='600 13px system-ui'; X.textAlign='left'; X.textBaseline='alphabetic';
+  X.fillText('SOIL SOLUTION',GEO.cx+GEO.R+70,30);
+  drawRoot(); drawClay();
+  if(el('respOn').checked){
+    X.fillStyle='rgba(255,255,255,.75)'; X.fillRect(RXN.x-150,512,300,22);
+    X.fillStyle='#444'; X.font='600 13px system-ui'; X.textAlign='center'; X.textBaseline='middle';
+    X.fillText('CO₂ + H₂O → H₂CO₃ → H⁺ + HCO₃⁻',RXN.x,523);
+  }
+  for(const p of S.parts){
+    if(p.kind==='H') circleLabel(p.x,p.y,9,COL.acid,'H⁺',p.alpha,10);
+    else if(p.kind==='CO2') circleLabel(p.x,p.y,13,'#8d8d8d','CO₂',p.alpha,10);
+    else if(p.kind==='H2CO3') circleLabel(p.x,p.y,17,'#8a6fa8','H₂CO₃',p.alpha,10);
+    else if(p.kind==='HCO3') circleLabel(p.x,p.y,13,'#a9a9a9','HCO₃⁻',p.alpha,9);
+    else if(p.kind==='ion') circleLabel(p.x,p.y,r3(p.type),col(p.type),IONS[p.type].lbl,p.alpha,10);
+  }
+  S.fx.forEach(f=>{ X.globalAlpha=Math.min(1,f.life/30); X.fillStyle=f.color; X.font='700 13px system-ui'; X.textAlign='center'; X.fillText(f.text,f.x,f.y); X.globalAlpha=1; });
+  if(!S.running){ X.fillStyle='rgba(0,0,0,.55)'; X.font='700 16px system-ui'; X.textAlign='center'; X.fillText('Paused',CW/2,24); }
+}
+function drawHist(){
+  HX.clearRect(0,0,HW,HH);
+  const L=46,R=HW-46,T=12,B=HH-24;
+  HX.strokeStyle='#ddd6c8'; HX.lineWidth=1; HX.font='11px system-ui'; HX.fillStyle='#6b665c';
+  for(let i=0;i<=4;i++){ const y=T+(B-T)*i/4; HX.beginPath(); HX.moveTo(L,y); HX.lineTo(R,y); HX.stroke();
+    HX.textAlign='right'; HX.fillStyle='#2f6fd6'; HX.fillText((100-i*25)+'%',L-6,y+4);
+    HX.textAlign='left'; HX.fillStyle='#d6453d'; HX.fillText(phFromBS(100-i*25).toFixed(1),R+6,y+4); }
+  HX.fillStyle='#6b665c'; HX.textAlign='center'; HX.fillText('time →',(L+R)/2,HH-6);
+  HX.textAlign='left'; HX.fillStyle='#2f6fd6'; HX.fillText('Base saturation',L,HH-6);
+  HX.textAlign='right'; HX.fillStyle='#d6453d'; HX.fillText('Est. pH',R,HH-6);
+  if(S.hist.length<2) return;
+  HX.strokeStyle='#2f6fd6'; HX.lineWidth=2.5; HX.beginPath();
+  S.hist.forEach((v,i)=>{ const x=L+(R-L)*i/299, y=B-(B-T)*v/100; i?HX.lineTo(x,y):HX.moveTo(x,y); }); HX.stroke();
+}
+let domTick=0;
+function updateDOM(){
+  const st=micStats(S.m), ph=phFromBS(st.bs);
+  el('exReadout').innerHTML=`
+    <div class="tile"><span>Base saturation</span><b style="color:var(--base)">${st.bs.toFixed(0)}%</b></div>
+    <div class="tile"><span>Est. pH</span><b style="color:var(--acid)">≈ ${ph.toFixed(1)}</b></div>
+    <div class="tile"><span>H⁺ on clay</span><b>${st.h} / ${st.N}</b></div>
+    <div class="tile"><span>Al³⁺ on clay</span><b>${st.al/3}</b></div>`;
+  const rel=S.stats.rel, mx=Math.max(1,...Object.values(rel));
+  el('tally').innerHTML=['Na','K','Mg','Ca','Al'].map(t=>`<div class="r"><b style="color:${col(t)}">${IONS[t].lbl}</b><div class="track"><i style="width:${rel[t]/mx*100}%;background:${col(t)}"></i></div><span>${rel[t]}</span></div>`).join('');
+  el('uptake').innerHTML=`K⁺: <b>${S.stats.up.K}</b> · Ca²⁺: <b>${S.stats.up.Ca}</b> · Mg²⁺: <b>${S.stats.up.Mg}</b>`;
+  el('hsrc').innerHTML=`Root exudate: <b>${S.stats.exH}</b> · Respiration (H₂CO₃): <b>${S.stats.respH}</b> · Al³⁺ hydrolysis: <b>${S.stats.alH}</b>${S.stats.lime?` · Lime added: <b>${S.stats.lime}</b> Ca²⁺`:''}`;
+}
+S.running=true;
+function loop(){
+  if(S.running){ const k=+el('spdSl').value; for(let i=0;i<k;i++) step(); }
+  draw();
+  if(++domTick%10===0){ updateDOM(); drawHist(); }
+  requestAnimationFrame(loop);
+}
+el('playBtn').onclick=()=>{ S.running=!S.running; el('playBtn').textContent=S.running?'⏸ Pause':'▶ Play'; };
+el('resetEx').onclick=resetEx;
+el('startSel').onchange=resetEx;
+el('limeBtn').onclick=addLime;
+resetEx(); loop();
+</script>
+<script>
+window.A11Y = {
+  css: '#micSvg .ion:focus{outline:none} #micSvg .ion:focus-visible circle{stroke:#111;stroke-width:3px} #micSvg:focus{outline:none}',
+  tabsLabel: 'Lab sections',
+  main: 'main',
+  groups: [['#micSvg', 'Clay micelle. Each negative charge site holds a cation. Each cation is a button; activate it to remove that cation.']],
+  img: [
+    ['#exCanvas', 'Animation of a plant root next to a clay particle in the soil solution. The root releases H+ ions (root exudate) and CO2 from respiration, which forms carbonic acid and releases H+. Each H+ moves to the clay and displaces a cation; weakly held cations such as sodium and potassium come off most often. Released calcium, magnesium, and potassium can be absorbed by the root; other cations leach away. Displaced aluminum reacts with water and releases more H+. The tallies and readouts below give the counts.'],
+    ['#histCanvas', 'Line graph of base saturation over time, with estimated soil pH on the right axis. The line falls as H+ replaces base cations on the clay and rises when lime is added.']
+  ],
+  pressed: [['#sortSeg button', 'on']],
+  live: ['#compFb', '#micMsg', '#goalStatus', '#micClass']
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>

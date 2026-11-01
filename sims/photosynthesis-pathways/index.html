@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Photosynthesis Pathways</title>
+<style>
+:root{--bg:#f6f8f3;--card:#fff;--ink:#1f2a1f;--muted:#5b675b;--line:#d7ded3;--green:#2e7d32;--c3:#2e7d32;--c4:#ef6c00;--cam:#6a1b9a;--co2:#546e7a;--o2:#e53935}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+header{background:linear-gradient(90deg,#1b5e20,#388e3c);color:#fff;padding:14px 18px}
+header h1{margin:0;font-size:1.35rem}
+header p{margin:2px 0 0;opacity:.9;font-size:.9rem}
+nav{display:flex;flex-wrap:wrap;gap:5px;padding:8px 12px;background:#e8efe4;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+nav button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;font-size:.88rem;cursor:pointer;color:var(--ink)}
+nav button.active{background:var(--green);color:#fff;border-color:var(--green)}
+main{max-width:1120px;margin:0 auto;padding:14px}
+section{display:none}section.active{display:block}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+@media(max-width:840px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px}
+h2{margin:0 0 6px;font-size:1.15rem}h3{margin:10px 0 6px;font-size:1rem}
+.ctl{margin:10px 0}.ctl label{display:flex;justify-content:space-between;font-size:.88rem;font-weight:600}
+.ctl input[type=range]{width:100%;accent-color:var(--green)}
+.val{font-variant-numeric:tabular-nums;color:var(--green)}
+.stat{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:.9rem}
+.stat b{font-variant-numeric:tabular-nums;text-align:right}
+.note{font-size:.84rem;color:var(--muted)}
+.callout{background:#f1f8e9;border-left:4px solid var(--green);padding:8px 10px;border-radius:6px;font-size:.9rem;margin-top:8px}
+.callout.warn{background:#fff3e0;border-color:#ef6c00}
+.btn{border:none;background:var(--green);color:#fff;padding:7px 12px;border-radius:8px;cursor:pointer;font-size:.86rem;margin:3px 3px 0 0}
+.btn.sec{background:#fff;color:var(--green);border:1px solid var(--green)}
+svg{width:100%;height:auto;display:block}
+canvas{width:100%;display:block;border-radius:8px;background:#fbfdf9;border:1px solid var(--line)}
+.three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:840px){.three{grid-template-columns:1fr}}
+.pw{border-top:6px solid;margin-bottom:0}
+.bar{height:12px;border-radius:6px;background:#eceff1;overflow:hidden;margin:2px 0 8px}
+.bar>i{display:block;height:100%;transition:width .3s}
+.lbl{font-size:.8rem;color:var(--muted);display:flex;justify-content:space-between}
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.75rem;color:#fff;font-weight:600}
+table{border-collapse:collapse;width:100%;font-size:.86rem}td,th{border:1px solid var(--line);padding:6px;text-align:left;vertical-align:top}th{background:#eef3ea}
+.tablewrap{overflow-x:auto}
+.q{margin-bottom:16px}.q p{margin:0 0 4px;font-weight:600}
+.q button{display:block;width:100%;text-align:left;margin:4px 0;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:pointer;font-size:.9rem;color:var(--ink)}
+.q button.right{background:#e8f5e9;border-color:#43a047}.q button.wrong{background:#ffebee;border-color:#e53935}
+.fb{font-size:.86rem;margin-top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.82rem;margin-top:6px}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px;background:var(--c)}
+.pathbox rect{transition:fill .25s}
+.pathbox.flash rect{fill:#ffcdd2}
+</style>
+</head>
+<body>
+<header>
+  <h1>Photosynthesis: C₃, C₄, CAM &amp; Photorespiration</h1>
+  <p>Change the conditions and watch how plants capture carbon — and why some lose it.</p>
+</header>
+<nav id="tabs">
+  <button data-tab="t1" class="active">1. Photosynthesis basics</button>
+  <button data-tab="t2">2. Rubisco &amp; photorespiration</button>
+  <button data-tab="t3">3. C₃ vs C₄ vs CAM</button>
+  <button data-tab="t4">4. CAM day &amp; night</button>
+  <button data-tab="t5">5. Check your understanding</button>
+</nav>
+<main>
+
+<!-- ================= TAB 1 ================= -->
+<section id="t1" class="active">
+ <div class="grid">
+  <div class="card">
+   <h2>Inside the chloroplast</h2>
+   <p class="note">6 CO₂ + 6 H₂O + light energy → C₆H₁₂O₆ + 6 O₂. The <b>light reactions</b> in the thylakoids split water and make ATP and NADPH. The <b>Calvin cycle</b> in the stroma uses them to turn CO₂ into sugar. Dot flow speed shows the rate.</p>
+   <svg viewBox="0 0 760 400" id="chloro">
+    <defs>
+     <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10z" fill="#90a4ae"/></marker>
+    </defs>
+    <ellipse cx="390" cy="215" rx="355" ry="165" fill="#e8f5e9" stroke="#66bb6a" stroke-width="5"/>
+    <text x="390" y="378" text-anchor="middle" font-size="13" fill="#2e7d32">stroma</text>
+    <g id="sun"><circle cx="70" cy="60" r="30" fill="#ffca28"/>
+     <g id="rays" stroke="#ffb300" stroke-width="4" stroke-dasharray="10 8">
+      <line x1="95" y1="80" x2="160" y2="140"><animate attributeName="stroke-dashoffset" from="36" to="0" dur="0.8s" repeatCount="indefinite"/></line>
+      <line x1="100" y1="65" x2="200" y2="130"><animate attributeName="stroke-dashoffset" from="36" to="0" dur="0.8s" repeatCount="indefinite"/></line>
+      <line x1="85" y1="92" x2="140" y2="170"><animate attributeName="stroke-dashoffset" from="36" to="0" dur="0.8s" repeatCount="indefinite"/></line>
+     </g></g>
+    <g fill="#43a047" stroke="#1b5e20" stroke-width="2">
+     <rect x="145" y="145" width="110" height="18" rx="9"/><rect x="145" y="168" width="110" height="18" rx="9"/>
+     <rect x="145" y="191" width="110" height="18" rx="9"/><rect x="145" y="214" width="110" height="18" rx="9"/>
+     <rect x="145" y="237" width="110" height="18" rx="9"/><rect x="145" y="260" width="110" height="18" rx="9"/>
+    </g>
+    <text x="200" y="300" text-anchor="middle" font-size="13" font-weight="700" fill="#1b5e20">Thylakoids</text>
+    <text x="200" y="316" text-anchor="middle" font-size="12" fill="#1b5e20">light reactions</text>
+    <!-- paths -->
+    <g fill="none" stroke="#b0bec5" stroke-width="2" stroke-dasharray="4 5" marker-end="url(#ah)">
+     <path id="pW" d="M 110 395 Q 140 330 175 280"/>
+     <path id="pO2" d="M 225 145 Q 245 80 260 20"/>
+     <path id="pATP" d="M 258 170 C 330 120 400 110 470 150"/>
+     <path id="pADP" d="M 470 275 C 400 310 330 300 258 255"/>
+     <path id="pCO2" d="M 745 70 Q 680 100 612 168"/>
+     <path id="pSug" d="M 605 265 Q 660 320 712 360"/>
+    </g>
+    <path id="pCyc" d="M 540 130 A 80 80 0 1 1 539.9 130" fill="none" stroke="#a5d6a7" stroke-width="16"/>
+    <text x="540" y="205" text-anchor="middle" font-size="15" font-weight="700" fill="#1b5e20">Calvin</text>
+    <text x="540" y="224" text-anchor="middle" font-size="15" font-weight="700" fill="#1b5e20">cycle</text>
+    <text x="640" y="160" font-size="11" fill="#33691e">① Carboxylation</text>
+    <text x="640" y="173" font-size="11" fill="#33691e">(Rubisco + RuBP)</text>
+    <text x="545" y="315" text-anchor="middle" font-size="11" fill="#33691e">② Reduction</text>
+    <text x="440" y="215" text-anchor="end" font-size="11" fill="#33691e">③ Regenerate</text>
+    <text x="440" y="228" text-anchor="end" font-size="11" fill="#33691e">RuBP</text>
+    <text x="96" y="388" font-size="13" fill="#1565c0" text-anchor="end">H₂O</text>
+    <text x="272" y="28" font-size="13" fill="#c62828">O₂</text>
+    <text x="365" y="112" font-size="13" text-anchor="middle" fill="#8d6e00">ATP + NADPH</text>
+    <text x="365" y="320" font-size="13" text-anchor="middle" fill="#8d6e00">ADP + NADP⁺</text>
+    <text x="700" y="62" font-size="13" fill="#37474f">CO₂</text>
+    <text x="700" y="388" font-size="13" fill="#5d4037" text-anchor="middle">G3P → sugars</text>
+    <g id="t1parts"></g>
+   </svg>
+  </div>
+  <div>
+   <div class="card">
+    <h3>Conditions</h3>
+    <div class="ctl"><label>Light intensity <span class="val" id="v1I"></span></label><input type="range" id="s1I" min="0" max="2000" step="25" value="1200"></div>
+    <div class="ctl"><label>Atmospheric CO₂ <span class="val" id="v1C"></span></label><input type="range" id="s1C" min="100" max="1200" step="10" value="420"></div>
+    <div class="ctl"><label>Leaf temperature <span class="val" id="v1T"></span></label><input type="range" id="s1T" min="5" max="45" step="1" value="25"></div>
+    <button class="btn sec" id="t1reset">Reset</button><button class="btn sec" id="t1pause">Pause animation</button>
+   </div>
+   <div class="card">
+    <h3>Results (a C₃ leaf)</h3>
+    <div class="stat"><span>Electron transport (light reactions)</span><b id="r1J"></b></div>
+    <div class="stat"><span>Rubisco carboxylation</span><b id="r1V"></b></div>
+    <div class="stat"><span>CO₂ lost to photorespiration</span><b id="r1P"></b></div>
+    <div class="stat"><span>Net photosynthesis</span><b id="r1A"></b></div>
+    <div class="callout" id="r1lim"></div>
+    <p class="note">Rates in µmol m⁻² s⁻¹. Light in µmol photons m⁻² s⁻¹ (full sun ≈ 2000).</p>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= TAB 2 ================= -->
+<section id="t2">
+ <div class="grid">
+  <div>
+   <div class="card">
+    <h2>Rubisco can't always tell CO₂ from O₂</h2>
+    <p class="note">Rubisco attaches either CO₂ (<b>carboxylation</b>, useful) or O₂ (<b>oxygenation</b>, wasteful) to RuBP. Oxygenation makes 2‑phosphoglycolate, which the plant must recycle through <b>photorespiration</b> — costing ATP and releasing CO₂ that was already fixed. Molecule numbers are not to scale (real air has ~500 O₂ for every CO₂).</p>
+    <canvas id="rcan" width="760" height="360"></canvas>
+    <div class="legend"><span style="--c:#546e7a">CO₂</span><span style="--c:#e53935">O₂</span><span style="--c:#43a047">3‑PGA (goes to Calvin cycle)</span><span style="--c:#8e24aa">2‑phosphoglycolate (goes to photorespiration)</span></div>
+   </div>
+   <div class="card">
+    <h3>The photorespiration salvage pathway</h3>
+    <svg viewBox="0 0 760 150" id="prsvg">
+     <defs><marker id="ah2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10z" fill="#78909c"/></marker></defs>
+     <g class="pathbox" id="pb1"><rect x="5" y="20" width="170" height="110" rx="12" fill="#e8f5e9" stroke="#43a047" stroke-width="2"/>
+      <text x="90" y="42" text-anchor="middle" font-weight="700" font-size="14">Chloroplast</text>
+      <text x="90" y="64" text-anchor="middle" font-size="12">2‑phosphoglycolate</text><text x="90" y="80" text-anchor="middle" font-size="12">→ glycolate</text>
+      <text x="90" y="102" text-anchor="middle" font-size="12">glycerate → 3‑PGA</text><text x="90" y="118" text-anchor="middle" font-size="11" fill="#c62828">(costs ATP)</text></g>
+     <g class="pathbox" id="pb2"><rect x="295" y="20" width="170" height="110" rx="12" fill="#fff8e1" stroke="#f9a825" stroke-width="2"/>
+      <text x="380" y="42" text-anchor="middle" font-weight="700" font-size="14">Peroxisome</text>
+      <text x="380" y="64" text-anchor="middle" font-size="12">glycolate + O₂</text><text x="380" y="80" text-anchor="middle" font-size="12">→ glycine (+ H₂O₂)</text>
+      <text x="380" y="104" text-anchor="middle" font-size="12">serine → glycerate</text></g>
+     <g class="pathbox" id="pb3"><rect x="585" y="20" width="170" height="110" rx="12" fill="#fbe9e7" stroke="#e64a19" stroke-width="2"/>
+      <text x="670" y="42" text-anchor="middle" font-weight="700" font-size="14">Mitochondrion</text>
+      <text x="670" y="64" text-anchor="middle" font-size="12">2 glycine → serine</text>
+      <text x="670" y="86" text-anchor="middle" font-size="13" font-weight="700" fill="#c62828">+ CO₂ released</text>
+      <text x="670" y="104" text-anchor="middle" font-size="12" fill="#c62828">+ NH₃ released</text></g>
+     <g stroke="#78909c" stroke-width="2.5" fill="none" marker-end="url(#ah2)">
+      <path d="M175 55 H292"/><path d="M465 55 H582"/><path d="M585 105 H468"/><path d="M295 105 H178"/>
+     </g>
+    </svg>
+    <p class="note">Boxes flash each time Rubisco grabs O₂. For every 2 oxygenations, 1 CO₂ is lost in the mitochondrion.</p>
+   </div>
+  </div>
+  <div>
+   <div class="card">
+    <h3>Conditions</h3>
+    <div class="ctl"><label>Atmospheric CO₂ <span class="val" id="v2C"></span></label><input type="range" id="s2C" min="100" max="1200" step="10" value="420"></div>
+    <div class="ctl"><label>Atmospheric O₂ <span class="val" id="v2O"></span></label><input type="range" id="s2O" min="2" max="35" step="1" value="21"></div>
+    <div class="ctl"><label>Leaf temperature <span class="val" id="v2T"></span></label><input type="range" id="s2T" min="5" max="45" step="1" value="25"></div>
+    <div class="ctl"><label>Stomata (CO₂ inside leaf) <span class="val" id="v2S"></span></label><input type="range" id="s2S" min="0" max="100" step="5" value="100"></div>
+    <div class="ctl"><label>Animation speed <span class="val" id="v2sp"></span></label><input type="range" id="s2sp" min="1" max="10" step="1" value="4"></div>
+    <button class="btn" id="t2pause">Pause</button><button class="btn sec" id="t2clear">Reset counts</button>
+   </div>
+   <div class="card">
+    <h3>Rubisco's choices</h3>
+    <div class="lbl"><span>Chance next reaction uses O₂</span><b id="r2p"></b></div>
+    <div class="bar"><i id="b2p" style="background:#e53935"></i></div>
+    <div class="stat"><span>CO₂ inside leaf (Cᵢ)</span><b id="r2ci"></b></div>
+    <div class="stat"><span>Carboxylations</span><b id="r2nc">0</b></div>
+    <div class="stat"><span>Oxygenations</span><b id="r2no">0</b></div>
+    <div class="stat"><span>CO₂ fixed</span><b id="r2f">0</b></div>
+    <div class="stat"><span>CO₂ released by photorespiration</span><b id="r2l">0</b></div>
+    <div class="stat"><span>Net CO₂ gained</span><b id="r2n">0</b></div>
+    <div class="callout" id="r2msg"></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= TAB 3 ================= -->
+<section id="t3">
+ <div class="card">
+  <h2>Three strategies for fixing carbon</h2>
+  <p class="note">C₄ and CAM plants use the enzyme <b>PEP carboxylase</b> (which ignores O₂) to capture CO₂ first as a 4‑carbon acid, then release it around Rubisco at high concentration. C₄ separates the steps in <b>space</b> (mesophyll → bundle sheath); CAM separates them in <b>time</b> (night → day). Both cost extra ATP. Set the environment and see who comes out ahead.</p>
+  <div class="grid" style="grid-template-columns:1fr 1fr">
+   <div>
+    <div class="ctl"><label>Temperature (daytime) <span class="val" id="v3T"></span></label><input type="range" id="s3T" min="5" max="45" step="1" value="25"></div>
+    <div class="ctl"><label>Light intensity <span class="val" id="v3I"></span></label><input type="range" id="s3I" min="100" max="2000" step="25" value="1500"></div>
+   </div>
+   <div>
+    <div class="ctl"><label>Soil water / drought <span class="val" id="v3D"></span></label><input type="range" id="s3D" min="0" max="100" step="5" value="0"></div>
+    <div class="ctl"><label>Relative humidity <span class="val" id="v3H"></span></label><input type="range" id="s3H" min="10" max="90" step="5" value="55"></div>
+   </div>
+  </div>
+  <div class="ctl"><label>Atmospheric CO₂ <span class="val" id="v3C"></span></label><input type="range" id="s3C" min="150" max="1000" step="10" value="420"></div>
+  <b style="font-size:.85rem">Try a habitat:</b>
+  <button class="btn sec" data-preset="cool">🌧 Cool, moist spring</button>
+  <button class="btn sec" data-preset="shade">🌲 Forest understory</button>
+  <button class="btn sec" data-preset="prairie">🌾 Hot summer grassland</button>
+  <button class="btn sec" data-preset="desert">🌵 Hot, dry desert</button>
+  <button class="btn sec" data-preset="future">🏭 Future high‑CO₂ world</button>
+ </div>
+ <div class="three">
+  <div class="card pw" style="border-color:var(--c3)" id="k3"></div>
+  <div class="card pw" style="border-color:var(--c4)" id="k4"></div>
+  <div class="card pw" style="border-color:var(--cam)" id="kcam"></div>
+ </div>
+ <div class="callout" id="r3msg" style="margin:14px 0"></div>
+ <div class="card tablewrap">
+  <h3>Summary</h3>
+  <table>
+   <tr><th></th><th style="color:var(--c3)">C₃</th><th style="color:var(--c4)">C₄</th><th style="color:var(--cam)">CAM</th></tr>
+   <tr><td>First CO₂‑fixing enzyme</td><td>Rubisco</td><td>PEP carboxylase (mesophyll)</td><td>PEP carboxylase (at night)</td></tr>
+   <tr><td>First stable product</td><td>3‑PGA (3 carbons)</td><td>Oxaloacetate → malate (4 carbons)</td><td>Oxaloacetate → malate, stored in vacuole</td></tr>
+   <tr><td>How steps are separated</td><td>Not separated</td><td>In space: mesophyll → bundle sheath (Kranz anatomy)</td><td>In time: night uptake → day Calvin cycle</td></tr>
+   <tr><td>Stomata open</td><td>Day</td><td>Day (can be narrower)</td><td>Night</td></tr>
+   <tr><td>Photorespiration</td><td>High, especially when hot or dry</td><td>Very low</td><td>Very low</td></tr>
+   <tr><td>Extra energy cost</td><td>None</td><td>~2 extra ATP per CO₂</td><td>Extra ATP + storage costs</td></tr>
+   <tr><td>Water lost per CO₂ fixed</td><td>Highest (~500–1000)</td><td>Medium (~250–350)</td><td>Lowest (~50–100)</td></tr>
+   <tr><td>Best in</td><td>Cool, moist, moderate light</td><td>Hot, sunny, seasonally dry</td><td>Hot, very dry (deserts, epiphytes)</td></tr>
+   <tr><td>Examples</td><td>Wheat, rice, soybean, trees, most plants</td><td>Corn, sugarcane, sorghum, crabgrass</td><td>Cacti, pineapple, agave, jade plant</td></tr>
+  </table>
+ </div>
+</section>
+
+<!-- ================= TAB 4 ================= -->
+<section id="t4">
+ <div class="grid">
+  <div class="card">
+   <h2>A CAM plant's 24 hours</h2>
+   <p class="note">Drag the clock or press Play. Compare a CAM plant with a C₃ plant growing in the same desert.</p>
+   <canvas id="ccan" width="760" height="280"></canvas>
+   <div class="legend"><span style="--c:#6a1b9a">CAM stomatal opening</span><span style="--c:#00897b">Malic acid stored in vacuole</span><span style="--c:#2e7d32">C₃ stomatal opening</span></div>
+   <div class="ctl"><label>Time of day <span class="val" id="v4h"></span></label><input type="range" id="s4h" min="0" max="24" step="0.1" value="22"></div>
+   <button class="btn" id="t4play">Play</button>
+  </div>
+  <div class="card">
+   <svg viewBox="0 0 300 260" id="camcell">
+    <rect x="0" y="0" width="300" height="60" id="sky" fill="#0d1b3e"/>
+    <g id="moon"><circle cx="250" cy="30" r="16" fill="#eceff1"/><circle cx="258" cy="25" r="14" fill="#0d1b3e" class="moonbite"/></g>
+    <g id="sunc"><circle cx="250" cy="30" r="16" fill="#ffca28"/></g>
+    <text x="12" y="36" font-size="18" fill="#fff" id="clock">22:00</text>
+    <!-- cell -->
+    <rect x="20" y="75" width="180" height="170" rx="20" fill="#c8e6c9" stroke="#2e7d32" stroke-width="3"/>
+    <rect x="45" y="100" width="130" height="120" rx="14" fill="#e3f2fd" stroke="#64b5f6" stroke-width="2"/>
+    <clipPath id="vclip"><rect x="45" y="100" width="130" height="120" rx="14"/></clipPath>
+    <rect id="malfill" x="45" y="220" width="130" height="0" fill="#4db6ac" clip-path="url(#vclip)"/>
+    <text x="110" y="118" text-anchor="middle" font-size="12" fill="#0d47a1">vacuole</text>
+    <text x="110" y="168" text-anchor="middle" font-size="13" font-weight="700" fill="#004d40" id="maltext">malic acid</text>
+    <!-- stoma -->
+    <text x="250" y="90" text-anchor="middle" font-size="12">stoma</text>
+    <ellipse id="gc1" cx="238" cy="150" rx="12" ry="45" fill="#66bb6a" stroke="#1b5e20" stroke-width="2"/>
+    <ellipse id="gc2" cx="262" cy="150" rx="12" ry="45" fill="#66bb6a" stroke="#1b5e20" stroke-width="2"/>
+    <text x="250" y="215" text-anchor="middle" font-size="12" id="stomtext">open</text>
+   </svg>
+   <h3 id="phaseTitle"></h3>
+   <p id="phaseText" style="font-size:.9rem;margin:0"></p>
+   <div class="stat" style="margin-top:8px"><span>CAM: CO₂ uptake from air</span><b id="r4cam"></b></div>
+   <div class="stat"><span>C₃ neighbor: CO₂ uptake</span><b id="r4c3"></b></div>
+   <div class="stat"><span>Evaporative demand (air dryness)</span><b id="r4vpd"></b></div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= TAB 5 ================= -->
+<section id="t5">
+ <div class="card">
+  <h2>Check your understanding</h2>
+  <p class="note">Pick an answer to see feedback. Score: <b id="score">0 / 0</b> <button class="btn sec" id="qreset">Start over</button></p>
+  <div id="quiz"></div>
+ </div>
+</section>
+</main>
+
+<script>
+/* ---------------- tabs ---------------- */
+let activeTab='t1';
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('section').forEach(s=>s.classList.remove('active'));
+  b.classList.add('active');activeTab=b.dataset.tab;document.getElementById(activeTab).classList.add('active');
+  if(activeTab==='t4')drawCam();
+});
+const $=id=>document.getElementById(id);
+const fmt=(x,d=1)=>(Math.abs(x)<0.05&&d===1?0:x).toFixed(d);
+
+/* ---------------- leaf model (simplified Farquhar-type) ---------------- */
+const R=8.314;
+const arr=(k,Ea,T)=>k*Math.exp(Ea*(T-25)/(298.15*R*(T+273.15)));
+const gammaStar=(T,O)=>arr(42.75,37830,T)*(O/21);           // CO2 compensation point w/o Rd (ppm)
+const Kc=T=>arr(404.9,79430,T), Ko=T=>arr(278.4,36380,T);  // ppm, mmol/mol
+const vF=(T,opt)=>arr(1,65330,T)/(1+Math.exp((T-opt)/2.5));
+const Rd=T=>1.0*arr(1,46390,T)/(1+Math.exp((T-46)/2));
+function Jf(I,T){const Jmax=140*arr(1,43540,T)/(1+Math.exp((T-39)/3));const a=0.3*I,th=0.7;
+  if(a<=0)return 0;return (a+Jmax-Math.sqrt((a+Jmax)**2-4*th*a*Jmax))/(2*th);}
+function rubisco(C,T,O,Vc,J,eFactor){ // returns carboxylation, oxygenation, photorespiratory CO2 loss
+  const g=gammaStar(T,O),K=Kc(T)*(1+O*10/Ko(T));
+  const wc=Vc*C/(C+K);
+  const wj=eFactor?J/eFactor:J*C/(4*C+8*g);
+  const vc=Math.max(0,Math.min(wc,wj)),vo=vc*2*g/C;
+  return {vc,vo,pr:0.5*vo,lim:wc<wj?'rubisco':'light',g};
+}
+function C3leaf(I,T,Ca,O,dry){
+  const Ci=Math.max(30,Ca*(0.7-0.35*dry));
+  const r=rubisco(Ci,T,O,60*vF(T,38),Jf(I,T));
+  r.Ci=Ci;r.J=Jf(I,T);r.A=r.vc-r.pr-Rd(T);return r;
+}
+function C4leaf(I,T,Ca,O,dry){
+  const cold=1/(1+Math.exp((14-T)/2));
+  const Ci=Ca*(0.4-0.2*dry);
+  const Vp=120*vF(T,41)*cold, Ap=Vp*Ci/(Ci+80);
+  const Cbs=Math.max(Ci*8,Ca*10*(0.6+0.4*Math.min(1,Ap/40)));
+  const r=rubisco(Cbs,T,O,45*vF(T,41)*cold,Jf(I,T),6.3);
+  r.vc=Math.min(r.vc,Ap);r.vo=r.vc*2*r.g/Cbs;r.pr=0.5*r.vo*0.3; // much is re-fixed
+  r.A=r.vc-r.pr-Rd(T);r.Cbs=Cbs;return r;
+}
+const svp=T=>0.611*Math.exp(17.27*T/(T+237.3)); // kPa
+
+/* ---------------- TAB 1 ---------------- */
+const t1={parts:[],acc:{},P:{},rate:0,light:0};
+['pW','pO2','pATP','pADP','pCO2','pSug','pCyc'].forEach(id=>{const el=$(id);t1.P[id]={el,len:el.getTotalLength()};t1.acc[id]=0;});
+const pcol={pW:'#1e88e5',pO2:'#e53935',pATP:'#fbc02d',pADP:'#fff176',pCO2:'#546e7a',pSug:'#8d6e63',pCyc:'#2e7d32'};
+function upd1(){
+  const I=+$('s1I').value,Ca=+$('s1C').value,T=+$('s1T').value;
+  $('v1I').textContent=I;$('v1C').textContent=Ca+' ppm';$('v1T').textContent=T+' °C';
+  const r=C3leaf(I,T,Ca,21,0);
+  $('r1J').textContent=fmt(r.J);$('r1V').textContent=fmt(r.vc);$('r1P').textContent=fmt(r.pr);
+  $('r1A').textContent=fmt(r.A);$('r1A').style.color=r.A<0?'#c62828':'';
+  $('rays').style.opacity=Math.min(1,I/1500);$('sun').style.opacity=0.25+0.75*Math.min(1,I/1500);
+  let msg;
+  if(I<25)msg='<b>No light:</b> no ATP or NADPH, so the Calvin cycle stops. The leaf only respires and loses CO₂.';
+  else if(r.lim==='light')msg='<b>Light-limited:</b> the light reactions can\'t make ATP and NADPH fast enough. More light would speed things up; more CO₂ helps only a little.';
+  else msg='<b>CO₂ / Rubisco-limited:</b> plenty of ATP and NADPH, but Rubisco can\'t fix CO₂ any faster. Raising CO₂ would help more than adding light.';
+  if(r.pr/Math.max(r.vc,0.01)>0.25&&I>=25)msg+='<br><b>Note:</b> photorespiration is eating '+Math.round(100*r.pr/r.vc)+'% of fixed carbon. Try raising the temperature or lowering CO₂ to see it grow.';
+  $('r1lim').innerHTML=msg;t1.rate=Math.max(0,r.vc);t1.light=r.J;
+}
+['s1I','s1C','s1T'].forEach(id=>$(id).oninput=upd1);
+$('t1reset').onclick=()=>{$('s1I').value=1200;$('s1C').value=420;$('s1T').value=25;upd1();};
+function step1(dt){
+  const f=t1.rate/6; // particles per second
+  const rates={pW:f,pO2:f,pATP:f*1.2,pADP:f*1.2,pCO2:f,pSug:f/3,pCyc:f*1.2};
+  for(const id in rates){t1.acc[id]+=rates[id]*dt;while(t1.acc[id]>=1){t1.acc[id]--;t1.parts.push({id,t:0});}}
+  const sp=110;
+  t1.parts.forEach(p=>p.t+=dt*sp/t1.P[p.id].len);
+  t1.parts=t1.parts.filter(p=>p.t<1);
+  let s='';
+  t1.parts.forEach(p=>{const pt=t1.P[p.id].el.getPointAtLength(p.t*t1.P[p.id].len);
+    s+=`<circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="${p.id==='pSug'?7:5}" fill="${pcol[p.id]}" stroke="#0003"/>`;});
+  $('t1parts').innerHTML=s;
+}
+
+/* ---------------- TAB 2 ---------------- */
+const rc=$('rcan'),rx=rc.getContext('2d');
+const t2={field:[],events:[],prods:[],nc:0,no:0,acc:0,pO:0,paused:false,flash:0};
+function seedField(){
+  const Ca=+$('s2C').value,O=+$('s2O').value;
+  const nC=Math.round(6+Ca/25),nO=Math.round(O*2.6);t2.field=[];
+  for(let i=0;i<nC;i++)t2.field.push({x:Math.random()*760,y:Math.random()*360,vx:(Math.random()-.5)*40,vy:(Math.random()-.5)*40,k:'C'});
+  for(let i=0;i<nO;i++)t2.field.push({x:Math.random()*760,y:Math.random()*360,vx:(Math.random()-.5)*40,vy:(Math.random()-.5)*40,k:'O'});
+}
+function upd2(){
+  const Ca=+$('s2C').value,O=+$('s2O').value,T=+$('s2T').value,S=+$('s2S').value/100;
+  $('v2C').textContent=Ca+' ppm';$('v2O').textContent=O+' %';$('v2T').textContent=T+' °C';
+  $('v2S').textContent=S>=0.95?'wide open':S<=0.05?'nearly closed':Math.round(S*100)+'% open';$('v2sp').textContent=$('s2sp').value+'×';
+  const Ci=Ca*(0.25+0.45*S);const g=gammaStar(T,O);
+  const ratio=2*g/Ci;t2.pO=ratio/(1+ratio);
+  $('r2p').textContent=Math.round(t2.pO*100)+'%';$('b2p').style.width=(t2.pO*100)+'%';
+  $('r2ci').textContent=Math.round(Ci)+' ppm';
+  const loss=g/Ci*100;
+  let m=`About <b>${Math.round(loss)}%</b> of the carbon Rubisco fixes is lost again by photorespiration under these conditions.`;
+  if(O<=3)m+=' With almost no O₂, photorespiration nearly disappears — proof that O₂ competes with CO₂ at Rubisco.';
+  else if(T>=35)m+=' Heat lowers Rubisco\'s preference for CO₂ and makes CO₂ less soluble than O₂ — so oxygenation climbs.';
+  else if(S<0.5)m+=' Closing stomata to save water lets CO₂ inside the leaf run down while O₂ builds up — photorespiration rises.';
+  else if(Ca>=800)m+=' High CO₂ outcompetes O₂ at Rubisco. This is why greenhouses add CO₂.';
+  $('r2msg').innerHTML=m;
+}
+['s2C','s2O'].forEach(id=>$(id).addEventListener('input',()=>{upd2();seedField();}));
+['s2T','s2S','s2sp'].forEach(id=>$(id).oninput=upd2);
+$('t2pause').onclick=()=>{t2.paused=!t2.paused;$('t2pause').textContent=t2.paused?'Play':'Pause';};
+$('t2clear').onclick=()=>{t2.nc=0;t2.no=0;t2.events=[];t2.prods=[];counts2();};
+function counts2(){$('r2nc').textContent=t2.nc;$('r2no').textContent=t2.no;$('r2f').textContent=t2.nc+t2.no*0;
+  const fixed=t2.nc,lost=t2.no*0.5;$('r2f').textContent=fixed;$('r2l').textContent=lost.toFixed(1);$('r2n').textContent=(fixed-lost).toFixed(1);}
+const RB={x:380,y:175};
+function step2(dt){
+  if(!t2.paused){
+    const sp=+$('s2sp').value;
+    t2.field.forEach(m=>{m.x+=m.vx*dt;m.y+=m.vy*dt;if(m.x<0||m.x>760)m.vx*=-1;if(m.y<0||m.y>360)m.vy*=-1;
+      m.vx+=(Math.random()-.5)*20*dt;m.vy+=(Math.random()-.5)*20*dt;});
+    t2.acc+=dt*sp*0.7;
+    while(t2.acc>=1){t2.acc--;
+      const isO=Math.random()<t2.pO;const ang=Math.random()*Math.PI*2;
+      t2.events.push({k:isO?'O':'C',sx:RB.x+Math.cos(ang)*230,sy:RB.y+Math.sin(ang)*170,t:0});}
+    t2.events.forEach(e=>e.t+=dt*1.6);
+    t2.events.filter(e=>e.t>=1).forEach(e=>{
+      if(e.k==='C'){t2.nc++;t2.prods.push({x:RB.x,y:RB.y,tx:740,ty:150,t:0,k:'P'},{x:RB.x,y:RB.y,tx:740,ty:200,t:0,k:'P'});}
+      else{t2.no++;t2.flash=0.5;t2.prods.push({x:RB.x,y:RB.y,tx:740,ty:175,t:0,k:'P'},{x:RB.x,y:RB.y,tx:RB.x,ty:350,t:0,k:'G'});}
+      counts2();});
+    t2.events=t2.events.filter(e=>e.t<1);
+    t2.prods.forEach(p=>p.t+=dt*0.9);t2.prods=t2.prods.filter(p=>p.t<1);
+    if(t2.flash>0){t2.flash-=dt;}
+    document.querySelectorAll('.pathbox').forEach(b=>b.classList.toggle('flash',t2.flash>0));
+  }
+  draw2();
+}
+function mol(x,y,k){rx.beginPath();rx.arc(x,y,k==='O'?6:6,0,7);rx.fillStyle=k==='O'?'#e53935':'#546e7a';rx.fill();
+  rx.beginPath();rx.arc(x-6,y,3.5,0,7);rx.arc(x+6,y,3.5,0,7);rx.fill();}
+function draw2(){
+  rx.clearRect(0,0,760,360);
+  rx.globalAlpha=0.35;t2.field.forEach(m=>mol(m.x,m.y,m.k));rx.globalAlpha=1;
+  // destinations
+  rx.fillStyle='#e8f5e9';rx.fillRect(690,110,70,130);rx.fillStyle='#2e7d32';rx.font='bold 13px system-ui';rx.textAlign='center';
+  rx.fillText('Calvin',725,170);rx.fillText('cycle',725,186);
+  rx.fillStyle='#f3e5f5';rx.fillRect(280,330,200,30);rx.fillStyle='#6a1b9a';rx.fillText('→ photorespiration',380,350);
+  // rubisco
+  rx.beginPath();rx.ellipse(RB.x,RB.y,58,44,0,0,7);rx.fillStyle='#a5d6a7';rx.fill();rx.lineWidth=3;rx.strokeStyle='#2e7d32';rx.stroke();
+  rx.fillStyle='#1b5e20';rx.font='bold 15px system-ui';rx.fillText('Rubisco',RB.x,RB.y-4);rx.font='12px system-ui';rx.fillText('+ RuBP',RB.x,RB.y+13);
+  t2.events.forEach(e=>{const x=e.sx+(RB.x-e.sx)*e.t,y=e.sy+(RB.y-e.sy)*e.t;rx.globalAlpha=1;mol(x,y,e.k);});
+  t2.prods.forEach(p=>{const x=p.x+(p.tx-p.x)*p.t,y=p.y+(p.ty-p.y)*p.t;
+    rx.fillStyle=p.k==='P'?'#43a047':'#8e24aa';rx.beginPath();rx.roundRect?rx.roundRect(x-16,y-9,32,18,5):rx.rect(x-16,y-9,32,18);rx.fill();
+    rx.fillStyle='#fff';rx.font='bold 9px system-ui';rx.fillText(p.k==='P'?'3‑PGA':'2‑PG',x,y+3);});
+}
+
+/* ---------------- TAB 3 ---------------- */
+const presets={cool:{T:15,I:900,D:0,H:75,C:420},shade:{T:20,I:250,D:0,H:80,C:420},prairie:{T:36,I:1900,D:35,H:35,C:420},
+  desert:{T:42,I:2000,D:90,H:15,C:420},future:{T:30,I:1500,D:20,H:50,C:850}};
+document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>{const p=presets[b.dataset.preset];
+  $('s3T').value=p.T;$('s3I').value=p.I;$('s3D').value=p.D;$('s3H').value=p.H;$('s3C').value=p.C;upd3();});
+['s3T','s3I','s3D','s3H','s3C'].forEach(id=>$(id).oninput=upd3);
+const svgC3=`<svg viewBox="0 0 220 90" role="img" aria-label="C3 leaf: mesophyll cells carry out every step of carbon fixation."><rect width="220" height="90" rx="8" fill="#f1f8e9"/>${[30,60,90,130,160,190].map((x,i)=>`<circle cx="${x}" cy="${i%2?60:32}" r="14" fill="#81c784" stroke="#2e7d32"/>`).join('')}<circle cx="110" cy="46" r="10" fill="#bcaaa4"/><text x="110" y="86" font-size="10" text-anchor="middle">Mesophyll cells do everything</text></svg>`;
+const svgC4=`<svg viewBox="0 0 220 90" role="img" aria-label="C4 leaf with Kranz anatomy: a ring of mesophyll cells surrounds the bundle sheath cells around the vein."><rect width="220" height="90" rx="8" fill="#fff3e0"/>${Array.from({length:10},(_,i)=>{const a=i/10*6.283;return `<circle cx="${110+Math.cos(a)*36}" cy="${42+Math.sin(a)*30}" r="9" fill="#a5d6a7" stroke="#2e7d32"/>`}).join('')}${Array.from({length:7},(_,i)=>{const a=i/7*6.283;return `<circle cx="${110+Math.cos(a)*20}" cy="${42+Math.sin(a)*16}" r="8" fill="#2e7d32"/>`}).join('')}<circle cx="110" cy="42" r="7" fill="#bcaaa4"/><text x="110" y="86" font-size="10" text-anchor="middle">Kranz anatomy: mesophyll ring → bundle sheath</text></svg>`;
+const svgCAM=`<svg viewBox="0 0 220 90" role="img" aria-label="CAM cell: at night CO2 is stored as malate in the vacuole; during the day it is released for the Calvin cycle."><rect width="220" height="90" rx="8" fill="#f3e5f5"/><rect x="60" y="8" width="100" height="66" rx="14" fill="#c8e6c9" stroke="#2e7d32"/><rect x="74" y="18" width="72" height="46" rx="10" fill="#80cbc4"/><text x="110" y="45" font-size="10" text-anchor="middle">malate</text><circle cx="30" cy="30" r="12" fill="#37474f"/><circle cx="35" cy="26" r="10" fill="#f3e5f5"/><circle cx="190" cy="30" r="12" fill="#ffca28"/><text x="110" y="86" font-size="10" text-anchor="middle">Night: store CO₂ · Day: use it</text></svg>`;
+function card(name,col,r,svg,extra){
+  const cMax=1100,wMax=1100;
+  const tr=r.carbon>1?r.water*1000/r.carbon:Infinity;
+  return `<h3 style="color:${col};margin-top:0">${name} ${r.win?'<span class="badge" style="background:'+col+'">most carbon</span>':''} ${r.wue?'<span class="badge" style="background:#1565c0">best water use</span>':''}</h3>${svg}
+  <div class="lbl" style="margin-top:8px"><span>Net carbon gained per day</span><b>${Math.round(r.carbon)} mmol CO₂/m²</b></div>
+  <div class="bar"><i style="width:${Math.max(0,Math.min(100,r.carbon/cMax*100))}%;background:${col}"></i></div>
+  <div class="lbl"><span>Carbon lost to photorespiration</span><b>${Math.round(r.prPct)}%</b></div>
+  <div class="bar"><i style="width:${Math.min(100,r.prPct*2)}%;background:#e53935"></i></div>
+  <div class="lbl"><span>Water lost per CO₂ fixed</span><b>${isFinite(tr)?Math.round(tr)+' : 1':'— (no net gain)'}</b></div>
+  <div class="bar"><i style="width:${isFinite(tr)?Math.min(100,tr/wMax*100):100}%;background:#1e88e5"></i></div>
+  <p class="note" style="margin:4px 0 0">${extra}</p>`;
+}
+function upd3(){
+  const T=+$('s3T').value,I=+$('s3I').value,D=+$('s3D').value/100,H=+$('s3H').value,Ca=+$('s3C').value;
+  $('v3T').textContent=T+' °C';$('v3I').textContent=I;$('v3D').textContent=D===0?'well watered':D>=0.8?'severe drought':D>=0.4?'dry':'slightly dry';
+  $('v3H').textContent=H+' %';$('v3C').textContent=Ca+' ppm';
+  const vpd=svp(T)*(1-H/100), vpdN=svp(T-15)*(1-Math.min(95,H+35)/100);
+  const nightResp=Rd(T-10)*12*3.6;
+  // C3
+  const a=C3leaf(I,T,Ca,21,D), h3=12*(1-0.95*D*D), gs3=0.4*(1-0.8*D);
+  const r3={carbon:a.A*h3*3.6-nightResp-(12-h3)*3.6*Rd(T)*0.5,water:gs3*vpd/101*1000*h3*3.6,prPct:100*a.pr/Math.max(a.vc,0.01)};
+  // C4
+  const b=C4leaf(I,T,Ca,21,D), h4=12*(1-0.85*D*D), gs4=0.2*(1-0.7*D);
+  const r4={carbon:b.A*h4*3.6-nightResp-(12-h4)*3.6*Rd(T)*0.5,water:gs4*vpd/101*1000*h4*3.6,prPct:100*b.pr/Math.max(b.vc,0.01)};
+  // CAM: nocturnal uptake into malate, limited by vacuole storage, then refixed by day
+  const tf=0.15+0.85*Math.exp(-(((T-15-22)/16)**2)), lightF=Math.min(1,I/700);
+  const camRate=5.2*tf*lightF*(1-0.25*D)*(0.8+0.2*Math.min(2,Ca/420));
+  const rc={carbon:camRate*12*3.6-nightResp*0.5,water:0.08*(1-0.3*D)*vpdN/101*1000*12*3.6,prPct:3};
+  const all=[r3,r4,rc];const mx=Math.max(...all.map(r=>r.carbon));
+  all.forEach(r=>r.win=r.carbon===mx&&mx>0);
+  const effs=all.map(r=>r.carbon>1?r.carbon/r.water:-1);const me=Math.max(...effs);all.forEach((r,i)=>r.wue=effs[i]===me&&me>0);
+  $('k3').innerHTML=card('C₃','var(--c3)',r3,svgC3,`Rubisco fixes CO₂ directly. CO₂ inside leaf ≈ ${Math.round(a.Ci)} ppm.`);
+  $('k4').innerHTML=card('C₄','var(--c4)',r4,svgC4,`PEP carboxylase pumps CO₂ into bundle sheath ≈ ${Math.round(b.Cbs)} ppm around Rubisco.`);
+  $('kcam').innerHTML=card('CAM','var(--cam)',rc,svgCAM,'Stomata open at night when air is cooler and moister.');
+  let m='';
+  if(r3.win)m='<b>C₃ wins here.</b> When it is cool or dim, photorespiration is modest and C₃ plants avoid the extra ATP cost that C₄ and CAM pay to concentrate CO₂.';
+  else if(r4.win)m='<b>C₄ wins here.</b> Heat and bright light make photorespiration costly for C₃ plants. C₄ plants pay a little extra ATP to keep Rubisco bathed in CO₂ and keep their stomata narrower.';
+  else m='<b>CAM wins here.</b> In heat and drought, C₃ and C₄ plants must close stomata by day to avoid drying out. CAM plants gather CO₂ at night and lose far less water.';
+  if(Ca>=750)m+=' At high CO₂, Rubisco is less distracted by O₂, so the C₃ disadvantage shrinks.';
+  if(r3.carbon<0)m+=' The C₃ plant is actually <b>losing</b> carbon — it respires more than it fixes.';
+  $('r3msg').innerHTML=m+'<br><span class="note">Simplified model for teaching; real plants vary by species and acclimation.</span>';
+}
+
+/* ---------------- TAB 4 ---------------- */
+const cc=$('ccan'),cx=cc.getContext('2d');
+function camG(h){if(h>=19||h<5)return 1;if(h<8)return 1-(h-5)/3*0.95;if(h<15)return 0.05;return 0.05+(h-15)/4*0.95;}
+function c3G(h){return h>6&&h<18?0.08+0.9*Math.sin(Math.PI*(h-6)/12)**0.7*(h>11&&h<16?0.35:1):0.03;}
+const isDay=h=>h>=6&&h<18;
+const MAL=[];(function(){let m=0;for(let pass=0;pass<3;pass++)for(let i=0;i<=240;i++){const h=i/10;
+  if(!isDay(h))m+=camG(h)*0.1/10*1.0;else if(h<15)m-=0.16/10;m=Math.max(0,Math.min(1.1,m));if(pass===2)MAL[i]=m;}
+  const mx=Math.max(...MAL);for(let i=0;i<MAL.length;i++)MAL[i]/=mx;})();
+const mal=h=>MAL[Math.round(h*10)%241];
+function drawCam(){
+  const W=760,H=280,L=40,Rr=15,Tp=15,B=40,h=+$('s4h').value;
+  cx.clearRect(0,0,W,H);const X=t=>L+(W-L-Rr)*t/24,Y=v=>Tp+(H-Tp-B)*(1-v);
+  cx.fillStyle='#e8eaf6';cx.fillRect(X(0),Tp,X(6)-X(0),H-Tp-B);cx.fillRect(X(18),Tp,X(24)-X(18),H-Tp-B);
+  cx.fillStyle='#fffde7';cx.fillRect(X(6),Tp,X(18)-X(6),H-Tp-B);
+  cx.strokeStyle='#90a4ae';cx.lineWidth=1;cx.beginPath();cx.moveTo(L,Tp);cx.lineTo(L,H-B);cx.lineTo(W-Rr,H-B);cx.stroke();
+  cx.fillStyle='#455a64';cx.font='12px system-ui';cx.textAlign='center';
+  for(let t=0;t<=24;t+=3)cx.fillText(t+':00',X(t),H-B+16);
+  cx.fillText('night',X(3),Tp+14);cx.fillText('day',X(12),Tp+14);cx.fillText('night',X(21),Tp+14);
+  cx.fillText('Time of day',W/2,H-6);
+  cx.save();cx.translate(12,(H-B)/2);cx.rotate(-Math.PI/2);cx.fillText('relative level',0,0);cx.restore();
+  const line=(f,col,dash)=>{cx.strokeStyle=col;cx.lineWidth=3;cx.setLineDash(dash||[]);cx.beginPath();
+    for(let i=0;i<=240;i++){const t=i/10;i?cx.lineTo(X(t),Y(f(t))):cx.moveTo(X(t),Y(f(t)));}cx.stroke();cx.setLineDash([]);};
+  line(c3G,'#2e7d32',[6,5]);line(mal,'#00897b');line(camG,'#6a1b9a');
+  cx.strokeStyle='#d32f2f';cx.lineWidth=2;cx.beginPath();cx.moveTo(X(h),Tp);cx.lineTo(X(h),H-B);cx.stroke();
+  // side panel
+  const hh=Math.floor(h)%24,mm=Math.round((h-Math.floor(h))*60)%60;$('clock').textContent=String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0');
+  $('v4h').textContent=$('clock').textContent;
+  const day=isDay(h);$('sky').setAttribute('fill',day?'#81d4fa':'#0d1b3e');$('moon').style.display=day?'none':'';$('sunc').style.display=day?'':'none';
+  $('clock').setAttribute('fill',day?'#0d47a1':'#fff');
+  const m=mal(h),fh=120*m;$('malfill').setAttribute('y',220-fh);$('malfill').setAttribute('height',fh);
+  $('maltext').textContent=m>0.08?'malic acid':'(empty)';
+  const g=camG(h),gap=2+12*g;$('gc1').setAttribute('cx',250-12-gap/2);$('gc2').setAttribute('cx',250+12+gap/2);
+  $('stomtext').textContent=g>0.6?'open':g>0.2?'partly open':'closed';
+  let title,text;
+  if(!day&&!(h>=5&&h<6)){title='Phase I · Night';text='Stomata open while the air is cool and humid. PEP carboxylase fixes CO₂ into oxaloacetate, which becomes <b>malic acid</b> stored in the vacuole. The leaf gets more acidic overnight.';}
+  else if(h>=5&&h<8){title='Phase II · Dawn';text='Stomata begin closing as the sun rises. For a short time, Rubisco and PEP carboxylase both fix CO₂ from the air.';}
+  else if(h<15){title='Phase III · Day';text='Stomata are <b>closed</b> to save water. Malic acid leaves the vacuole and is decarboxylated, releasing CO₂ inside the sealed leaf. CO₂ gets so concentrated that Rubisco rarely grabs O₂, so photorespiration stays low. Light reactions supply ATP and NADPH for the Calvin cycle.';}
+  else {title='Phase IV · Late afternoon';text='The malic acid store is used up. If water allows, stomata reopen a little and Rubisco fixes CO₂ directly from the air, like a C₃ plant.';}
+  $('phaseTitle').textContent=title;$('phaseText').innerHTML=text;
+  const camUp=(!day?g:(h<8||h>=15)?g*0.6:0);
+  $('r4cam').textContent=camUp>0.5?'high':camUp>0.15?'some':'none (stomata closed)';
+  $('r4c3').textContent=day?(h>11&&h<16?'reduced (midday stomatal closure)':'yes'):'none (dark)';
+  const T=day?38-8*Math.abs(h-14)/8:20+(h>=18?(24-h):-h)/6;
+  $('r4vpd').textContent=day?(h>10&&h<17?'very high':'high'):'low';
+}
+$('s4h').oninput=drawCam;
+let camPlay=false;$('t4play').onclick=()=>{camPlay=!camPlay;$('t4play').textContent=camPlay?'Pause':'Play';};
+
+/* ---------------- TAB 5 quiz ---------------- */
+const Q=[
+ {q:'Which two products of the light reactions power the Calvin cycle?',a:['O₂ and glucose','ATP and NADPH','CO₂ and H₂O','ADP and NADP⁺'],c:1,e:'ATP supplies energy and NADPH supplies electrons to reduce 3‑PGA to G3P.'},
+ {q:'What happens when Rubisco binds O₂ instead of CO₂?',a:['It makes extra glucose','It makes 2‑phosphoglycolate, which must be recycled by photorespiration','It splits water','It makes malic acid'],c:1,e:'Oxygenation produces one 3‑PGA and one 2‑phosphoglycolate. Recycling it costs ATP and releases CO₂.'},
+ {q:'Why does photorespiration increase on hot days?',a:['Rubisco prefers CO₂ more in heat','Heat lowers Rubisco\'s CO₂ preference and CO₂ dissolves less than O₂ as temperature rises','Light reactions stop','Plants make more CO₂ when hot'],c:1,e:'Both effects shift Rubisco toward oxygenation. Closing stomata on hot days makes it worse by letting CO₂ inside the leaf drop.'},
+ {q:'In which organelle is CO₂ released during photorespiration?',a:['Chloroplast','Peroxisome','Mitochondrion','Vacuole'],c:2,e:'Two glycine molecules are converted to serine in the mitochondrion, releasing CO₂ and NH₃.'},
+ {q:'In C₄ plants, CO₂ is first fixed by ____ into a ____‑carbon acid.',a:['Rubisco; 3','PEP carboxylase; 4','Rubisco; 4','PEP carboxylase; 6'],c:1,e:'PEP carboxylase does not react with O₂. It forms oxaloacetate (4 C), which becomes malate or aspartate.'},
+ {q:'C₄ plants separate CO₂ capture and the Calvin cycle in ____; CAM plants separate them in ____.',a:['time; space','space; time','space; space','time; time'],c:1,e:'C₄: mesophyll cells then bundle sheath cells (Kranz anatomy). CAM: night capture then daytime Calvin cycle.'},
+ {q:'Which crop is a C₄ plant?',a:['Wheat','Rice','Corn (maize)','Pineapple'],c:2,e:'Corn, sugarcane and sorghum are C₄. Wheat and rice are C₃. Pineapple is CAM.'},
+ {q:'Under cool, moist, low‑light conditions, which pathway usually does best and why?',a:['C₃, because photorespiration is low and it avoids the extra ATP cost of concentrating CO₂','C₄, because it always fixes more carbon','CAM, because it has the highest growth rate','All are identical'],c:0,e:'C₄ and CAM pay an energy cost. That cost only pays off when photorespiration would otherwise be high.'},
+ {q:'Why do CAM plants open their stomata at night?',a:['CO₂ is only present at night','Cooler, more humid night air means much less water is lost','Rubisco only works in the dark','To release oxygen'],c:1,e:'Evaporative demand is far lower at night, so CAM plants gain CO₂ while losing only a fraction of the water.'},
+ {q:'If atmospheric CO₂ keeps rising, which group gains the most from it directly?',a:['C₃ plants','C₄ plants','CAM plants','None'],c:0,e:'Extra CO₂ helps Rubisco outcompete O₂. C₄ plants already concentrate CO₂, so they gain less.'}
+];
+let answered={},right=0;
+function buildQuiz(){answered={};right=0;$('score').textContent='0 / '+Q.length;
+  $('quiz').innerHTML=Q.map((x,i)=>`<div class="q"><p>${i+1}. ${x.q}</p>${x.a.map((a,j)=>`<button data-q="${i}" data-a="${j}">${a}</button>`).join('')}<div class="fb" id="fb${i}"></div></div>`).join('');
+  document.querySelectorAll('.q button').forEach(b=>b.onclick=()=>{const i=+b.dataset.q,j=+b.dataset.a;if(answered[i]!==undefined)return;answered[i]=j;
+    const ok=j===Q[i].c;if(ok)right++;b.classList.add(ok?'right':'wrong');
+    if(!ok)document.querySelector(`.q button[data-q="${i}"][data-a="${Q[i].c}"]`).classList.add('right');
+    $('fb'+i).innerHTML=(ok?'✅ <b>Correct.</b> ':'❌ <b>Not quite.</b> ')+Q[i].e;
+    $('score').textContent=right+' / '+Q.length;});}
+$('qreset').onclick=buildQuiz;
+
+/* ---------------- tab 1 pause ---------------- */
+let t1paused=false;
+$('t1pause').onclick=()=>{t1paused=!t1paused;$('t1pause').textContent=t1paused?'Resume animation':'Pause animation';const sv=$('chloro');if(sv.pauseAnimations){t1paused?sv.pauseAnimations():sv.unpauseAnimations();}};
+
+/* ---------------- main loop ---------------- */
+upd1();upd2();seedField();counts2();upd3();drawCam();buildQuiz();
+let last=performance.now();
+function loop(now){const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(activeTab==='t1'){if(!t1paused)step1(dt);}
+  else if(activeTab==='t2')step2(dt);
+  else if(activeTab==='t4'&&camPlay){let h=+$('s4h').value+dt*1.5;if(h>24)h-=24;$('s4h').value=h;drawCam();}
+  requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+</script>
+<script>
+window.A11Y = {
+  css: ':root{--c4:#a84f00} nav button:focus-visible{outline-offset:1px!important}',
+  tabsLabel: 'Simulation sections',
+  img: [
+    ['#chloro', 'Animated diagram of a chloroplast. Light strikes the thylakoids, where the light reactions split water, release oxygen, and make ATP and NADPH. ATP and NADPH flow to the Calvin cycle in the stroma, which takes in CO2 and makes G3P and sugars, returning ADP and NADP+ to the thylakoids. Moving dots show the rate of each flow. The results panel gives the numbers.'],
+    ['#prsvg', 'Photorespiration salvage pathway: 2-phosphoglycolate made in the chloroplast becomes glycolate, moves to the peroxisome where it becomes glycine, then to the mitochondrion where two glycines become serine and CO2 and NH3 are released. Serine returns through the peroxisome as glycerate to the chloroplast, where it becomes 3-PGA at an ATP cost.'],
+    ['#rcan', 'Animation of Rubisco with RuBP in the center. Gray CO2 and red O2 molecules drift around it and are drawn in one at a time. Each CO2 makes two green 3-PGA that go to the Calvin cycle. Each O2 makes one 3-PGA and one purple 2-phosphoglycolate that goes to photorespiration. The panel on the right gives the chance of oxygenation and the running counts.'],
+    ['#ccan', 'Line graph over 24 hours comparing a CAM plant and a C3 plant. The CAM plant opens its stomata at night, stores malic acid overnight, and uses it during the day with stomata closed. The C3 plant opens its stomata in daylight and partly closes them at midday. A red line marks the selected time of day.'],
+    ['#camcell', 'CAM leaf cell at the selected time: the sky shows day or night, the vacuole fills with malic acid at night and empties during the day, and the stoma opens at night and closes during the day. The text below describes the current phase.']
+  ],
+  units: { '#s1I,#s3I': 'micromoles of photons per square meter per second' },
+  live: ['#r1lim', '#r2msg', '#r3msg', '#phaseTitle', '#phaseText', '#quiz .fb', '#score']
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>

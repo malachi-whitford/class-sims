@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Osmosis Simulation</title>
+<style>
+:root{--bg:#f7f8fa;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--water:#9fd0f0;--solute:#d6372b;--accent:#1f6fbf;--mem:#7a8594;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--water:#2b6a99;--solute:#ff6b5e;--accent:#6ab0f3;--mem:#9aa6b4;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--water:#2b6a99;--solute:#ff6b5e;--accent:#6ab0f3;--mem:#9aa6b4;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px}
+.wrap{max-width:700px;margin:0 auto}
+h1{font-size:1.4rem;margin:0 0 4px}
+p.sub{margin:0 0 12px;color:var(--muted);font-size:.9rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:12px}
+canvas{width:100%;max-width:100%;display:block;border-radius:8px}
+.read{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;text-align:center}
+.read div{background:var(--bg);border-radius:8px;padding:8px;font-size:.9rem}
+.read b{display:block;font-size:1.15rem}
+#status{margin-top:10px;padding:10px;border-radius:8px;background:var(--bg);font-weight:600;text-align:center;min-height:2.6em}
+.ctl{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:480px){.ctl{grid-template-columns:1fr}}
+label{display:flex;justify-content:space-between;font-size:.9rem;margin-bottom:4px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+button{font:inherit;font-size:.85rem;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin-top:8px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Osmosis Simulation</h1>
+<p class="sub">Solutes can't cross the membrane, but water can. Water moves toward the side with more solute until concentrations match.</p>
+<div class="card">
+<canvas id="cv"></canvas>
+<div class="legend"><span><i class="dot" style="background:var(--solute)"></i>Solute (can't cross)</span><span><i class="dot" style="background:#4aa3e0"></i>Water crossing (flows both ways; more toward the saltier side)</span></div>
+<div class="read"><div>Left concentration<b id="cl">-</b></div><div>Right concentration<b id="cr">-</b></div></div>
+<div id="status"></div>
+</div>
+<div class="card">
+<div class="ctl">
+<div><label for="sl">Solutes on left <span id="vl"></span></label><input type="range" id="sl" min="0" max="60" value="30"></div>
+<div><label for="sr">Solutes on right <span id="vr"></span></label><input type="range" id="sr" min="0" max="60" value="30"></div>
+</div>
+<div class="btns">
+<button id="p1">Equal (isotonic)</button>
+<button id="p2">Left hypertonic</button>
+<button id="p3">Right hypertonic</button>
+<button id="pause">Pause</button>
+<button id="reset">Reset</button>
+</div>
+</div>
+</div>
+<script>
+(function(){
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=640,H=340,MID=W/2,HMIN=40,HMAX=300,V=H; // total water conserved (px of height)
+const dpr=window.devicePixelRatio||1;
+cv.width=W*dpr;cv.height=H*dpr;ctx.scale(dpr,dpr);
+cv.style.aspectRatio=W+'/'+H;
+const sl=document.getElementById('sl'),sr=document.getElementById('sr');
+let hL=H/2,hR=H/2,paused=false,parts={L:[],R:[]},drops=[],last=performance.now();
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+function bounds(side){
+  const h=side==='L'?hL:hR;
+  return {x0:side==='L'?10:MID+8,x1:side==='L'?MID-8:W-10,y0:H-h+8,y1:H-8};
+}
+function sync(side,n){
+  const arr=parts[side],b=bounds(side);
+  while(arr.length<n)arr.push({x:b.x0+Math.random()*(b.x1-b.x0),y:b.y0+Math.random()*(b.y1-b.y0),vx:(Math.random()-.5)*60,vy:(Math.random()-.5)*60});
+  arr.length=n;
+}
+function counts(){return {nL:+sl.value,nR:+sr.value}}
+function updateLabels(){
+  const {nL,nR}=counts();
+  document.getElementById('vl').textContent=nL;
+  document.getElementById('vr').textContent=nR;
+}
+function resetLevels(){hL=hR=H/2;}
+
+function step(dt){
+  const {nL,nR}=counts();
+  sync('L',nL);sync('R',nR);
+  const cL=nL/hL,cR=nR/hR,diff=cL-cR;
+  // water flows toward higher concentration; level change conserved
+  let flow=diff*400; // px/s, positive = water moves into left
+  if(Math.abs(diff)<0.0015)flow=0;
+  hL=Math.max(HMIN,Math.min(HMAX,hL+flow*dt));
+  hR=V-hL;
+  // brownian motion
+  for(const side of ['L','R']){
+    const b=bounds(side);
+    for(const p of parts[side]){
+      p.vx+=(Math.random()-.5)*400*dt;p.vy+=(Math.random()-.5)*400*dt;
+      const s=Math.hypot(p.vx,p.vy),max=70;
+      if(s>max){p.vx*=max/s;p.vy*=max/s}
+      p.x+=p.vx*dt;p.y+=p.vy*dt;
+      if(p.x<b.x0){p.x=b.x0;p.vx=Math.abs(p.vx)}
+      if(p.x>b.x1){p.x=b.x1;p.vx=-Math.abs(p.vx)}
+      if(p.y<b.y0){p.y=b.y0;p.vy=Math.abs(p.vy)}
+      if(p.y>b.y1){p.y=b.y1;p.vy=-Math.abs(p.vy)}
+    }
+  }
+  // water drops crossing membrane
+  // dir>0 = water moving right-to-left (into left side). At equilibrium water still crosses both ways equally.
+  const rate=5+Math.min(Math.abs(flow)*1.2,45);
+  if(Math.random()<rate*dt){
+    const top=H-Math.min(hL,hR);
+    const sign=flow>=0?1:-1;
+    const pNet=0.5+0.5*Math.min(Math.abs(flow)/15,1);
+    drops.push({y:top+10+Math.random()*(H-top-20),t:0,dir:Math.random()<pNet?sign:-sign});
+  }
+  for(const d of drops)d.t+=dt/0.7;
+  drops=drops.filter(d=>d.t<1);
+}
+
+function draw(){
+  const water=css('--water'),sol=css('--solute'),mem=css('--mem'),text=css('--text'),line=css('--line');
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle=water;
+  ctx.fillRect(0,H-hL,MID,hL);
+  ctx.fillRect(MID,H-hR,MID,hR);
+  // water surface lines
+  ctx.strokeStyle=text;ctx.lineWidth=1.5;ctx.globalAlpha=.5;
+  ctx.beginPath();ctx.moveTo(0,H-hL);ctx.lineTo(MID-3,H-hL);ctx.moveTo(MID+3,H-hR);ctx.lineTo(W,H-hR);ctx.stroke();
+  ctx.globalAlpha=1;
+  // membrane with pores
+  ctx.strokeStyle=mem;ctx.lineWidth=4;ctx.setLineDash([10,6]);
+  ctx.beginPath();ctx.moveTo(MID,0);ctx.lineTo(MID,H);ctx.stroke();ctx.setLineDash([]);
+  // solutes
+  ctx.fillStyle=sol;
+  for(const side of ['L','R'])for(const p of parts[side]){ctx.beginPath();ctx.arc(p.x,p.y,4.5,0,6.283);ctx.fill();}
+  // crossing water
+  ctx.fillStyle='#4aa3e0';ctx.strokeStyle='#fff';ctx.lineWidth=1;
+  for(const d of drops){
+    const xx=d.dir>0?MID+30-60*d.t:MID-30+60*d.t;
+    ctx.beginPath();ctx.arc(xx,d.y,4,0,6.283);ctx.fill();ctx.stroke();
+  }
+  // border
+  ctx.strokeStyle=line;ctx.lineWidth=2;ctx.strokeRect(1,1,W-2,H-2);
+}
+
+function readout(){
+  const {nL,nR}=counts();
+  const cL=nL/hL*1000,cR=nR/hR*1000; // arbitrary units
+  document.getElementById('cl').textContent=cL.toFixed(0);
+  document.getElementById('cr').textContent=cR.toFixed(0);
+  const diff=nL/hL-nR/hR,st=document.getElementById('status');
+  if(Math.abs(diff)<0.0015)st.textContent=(nL===nR)?'Isotonic: equal concentrations, no net water movement.':'Equilibrium reached: concentrations are equal on both sides.';
+  else if(diff>0)st.textContent=(hL>=HMAX?'Left is full. ':'')+'Left is hypertonic, so water moves left.';
+  else st.textContent=(hR>=HMAX?'Right is full. ':'')+'Right is hypertonic, so water moves right.';
+}
+
+function loop(now){
+  const dt=Math.min((now-last)/1000,0.05);last=now;
+  if(!paused)step(dt);
+  draw();readout();
+  requestAnimationFrame(loop);
+}
+sl.addEventListener('input',updateLabels);
+sr.addEventListener('input',updateLabels);
+function preset(a,b){sl.value=a;sr.value=b;updateLabels();}
+document.getElementById('p1').onclick=()=>preset(30,30);
+document.getElementById('p2').onclick=()=>preset(50,15);
+document.getElementById('p3').onclick=()=>preset(15,50);
+document.getElementById('pause').onclick=e=>{paused=!paused;e.target.textContent=paused?'Resume':'Pause'};
+document.getElementById('reset').onclick=()=>{resetLevels();drops=[];preset(30,30)};
+updateLabels();sync('L',30);sync('R',30);
+requestAnimationFrame(loop);
+})();
+</script>
+<script>
+window.A11Y = {
+  img: [['#cv', 'Animated diagram of two chambers of water separated by a semipermeable membrane (dashed line). Red dots are solute particles, which cannot cross. Blue dots are water molecules crossing the membrane in both directions, with more crossing toward the side with more solute, so the water level rises on that side. The concentrations and status message below the diagram describe what is happening.']],
+  live: ['#status']
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>

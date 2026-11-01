@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Water Potential in Plants</title>
+<style>
+  :root{
+    --bg:#f4f8f3; --card:#ffffff; --ink:#1d2b22; --muted:#5b6b60; --line:#d6e2d8;
+    --green:#2f7d4a; --green2:#e3f1e6; --blue:#2a7bd6; --blue2:#e4effb;
+    --orange:#e08a1e; --red:#c8423b; --purple:#7a4fc0; --brown:#8b5a2b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45}
+  header{padding:14px 18px 6px}
+  h1{margin:0;font-size:22px;color:var(--green)}
+  header p{margin:4px 0 0;color:var(--muted)}
+  .eq-big{font-family:Georgia,"Times New Roman",serif;font-size:20px;font-weight:600;color:var(--ink)}
+  .eq-big .s{color:var(--orange)} .eq-big .p{color:var(--blue)} .eq-big .g{color:var(--purple)} .eq-big .m{color:var(--brown)}
+  nav.tabs{display:flex;flex-wrap:wrap;gap:6px;padding:8px 18px 0;border-bottom:2px solid var(--line)}
+  nav.tabs button{border:1px solid var(--line);border-bottom:none;background:#e9f0ea;color:var(--ink);padding:9px 14px;border-radius:10px 10px 0 0;font-size:14px;font-weight:600;cursor:pointer}
+  nav.tabs button.active{background:var(--card);color:var(--green);box-shadow:0 -2px 0 var(--green) inset}
+  .panel{display:none;padding:14px 18px 22px}
+  .panel.active{display:block}
+  .grid{display:grid;grid-template-columns:minmax(260px,330px) 1fr;gap:14px}
+  @media (max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .card h3{margin:0 0 8px;font-size:15px;color:var(--green)}
+  .ctrl{margin:8px 0}
+  .ctrl label{display:flex;justify-content:space-between;font-size:13px;font-weight:600}
+  .ctrl label span{font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums}
+  .ctrl input[type=range]{width:100%;accent-color:var(--green)}
+  .ctrl select{width:100%;padding:4px;border-radius:6px;border:1px solid var(--line)}
+  .hint{font-size:12px;color:var(--muted);margin-top:1px}
+  .presets{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+  .presets button,.btn{border:1px solid var(--green);background:var(--green2);color:var(--green);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;cursor:pointer}
+  .presets button:hover,.btn:hover{background:var(--green);color:#fff}
+  .btn.red{border-color:var(--red);background:#fbe9e8;color:var(--red)}
+  .btn.red:hover{background:var(--red);color:#fff}
+  canvas{width:100%;display:block;border-radius:10px;background:#fff;border:1px solid var(--line)}
+  .readout{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .pill{background:#f3f6f4;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px}
+  .pill b{font-variant-numeric:tabular-nums}
+  .msg{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--blue2);border-left:5px solid var(--blue);font-size:14px}
+  .msg.warn{background:#fdf0e1;border-color:var(--orange)}
+  .msg.bad{background:#fbe9e8;border-color:var(--red)}
+  .twocol{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media (max-width:520px){.twocol{grid-template-columns:1fr}}
+  .colA h4,.colB h4{margin:2px 0 4px;font-size:14px}
+  .colA h4{color:#1f6fb8} .colB h4{color:#b5521b}
+  .terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:12px}
+  .term{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px}
+  .term b{display:block;font-size:14px}
+  .bars{margin-top:10px;font-size:13px}
+  .barrow{display:grid;grid-template-columns:120px 1fr 1fr;gap:8px;align-items:center;margin:3px 0}
+  .barrow.head{font-weight:700;font-size:12px;color:var(--muted)}
+  .bartrack{position:relative;height:18px;background:#f1f4f2;border-radius:4px}
+  .bartrack .zero{position:absolute;top:-2px;bottom:-2px;width:2px;background:#9aa8a0}
+  .bartrack .bar{position:absolute;top:2px;height:14px;border-radius:3px}
+  .bartrack .val{position:absolute;top:0;font-size:11px;font-weight:700;line-height:18px;white-space:nowrap}
+  .check{margin-top:14px}
+  .check details{background:#fffdf3;border:1px solid #eadfae;border-radius:10px;padding:8px 12px;margin-top:6px}
+  .check summary{cursor:pointer;font-weight:600}
+  .check p{margin:6px 0 2px}
+  .toggles{display:flex;flex-wrap:wrap;gap:12px;font-size:13px;margin:6px 0}
+  .profile{margin-top:10px}
+  .prow{display:grid;grid-template-columns:150px 1fr 82px;gap:8px;align-items:center;margin:4px 0;font-size:13px}
+  .ptrack{height:16px;background:#f1f4f2;border-radius:4px;position:relative;overflow:hidden}
+  .pfill{position:absolute;right:0;top:0;bottom:0;border-radius:4px}
+  .pv{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+  .small{font-size:12px;color:var(--muted)}
+  footer{padding:0 18px 16px;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Water Potential in Plants</h1>
+  <p class="eq-big">Ψ = <span class="s">Ψ<sub>s</sub></span> + <span class="p">Ψ<sub>p</sub></span> + <span class="g">Ψ<sub>g</sub></span> + <span class="m">Ψ<sub>m</sub></span></p>
+  <p>Water always moves from <b>higher (less negative)</b> water potential to <b>lower (more negative)</b> water potential. Units: megapascals (MPa). Pure water at sea level = 0 MPa.</p>
+</header>
+
+<div style="padding:0 18px 8px"><button class="btn" id="motionBtn" aria-pressed="false">Pause animation</button></div>
+<nav class="tabs">
+  <button data-tab="t1" class="active">1. The Equation</button>
+  <button data-tab="t2">2. Soil → Root</button>
+  <button data-tab="t3">3. Up the Xylem</button>
+  <button data-tab="t4">4. Transpiration</button>
+</nav>
+
+<!-- ============ TAB 1 ============ -->
+<section id="t1" class="panel active">
+  <div class="terms">
+    <div class="term"><b style="color:var(--orange)">Ψ<sub>s</sub> Solute (osmotic) potential</b>Ψ<sub>s</sub> = −iCRT. Dissolved solutes always make it negative. More solute → more negative.</div>
+    <div class="term"><b style="color:var(--blue)">Ψ<sub>p</sub> Pressure potential</b>Positive when a cell wall pushes back (turgor). Negative when water is pulled (tension in xylem).</div>
+    <div class="term"><b style="color:var(--purple)">Ψ<sub>g</sub> Gravity potential</b>Ψ<sub>g</sub> = ρgh ≈ 0.0098 MPa per meter of height. Matters in tall trees.</div>
+    <div class="term"><b style="color:var(--brown)">Ψ<sub>m</sub> Matric potential</b>Water held by adhesion to surfaces (soil particles, cell walls). Always ≤ 0; very negative in dry soil.</div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Compare two compartments</h3>
+      <div class="presets">
+        <button data-p1="turgid">Cell in pure water</button>
+        <button data-p1="salt">Cell in salt water</button>
+        <button data-p1="soilroot">Moist soil vs root</button>
+        <button data-p1="tree">Root vs top of tree</button>
+        <button data-p1="equal">Equilibrium</button>
+      </div>
+      <div class="ctrl"><label>Temperature <span id="tTval"></span></label><input type="range" id="tT" min="0" max="40" step="1" value="20"></div>
+      <div class="twocol">
+        <div class="colA">
+          <h4>Compartment A</h4>
+          <div class="ctrl"><label>Solute conc. C <span id="aCv"></span></label><input type="range" id="aC" min="0" max="1" step="0.01" value="0.10"></div>
+          <div class="ctrl"><label>Solute type</label><select id="aI"><option value="1">Sucrose (i = 1)</option><option value="2">NaCl (i = 2)</option><option value="3">CaCl₂ (i = 3)</option></select></div>
+          <div class="ctrl"><label>Pressure Ψp <span id="aPv"></span></label><input type="range" id="aP" min="-2" max="1.5" step="0.05" value="0"></div>
+          <div class="ctrl"><label>Height h <span id="aHv"></span></label><input type="range" id="aH" min="0" max="100" step="1" value="0"></div>
+          <div class="ctrl"><label>Matric Ψm <span id="aMv"></span></label><input type="range" id="aM" min="-2" max="0" step="0.05" value="0"></div>
+        </div>
+        <div class="colB">
+          <h4>Compartment B</h4>
+          <div class="ctrl"><label>Solute conc. C <span id="bCv"></span></label><input type="range" id="bC" min="0" max="1" step="0.01" value="0.30"></div>
+          <div class="ctrl"><label>Solute type</label><select id="bI"><option value="1">Sucrose (i = 1)</option><option value="2">NaCl (i = 2)</option><option value="3">CaCl₂ (i = 3)</option></select></div>
+          <div class="ctrl"><label>Pressure Ψp <span id="bPv"></span></label><input type="range" id="bP" min="-2" max="1.5" step="0.05" value="0.2"></div>
+          <div class="ctrl"><label>Height h <span id="bHv"></span></label><input type="range" id="bH" min="0" max="100" step="1" value="0"></div>
+          <div class="ctrl"><label>Matric Ψm <span id="bMv"></span></label><input type="range" id="bM" min="-2" max="0" step="0.05" value="0"></div>
+        </div>
+      </div>
+      <p class="hint">R = 0.00831 L·MPa/(mol·K); T in kelvin (°C + 273).</p>
+    </div>
+
+    <div>
+      <canvas id="c1" height="260"></canvas>
+      <div class="card bars" id="bars1"></div>
+      <div class="msg" id="msg1"></div>
+    </div>
+  </div>
+
+  <div class="check">
+    <details><summary>Check: A cell has Ψs = −0.7 MPa and Ψp = +0.3 MPa. It is placed in pure water. Which way does water move?</summary>
+      <p>Cell Ψ = −0.7 + 0.3 = −0.4 MPa. Pure water = 0 MPa. Water moves <b>into the cell</b> (0 → −0.4) until rising turgor pressure makes the cell Ψ = 0.</p></details>
+    <details><summary>Check: Why does adding salt to the outside solution make a plant cell lose water?</summary>
+      <p>Salt makes the outside Ψs (and therefore Ψ) more negative than the cell. Water moves from the cell (higher Ψ) to the solution (lower Ψ): plasmolysis.</p></details>
+    <details><summary>Check: Calculate Ψs for 0.2 M NaCl at 20 °C.</summary>
+      <p>Ψs = −iCRT = −(2)(0.2)(0.00831)(293) ≈ <b>−0.97 MPa</b>.</p></details>
+  </div>
+</section>
+
+<!-- ============ TAB 2 ============ -->
+<section id="t2" class="panel">
+  <div class="grid">
+    <div class="card">
+      <h3>Soil and root conditions</h3>
+      <div class="presets">
+        <button data-p2="moist">Moist soil</button>
+        <button data-p2="dry">Drought</button>
+        <button data-p2="salty">Salty / over-fertilized</button>
+        <button data-p2="pressure">Root pressure (night)</button>
+      </div>
+      <div class="ctrl"><label>Soil water (% of saturation) <span id="sWv"></span></label><input type="range" id="sW" min="5" max="100" step="1" value="70"><div class="hint">Drier soil → water clings tighter to particles → more negative Ψm.</div></div>
+      <div class="ctrl"><label>Soil salt (NaCl) <span id="sSv"></span></label><input type="range" id="sS" min="0" max="0.3" step="0.005" value="0.005"></div>
+      <div class="ctrl"><label>Root cell solutes <span id="rCv"></span></label><input type="range" id="rC" min="0.05" max="0.6" step="0.01" value="0.25"><div class="hint">Root cells actively pump in mineral ions, lowering their Ψs.</div></div>
+      <div class="ctrl"><label>Root cell turgor Ψp <span id="rPv"></span></label><input type="range" id="rP" min="0" max="0.8" step="0.05" value="0.3"></div>
+      <div class="toggles">
+        <label><input type="checkbox" id="showApo" checked> Apoplast path</label>
+        <label><input type="checkbox" id="showSym" checked> Symplast path</label>
+      </div>
+      <canvas id="c2b" height="150"></canvas>
+      <p class="hint">Soil water retention curve: the dot is the current soil.</p>
+    </div>
+    <div>
+      <canvas id="c2" height="380"></canvas>
+      <div class="readout" id="read2"></div>
+      <div class="msg" id="msg2"></div>
+    </div>
+  </div>
+  <div class="check">
+    <details><summary>What is the Casparian strip and why does it matter?</summary>
+      <p>A waxy (suberin) band in the walls of endodermis cells. It blocks the apoplast (wall) pathway, forcing water and minerals to cross a cell membrane. This lets the plant <b>control which minerals</b> enter the xylem.</p></details>
+    <details><summary>Why can over-fertilizing "burn" a plant even when the soil is wet?</summary>
+      <p>Excess salts make soil Ψs very negative. If Ψsoil drops below Ψroot, water flows <b>out</b> of the root even though the soil is moist.</p></details>
+    <details><summary>Why doesn't a plant just keep pumping ions to pull water from very dry soil?</summary>
+      <p>Below about −1.5 MPa (the permanent wilting point) soil water is held so tightly that most plants cannot lower their own Ψ enough, and soil hydraulic conductance falls sharply.</p></details>
+  </div>
+</section>
+
+<!-- ============ TAB 3 ============ -->
+<section id="t3" class="panel">
+  <div class="grid">
+    <div class="card">
+      <h3>Xylem controls</h3>
+      <div class="presets">
+        <button data-p3="normal">Normal day</button>
+        <button data-p3="redwood">Tall redwood</button>
+        <button data-p3="nopull">No transpiration</button>
+        <button data-p3="drought">Severe drought</button>
+      </div>
+      <div class="ctrl"><label>Xylem vessel radius <span id="xRv"></span></label><input type="range" id="xR" min="5" max="200" step="1" value="40"><div class="hint">Narrow = safe but slow. Wide = fast but cavitates easily.</div></div>
+      <div class="ctrl"><label>Plant height <span id="xHv"></span></label><input type="range" id="xH" min="1" max="115" step="1" value="20"></div>
+      <div class="ctrl"><label>Leaf water potential (tension) <span id="xLv"></span></label><input type="range" id="xL" min="-5" max="-0.1" step="0.05" value="-1.0"><div class="hint">More negative = stronger pull from transpiring leaves.</div></div>
+      <div class="toggles">
+        <label><input type="checkbox" id="showCoh" checked> Cohesion (H-bonds between water)</label>
+        <label><input type="checkbox" id="showAdh" checked> Adhesion (water to wall)</label>
+      </div>
+      <button class="btn red" id="embolBtn">Let air in (embolism)</button>
+      <button class="btn" id="repairBtn">Refill vessel</button>
+    </div>
+    <div>
+      <canvas id="c3" height="420"></canvas>
+      <div class="readout" id="read3"></div>
+      <div class="msg" id="msg3"></div>
+    </div>
+  </div>
+  <div class="check">
+    <details><summary>How high can adhesion (capillarity) alone lift water in a 20 µm-radius vessel?</summary>
+      <p>h = 2γcosθ / (ρgr) ≈ 1.5×10⁻⁵ / r ≈ <b>0.74 m</b>. Far short of a 30 m tree, so a pulling force (transpiration + cohesion) is needed.</p></details>
+    <details><summary>Explain the cohesion-tension theory in one sentence.</summary>
+      <p>Evaporation from leaves creates negative pressure (tension) that pulls a continuous column of water, held together by hydrogen bonds (cohesion) and to vessel walls (adhesion), up from the roots.</p></details>
+    <details><summary>Why do trees in cold or dry climates often have narrower vessels?</summary>
+      <p>Narrow vessels are less likely to cavitate (form air bubbles) under high tension or freeze-thaw, trading speed for safety.</p></details>
+  </div>
+</section>
+
+<!-- ============ TAB 4 ============ -->
+<section id="t4" class="panel">
+  <div class="grid">
+    <div class="card">
+      <h3>Environment</h3>
+      <div class="presets">
+        <button data-p4="mild">Mild morning</button>
+        <button data-p4="hot">Hot, dry, windy</button>
+        <button data-p4="humid">Humid / rainy</button>
+        <button data-p4="night">Night</button>
+        <button data-p4="drought">Drought</button>
+      </div>
+      <div class="ctrl"><label>Relative humidity <span id="eRHv"></span></label><input type="range" id="eRH" min="10" max="100" step="1" value="60"></div>
+      <div class="ctrl"><label>Air temperature <span id="eTv"></span></label><input type="range" id="eT" min="5" max="40" step="1" value="22"></div>
+      <div class="ctrl"><label>Wind <span id="eWv"></span></label><input type="range" id="eW" min="0" max="10" step="0.5" value="2"></div>
+      <div class="ctrl"><label>Light <span id="eLv"></span></label><input type="range" id="eL" min="0" max="100" step="1" value="70"><div class="hint">Light opens stomata (guard cells take up K⁺ and swell).</div></div>
+      <div class="ctrl"><label>Soil water <span id="eSv"></span></label><input type="range" id="eS" min="5" max="100" step="1" value="70"></div>
+      <div class="ctrl"><label>Plant height <span id="eHv"></span></label><input type="range" id="eH" min="1" max="60" step="1" value="10"></div>
+    </div>
+    <div>
+      <canvas id="c4" height="440"></canvas>
+      <div class="readout" id="read4"></div>
+      <div class="card profile" id="prof4"></div>
+      <div class="msg" id="msg4"></div>
+    </div>
+  </div>
+  <div class="check">
+    <details><summary>Why is the water potential of air so much more negative than the leaf?</summary>
+      <p>Ψair = (RT/V̄w)·ln(RH). Even at 90% RH, air is about −14 MPa; at 50% RH about −94 MPa. That huge drop happens at the stomata, where liquid water turns to vapor.</p></details>
+    <details><summary>Which conditions increase transpiration?</summary>
+      <p>Low humidity, high temperature, wind (removes the humid boundary layer), bright light (open stomata), and moist soil. Humid air, darkness, and drought (stomata close) decrease it.</p></details>
+    <details><summary>Why do stomata close during drought, and what is the trade-off?</summary>
+      <p>Closing stomata prevents leaf Ψ from becoming so negative that xylem cavitates or cells wilt, but it also blocks CO₂ uptake, so photosynthesis slows.</p></details>
+  </div>
+</section>
+
+<footer>Simplified model for teaching. Values are realistic in magnitude but calculations are approximate.</footer>
+
+<script>
+(function(){
+"use strict";
+let MOTION=true; let _vt=0,_vl=performance.now();
+function vnow(){ const n=performance.now(); if(MOTION) _vt+=n-_vl; _vl=n; return _vt; }
+const R = 0.00831;           // L·MPa/(mol·K)
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+const f2 = v => (Math.abs(v) < 0.005 ? 0 : v).toFixed(2);
+const mpa = v => f2(v) + " MPa";
+
+/* ---------- canvas helper ---------- */
+const canv = {};
+function setupCanvas(id){
+  const c = $(id); if(!c) return;
+  const h = +c.getAttribute("height");
+  const w = c.clientWidth || 600;
+  const dpr = window.devicePixelRatio || 1;
+  c.width = Math.round(w*dpr); c.height = Math.round(h*dpr);
+  c.style.height = h + "px";
+  const ctx = c.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+  canv[id] = {c, ctx, w, h};
+}
+function allCanvases(){ ["c1","c2","c2b","c3","c4"].forEach(setupCanvas); }
+window.addEventListener("resize", () => { allCanvases(); refreshAll(); });
+
+/* ---------- tabs ---------- */
+let activeTab = "t1";
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll("nav.tabs button").forEach(x => x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(x => x.classList.remove("active"));
+  b.classList.add("active"); activeTab = b.dataset.tab; $(activeTab).classList.add("active");
+  allCanvases(); refreshAll();
+}));
+
+function rrect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function arrow(ctx,x1,y1,x2,y2,col,wid){
+  ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=wid||4;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  const a=Math.atan2(y2-y1,x2-x1), s=8+(wid||4)*1.5;
+  ctx.beginPath(); ctx.moveTo(x2,y2); ctx.lineTo(x2-s*Math.cos(a-0.45),y2-s*Math.sin(a-0.45)); ctx.lineTo(x2-s*Math.cos(a+0.45),y2-s*Math.sin(a+0.45)); ctx.closePath(); ctx.fill();
+}
+
+/* =====================================================
+   TAB 1 – equation
+   ===================================================== */
+const S1 = {A:{}, B:{}, d:0, parts:[]};
+function setVals(map){ for(const k in map){ const el=$(k); if(el){ el.value = map[k]; } } }
+const presets1 = {
+  turgid:{aC:0, aI:1, aP:0, aH:0, aM:0, bC:0.28, bI:1, bP:0.30, bH:0, bM:0},
+  salt:{aC:0.30, aI:1, aP:0.25, aH:0, aM:0, bC:0.25, bI:2, bP:0, bH:0, bM:0},
+  soilroot:{aC:0.01, aI:2, aP:0, aH:0, aM:-0.05, bC:0.25, bI:1, bP:0.3, bH:0, bM:0},
+  tree:{aC:0.02, aI:1, aP:-0.4, aH:0, aM:0, bC:0.05, bI:1, bP:-1.2, bH:60, bM:0},
+  equal:{aC:0.20, aI:1, aP:0, aH:0, aM:0, bC:0.30, bI:1, bP:0.24, bH:0, bM:0}
+};
+document.querySelectorAll("[data-p1]").forEach(b => b.addEventListener("click", () => { setVals(presets1[b.dataset.p1]); update1(); }));
+["tT","aC","aI","aP","aH","aM","bC","bI","bP","bH","bM"].forEach(id => $(id).addEventListener("input", update1));
+
+function comp(prefix, T){
+  const C=+$(prefix+"C").value, i=+$(prefix+"I").value, P=+$(prefix+"P").value, h=+$(prefix+"H").value, M=+$(prefix+"M").value;
+  const s = -i*C*R*T, g = 0.0098*h;
+  return {C,i,s,p:P,g,m:M,h,total:s+P+g+M};
+}
+function update1(){
+  const Tc=+$("tT").value, T=Tc+273;
+  $("tTval").textContent = Tc + " °C (" + T + " K)";
+  ["a","b"].forEach(p => {
+    $(p+"Cv").textContent = (+$(p+"C").value).toFixed(2)+" M";
+    $(p+"Pv").textContent = mpa(+$(p+"P").value);
+    $(p+"Hv").textContent = $(p+"H").value+" m";
+    $(p+"Mv").textContent = mpa(+$(p+"M").value);
+  });
+  S1.A = comp("a",T); S1.B = comp("b",T); S1.d = S1.A.total - S1.B.total;
+
+  // bars
+  const rows=[["Ψs solute","s","var(--orange)"],["Ψp pressure","p","var(--blue)"],["Ψg gravity","g","var(--purple)"],["Ψm matric","m","var(--brown)"],["Ψ TOTAL","total","#1d2b22"]];
+  const lo=-3, hi=1.5, pct=v=>(clamp(v,lo,hi)-lo)/(hi-lo)*100, z=pct(0);
+  let html='<div class="barrow head"><div></div><div style="color:#1f6fb8">Compartment A</div><div style="color:#b5521b">Compartment B</div></div>';
+  rows.forEach(r=>{
+    html+='<div class="barrow"><div'+(r[1]==="total"?' style="font-weight:800"':'')+'>'+r[0]+'</div>';
+    [S1.A,S1.B].forEach(o=>{
+      const v=o[r[1]], x=pct(v), l=Math.min(x,z), w=Math.abs(x-z);
+      const lab = f2(v);
+      const valPos = v<0 ? 'right:'+(100-l+1)+'%' : 'left:'+(l+w+1)+'%';
+      html+='<div class="bartrack"><div class="zero" style="left:'+z+'%"></div><div class="bar" style="left:'+l+'%;width:'+w+'%;background:'+r[2]+(r[1]==="total"?'':';opacity:.85')+'"></div><div class="val" style="'+valPos+'">'+lab+'</div></div>';
+    });
+    html+='</div>';
+  });
+  html+='<div class="small" style="margin-top:4px">Scale: −3 to +1.5 MPa (vertical line = 0)</div>';
+  $("bars1").innerHTML=html;
+
+  const A=S1.A, B=S1.B, m=$("msg1");
+  const calc = o => "Ψ = ("+f2(o.s)+") + ("+f2(o.p)+") + ("+f2(o.g)+") + ("+f2(o.m)+") = <b>"+f2(o.total)+" MPa</b>";
+  let txt = "<b>A:</b> "+calc(A)+"<br><b>B:</b> "+calc(B)+"<br>";
+  if(Math.abs(S1.d)<0.01){ txt+="ΔΨ ≈ 0 → <b>dynamic equilibrium</b>: water moves both ways equally, no net movement."; m.className="msg warn"; }
+  else if(S1.d>0){ txt+="Net water movement <b>A → B</b> (ΔΨ = "+f2(S1.d)+" MPa) because A has the higher water potential."; m.className="msg"; }
+  else { txt+="Net water movement <b>B → A</b> (ΔΨ = "+f2(-S1.d)+" MPa) because B has the higher water potential."; m.className="msg"; }
+  m.innerHTML = txt;
+  initParticles1();
+}
+
+let P1 = [], P1sol=[];
+function initParticles1(){
+  const cv=canv.c1; if(!cv) return;
+  const W=cv.w, H=cv.h, mid=W/2, top=40, bot=H-20;
+  if(P1.length===0){
+    for(let k=0;k<90;k++){ const side=k%2; P1.push({x: side? mid+20+Math.random()*(W/2-50) : 30+Math.random()*(W/2-50), y: top+10+Math.random()*(bot-top-20), side, cross:0}); }
+  }
+  // solutes based on concentration
+  P1sol=[];
+  [["A",S1.A],["B",S1.B]].forEach((e,idx)=>{
+    const n=Math.round(e[1].C*e[1].i*30);
+    for(let k=0;k<n;k++){ P1sol.push({side:idx, x: idx? mid+20+Math.random()*(W/2-50) : 30+Math.random()*(W/2-50), y: top+10+Math.random()*(bot-top-20), vx:(Math.random()-.5)*.6, vy:(Math.random()-.5)*.6}); }
+  });
+}
+function draw1(){
+  const cv=canv.c1; if(!cv) return; const {ctx,w:W,h:H}=cv;
+  const mid=W/2, top=40, bot=H-20;
+  ctx.clearRect(0,0,W,H);
+  // boxes
+  ctx.fillStyle="#eaf3fd"; rrect(ctx,16,top,mid-24,bot-top,10); ctx.fill();
+  ctx.fillStyle="#fdf0e6"; rrect(ctx,mid+8,top,mid-24,bot-top,10); ctx.fill();
+  // membrane
+  ctx.strokeStyle="#5b6b60"; ctx.setLineDash([6,5]); ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(mid,top-6); ctx.lineTo(mid,bot+6); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle="#5b6b60"; ctx.font="11px sans-serif"; ctx.textAlign="center"; ctx.fillText("selectively permeable membrane",mid,bot+16);
+  ctx.font="bold 14px sans-serif"; ctx.fillStyle="#1f6fb8"; ctx.fillText("A   Ψ = "+mpa(S1.A.total), mid/2, 24);
+  ctx.fillStyle="#b5521b"; ctx.fillText("B   Ψ = "+mpa(S1.B.total), mid+mid/2, 24);
+  // gravity indicator & pressure indicator
+  [[S1.A,16],[S1.B,mid+8]].forEach(e=>{
+    const o=e[0], x0=e[1];
+    if(o.h>0){ ctx.fillStyle="rgba(122,79,192,.85)"; ctx.font="11px sans-serif"; ctx.textAlign="left"; ctx.fillText("↑ "+o.h+" m above ground", x0+8, top+14); }
+    if(o.p>0.02){ ctx.strokeStyle="rgba(42,123,214,.6)"; ctx.lineWidth=2+o.p*3; rrect(ctx,x0+3,top+3,mid-30,bot-top-6,8); ctx.stroke(); }
+    if(o.p<-0.02){ ctx.fillStyle="rgba(42,123,214,.9)"; ctx.font="11px sans-serif"; ctx.textAlign="right"; ctx.fillText("tension (pulled)", x0+mid-32, top+14); }
+    if(o.m<-0.02){ ctx.fillStyle="rgba(139,90,43,.35)"; for(let k=0;k<7;k++){ ctx.beginPath(); ctx.arc(x0+25+k*((mid-60)/6), bot-12, 8+(-o.m)*3,0,Math.PI*2); ctx.fill(); } }
+  });
+  // solutes
+  P1sol.forEach(s=>{
+    if(MOTION){ s.x+=s.vx; s.y+=s.vy; }
+    const xmin = s.side? mid+18 : 26, xmax = s.side? W-26 : mid-10;
+    if(s.x<xmin||s.x>xmax) s.vx*=-1; if(s.y<top+8||s.y>bot-8) s.vy*=-1;
+    s.x=clamp(s.x,xmin,xmax); s.y=clamp(s.y,top+8,bot-8);
+    ctx.fillStyle="#e08a1e"; ctx.beginPath(); ctx.arc(s.x,s.y,5,0,Math.PI*2); ctx.fill();
+  });
+  // water
+  const d=S1.d, rate = Math.min(Math.abs(d)*0.03,0.05);
+  P1.forEach(p=>{
+    if(p.cross){
+      if(MOTION){ p.x += p.cross*2.2; p.y += (Math.random()-.5)*1.5; }
+      const target = p.cross>0 ? mid+30 : mid-30;
+      if((p.cross>0 && p.x>=target)||(p.cross<0 && p.x<=target)){ p.side = p.cross>0?1:0; p.cross=0; }
+    } else {
+      if(MOTION){ p.x += (Math.random()-.5)*2.4; p.y += (Math.random()-.5)*2.4; }
+      const xmin = p.side? mid+16 : 24, xmax = p.side? W-24 : mid-12;
+      p.x=clamp(p.x,xmin,xmax); p.y=clamp(p.y,top+6,bot-6);
+      if(!MOTION){ }
+      else if(Math.abs(d)>=0.01 && Math.random()<rate){
+        const src = d>0?0:1;
+        if(p.side===src){ p.cross = d>0?1:-1; p.x = d>0? mid-28 : mid+28; }
+      } else if(Math.abs(d)<0.01 && Math.random()<0.004){ p.cross = p.side?-1:1; p.x = p.side? mid+28 : mid-28; }
+    }
+    ctx.fillStyle = p.cross? "#0a58b8" : "#5aa6ec";
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.cross?4.5:3.5,0,Math.PI*2); ctx.fill();
+  });
+  // keep population balanced visually: recycle (respawn on source side) so one side never empties
+  const countA = P1.filter(p=>p.side===0&&!p.cross).length;
+  if(MOTION && (countA<25 || countA>65)){ P1.forEach(p=>{ if(!p.cross && Math.random()<0.02){ const want = countA<25?0:1; p.side=want; p.x = want? mid+20+Math.random()*(W/2-50) : 30+Math.random()*(W/2-50);} }); }
+  // big arrow
+  if(Math.abs(d)>=0.01){
+    const y=top+(bot-top)/2, len=Math.min(40+Math.abs(d)*40,110);
+    arrow(ctx, mid-(d>0?len/2:-len/2), y, mid+(d>0?len/2:-len/2), y, "rgba(10,88,184,.85)", 6);
+  }
+  ctx.fillStyle="#1d2b22"; ctx.font="11px sans-serif"; ctx.textAlign="left";
+  ctx.fillStyle="#5aa6ec"; ctx.beginPath(); ctx.arc(24,H-8,4,0,7); ctx.fill(); ctx.fillStyle="#1d2b22"; ctx.fillText("water",32,H-4);
+  ctx.fillStyle="#e08a1e"; ctx.beginPath(); ctx.arc(80,H-8,4,0,7); ctx.fill(); ctx.fillStyle="#1d2b22"; ctx.fillText("solute",88,H-4);
+}
+
+/* =====================================================
+   TAB 2 – soil → root
+   ===================================================== */
+const S2={};
+const psiM = w => -0.01*Math.exp(5.7*(1-w));    // w = fraction of saturation
+const presets2 = {
+  moist:{sW:70,sS:0.005,rC:0.25,rP:0.3},
+  dry:{sW:12,sS:0.005,rC:0.35,rP:0.1},
+  salty:{sW:70,sS:0.22,rC:0.25,rP:0.3},
+  pressure:{sW:90,sS:0.002,rC:0.45,rP:0.6}
+};
+document.querySelectorAll("[data-p2]").forEach(b => b.addEventListener("click", () => { setVals(presets2[b.dataset.p2]); update2(); }));
+["sW","sS","rC","rP","showApo","showSym"].forEach(id => $(id).addEventListener("input", update2));
+
+function update2(){
+  const T=293, w=+$("sW").value/100, salt=+$("sS").value, rc=+$("rC").value, rp=+$("rP").value;
+  $("sWv").textContent = Math.round(w*100)+"%";
+  $("sSv").textContent = salt.toFixed(3)+" M";
+  $("rCv").textContent = rc.toFixed(2)+" M";
+  $("rPv").textContent = mpa(rp);
+  S2.w=w; S2.m=psiM(w); S2.s=-2*salt*R*T; S2.soil=S2.m+S2.s;
+  S2.rs=-rc*R*T; S2.rp=rp; S2.root=S2.rs+rp;
+  S2.d=S2.soil-S2.root;
+  $("read2").innerHTML =
+    '<div class="pill">Soil Ψm <b>'+mpa(S2.m)+'</b></div>'+
+    '<div class="pill">Soil Ψs <b>'+mpa(S2.s)+'</b></div>'+
+    '<div class="pill" style="border-color:#8b5a2b">Ψ soil <b>'+mpa(S2.soil)+'</b></div>'+
+    '<div class="pill" style="border-color:#2f7d4a">Ψ root cell <b>'+mpa(S2.root)+'</b> <span class="small">(Ψs '+f2(S2.rs)+' + Ψp '+f2(rp)+')</span></div>'+
+    '<div class="pill">ΔΨ (soil − root) <b>'+mpa(S2.d)+'</b></div>';
+  const m=$("msg2");
+  if(S2.soil < -1.5 && S2.d<=0){ m.className="msg bad"; m.innerHTML="Soil is drier than the <b>permanent wilting point (−1.5 MPa)</b>. Water is held so tightly by soil particles (matric potential) that the root cannot absorb it — water may even leave the root. The plant wilts."; }
+  else if(S2.d<=-0.01){ m.className="msg bad"; m.innerHTML="Ψsoil is <b>lower</b> than Ψroot, so water moves <b>out of the root into the soil</b>. "+(S2.s<-0.4?"The salt in the soil lowered Ψs (this is how over-fertilizing or salty irrigation water damages plants).":"The root needs a more negative Ψ (more solutes) to absorb water.")+""; }
+  else if(S2.d<0.01){ m.className="msg warn"; m.innerHTML="Ψsoil ≈ Ψroot: almost no net water uptake."; }
+  else { m.className="msg"; m.innerHTML="Water moves <b>from soil into the root</b> because Ψsoil ("+f2(S2.soil)+") is higher than Ψroot ("+f2(S2.root)+"). It travels through the cortex by the <b style='color:#1f66b8'>apoplast</b> (cell walls) and <b style='color:#1f7a43'>symplast</b> (cytoplasm, via plasmodesmata). At the endodermis the <b style='color:#a8322c'>Casparian strip</b> forces all water through a cell membrane before it reaches the xylem."+(S2.rp>=0.5?" High root solute levels also create <b>root pressure</b>, which can push water up at night (guttation).":""); }
+  buildPaths2();
+}
+
+let paths2={apo:[],sym:[]}, P2=[], soilGrains=[];
+function buildPaths2(){
+  const cv=canv.c2; if(!cv) return; const W=cv.w, H=cv.h;
+  const soilEnd = W*0.30, xyl = W*0.88;
+  const cortex0 = W*0.36, endo = W*0.72;
+  const cy = H/2;
+  // symplast: through cells (straight-ish line through cell centers)
+  const nCells=4, cw=(endo-cortex0)/nCells;
+  const sym=[[16,cy+40],[soilEnd-30,cy+30],[soilEnd+10,cy+8],[cortex0-10,cy+10]];
+  for(let k=0;k<nCells;k++){ sym.push([cortex0+cw*k+cw*0.5, cy+ (k%2?14:6)]); }
+  sym.push([endo+cw*0.35,cy+8],[xyl-10,cy+4]);
+  // apoplast: along cell walls (zig-zag between cells), forced into endodermis cell
+  const apo=[[16,cy-60],[soilEnd-30,cy-50],[soilEnd+10,cy-34],[cortex0,cy-34]];
+  for(let k=0;k<nCells;k++){ const x=cortex0+cw*(k+1); apo.push([x-cw*0.5, k%2? cy-50 : cy-30],[x, cy-40]); }
+  apo.push([endo+cw*0.05,cy-38],[endo+cw*0.35,cy-20],[endo+cw*0.6,cy-10],[xyl-10,cy-6]);
+  paths2={apo,sym,soilEnd,xyl,cortex0,endo,cw,cy};
+  if(P2.length===0){ for(let k=0;k<26;k++) P2.push({path: k%2?"apo":"sym", t:Math.random()}); }
+  if(soilGrains.length===0){ for(let k=0;k<40;k++) soilGrains.push({x:Math.random(), y:Math.random(), r:8+Math.random()*14}); }
+  draw2b();
+}
+function pathPoint(pts,t){
+  let len=0, seg=[]; for(let i=1;i<pts.length;i++){ const d=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]); seg.push(d); len+=d; }
+  let target=t*len;
+  for(let i=0;i<seg.length;i++){ if(target<=seg[i]){ const f=target/seg[i]; return [pts[i][0]+(pts[i+1][0]-pts[i][0])*f, pts[i][1]+(pts[i+1][1]-pts[i][1])*f]; } target-=seg[i]; }
+  return pts[pts.length-1];
+}
+function draw2(){
+  const cv=canv.c2; if(!cv||!paths2.apo.length) return; const {ctx,w:W,h:H}=cv;
+  const {soilEnd,xyl,cortex0,endo,cw,cy}=paths2;
+  ctx.clearRect(0,0,W,H);
+  // soil
+  ctx.fillStyle="#d9c3a3"; ctx.fillRect(0,0,soilEnd,H);
+  soilGrains.forEach(g=>{
+    const x=g.x*(soilEnd-10), y=g.y*H;
+    const film = 1+S2.w*7;
+    ctx.fillStyle="rgba(90,166,236,"+(0.25+S2.w*0.5)+")"; ctx.beginPath(); ctx.arc(x,y,g.r+film,0,7); ctx.fill();
+    ctx.fillStyle="#8b5a2b"; ctx.beginPath(); ctx.arc(x,y,g.r,0,7); ctx.fill();
+  });
+  if(S2.s<-0.1){ ctx.fillStyle="#fff"; for(let k=0;k<Math.round(-S2.s*40);k++){ const x=(k*53%100)/100*(soilEnd-10), y=(k*37%100)/100*H; ctx.fillRect(x,y,3,3);} }
+  // root tissue background
+  ctx.fillStyle="#eef7e9"; ctx.fillRect(soilEnd,0,W-soilEnd,H);
+  // epidermis + root hair
+  ctx.fillStyle="#cfe8c4"; ctx.fillRect(soilEnd,0,cortex0-soilEnd,H);
+  ctx.strokeStyle="#7fae72"; ctx.lineWidth=2;
+  for(let y=0;y<H;y+=46){ ctx.strokeRect(soilEnd,y,cortex0-soilEnd,46); }
+  ctx.fillStyle="#cfe8c4"; ctx.strokeStyle="#7fae72"; ctx.lineWidth=2;
+  rrect(ctx,30,cy+18,soilEnd-20,24,12); ctx.fill(); ctx.stroke();
+  // cortex cells
+  for(let k=0;k<4;k++){
+    for(let r=0;r<5;r++){
+      const x=cortex0+cw*k+3, y=r*(H/5)+3+(k%2?H/10:0)-H/10;
+      ctx.fillStyle="#e2f2da"; ctx.strokeStyle="#9cc58e"; ctx.lineWidth=3;
+      rrect(ctx,x,y,cw-6,H/5-6,14); ctx.fill(); ctx.stroke();
+      ctx.fillStyle="rgba(170,210,240,.5)"; rrect(ctx,x+8,y+8,cw-22,H/5-22,10); ctx.fill();
+    }
+  }
+  // endodermis
+  const ew=cw*0.7;
+  for(let r=0;r<8;r++){ const y=r*(H/8);
+    ctx.fillStyle="#d9eccd"; ctx.strokeStyle="#6d9e5f"; ctx.lineWidth=2; rrect(ctx,endo+2,y+2,ew-4,H/8-4,6); ctx.fill(); ctx.stroke();
+    ctx.fillStyle="#c8423b"; ctx.fillRect(endo+ew*0.4,y-2,ew*0.18,6);
+  }
+  // xylem
+  ctx.fillStyle="#d7e8f7"; ctx.fillRect(xyl-12,0,W-xyl+12,H);
+  ctx.strokeStyle="#5a7fa6"; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(xyl-12,0); ctx.lineTo(xyl-12,H); ctx.stroke();
+  for(let y=10;y<H;y+=22){ ctx.strokeStyle="#5a7fa6"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(xyl+12,y,4,0,7); ctx.stroke(); }
+  // labels
+  ctx.font="bold 12px sans-serif"; ctx.textAlign="center"; ctx.fillStyle="#3b2a18";
+  const lab=(t,x,y,c)=>{ ctx.fillStyle="rgba(255,255,255,.85)"; const m=ctx.measureText(t).width; rrect(ctx,x-m/2-4,y-12,m+8,17,5); ctx.fill(); ctx.fillStyle=c||"#1d2b22"; ctx.fillText(t,x,y); };
+  lab("SOIL  Ψ "+f2(S2.soil),soilEnd/2,18,"#6b3f14");
+  lab("root hair",soilEnd*0.55,cy+58,"#2f7d4a");
+  lab("epidermis",(soilEnd+cortex0)/2,H-8);
+  lab("CORTEX  Ψ "+f2(S2.root),(cortex0+endo)/2,18,"#2f7d4a");
+  lab("endodermis",endo+ew/2,H-8,"#1d2b22");
+  lab("Casparian strip",endo+ew/2,H-26,"#c8423b");
+  lab("XYLEM",(xyl+W)/2,18,"#1f5f9e");
+  // paths
+  const showA=$("showApo").checked, showS=$("showSym").checked;
+  const drawPath=(pts,col)=>{ ctx.strokeStyle=col; ctx.lineWidth=2; ctx.setLineDash([5,5]); ctx.beginPath(); pts.forEach((p,i)=> i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.stroke(); ctx.setLineDash([]); };
+  if(showA) drawPath(paths2.apo,"rgba(42,123,214,.7)");
+  if(showS) drawPath(paths2.sym,"rgba(47,158,90,.8)");
+  if(showA){ ctx.fillStyle="#2a7bd6"; ctx.font="bold 11px sans-serif"; ctx.fillText("apoplast (walls)",(cortex0+endo)/2,cy-60); }
+  if(showS){ ctx.fillStyle="#2f9e5a"; ctx.font="bold 11px sans-serif"; ctx.fillText("symplast (cytoplasm)",(cortex0+endo)/2,cy+42); }
+  // particles
+  const v = clamp(S2.d,-1,1)*0.004;
+  P2.forEach(p=>{
+    const show = p.path==="apo"?showA:showS;
+    if(MOTION){ p.t += v; if(p.t>1) p.t-=1; if(p.t<0) p.t+=1; }
+    if(!show) return;
+    const pt=pathPoint(paths2[p.path],p.t);
+    ctx.fillStyle = p.path==="apo" ? "#2a7bd6" : "#1f8f4f";
+    ctx.beginPath(); ctx.arc(pt[0],pt[1],4.5,0,7); ctx.fill();
+  });
+  // direction arrow
+  if(Math.abs(S2.d)>=0.01){
+    const out = S2.d<0;
+    arrow(ctx, out? cortex0-10: soilEnd-80, H-50, out? soilEnd-80 : cortex0-10, H-50, out?"#c8423b":"#0a58b8",5);
+    ctx.fillStyle=out?"#c8423b":"#0a58b8"; ctx.font="bold 12px sans-serif"; ctx.fillText(out?"water LEAVES root":"water enters root",(soilEnd-80+cortex0)/2,H-62);
+  }
+}
+function draw2b(){
+  const cv=canv.c2b; if(!cv) return; const {ctx,w:W,h:H}=cv;
+  ctx.clearRect(0,0,W,H);
+  const L=38,Rr=W-10,T=10,B=H-28;
+  const yv = v => T + (Math.log10(-v)-Math.log10(0.01))/(Math.log10(5)-Math.log10(0.01))*(B-T);
+  ctx.strokeStyle="#9aa8a0"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(L,T); ctx.lineTo(L,B); ctx.lineTo(Rr,B); ctx.stroke();
+  ctx.fillStyle="#5b6b60"; ctx.font="10px sans-serif"; ctx.textAlign="right";
+  [-0.01,-0.1,-1].forEach(v=>{ ctx.fillText(v,L-3,yv(v)+3); });
+  ctx.textAlign="center"; ctx.fillText("soil water (% saturation) →",(L+Rr)/2,H-6);
+  ctx.save(); ctx.translate(10,(T+B)/2); ctx.rotate(-Math.PI/2); ctx.fillText("Ψm (MPa, log)",0,0); ctx.restore();
+  [[-0.033,"field capacity"],[-1.5,"wilting point"]].forEach(e=>{ const y=yv(e[0]); ctx.strokeStyle="#c9d4cc"; ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(L,y); ctx.lineTo(Rr,y); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle="#8a978e"; ctx.textAlign="right"; ctx.fillText(e[1],Rr-2,y-3); });
+  ctx.strokeStyle="#8b5a2b"; ctx.lineWidth=2.5; ctx.beginPath();
+  for(let p=5;p<=100;p++){ const x=L+(p-5)/95*(Rr-L), y=yv(psiM(p/100)); p===5?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.stroke();
+  const x=L+(S2.w*100-5)/95*(Rr-L), y=yv(S2.m);
+  ctx.fillStyle="#2a7bd6"; ctx.beginPath(); ctx.arc(x,y,6,0,7); ctx.fill();
+}
+
+/* =====================================================
+   TAB 3 – xylem
+   ===================================================== */
+const S3={embol:false};
+const presets3 = { normal:{xR:40,xH:20,xL:-1.0}, redwood:{xR:30,xH:110,xL:-2.4}, nopull:{xR:40,xH:20,xL:-0.1}, drought:{xR:120,xH:20,xL:-3.8} };
+document.querySelectorAll("[data-p3]").forEach(b => b.addEventListener("click", () => { setVals(presets3[b.dataset.p3]); S3.embol=false; update3(); }));
+["xR","xH","xL","showCoh","showAdh"].forEach(id => $(id).addEventListener("input", update3));
+$("embolBtn").addEventListener("click", ()=>{ S3.embol=true; update3(); });
+$("repairBtn").addEventListener("click", ()=>{ S3.embol=false; S3.manualCav=false; update3(); });
+
+function update3(){
+  const r=+$("xR").value, h=+$("xH").value, L=+$("xL").value;
+  $("xRv").textContent = r+" µm"; $("xHv").textContent = h+" m"; $("xLv").textContent = mpa(L);
+  const rise = 1.48e-5/(r*1e-6);                 // m
+  const grav = 0.0098*h, fric = (0.004+0.24/r)*h, soil=-0.1;
+  const need = soil - grav - fric;               // leaf Ψ must be below this for upward flow
+  const cav = -Math.min(8, 0.6+120/r);           // cavitation threshold
+  S3.r=r; S3.h=h; S3.L=L; S3.rise=rise; S3.need=need; S3.cav=cav;
+  S3.cavitated = S3.embol || L < cav;
+  S3.flow = S3.cavitated ? 0 : Math.max(0,(need-L))/(fric/h*10+0.01);
+  $("read3").innerHTML =
+    '<div class="pill">Capillary rise (adhesion only) <b>'+(rise<1?(rise*100).toFixed(0)+" cm":rise.toFixed(2)+" m")+'</b></div>'+
+    '<div class="pill" style="border-color:#7a4fc0">Ψg to lift to top <b>+'+f2(grav)+' MPa</b></div>'+
+    '<div class="pill">Friction loss <b>'+f2(fric)+' MPa</b></div>'+
+    '<div class="pill" style="border-color:#2f7d4a">Leaf Ψ needed &lt; <b>'+mpa(need)+'</b></div>'+
+    '<div class="pill" style="border-color:#c8423b">Cavitation below <b>'+mpa(cav)+'</b></div>';
+  const m=$("msg3");
+  if(S3.embol){ m.className="msg bad"; m.innerHTML="An <b>air bubble (embolism)</b> broke the water column. Cohesion can't pull across a gas gap, so this vessel stops conducting. Water detours sideways through <b>pits</b> into neighbouring vessels."; }
+  else if(L<cav){ m.className="msg bad"; m.innerHTML="<b>Cavitation!</b> Tension ("+f2(L)+" MPa) is beyond what this vessel can withstand ("+f2(cav)+" MPa). Dissolved air is pulled out of solution and the column snaps. Wide vessels cavitate more easily — try a narrower radius."; }
+  else if(L>=need){ m.className="msg warn"; m.innerHTML="Not enough pull. Leaf Ψ ("+f2(L)+") is not lower than the "+f2(need)+" MPa needed to overcome gravity (Ψg = +"+f2(grav)+") and friction. The column stays in place (cohesion holds it) but there is <b>no net upward flow</b>. Adhesion alone would raise water only "+(rise<1?(rise*100).toFixed(0)+" cm":rise.toFixed(2)+" m")+"."; }
+  else { m.className="msg"; m.innerHTML="<b>Cohesion-tension:</b> Evaporation in the leaf creates tension ("+f2(L)+" MPa). Because water molecules <b>cohere</b> (hydrogen bonds), the whole column is pulled upward like a chain. <b>Adhesion</b> to the hydrophilic cellulose walls helps hold the column and resists gravity. Adhesion alone lifts water only "+(rise<1?(rise*100).toFixed(0)+" cm":rise.toFixed(2)+" m")+" — the "+h+" m climb needs the transpiration pull."; }
+}
+
+let molOffset=0;
+function draw3(){
+  const cv=canv.c3; if(!cv) return; const {ctx,w:W,h:H}=cv;
+  ctx.clearRect(0,0,W,H);
+  const split=Math.max(150,W*0.30);
+  // ---- left: capillary vs tree
+  ctx.fillStyle="#f6faf6"; ctx.fillRect(0,0,split,H);
+  ctx.fillStyle="#1d2b22"; ctx.font="bold 12px sans-serif"; ctx.textAlign="center"; ctx.fillText("Adhesion alone vs. plant height",split/2,18);
+  const base=H-30, topY=40, scaleMax=Math.max(S3.h,S3.rise,2);
+  const ym = v => base - (v/scaleMax)*(base-topY);
+  // dish
+  ctx.fillStyle="#bcdcf5"; ctx.fillRect(10,base,split-20,18);
+  // tube
+  const tw = clamp(S3.r/200*40,5,40), tx=split*0.32-tw/2;
+  ctx.fillStyle="#7ab8ec"; ctx.fillRect(tx,ym(S3.rise),tw,base-ym(S3.rise)+10);
+  ctx.strokeStyle="#5b6b60"; ctx.lineWidth=2; ctx.strokeRect(tx,topY-10,tw,base-topY+20);
+  ctx.fillStyle="#1f5f9e"; ctx.font="11px sans-serif"; ctx.fillText("capillary",tx+tw/2,base+30-2);
+  // tree bar
+  const bx=split*0.7;
+  ctx.fillStyle="#7a5232"; ctx.fillRect(bx-6,ym(S3.h),12,base-ym(S3.h));
+  ctx.fillStyle="#3f9a52"; ctx.beginPath(); ctx.arc(bx,ym(S3.h),16,0,7); ctx.fill();
+  ctx.fillStyle="#1d2b22"; ctx.fillText("plant "+S3.h+" m",bx,base+28);
+  ctx.strokeStyle="#c9d4cc"; ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(10,ym(S3.rise)); ctx.lineTo(split-10,ym(S3.rise)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle="#1f5f9e"; ctx.textAlign="left"; ctx.fillText((S3.rise<1?(S3.rise*100).toFixed(0)+" cm":S3.rise.toFixed(1)+" m"),tx+tw+4,ym(S3.rise)-3);
+  // ---- right: zoomed vessel
+  const x0=split+20, x1=W-20, vw=x1-x0;
+  ctx.fillStyle="#fff"; ctx.fillRect(split,0,W-split,H);
+  ctx.fillStyle="#1d2b22"; ctx.font="bold 12px sans-serif"; ctx.textAlign="center"; ctx.fillText("Inside a xylem vessel (zoomed in)",(x0+x1)/2,18);
+  const wallL=x0+vw*0.18, wallR=x1-vw*0.18;
+  // walls with pits
+  ctx.fillStyle="#c9a77c"; ctx.fillRect(wallL-14,28,14,H-40); ctx.fillRect(wallR,28,14,H-40);
+  ctx.fillStyle="#fff"; for(let y=60;y<H-20;y+=70){ ctx.fillRect(wallL-14,y,14,12); ctx.fillRect(wallR,y+35,14,12); }
+  ctx.fillStyle="#7a5232"; ctx.font="10px sans-serif";
+  ctx.save(); ctx.translate(wallL-20,H/2); ctx.rotate(-Math.PI/2); ctx.fillText("cellulose wall (+ lignin)",0,0); ctx.restore();
+  ctx.save(); ctx.translate(wallR+26,H/2); ctx.rotate(-Math.PI/2); ctx.fillText("pits connect to next vessel",0,0); ctx.restore();
+  // leaf / root labels
+  ctx.fillStyle="#2f7d4a"; ctx.font="bold 11px sans-serif"; ctx.fillText("↑ to leaf  Ψ "+f2(S3.L),(wallL+wallR)/2,34);
+  ctx.fillStyle="#8b5a2b"; ctx.fillText("from root  Ψ ≈ −0.10",(wallL+wallR)/2,H-4);
+  // molecules
+  const cols=Math.max(3,Math.floor((wallR-wallL)/30)), dx=(wallR-wallL)/cols, dy=28;
+  const speed = clamp(S3.flow*0.6,0,3);
+  if(MOTION) molOffset = (molOffset + speed) % dy;
+  const gapTop=H*0.38, gapBot=H*0.58;
+  const showC=$("showCoh").checked, showA=$("showAdh").checked;
+  const mols=[];
+  for(let row=-1; row< Math.ceil((H-40)/dy)+1; row++){
+    const y = H-24 - row*dy - molOffset;
+    if(y<40||y>H-14) continue;
+    if(S3.cavitated && y>gapTop && y<gapBot) continue;
+    for(let c=0;c<cols;c++){
+      const jitter = Math.sin((row*7+c*13)+vnow()/400)*2;
+      mols.push({x: wallL+dx*(c+0.5)+jitter, y: y + (c%2?dy/2:0)*0.3, c});
+    }
+  }
+  if(showC){ ctx.strokeStyle="rgba(42,123,214,.55)"; ctx.lineWidth=1.5; ctx.setLineDash([3,3]);
+    for(let i=0;i<mols.length;i++) for(let j=i+1;j<mols.length;j++){ const d=Math.hypot(mols[i].x-mols[j].x,mols[i].y-mols[j].y); if(d<dy*1.25){ ctx.beginPath(); ctx.moveTo(mols[i].x,mols[i].y); ctx.lineTo(mols[j].x,mols[j].y); ctx.stroke(); } }
+    ctx.setLineDash([]); }
+  if(showA){ ctx.strokeStyle="rgba(224,138,30,.9)"; ctx.lineWidth=2; ctx.setLineDash([2,3]);
+    mols.forEach(m=>{ if(m.c===0){ ctx.beginPath(); ctx.moveTo(m.x,m.y); ctx.lineTo(wallL,m.y); ctx.stroke(); } if(m.c===cols-1){ ctx.beginPath(); ctx.moveTo(m.x,m.y); ctx.lineTo(wallR,m.y); ctx.stroke(); } });
+    ctx.setLineDash([]); }
+  mols.forEach(m=>{
+    ctx.fillStyle="#d8453b"; ctx.beginPath(); ctx.arc(m.x,m.y,6,0,7); ctx.fill();
+    ctx.fillStyle="#f2f2f2"; ctx.strokeStyle="#999"; ctx.lineWidth=0.8;
+    [[-6,5],[6,5]].forEach(o=>{ ctx.beginPath(); ctx.arc(m.x+o[0],m.y+o[1],3.2,0,7); ctx.fill(); ctx.stroke(); });
+  });
+  if(S3.cavitated){
+    ctx.fillStyle="rgba(255,255,255,.95)"; ctx.strokeStyle="#9aa8a0"; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.ellipse((wallL+wallR)/2,(gapTop+gapBot)/2,(wallR-wallL)/2-4,(gapBot-gapTop)/2,0,0,7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle="#c8423b"; ctx.font="bold 13px sans-serif"; ctx.fillText("AIR BUBBLE (embolism)",(wallL+wallR)/2,(gapTop+gapBot)/2+4);
+    // detour arrow through pit
+    arrow(ctx,wallR-6,gapBot+12,wallR+24,gapBot+12,"#2a7bd6",3);
+  } else if(speed>0.02){
+    arrow(ctx,x1-8,H*0.75,x1-8,H*0.3,"rgba(10,88,184,.8)",4);
+  }
+  // legend
+  ctx.textAlign="left"; ctx.font="10px sans-serif";
+  ctx.fillStyle="rgba(42,123,214,.9)"; ctx.fillText("- - cohesion",x0,H-18);
+  ctx.fillStyle="rgba(224,138,30,1)"; ctx.fillText("- - adhesion",x0,H-6);
+}
+
+/* =====================================================
+   TAB 4 – transpiration / whole plant
+   ===================================================== */
+const S4={};
+const presets4 = {
+  mild:{eRH:65,eT:20,eW:1,eL:60,eS:75,eH:10},
+  hot:{eRH:15,eT:36,eW:8,eL:100,eS:70,eH:10},
+  humid:{eRH:97,eT:18,eW:1,eL:30,eS:95,eH:10},
+  night:{eRH:85,eT:14,eW:1,eL:0,eS:75,eH:10},
+  drought:{eRH:25,eT:34,eW:4,eL:100,eS:12,eH:10}
+};
+document.querySelectorAll("[data-p4]").forEach(b => b.addEventListener("click", () => { setVals(presets4[b.dataset.p4]); update4(); }));
+["eRH","eT","eW","eL","eS","eH"].forEach(id => $(id).addEventListener("input", update4));
+
+function update4(){
+  const RH=+$("eRH").value/100, Tc=+$("eT").value, wind=+$("eW").value, light=+$("eL").value/100, w=+$("eS").value/100, h=+$("eH").value;
+  $("eRHv").textContent=Math.round(RH*100)+"%"; $("eTv").textContent=Tc+" °C"; $("eWv").textContent=wind+" m/s";
+  $("eLv").textContent=Math.round(light*100)+"%"; $("eSv").textContent=Math.round(w*100)+"%"; $("eHv").textContent=h+" m";
+  const T=Tc+273.15;
+  const psiAir = RH>=0.999 ? 0 : (8.314*T/18e-6)*Math.log(RH)/1e6;   // MPa
+  const es = 0.6108*Math.exp(17.27*Tc/(Tc+237.3));                  // kPa
+  const leafT = Tc + light*2;                                        // sunlit leaf a bit warmer
+  const esLeaf = 0.6108*Math.exp(17.27*leafT/(leafT+237.3));
+  const vpd = Math.max(0, esLeaf - es*RH);                           // kPa
+  const psiSoil = psiM(w) - 0.02;
+  const Rsr = 0.05*(1+30*Math.pow(1-w,3)), Rst=0.004*h+0.02, Rlf=0.06; // MPa per mmol m-2 s-1
+  const gb = 0.4+0.5*wind;                                           // boundary layer conductance
+  const gmax = 0.45*(light>0 ? (0.12+0.88*light) : 0.03);
+  let gs = gmax, E=0, psiRoot=0, psiStem=0, psiLeaf=0;
+  for(let k=0;k<40;k++){
+    const g = gs*gb/(gs+gb);
+    E = g*vpd/101.3*1000;                                            // mmol m-2 s-1
+    psiRoot = psiSoil - E*Rsr;
+    psiStem = psiRoot - E*Rst*0.5 - 0.0098*h*0.5;
+    psiLeaf = psiRoot - E*(Rst+Rlf) - 0.0098*h;
+    const f = clamp((psiLeaf+2.6)/1.4,0.05,1);                     // stomata close as leaf Ψ falls
+    gs = gs*0.6 + 0.4*gmax*f;
+  }
+  Object.assign(S4,{RH,Tc,wind,light,w,h,psiAir,psiSoil,psiRoot,psiStem,psiLeaf,E,gs,gmax:0.45,vpd});
+  const rate=E;
+  $("read4").innerHTML =
+    '<div class="pill" style="border-color:#2a7bd6">Transpiration <b>'+rate.toFixed(1)+' mmol H₂O m⁻² s⁻¹</b></div>'+
+    '<div class="pill">Vapor pressure deficit <b>'+vpd.toFixed(2)+' kPa</b></div>'+
+    '<div class="pill">Stomata open <b>'+Math.round(gs/0.45*100)+'%</b></div>';
+  // profile
+  const nodes=[["Soil",psiSoil,"#8b5a2b"],["Root xylem",psiRoot,"#a0703e"],["Stem xylem (mid)",psiStem,"#2f7d4a"],["Leaf",psiLeaf,"#3f9a52"],["Air",psiAir,"#1f66b8"]];
+  const maxS=4;
+  let html='<h3 style="margin:0 0 4px;font-size:14px;color:#2f7d4a">Water potential gradient (soil → air)</h3>';
+  nodes.forEach(n=>{
+    const off = n[1] < -maxS;
+    const pct = clamp(-n[1]/maxS*100,0,100);
+    html+='<div class="prow"><div>'+n[0]+'</div><div class="ptrack"><div class="pfill" style="width:'+pct+'%;background:'+n[2]+'"></div>'+(off?'<div style="position:absolute;left:4px;top:0;font-size:11px;font-weight:700;color:#fff">off scale ≫</div>':'')+'</div><div class="pv">'+f2(n[1])+'</div></div>';
+  });
+  html+='<div class="small">Bars grow leftward as Ψ becomes more negative (scale 0 to −4 MPa). Water flows down this gradient: soil → root → stem → leaf → air.</div>';
+  $("prof4").innerHTML=html;
+  const m=$("msg4");
+  if(RH>=0.99){ m.className="msg warn"; m.innerHTML="Air is nearly saturated (Ψair ≈ "+f2(psiAir)+" MPa). With almost no gradient between the leaf air spaces and the air, transpiration nearly stops. Water movement up the plant slows; in some plants root pressure may cause <b>guttation</b>."; }
+  else if(light<0.02){ m.className="msg warn"; m.innerHTML="<b>Darkness:</b> guard cells lose K⁺ and water, become flaccid, and stomata close. Transpiration drops to a small leak through the cuticle, so leaf Ψ rises toward soil Ψ overnight."; }
+  else if(gs<0.45*0.35*Math.max(light,0.1) || psiLeaf < -2){ m.className="msg bad"; m.innerHTML="<b>Water stress:</b> leaf Ψ fell to "+f2(psiLeaf)+" MPa, so stomata are partly <b>closing</b> (signal: the hormone ABA). This saves water and protects the xylem from cavitation, but also limits CO₂ intake for photosynthesis."; }
+  else { m.className="msg"; m.innerHTML="Water evaporates from mesophyll cell walls into the leaf air spaces and diffuses out through open <b>stomata</b> into the much drier air (Ψair = "+f2(psiAir)+" MPa). This loss lowers leaf Ψ ("+f2(psiLeaf)+" MPa), pulling water up the xylem by <b>cohesion-tension</b> and drawing water in from the soil."; }
+}
+
+let P4=[], V4=[], windLines=[];
+function plantGeom(W,H){
+  const ground=H*0.62, sx=W*0.40;
+  const topY = H*0.12;
+  return {ground,sx,topY, leafL:[sx-90,topY+70], leafR:[sx+95,topY+40], rootL:[sx-60,H-30], rootR:[sx+55,H-20]};
+}
+function draw4(){
+  const cv=canv.c4; if(!cv||S4.E===undefined) return; const {ctx,w:W,h:H}=cv;
+  const g=plantGeom(W,H);
+  ctx.clearRect(0,0,W,H);
+  // sky
+  const L=S4.light;
+  const sky=ctx.createLinearGradient(0,0,0,g.ground);
+  sky.addColorStop(0, L<0.02? "#1d2a4a" : "rgb("+Math.round(150+80*L)+","+Math.round(190+50*L)+",255)");
+  sky.addColorStop(1, L<0.02? "#3a4a6a" : "#eef6ff");
+  ctx.fillStyle=sky; ctx.fillRect(0,0,W,g.ground);
+  // humidity haze
+  ctx.fillStyle="rgba(255,255,255,"+(S4.RH*0.35)+")"; ctx.fillRect(0,0,W,g.ground);
+  // sun / moon
+  if(L>0.02){ ctx.fillStyle="rgba(255,200,40,"+(0.35+0.65*L)+")"; ctx.beginPath(); ctx.arc(W-50,40,18+10*L,0,7); ctx.fill(); }
+  else { ctx.fillStyle="#f3f1d8"; ctx.beginPath(); ctx.arc(W-50,40,16,0,7); ctx.fill(); ctx.fillStyle="#1d2a4a"; ctx.beginPath(); ctx.arc(W-43,35,15,0,7); ctx.fill(); }
+  // wind lines
+  if(windLines.length===0) for(let k=0;k<10;k++) windLines.push({x:Math.random()*W,y:20+Math.random()*(g.ground-60)});
+  ctx.strokeStyle="rgba(255,255,255,.8)"; ctx.lineWidth=2;
+  windLines.forEach(l=>{ if(MOTION){ l.x+=S4.wind*0.9; if(l.x>W+40) l.x=-40; } if(S4.wind>0.2){ ctx.beginPath(); ctx.moveTo(l.x,l.y); ctx.lineTo(l.x+15+S4.wind*4,l.y); ctx.stroke(); } });
+  // soil
+  ctx.fillStyle = "rgb("+Math.round(196-60*S4.w)+","+Math.round(160-60*S4.w)+","+Math.round(120-50*S4.w)+")";
+  ctx.fillRect(0,g.ground,W,H-g.ground);
+  // roots
+  ctx.strokeStyle="#f1dfb8"; ctx.lineWidth=5; ctx.lineCap="round";
+  [[g.rootL,-1],[g.rootR,1],[[g.sx-10,H-8],0]].forEach(r=>{ ctx.beginPath(); ctx.moveTo(g.sx,g.ground); ctx.quadraticCurveTo(g.sx+r[1]*20,(g.ground+r[0][1])/2,r[0][0],r[0][1]); ctx.stroke(); });
+  ctx.lineWidth=2; [[g.sx-40,g.ground+40,g.sx-95,g.ground+55],[g.sx+40,g.ground+50,g.sx+100,g.ground+60],[g.sx-30,g.ground+90,g.sx-80,H-6]].forEach(a=>{ ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(a[2],a[3]); ctx.stroke(); });
+  // stem
+  ctx.strokeStyle="#5d8a3a"; ctx.lineWidth=10; ctx.beginPath(); ctx.moveTo(g.sx,g.ground); ctx.lineTo(g.sx,g.topY+20); ctx.stroke();
+  // xylem line inside stem
+  ctx.strokeStyle="rgba(120,180,240,.9)"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(g.sx,g.ground); ctx.lineTo(g.sx,g.topY+30); ctx.stroke();
+  // leaves (droop if stressed)
+  const droop = clamp((-S4.psiLeaf-1.2)/1.5,0,1)*30;
+  const leaf=(x,y,dir)=>{ ctx.fillStyle = droop>15?"#8bb35a":"#3f9a52"; ctx.beginPath(); ctx.moveTo(g.sx,y+10);
+    ctx.quadraticCurveTo((g.sx+x)/2, y-25+droop, x, y+droop); ctx.quadraticCurveTo((g.sx+x)/2, y+30+droop, g.sx, y+10); ctx.fill();
+    ctx.strokeStyle="#2b6b38"; ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(g.sx,y+10); ctx.lineTo(x,y+droop); ctx.stroke(); };
+  leaf(g.leafL[0],g.leafL[1],-1); leaf(g.leafR[0],g.leafR[1],1); leaf(g.sx-70,g.topY+130,-1); leaf(g.sx+70,g.topY+115,1);
+  ctx.fillStyle="#3f9a52"; ctx.beginPath(); ctx.ellipse(g.sx,g.topY+12,10,20,0,0,7); ctx.fill();
+  // liquid water particles: soil → root → stem → leaves
+  const E=S4.E, speed=clamp(E/6,0,1.6)*0.006;
+  if(P4.length===0) for(let k=0;k<34;k++) P4.push({t:Math.random(), br:k%4});
+  const branchEnd=[g.leafL,g.leafR,[g.sx-70,g.topY+130],[g.sx+70,g.topY+115]];
+  P4.forEach(p=>{
+    if(MOTION) p.t += speed; if(p.t>1){ p.t=0; p.br=Math.floor(Math.random()*4);
+      if(speed>0) V4.push({x:branchEnd[p.br][0]*0.7+g.sx*0.3, y:branchEnd[p.br][1]+droop*0.7, vx:(branchEnd[p.br][0]<g.sx?-1:1)*(0.4+Math.random()*0.6), vy:-0.3-Math.random()*0.5, life:1}); }
+    const pts=[[p.br%2? g.sx+80 : g.sx-80, H-25],[g.sx,g.ground+5],[g.sx,branchEnd[p.br][1]+12],[branchEnd[p.br][0]*0.7+g.sx*0.3, branchEnd[p.br][1]+droop*0.7]];
+    const pt=pathPoint(pts,p.t);
+    ctx.fillStyle="#1f6fd0"; ctx.beginPath(); ctx.arc(pt[0],pt[1],3.5,0,7); ctx.fill();
+  });
+  // vapor
+  V4 = V4.filter(v=>v.life>0);
+  V4.forEach(v=>{ if(MOTION){ v.x+=v.vx+S4.wind*0.25; v.y+=v.vy; v.life-=0.012; }
+    ctx.fillStyle="rgba(90,150,230,"+(v.life*0.7)+")"; ctx.beginPath(); ctx.arc(v.x,v.y,2.5,0,7); ctx.fill(); });
+  if(V4.length>200) V4.splice(0,V4.length-200);
+  // node labels
+  const tag=(t,x,y,c)=>{ ctx.font="bold 11px sans-serif"; const m=ctx.measureText(t).width; ctx.fillStyle="rgba(255,255,255,.92)"; rrect(ctx,x,y-12,m+10,17,5); ctx.fill(); ctx.strokeStyle=c; ctx.lineWidth=1.5; ctx.stroke(); ctx.fillStyle=c; ctx.textAlign="left"; ctx.fillText(t,x+5,y); };
+  tag("Air Ψ "+f2(S4.psiAir),12,26,"#1f5f9e");
+  tag("Leaf Ψ "+f2(S4.psiLeaf),g.sx+12,g.topY+12,"#2f7d4a");
+  tag("Stem Ψ "+f2(S4.psiStem),g.sx+12,(g.ground+g.topY)/2+40,"#2f7d4a");
+  tag("Root Ψ "+f2(S4.psiRoot),g.sx+60,g.ground+28,"#7a5232");
+  tag("Soil Ψ "+f2(S4.psiSoil),12,H-12,"#7a5232");
+  // stomata inset
+  const cx=W-Math.min(110,W*0.17), cyy=g.ground-90, rad=Math.min(70,W*0.12);
+  ctx.fillStyle="rgba(255,255,255,.95)"; ctx.beginPath(); ctx.arc(cx,cyy,rad,0,7); ctx.fill(); ctx.strokeStyle="#2f7d4a"; ctx.lineWidth=2; ctx.stroke();
+  ctx.save(); ctx.beginPath(); ctx.arc(cx,cyy,rad-2,0,7); ctx.clip();
+  ctx.fillStyle="#d8eccd"; ctx.fillRect(cx-rad,cyy-rad,rad*2,rad*2);
+  const open = clamp(S4.gs/0.45,0,1);
+  const gap = 2+open*rad*0.22, gl=rad*0.62, gwid=rad*0.3;
+  ctx.fillStyle="#5fae5a"; ctx.strokeStyle="#2b6b38"; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.ellipse(cx-gap-gwid/2,cyy,gwid/2+ (1-open)*3,gl,0,0,7); ctx.fill(); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(cx+gap+gwid/2,cyy,gwid/2+ (1-open)*3,gl,0,0,7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle="#2b5a2b"; for(let k=0;k<4;k++){ ctx.beginPath(); ctx.arc(cx-gap-gwid/2+(k%2?3:-3),cyy-gl*0.5+k*gl*0.33,2.2,0,7); ctx.fill(); ctx.beginPath(); ctx.arc(cx+gap+gwid/2+(k%2?3:-3),cyy-gl*0.5+k*gl*0.33,2.2,0,7); ctx.fill(); }
+  ctx.fillStyle="#24361f"; ctx.beginPath(); ctx.ellipse(cx,cyy,Math.max(gap,0.5),gl*0.75,0,0,7); ctx.fill();
+  // vapor puffs leaving pore
+  const tnow=vnow()/1000;
+  for(let k=0;k<6;k++){ const ph=((tnow*(0.3+S4.E/8)+k/6)%1); if(open>0.08){ ctx.fillStyle="rgba(120,180,250,"+(1-ph)*0.8+")"; ctx.beginPath(); ctx.arc(cx+Math.sin(k*2)*gap*0.5 + ph*S4.wind*3, cyy - ph*rad*0.9, 2+ph*3,0,7); ctx.fill(); } }
+  ctx.restore();
+  ctx.fillStyle="#1d2b22"; ctx.font="bold 11px sans-serif"; ctx.textAlign="center";
+  ctx.fillText("Stoma "+(open<0.15?"(closed)":open<0.6?"(partly open)":"(open)"),cx,cyy+rad+14);
+  ctx.strokeStyle="rgba(47,125,74,.6)"; ctx.setLineDash([4,4]); ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(g.leafR[0],g.leafR[1]+droop); ctx.lineTo(cx-rad*0.7,cyy-rad*0.7); ctx.stroke(); ctx.setLineDash([]);
+  // E meter
+  ctx.fillStyle="rgba(255,255,255,.9)"; rrect(ctx,12,g.ground-34,150,24,6); ctx.fill();
+  ctx.fillStyle="#e3eef9"; rrect(ctx,16,g.ground-28,142,12,4); ctx.fill();
+  ctx.fillStyle="#2a7bd6"; rrect(ctx,16,g.ground-28,142*clamp(S4.E/10,0,1),12,4); ctx.fill();
+  ctx.fillStyle="#1d2b22"; ctx.font="10px sans-serif"; ctx.textAlign="left"; ctx.fillText("transpiration rate",16,g.ground-38);
+}
+
+/* ---------- main loop ---------- */
+function refreshAll(){ update1(); update2(); update3(); update4(); }
+function loop(){
+  if(activeTab==="t1") draw1();
+  else if(activeTab==="t2") draw2();
+  else if(activeTab==="t3") draw3();
+  else if(activeTab==="t4") draw4();
+  requestAnimationFrame(loop);
+}
+const mb=$("motionBtn"); mb.addEventListener("click",()=>{ MOTION=!MOTION; mb.textContent=MOTION?"Pause animation":"Resume animation"; mb.setAttribute("aria-pressed",MOTION?"false":"true"); });
+allCanvases(); refreshAll(); loop();
+})();
+</script>
+<script>
+window.A11Y = {
+  css: ':root{--orange:#a35a00;--blue:#1f66b8} .presets button,.btn{color:#24683b} .btn.red{color:#a8322c}',
+  main: 'body',
+  tabsLabel: 'Simulation sections',
+  img: [
+    ['#c1', 'Animated diagram of two compartments, A and B, separated by a membrane. Orange dots are solutes and blue dots are water molecules; darker blue dots are water crossing the membrane, mostly toward the compartment with the lower (more negative) water potential. The message below the diagram states the net direction of water movement.'],
+    ['#c2b', 'Graph of soil matric potential (log scale) against soil water as a percent of saturation. Matric potential becomes much more negative as soil dries. A marker shows the current soil water setting.'],
+    ['#c2', 'Animated cross-section from the soil into the root: soil, cortex, endodermis with the Casparian strip, and xylem. Blue dots move along the apoplast path through cell walls and the symplast path through cytoplasm. Dots move inward when water potential is lower in the root than in the soil and outward when it is higher. The readout below gives the water potentials.'],
+    ['#c3', 'Animated diagram of a xylem vessel with a column of water molecules pulled upward by tension from the leaves. Cohesion (hydrogen bonds between water molecules) and adhesion (water to vessel walls) can be shown. If tension is too great for the vessel size, an air bubble breaks the column (cavitation). The readout below gives the values.'],
+    ['#c4', 'Animated diagram of a whole plant transpiring. Water moves from soil into roots, up the stem, and out through the leaves as vapor; wind lines show wind speed. Labels give the water potential of the soil, root, stem, leaf, and air. A close-up shows a stoma open, partly open, or closed, and a bar shows the transpiration rate. The readout below gives the numbers.']
+  ],
+  names: { '.colA input,.colA select': function(el, n){ return 'Compartment A ' + (n || ''); },
+           '.colB input,.colB select': function(el, n){ return 'Compartment B ' + (n || ''); } },
+  live: ['#msg1', '#read2', '#msg2', '#read3', '#msg3', '#read4', '#msg4']
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>

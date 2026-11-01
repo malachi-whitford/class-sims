@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soil Water Simulation</title>
+<style>
+  :root{
+    --bg:#f6f3ec; --card:#ffffff; --ink:#2a2118; --muted:#6b6155; --line:#e2d9cb;
+    --brown:#8b5a2b; --brown2:#f3e8d8; --blue:#2a7bd6; --blue2:#e4effb;
+    --green:#2f7d4a; --green2:#e3f1e6; --orange:#e08a1e; --red:#c8423b; --purple:#7a4fc0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.45}
+  header{padding:14px 18px 6px}
+  h1{margin:0;font-size:22px;color:var(--brown)}
+  header p{margin:4px 0 0;color:var(--muted)}
+  .eq-big{font-family:Georgia,"Times New Roman",serif;font-size:20px;font-weight:600;color:var(--ink)}
+  .eq-big .s{color:var(--orange)} .eq-big .p{color:var(--blue)} .eq-big .g{color:var(--purple)} .eq-big .m{color:var(--brown)}
+  nav.tabs{display:flex;flex-wrap:wrap;gap:6px;padding:8px 18px 0;border-bottom:2px solid var(--line)}
+  nav.tabs button{border:1px solid var(--line);border-bottom:none;background:#efe8dc;color:var(--ink);padding:9px 14px;border-radius:10px 10px 0 0;font-size:14px;font-weight:600;cursor:pointer}
+  nav.tabs button.active{background:var(--card);color:var(--brown);box-shadow:0 -2px 0 var(--brown) inset}
+  .panel{display:none;padding:14px 18px 22px}
+  .panel.active{display:block}
+  .grid{display:grid;grid-template-columns:minmax(260px,330px) 1fr;gap:14px}
+  @media (max-width:820px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .card h3{margin:0 0 8px;font-size:15px;color:var(--brown)}
+  .card h4{margin:10px 0 2px;font-size:14px}
+  .ctrl{margin:8px 0}
+  .ctrl label{display:flex;justify-content:space-between;font-size:13px;font-weight:600;gap:6px}
+  .ctrl label span{font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums;white-space:nowrap}
+  .ctrl input[type=range]{width:100%;accent-color:var(--brown)}
+  .ctrl select{width:100%;padding:5px;border-radius:6px;border:1px solid var(--line);font-size:14px}
+  .hint{font-size:12px;color:var(--muted);margin-top:1px}
+  .presets{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+  .presets button,.btn{border:1px solid var(--brown);background:var(--brown2);color:var(--brown);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;cursor:pointer}
+  .presets button:hover,.btn:hover{background:var(--brown);color:#fff}
+  .btn.blue{border-color:var(--blue);background:var(--blue2);color:#1f5f9e}
+  .btn.blue:hover{background:var(--blue);color:#fff}
+  .btn.red{border-color:var(--red);background:#fbe9e8;color:var(--red)}
+  .btn.red:hover{background:var(--red);color:#fff}
+  .btnrow{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+  canvas{width:100%;display:block;border-radius:10px;background:#fff;border:1px solid var(--line)}
+  .readout{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .pill{background:#faf7f2;border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px}
+  .pill b{font-variant-numeric:tabular-nums}
+  .msg{margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--blue2);border-left:5px solid var(--blue);font-size:14px}
+  .msg.warn{background:#fdf0e1;border-color:var(--orange)}
+  .msg.bad{background:#fbe9e8;border-color:var(--red)}
+  .msg.good{background:var(--green2);border-color:var(--green)}
+  .terms{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:12px}
+  .term{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13px}
+  .term b{display:block;font-size:14px}
+  .bars{margin-top:10px;font-size:13px}
+  .barrow{display:grid;grid-template-columns:110px 1fr 1fr;gap:8px;align-items:center;margin:3px 0}
+  .barrow.head{font-weight:700;font-size:12px;color:var(--muted)}
+  .bartrack{position:relative;height:18px;background:#f4f0e9;border-radius:4px}
+  .bartrack .zero{position:absolute;top:-2px;bottom:-2px;width:2px;background:#a39889}
+  .bartrack .bar{position:absolute;top:2px;height:14px;border-radius:3px}
+  .bartrack .val{position:absolute;top:0;font-size:11px;font-weight:700;line-height:18px;white-space:nowrap}
+  .check{margin-top:14px}
+  .check details{background:#fffdf3;border:1px solid #eadfae;border-radius:10px;padding:8px 12px;margin-top:6px}
+  .check summary{cursor:pointer;font-weight:600}
+  .check p{margin:6px 0 2px}
+  .small{font-size:12px;color:var(--muted)}
+  .tex-table{width:100%;border-collapse:collapse;font-size:13px}
+  .tex-table td{padding:3px 4px;vertical-align:middle}
+  .tex-table td:first-child{width:92px;font-weight:600}
+  .stack{display:flex;height:18px;border-radius:4px;overflow:hidden;background:#f4f0e9}
+  .stack div{height:100%}
+  .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;margin-top:6px}
+  .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+  .ladder{font-size:13px}
+  .rung{display:grid;grid-template-columns:16px 1fr;gap:8px;padding:6px 8px;border-radius:8px;margin:3px 0;border:1px solid var(--line);background:#fff;opacity:.75}
+  .rung.on{opacity:1;border-width:2px;box-shadow:0 0 0 2px rgba(42,123,214,.15)}
+  .rung.done{opacity:.45}
+  .rung .dot{width:12px;height:12px;border-radius:50%;margin-top:3px}
+  .rung b{display:block}
+  .rung code{display:block;font-family:Consolas,Menlo,monospace;font-size:12px;color:#3a3a3a}
+  footer{padding:0 18px 16px;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Soil Water Simulation</h1>
+  <p class="eq-big">Ψ<sub>total</sub> = <span class="s">Ψ<sub>s</sub></span> + <span class="p">Ψ<sub>p</sub></span> + <span class="g">Ψ<sub>g</sub></span> + <span class="m">Ψ<sub>m</sub></span></p>
+  <p>Water always moves from <b>high</b> (less negative) to <b>low</b> (more negative) water potential. 1 MPa = 10 bar.</p>
+</header>
+
+<nav class="tabs">
+  <button data-tab="t1" class="active">1. Soil Water Potential</button>
+  <button data-tab="t2">2. Soil Water Content</button>
+  <button data-tab="t3">3. Infiltration &amp; Permeability</button>
+  <button data-tab="t4">4. Redox (Flooded Soil)</button>
+</nav>
+
+<!-- ================= TAB 1 ================= -->
+<section id="t1" class="panel active">
+  <div class="terms">
+    <div class="term"><b style="color:var(--brown)">Ψ<sub>m</sub> Matric</b>Water held by adhesion to soil particles. Drier soil and finer texture (clay) → more negative.</div>
+    <div class="term"><b style="color:var(--orange)">Ψ<sub>s</sub> Solute</b>Ψ<sub>s</sub> = −iCRT. Salts from irrigation water or fertilizer make it more negative. Salts concentrate as soil dries.</div>
+    <div class="term"><b style="color:var(--blue)">Ψ<sub>p</sub> Pressure</b>Positive in saturated soil below the water table (weight of water above). Turgor in root cells.</div>
+    <div class="term"><b style="color:var(--purple)">Ψ<sub>g</sub> Gravity</b>Small over short distances (≈0.01 MPa per meter). Here soil and root are at the same height, so Ψ<sub>g</sub> = 0.</div>
+  </div>
+  <div class="grid">
+    <div class="card">
+      <h3>Soil vs. root</h3>
+      <div class="presets">
+        <button data-p1="slide">Week 11 practice problem</button>
+        <button data-p1="moist">Moist loam</button>
+        <button data-p1="drought">Drought</button>
+        <button data-p1="salty">Salty irrigation water</button>
+        <button data-p1="sand15">Sand at 15% water</button>
+        <button data-p1="clay15">Clay at 15% water</button>
+      </div>
+      <div class="ctrl"><label>Temperature <span id="t1Tv"></span></label><input type="range" id="t1T" min="0" max="40" step="1" value="25"></div>
+      <h4 style="color:var(--brown)">Soil</h4>
+      <div class="ctrl"><label>Soil texture</label><select id="t1Tex"></select></div>
+      <div class="ctrl"><label>Soil water content (θ) <span id="t1Wv"></span></label><input type="range" id="t1W" min="1" max="52" step="0.5" value="28"><div class="hint" id="t1Whint"></div></div>
+      <div class="ctrl"><label>How to enter salinity</label><select id="t1Mode"><option value="ec">Irrigation water EC (dS/m)</option><option value="m">Molar concentration (−iCRT)</option></select></div>
+      <div class="ctrl" id="t1ECbox"><label>Irrigation water EC <span id="t1ECv"></span></label><input type="range" id="t1EC" min="0" max="8" step="0.1" value="0.5"><div class="hint">Soil-water EC rises as the soil dries (salts are left behind). Ψs ≈ −0.036 × EC.</div></div>
+      <div id="t1Mbox" style="display:none">
+        <div class="ctrl"><label>Soil solute conc. <span id="t1SCv"></span></label><input type="range" id="t1SC" min="0" max="0.3" step="0.005" value="0.01"></div>
+        <div class="ctrl"><label>Soil solute i</label><select id="t1SI"><option value="1">i = 1 (does not ionize)</option><option value="2">i = 2 (e.g., NaCl)</option><option value="3">i = 3 (e.g., CaCl₂)</option></select></div>
+      </div>
+      <div class="ctrl"><label>Depth below water table <span id="t1Dv"></span></label><input type="range" id="t1D" min="0" max="200" step="5" value="0"><div class="hint">Only counts when soil is saturated: gives a positive Ψp.</div></div>
+      <h4 style="color:var(--green)">Root cell</h4>
+      <div class="ctrl"><label>Root solute conc. <span id="t1RCv"></span></label><input type="range" id="t1RC" min="0" max="0.6" step="0.005" value="0.3"></div>
+      <div class="ctrl"><label>Root turgor Ψp <span id="t1RPv"></span></label><input type="range" id="t1RP" min="0" max="1" step="0.05" value="0.3"></div>
+      <p class="hint">R = 0.00831 L·MPa/(mol·K) = 0.0831 L·bar/(mol·K). T in kelvin = °C + 273.15.</p>
+    </div>
+    <div>
+      <canvas id="c1" height="300"></canvas>
+      <div class="card bars" id="bars1"></div>
+      <div class="msg" id="msg1"></div>
+    </div>
+  </div>
+  <div class="check">
+    <details><summary>Week 11 practice problem worked in MPa (root: 0.1 M, Ψp = 0.3 MPa; soil: 0.01 M; 25 °C)</summary>
+      <p>Root Ψs = −(1)(0.1)(0.00831)(298) = −0.248 MPa → Ψroot = −0.248 + 0.3 = <b>+0.05 MPa</b>.<br>
+      Soil Ψs = −(1)(0.01)(0.00831)(298) = −0.025 MPa → Ψsoil = <b>−0.025 MPa</b>.<br>
+      Ψroot &gt; Ψsoil, so water would move <b>out of the root into the soil</b>. (If you use R = 0.0831, your answers are in <b>bar</b>, not MPa: −2.48 bar + 3 bar = +0.52 bar.) Click the "Week 11 practice problem" preset to see it.</p></details>
+    <details><summary>At the same water content (15%), why is water easy to take up from sand but almost impossible from clay?</summary>
+      <p>Clay has huge surface area, so at 15% almost all its water is a thin film stuck to particles (very negative Ψm, below the wilting point). Sand at 15% still holds water in pores near field capacity (Ψm close to 0).</p></details>
+    <details><summary>Why can salty irrigation water cause drought stress even in moist soil?</summary>
+      <p>Salts lower soil Ψs. If Ψsoil drops below Ψroot, the plant can't absorb water (physiological drought). As soil dries, salts concentrate and Ψs drops even further.</p></details>
+  </div>
+</section>
+
+<!-- ================= TAB 2 ================= -->
+<section id="t2" class="panel">
+  <div class="grid">
+    <div class="card">
+      <h3>Soil water content</h3>
+      <div class="ctrl"><label>Soil texture</label><select id="t2Tex"></select></div>
+      <div class="ctrl"><label>Water content θ (% by volume) <span id="t2Wv"></span></label><input type="range" id="t2W" min="0" max="52" step="0.25" value="28"></div>
+      <div class="presets">
+        <button data-p2="sat">Saturated</button>
+        <button data-p2="fc">Field capacity</button>
+        <button data-p2="stress">Plant stress</button>
+        <button data-p2="pwp">Wilting point</button>
+        <button data-p2="hyg">Hygroscopic</button>
+      </div>
+      <h4>After a heavy rain…</h4>
+      <div class="btnrow">
+        <button class="btn blue" id="t2Rain">Rain → watch it dry out</button>
+        <button class="btn" id="t2Pause">Pause</button>
+      </div>
+      <div class="ctrl"><label>Speed <span id="t2Sv"></span></label><input type="range" id="t2S" min="1" max="10" step="1" value="4"></div>
+      <div class="pill" id="t2Day">Day 0</div>
+      <canvas id="c2b" height="190" style="margin-top:10px"></canvas>
+      <p class="hint">Water retention curve for this texture. The dot is the current soil.</p>
+    </div>
+    <div>
+      <canvas id="c2" height="380"></canvas>
+      <div class="readout" id="read2"></div>
+      <div class="msg" id="msg2"></div>
+      <div class="card" style="margin-top:10px">
+        <h3>Compare textures (water held per 100 cm³ of soil)</h3>
+        <table class="tex-table" id="texTable"></table>
+        <div class="legend">
+          <span><i style="background:#c9bfae"></i>Hygroscopic</span>
+          <span><i style="background:#e6b8a2"></i>Unavailable capillary</span>
+          <span><i style="background:#f2cf74"></i>Plant stress</span>
+          <span><i style="background:#7cc38e"></i>Readily available</span>
+          <span><i style="background:#8ec3f0"></i>Gravitational</span>
+          <span><i style="background:#f4f0e9;border:1px solid #ddd"></i>Air only (oven-dry: 0)</span>
+        </div>
+        <p class="small">Available water = field capacity − wilting point. Loams and silt loams hold the most available water; sand holds little; clay holds a lot, but much of it is unavailable.</p>
+      </div>
+    </div>
+  </div>
+  <div class="check">
+    <details><summary>Define field capacity and permanent wilting point in terms of water potential.</summary>
+      <p><b>Field capacity</b>: water left after gravity drains a saturated soil for 1–3 days, about Ψm = −0.033 MPa (−1/3 bar). <b>Permanent wilting point</b>: plants can no longer extract water and do not recover overnight, about −1.5 MPa (−15 bar).</p></details>
+    <details><summary>What is the difference between capillary water and hygroscopic water?</summary>
+      <p><b>Capillary water</b> is held in small pores by cohesion and adhesion, between field capacity and about −3.1 MPa; most of it (down to −1.5 MPa) is available to plants. <b>Hygroscopic water</b> is a very thin film bonded tightly to particle surfaces (below about −3.1 MPa). Plants can never use it.</p></details>
+    <details><summary>Why is gravitational water not considered "available," even though roots can take some of it up?</summary>
+      <p>It drains out of the root zone within a day or two, and while it's there it fills the pores that roots need for oxygen (see the Redox tab). It also carries nitrate down to groundwater.</p></details>
+    <details><summary>Irrigation managers often water when about half of the available water is used. Why?</summary>
+      <p>Below that point (the plant stress zone) water is held more tightly, so plants close stomata and growth slows, even though they are not yet wilting.</p></details>
+  </div>
+</section>
+
+<!-- ================= TAB 3 ================= -->
+<section id="t3" class="panel">
+  <div class="grid">
+    <div class="card">
+      <h3>Infiltration test</h3>
+      <div class="ctrl"><label>Test type</label><select id="t3Mode"><option value="ring">Ring infiltrometer (keep 2 in of water ponded)</option><option value="rain">Rainstorm (water falls at a set rate)</option></select></div>
+      <div class="ctrl"><label>Soil texture</label><select id="t3Tex"></select></div>
+      <div class="ctrl"><label>Starting soil moisture <span id="t3Iv"></span></label><input type="range" id="t3I" min="0" max="100" step="5" value="25"><div class="hint">0% = air-dry, 100% = field capacity. Dry soil pulls water in faster at first (strong Ψm).</div></div>
+      <div class="ctrl"><label>Compaction <span id="t3Cv"></span></label><input type="range" id="t3C" min="0" max="100" step="5" value="10"><div class="hint">Tractor and hoof traffic crush the large pores (macropores).</div></div>
+      <div class="ctrl"><label>Organic matter / structure <span id="t3Ov"></span></label><input type="range" id="t3O" min="0.5" max="8" step="0.5" value="2"><div class="hint">More OM → stable aggregates, root and earthworm channels.</div></div>
+      <div class="ctrl" id="t3RainBox" style="display:none"><label>Rainfall rate <span id="t3Rv"></span></label><input type="range" id="t3R" min="0.1" max="4" step="0.1" value="1.0"></div>
+      <div class="ctrl"><label><span style="color:inherit;font-weight:600"><input type="checkbox" id="t3N" checked> Nitrate fertilizer on surface</span></label></div>
+      <div class="btnrow">
+        <button class="btn blue" id="t3Go">Start test</button>
+        <button class="btn" id="t3Pause">Pause</button>
+        <button class="btn red" id="t3Reset">Reset</button>
+      </div>
+      <div class="ctrl"><label>Speed <span id="t3Sv"></span></label><input type="range" id="t3S" min="1" max="10" step="1" value="5"></div>
+      <div class="presets">
+        <button data-p3="sandy">Sandy field</button>
+        <button data-p3="healthy">Healthy loam (high OM)</button>
+        <button data-p3="compacted">Compacted loam</button>
+        <button data-p3="clayflood">Clay in a storm</button>
+      </div>
+    </div>
+    <div>
+      <canvas id="c3" height="420"></canvas>
+      <div class="readout" id="read3"></div>
+      <div class="msg" id="msg3"></div>
+    </div>
+  </div>
+  <div class="check">
+    <details><summary>What is the difference between infiltration and permeability?</summary>
+      <p><b>Infiltration</b> is water entering the soil <b>surface</b>. <b>Permeability</b> (hydraulic conductivity) is how easily water moves <b>through</b> the soil once inside. A crusted or compacted surface can have slow infiltration even if the soil below is permeable.</p></details>
+    <details><summary>Why does the infiltration rate start high and then slow down?</summary>
+      <p>At first, dry soil pulls water in with strong matric potential (Ψm) as well as gravity. As the wetted zone gets deeper, the pull from dry soil is farther away, so the rate drops toward a steady rate set by the soil's permeability.</p></details>
+    <details><summary>How is slow infiltration connected to flooding and dead zones?</summary>
+      <p>Water that can't infiltrate becomes runoff. Runoff causes flooding and erosion, and carries fertilizer (N and P) to rivers and the ocean, feeding algae blooms that use up oxygen (eutrophication → dead zones). Fast-draining sandy soils have the opposite problem: nitrate leaches down to groundwater.</p></details>
+  </div>
+</section>
+
+<!-- ================= TAB 4 ================= -->
+<section id="t4" class="panel">
+  <div class="grid">
+    <div class="card">
+      <h3>Flood the soil</h3>
+      <div class="btnrow">
+        <button class="btn blue" id="t4Flood">Flood (saturate)</button>
+        <button class="btn" id="t4Drain">Drain</button>
+        <button class="btn" id="t4Pause">Pause</button>
+        <button class="btn red" id="t4Reset">Reset</button>
+      </div>
+      <div class="ctrl"><label>Speed <span id="t4Sv"></span></label><input type="range" id="t4S" min="1" max="10" step="1" value="4"></div>
+      <div class="ctrl"><label>Organic matter (microbe food) <span id="t4Ov"></span></label><input type="range" id="t4O" min="0.5" max="10" step="0.5" value="3"></div>
+      <div class="ctrl"><label>Soil temperature <span id="t4Tv"></span></label><input type="range" id="t4T" min="5" max="35" step="1" value="20"><div class="hint">Warmer → microbes work faster → oxygen used up faster.</div></div>
+      <div class="ctrl"><label>Nitrate (NO₃⁻) in soil <span id="t4Nv"></span></label><input type="range" id="t4N" min="0" max="3" step="0.1" value="1"></div>
+      <div class="ctrl"><label>Soil pH <span id="t4Pv"></span></label><input type="range" id="t4P" min="4.5" max="8.5" step="0.1" value="7"><div class="hint">Eh thresholds shift about 59 mV per pH unit.</div></div>
+      <div class="presets">
+        <button data-p4="rice">Rice paddy (long flood)</button>
+        <button data-p4="cold">Cold, low-OM soil</button>
+        <button data-p4="cycles">Wet/dry cycles (mottles)</button>
+      </div>
+      <h4>The redox ladder</h4>
+      <div class="ladder" id="ladder"></div>
+    </div>
+    <div>
+      <canvas id="c4" height="440"></canvas>
+      <div class="readout" id="read4"></div>
+      <div class="msg" id="msg4"></div>
+    </div>
+  </div>
+  <div class="check">
+    <details><summary>What do "oxidation" and "reduction" mean? (OIL RIG)</summary>
+      <p><b>O</b>xidation <b>I</b>s <b>L</b>oss of electrons; <b>R</b>eduction <b>I</b>s <b>G</b>ain. Microbes oxidize organic matter (it loses electrons) and must hand those electrons to an electron acceptor, which is reduced. O₂ is the best acceptor; when it runs out they use NO₃⁻, then Mn⁴⁺, Fe³⁺, SO₄²⁻, and finally CO₂.</p></details>
+    <details><summary>Why does saturating a soil remove its oxygen?</summary>
+      <p>Water fills the air-filled pores, and O₂ diffuses about 10,000 times more slowly through water than through air. Roots and microbes use up what's left within about a day.</p></details>
+    <details><summary>How can you tell from a soil pit that a soil is often waterlogged?</summary>
+      <p>Look for <b>gray (gleyed) colors</b> where Fe³⁺ was reduced to soluble Fe²⁺ and washed away, and <b>red-orange mottles</b> where Fe²⁺ was re-oxidized when the soil drained. These redoximorphic features are used to identify wetland (hydric) soils.</p></details>
+    <details><summary>Why is a waterlogged field a problem for nitrogen fertilizer?</summary>
+      <p>Denitrifying bacteria use NO₃⁻ as an electron acceptor and convert it to N₂ (and N₂O, a greenhouse gas) that escapes to the air, so the fertilizer is lost.</p></details>
+  </div>
+</section>
+
+<footer>Simplified teaching model. Values are realistic in magnitude; calculations are approximate.</footer>
+
+<script>
+(function(){
+"use strict";
+const $ = id => document.getElementById(id);
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+const f2 = v => (Math.abs(v) < 0.005 ? 0 : v).toFixed(2);
+const mpa = v => f2(v)+" MPa";
+const R = 0.00831;
+
+/* ---------- soil texture data ----------
+   Water contents are % by volume: saturation, field capacity (−0.033 MPa),
+   wilting point (−1.5 MPa), hygroscopic coefficient (−3.1 MPa).
+   Ks = saturated hydraulic conductivity (cm/h), psi = wetting-front suction (cm), Rawls et al. */
+const TEX = {
+  sand:      {name:"Sand",       sat:40, fc:10, pwp:4,  hyg:2,  Ks:21.0, psi:4.95,  grain:[6,11], fine:0.0,  col:"#d8bd86"},
+  sandyloam: {name:"Sandy loam", sat:43, fc:18, pwp:8,  hyg:4,  Ks:2.59, psi:11.01, grain:[5,9],  fine:0.35, col:"#c49a64"},
+  loam:      {name:"Loam",       sat:47, fc:28, pwp:13, hyg:7,  Ks:1.32, psi:8.89,  grain:[4,8],  fine:0.6,  col:"#a97a4a"},
+  siltloam:  {name:"Silt loam",  sat:49, fc:32, pwp:14, hyg:8,  Ks:0.68, psi:16.68, grain:[3,6],  fine:0.7,  col:"#9c7b56"},
+  clayloam:  {name:"Clay loam",  sat:50, fc:36, pwp:20, hyg:12, Ks:0.23, psi:20.88, grain:[3,6],  fine:0.85, col:"#86613f"},
+  clay:      {name:"Clay",       sat:52, fc:42, pwp:26, hyg:17, Ks:0.06, psi:31.63, grain:[2.2,3.5], fine:1.0, col:"#6f4f36"}
+};
+const TEX_KEYS = Object.keys(TEX);
+const stressPt = t => t.pwp + 0.5*(t.fc - t.pwp);
+function psiM(t, th){
+  const a=[[0,-1000],[t.hyg,-3.1],[t.pwp,-1.5],[t.fc,-0.033],[t.sat,-0.0003]];
+  th = clamp(th,0,t.sat);
+  for(let i=0;i<a.length-1;i++){
+    if(th<=a[i+1][0]){
+      const f=(th-a[i][0])/(a[i+1][0]-a[i][0]);
+      const L=Math.log10(-a[i][1])+f*(Math.log10(-a[i+1][1])-Math.log10(-a[i][1]));
+      return -Math.pow(10,L);
+    }
+  }
+  return -0.0003;
+}
+function waterClass(t, th){
+  if(th >= t.sat-0.4) return {k:"sat", name:"Saturated", col:"#2a7bd6"};
+  if(th > t.fc+0.6) return {k:"grav", name:"Gravitational water (draining)", col:"#4f9be3"};
+  if(th >= t.fc-0.6) return {k:"fc", name:"Field capacity", col:"#2f7d4a"};
+  if(th > stressPt(t)) return {k:"raw", name:"Readily available water", col:"#2f9e5a"};
+  if(th > t.pwp+0.3) return {k:"stress", name:"Plant stress zone", col:"#d69a16"};
+  if(th >= t.pwp-0.3) return {k:"pwp", name:"Permanent wilting point", col:"#c8423b"};
+  if(th > t.hyg) return {k:"unav", name:"Unavailable (capillary) water", col:"#b5521b"};
+  return {k:"hyg", name:"Hygroscopic water only", col:"#6b6155"};
+}
+function fillTexSelect(id, val){
+  const s=$(id); s.innerHTML = TEX_KEYS.map(k=>'<option value="'+k+'">'+TEX[k].name+'</option>').join(""); s.value=val;
+}
+function setVals(map){ for(const k in map){ const el=$(k); if(!el) continue; if(el.type==="checkbox") el.checked=!!map[k]; else el.value=map[k]; } }
+
+/* ---------- canvas helpers ---------- */
+const canv={};
+const DPR = () => window.devicePixelRatio || 1;
+function setupCanvas(id){
+  const c=$(id); if(!c) return;
+  const h=+c.getAttribute("height"), w=c.clientWidth||600, d=DPR();
+  c.width=Math.round(w*d); c.height=Math.round(h*d); c.style.height=h+"px";
+  const ctx=c.getContext("2d"); ctx.setTransform(d,0,0,d,0,0);
+  canv[id]={c,ctx,w,h};
+}
+function allCanvases(){ ["c1","c2","c2b","c3","c4"].forEach(setupCanvas); soilCache.clear(); }
+function rrect(ctx,x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+function arrow(ctx,x1,y1,x2,y2,col,wid){
+  ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=wid||4;
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke();
+  const a=Math.atan2(y2-y1,x2-x1), s=8+(wid||4)*1.5;
+  ctx.beginPath(); ctx.moveTo(x2,y2); ctx.lineTo(x2-s*Math.cos(a-0.45),y2-s*Math.sin(a-0.45)); ctx.lineTo(x2-s*Math.cos(a+0.45),y2-s*Math.sin(a+0.45)); ctx.closePath(); ctx.fill();
+}
+function label(ctx,t,x,y,c,align){
+  ctx.font="bold 12px sans-serif"; const m=ctx.measureText(t).width;
+  let x0 = align==="left"? x : align==="right"? x-m-8 : x-m/2-4;
+  ctx.fillStyle="rgba(255,255,255,.9)"; rrect(ctx,x0,y-12,m+8,17,5); ctx.fill();
+  ctx.fillStyle=c||"#2a2118"; ctx.textAlign="left"; ctx.fillText(t,x0+4,y);
+}
+function mulberry(seed){ return function(){ seed|=0; seed=seed+0x6D2B79F5|0; let t=Math.imul(seed^seed>>>15,1|seed); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
+
+/* ---------- soil pore image (cached offscreen) ---------- */
+const grainCache=new Map(), soilCache=new Map();
+function grains(texKey,w,h,seed){
+  const key=texKey+"|"+Math.round(w)+"|"+Math.round(h)+"|"+seed;
+  if(grainCache.has(key)) return grainCache.get(key);
+  const t=TEX[texKey], rnd=mulberry(seed+texKey.length*97), list=[];
+  const tries = Math.min(9000, Math.round(w*h/6));
+  const big=t.grain, gap=Math.max(2.4,big[0]*0.75);
+  for(let i=0;i<tries;i++){
+    const isFine = rnd() < t.fine;
+    const r = isFine ? 1.8+rnd()*1.6 : big[0]+rnd()*(big[1]-big[0]);
+    const x=rnd()*w, y=rnd()*h;
+    let ok=true;
+    for(let j=0;j<list.length;j++){ const g=list[j]; const dx=g.x-x, dy=g.y-y, md=g.r+r+gap; if(dx*dx+dy*dy<md*md){ ok=false; break; } }
+    if(ok) list.push({x,y,r,shade:rnd()});
+    if(list.length>2600) break;
+  }
+  grainCache.set(key,list); return list;
+}
+function soilImage(texKey,w,h,s,seed,saltLevel){
+  // s = theta/sat (0..1); salt 0..1
+  const sq=Math.round(s*50)/50, sl=Math.round((saltLevel||0)*10)/10;
+  const key=texKey+"|"+Math.round(w)+"|"+Math.round(h)+"|"+sq+"|"+seed+"|"+sl;
+  if(soilCache.has(key)) return soilCache.get(key);
+  const d=DPR(), oc=document.createElement("canvas"); oc.width=Math.max(1,Math.round(w*d)); oc.height=Math.max(1,Math.round(h*d));
+  const ctx=oc.getContext("2d"); ctx.setTransform(d,0,0,d,0,0);
+  const t=TEX[texKey], gl=grains(texKey,w,h,seed);
+  if(sq>=0.985){ ctx.fillStyle="#8fc4ef"; ctx.fillRect(0,0,w,h); }
+  else{
+    ctx.fillStyle="#fbf6ea"; ctx.fillRect(0,0,w,h);
+    const avgR=(t.grain[0]+t.grain[1])/2*(1-t.fine)+2.6*t.fine;
+    ctx.fillStyle="#8fc4ef";
+    gl.forEach(g=>{
+      const gp=Math.max(2.4,t.grain[0]*0.75); const film = sq<0.05 ? 0.4 : 0.3 + Math.pow(sq,2.2)*(gp*1.15+3);
+      ctx.beginPath(); ctx.arc(g.x,g.y,g.r+film,0,7); ctx.fill();
+    });
+    if(sq<0.12){ ctx.strokeStyle="#2f6fb3"; ctx.lineWidth=0.7; gl.forEach(g=>{ ctx.beginPath(); ctx.arc(g.x,g.y,g.r+0.5,0,7); ctx.stroke(); }); }
+  }
+  gl.forEach(g=>{
+    const base = g.r<3.5 ? "#7a5638" : t.col;
+    ctx.fillStyle=base; ctx.beginPath(); ctx.arc(g.x,g.y,g.r,0,7); ctx.fill();
+    if(g.r>4){ ctx.fillStyle="rgba(255,255,255,"+(0.12+g.shade*0.15)+")"; ctx.beginPath(); ctx.arc(g.x-g.r*0.3,g.y-g.r*0.3,g.r*0.4,0,7); ctx.fill(); }
+  });
+  if(sl>0){
+    const rnd=mulberry(seed+3); ctx.fillStyle="#ffffff"; ctx.strokeStyle="#c4b8a5"; ctx.lineWidth=0.6;
+    const n=Math.round(sl*w*h/600);
+    for(let i=0;i<n;i++){ const x=rnd()*w,y=rnd()*h; ctx.fillRect(x,y,2.6,2.6); ctx.strokeRect(x,y,2.6,2.6); }
+  }
+  if(soilCache.size>60) soilCache.delete(soilCache.keys().next().value);
+  soilCache.set(key,oc); return oc;
+}
+
+/* ---------- tabs ---------- */
+let activeTab="t1";
+document.querySelectorAll("nav.tabs button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("nav.tabs button").forEach(x=>x.classList.remove("active"));
+  document.querySelectorAll(".panel").forEach(x=>x.classList.remove("active"));
+  b.classList.add("active"); activeTab=b.dataset.tab; $(activeTab).classList.add("active");
+  allCanvases(); refreshAll();
+}));
+window.addEventListener("resize",()=>{ allCanvases(); refreshAll(); });
+
+/* =========================================================
+   TAB 1 — soil water potential
+   ========================================================= */
+const S1={};
+fillTexSelect("t1Tex","loam");
+const presets1={
+  slide:{t1T:25,t1Tex:"loam",t1W:47,t1Mode:"m",t1SC:0.01,t1SI:1,t1D:0,t1RC:0.1,t1RP:0.3},
+  moist:{t1T:25,t1Tex:"loam",t1W:28,t1Mode:"ec",t1EC:0.5,t1D:0,t1RC:0.3,t1RP:0.3},
+  drought:{t1T:30,t1Tex:"loam",t1W:13.5,t1Mode:"ec",t1EC:0.5,t1D:0,t1RC:0.4,t1RP:0.2},
+  salty:{t1T:30,t1Tex:"loam",t1W:22,t1Mode:"ec",t1EC:6,t1D:0,t1RC:0.3,t1RP:0.3},
+  sand15:{t1T:25,t1Tex:"sand",t1W:15,t1Mode:"ec",t1EC:0.5,t1D:0,t1RC:0.3,t1RP:0.3},
+  clay15:{t1T:25,t1Tex:"clay",t1W:15,t1Mode:"ec",t1EC:0.5,t1D:0,t1RC:0.3,t1RP:0.3}
+};
+document.querySelectorAll("[data-p1]").forEach(b=>b.addEventListener("click",()=>{
+  const p=presets1[b.dataset.p1]; $("t1Tex").value=p.t1Tex; syncT1Range(); setVals(p); update1(); }));
+["t1T","t1W","t1Mode","t1EC","t1SC","t1SI","t1D","t1RC","t1RP"].forEach(id=>$(id).addEventListener("input",update1));
+$("t1Tex").addEventListener("input",()=>{ syncT1Range(); update1(); });
+function syncT1Range(){ const t=TEX[$("t1Tex").value]; $("t1W").max=t.sat; if(+$("t1W").value>t.sat) $("t1W").value=t.sat; }
+
+function update1(){
+  const Tc=+$("t1T").value, T=Tc+273.15, tex=TEX[$("t1Tex").value], th=+$("t1W").value, mode=$("t1Mode").value;
+  $("t1ECbox").style.display = mode==="ec"?"":"none"; $("t1Mbox").style.display = mode==="m"?"":"none";
+  $("t1Tv").textContent=Tc+" °C ("+T.toFixed(2)+" K)";
+  $("t1Wv").textContent=th.toFixed(1)+"%";
+  const wc=waterClass(tex,th);
+  $("t1Whint").innerHTML="Saturation "+tex.sat+"% · field capacity "+tex.fc+"% · wilting point "+tex.pwp+"% → <b style='border-bottom:3px solid "+wc.col+"'>"+wc.name+"</b>";
+  $("t1ECv").textContent=(+$("t1EC").value).toFixed(1)+" dS/m";
+  $("t1SCv").textContent=(+$("t1SC").value).toFixed(3)+" M";
+  $("t1Dv").textContent=$("t1D").value+" cm";
+  $("t1RCv").textContent=(+$("t1RC").value).toFixed(3)+" M";
+  $("t1RPv").textContent=mpa(+$("t1RP").value);
+  const saturated = th>=tex.sat-0.4;
+  const soil={}, root={};
+  soil.m = saturated ? 0 : psiM(tex,th);
+  let ecSoil=0;
+  if(mode==="ec"){ ecSoil = +$("t1EC").value * Math.min(6, tex.fc/Math.max(th,0.5)); soil.s = -0.036*ecSoil; }
+  else { soil.s = -(+$("t1SI").value)*(+$("t1SC").value)*R*T; }
+  soil.p = saturated ? 0.0098*(+$("t1D").value/100) : 0;
+  soil.g = 0;
+  soil.total = soil.s+soil.p+soil.g+soil.m;
+  root.s = -1*(+$("t1RC").value)*R*T; root.p=+$("t1RP").value; root.g=0; root.m=0;
+  root.total=root.s+root.p;
+  Object.assign(S1,{tex,texKey:$("t1Tex").value,th,soil,root,ecSoil,d:soil.total-root.total,saturated,salt: mode==="ec"? clamp(ecSoil/12,0,1) : clamp(-soil.s/1.2,0,1)});
+
+  const rows=[["Ψs solute","s","var(--orange)"],["Ψp pressure","p","var(--blue)"],["Ψg gravity","g","var(--purple)"],["Ψm matric","m","var(--brown)"],["Ψ TOTAL","total","#2a2118"]];
+  const lo=-3, hi=1, pct=v=>(clamp(v,lo,hi)-lo)/(hi-lo)*100, z=pct(0);
+  let html='<div class="barrow head"><div></div><div style="color:#8b5a2b">Soil</div><div style="color:#2f7d4a">Root cell</div></div>';
+  rows.forEach(r=>{
+    html+='<div class="barrow"><div'+(r[1]==="total"?' style="font-weight:800"':'')+'>'+r[0]+'</div>';
+    [soil,root].forEach(o=>{
+      const v=o[r[1]], x=pct(v), l=Math.min(x,z), w=Math.abs(x-z);
+      const off = v<lo ? " ≪" : "";
+      const pos = v<0 ? 'right:'+(100-l+1)+'%' : 'left:'+(l+w+1)+'%';
+      html+='<div class="bartrack"><div class="zero" style="left:'+z+'%"></div><div class="bar" style="left:'+l+'%;width:'+w+'%;background:'+r[2]+'"></div><div class="val" style="'+(v<lo?'left:2px;color:#fff':pos)+'">'+f2(v)+off+'</div></div>';
+    });
+    html+='</div>';
+  });
+  html+='<div class="small" style="margin-top:4px">Scale: −3 to +1 MPa (vertical line = 0)'+(mode==="ec"?' · soil-water EC = '+ecSoil.toFixed(1)+' dS/m':'')+'</div>';
+  $("bars1").innerHTML=html;
+
+  const m=$("msg1");
+  const calc=o=>"("+f2(o.s)+") + ("+f2(o.p)+") + ("+f2(o.g)+") + ("+f2(o.m)+") = <b>"+f2(o.total)+" MPa</b>";
+  let txt="<b>Soil:</b> Ψ = "+calc(soil)+"<br><b>Root:</b> Ψ = "+calc(root)+"<br>";
+  if(Math.abs(S1.d)<0.01){ m.className="msg warn"; txt+="Ψsoil ≈ Ψroot → no net water movement."; }
+  else if(S1.d>0){ m.className="msg good"; txt+="Ψsoil &gt; Ψroot, so water moves <b>from soil into the root</b> (ΔΨ = "+f2(S1.d)+" MPa)."; }
+  else{
+    m.className="msg bad";
+    let why = soil.m < -1.5 ? "The soil is drier than the wilting point: Ψm is too negative." :
+              soil.s < -0.5 ? "Salts make soil Ψs very negative (physiological drought)." :
+              root.total > 0 ? "The root cell's turgor pressure is larger than its solute potential, so Ψroot is positive." :
+              "The root needs more solutes (more negative Ψs) to pull water in.";
+    txt+="Ψsoil &lt; Ψroot, so water moves <b>out of the root into the soil</b> (ΔΨ = "+f2(-S1.d)+" MPa). "+why;
+  }
+  m.innerHTML=txt;
+}
+let P1=[];
+function draw1(){
+  const cv=canv.c1; if(!cv||!S1.tex) return; const {ctx,w:W,h:H}=cv;
+  ctx.clearRect(0,0,W,H);
+  const sw=Math.round(W*0.6);
+  const img=soilImage(S1.texKey,sw,H,S1.th/S1.tex.sat,11,S1.salt);
+  ctx.drawImage(img,0,0,sw,H);
+  // root
+  const rx=sw-10;
+  ctx.fillStyle="#d9eccd"; ctx.fillRect(rx,0,W-rx,H);
+  ctx.fillStyle="#cfe8c4"; ctx.strokeStyle="#6d9e5f"; ctx.lineWidth=3;
+  rrect(ctx,rx-sw*0.45,H*0.47,sw*0.45+20,26,13); ctx.fill(); ctx.stroke();
+  rrect(ctx,rx+6,16,W-rx-22,H-32,22); ctx.fillStyle="#e7f4df"; ctx.fill(); ctx.stroke();
+  const vac = clamp(0.5+S1.root.p*0.4,0.35,0.85);
+  ctx.fillStyle="rgba(140,195,240,.55)"; rrect(ctx,rx+20,16+(H-32)*(1-vac)/2,W-rx-50,(H-32)*vac,18); ctx.fill();
+  ctx.fillStyle="#2f7d4a"; ctx.font="11px sans-serif"; ctx.textAlign="center"; ctx.fillText("vacuole",rx+6+(W-rx-22)/2,H/2+4);
+  ctx.fillStyle="#3d7a34"; ctx.font="bold 11px sans-serif"; ctx.fillText("root hair",rx-sw*0.25,H*0.47-6);
+  label(ctx,"SOIL  Ψ = "+mpa(S1.soil.total),8,20,"#6b3f14","left");
+  label(ctx,"ROOT  Ψ = "+mpa(S1.root.total),W-8,20,"#2f7d4a","right");
+  label(ctx,S1.tex.name+" · θ = "+S1.th.toFixed(1)+"%",8,H-10,"#2a2118","left");
+  // particles
+  if(P1.length===0) for(let i=0;i<24;i++) P1.push({t:Math.random(),y:Math.random()});
+  const d=S1.d, v=clamp(d,-1.5,1.5)*0.006;
+  if(Math.abs(d)>=0.01){
+    P1.forEach(p=>{ p.t+=v; if(p.t>1)p.t-=1; if(p.t<0)p.t+=1;
+      const x=rx-sw*0.4+p.t*(sw*0.4+(W-rx)*0.5), y=H*0.47+13+(p.y-0.5)*(p.t>0.6?H*0.5:16);
+      ctx.fillStyle="#1f6fd0"; ctx.beginPath(); ctx.arc(x,y,3.5,0,7); ctx.fill(); });
+    const y=H*0.75, x1=rx-80, x2=rx+60;
+    if(d>0) arrow(ctx,x1,y,x2,y,"rgba(10,88,184,.9)",6); else arrow(ctx,x2,y,x1,y,"rgba(200,66,59,.9)",6);
+    label(ctx, d>0?"water INTO root":"water OUT of root",(x1+x2)/2,y-16,d>0?"#0a58b8":"#c8423b");
+  } else label(ctx,"no net movement",rx,H*0.75,"#e08a1e");
+}
+
+/* =========================================================
+   TAB 2 — soil water content
+   ========================================================= */
+const S2={running:false,day:0};
+fillTexSelect("t2Tex","loam");
+$("t2Tex").addEventListener("input",()=>{ const t=TEX[$("t2Tex").value]; $("t2W").max=t.sat; if(+$("t2W").value>t.sat) $("t2W").value=t.sat; update2(); });
+$("t2W").addEventListener("input",()=>{ S2.running=false; update2(); });
+$("t2S").addEventListener("input",update2);
+document.querySelectorAll("[data-p2]").forEach(b=>b.addEventListener("click",()=>{
+  const t=TEX[$("t2Tex").value]; S2.running=false;
+  const v={sat:t.sat,fc:t.fc,stress:stressPt(t),pwp:t.pwp,hyg:t.hyg}[b.dataset.p2];
+  $("t2W").value=v; update2(); }));
+$("t2Rain").addEventListener("click",()=>{ const t=TEX[$("t2Tex").value]; $("t2W").value=t.sat; S2.day=0; S2.running=true; S2.th=t.sat; update2(); });
+$("t2Pause").addEventListener("click",()=>{ S2.running=!S2.running; $("t2Pause").textContent=S2.running?"Pause":"Resume"; });
+
+function update2(){
+  const key=$("t2Tex").value, t=TEX[key];
+  $("t2W").max=t.sat;
+  if(!S2.running) S2.th=+$("t2W").value;
+  const th=S2.th, pm=psiM(t,th), wc=waterClass(t,th);
+  Object.assign(S2,{key,t,pm,wc});
+  $("t2Wv").textContent=th.toFixed(1)+"%";
+  $("t2Sv").textContent=$("t2S").value+"×";
+  $("t2Day").innerHTML="Day <b>"+S2.day.toFixed(1)+"</b> since rain"+(S2.running?" · running":"");
+  const aw=t.fc-t.pwp, used = th>=t.fc ? 0 : clamp((t.fc-th)/aw*100,0,100);
+  $("read2").innerHTML=
+    '<div class="pill">Ψm <b>'+(pm>-0.01?mpa(pm):pm.toFixed(pm>-1?3:1)+" MPa")+'</b> <span class="small">('+(pm*10).toFixed(pm>-0.1?2:1)+' bar)</span></div>'+
+    '<div class="pill" style="border-color:'+wc.col+'">Zone <b style="border-bottom:3px solid '+wc.col+'">'+wc.name+'</b></div>'+
+    '<div class="pill">Air-filled pores <b>'+Math.max(0,t.sat-th).toFixed(1)+'%</b></div>'+
+    '<div class="pill">Available water capacity <b>'+aw+'%</b> ('+(aw*0.12).toFixed(1)+' in per ft)</div>'+
+    '<div class="pill">Available water used <b>'+Math.round(used)+'%</b></div>';
+  const msgs={
+    sat:["msg warn","<b>Saturated:</b> every pore is full of water (Ψm ≈ 0). No air is left for roots. The extra water is <b>gravitational water</b> and drains downward."],
+    grav:["msg warn","<b>Gravitational water</b> is in the large pores and is draining downward. It usually drains out within 1–3 days, carrying nitrate toward groundwater."],
+    fc:["msg good","<b>Field capacity</b> (≈ −0.033 MPa): gravity has drained the large pores. Small pores still hold <b>capillary water</b>, and there is air for roots. This is the ideal condition."],
+    raw:["msg good","<b>Readily available water:</b> plants take up capillary water easily and grow well."],
+    stress:["msg warn","<b>Plant stress zone:</b> water is still available but held more tightly (more negative Ψm). Plants close stomata and growth slows. Irrigate around here."],
+    pwp:["msg bad","<b>Permanent wilting point</b> (≈ −1.5 MPa): the remaining water is held too tightly for most plants. They wilt and do not recover overnight."],
+    unav:["msg bad","<b>Unavailable water:</b> thin capillary films below the wilting point. The soil feels moist to the touch but plants can't use it."],
+    hyg:["msg bad","<b>Hygroscopic water</b> (below ≈ −3.1 MPa): a few molecules thick, bonded tightly to particle surfaces. It's removed only by oven-drying at 105 °C."]
+  };
+  const mm=msgs[wc.k]; $("msg2").className=mm[0]; $("msg2").innerHTML=mm[1];
+  draw2b(); texTable();
+}
+function step2(){
+  if(!S2.running) return;
+  const t=TEX[$("t2Tex").value], sp=+$("t2S").value, dt=0.004*sp;
+  const kd=0.6+2.4*(Math.log10(t.Ks)+1.3)/2.6;
+  let th=S2.th;
+  if(th>t.fc) th -= (th-t.fc)*kd*dt + 0.002*dt;
+  const st=stressPt(t);
+  const et = th>st ? 0.7 : th>t.pwp ? 0.7*(0.12+0.88*(th-t.pwp)/(st-t.pwp)) : 0.06*Math.max(0,(th-t.hyg*0.7)/(t.pwp));
+  th -= et*dt;
+  S2.th=Math.max(th,0); S2.day+=dt;
+  $("t2W").value=S2.th;
+  if(S2.day>90 || S2.th<=t.hyg*0.75){ S2.running=false; $("t2Pause").textContent="Pause"; }
+  update2();
+}
+function texTable(){
+  let h=""; const max=52;
+  TEX_KEYS.forEach(k=>{
+    const t=TEX[k], st=stressPt(t);
+    const seg=[[t.hyg,"#c9bfae"],[t.pwp-t.hyg,"#e6b8a2"],[st-t.pwp,"#f2cf74"],[t.fc-st,"#7cc38e"],[t.sat-t.fc,"#8ec3f0"]];
+    const bold = k===S2.key ? ' style="outline:2px solid #8b5a2b;border-radius:4px"' : '';
+    h+='<tr><td>'+t.name+'</td><td><div class="stack"'+bold+'>'+seg.map(s=>'<div style="width:'+(s[0]/max*100)+'%;background:'+s[1]+'"></div>').join("")+'</div></td><td class="small" style="width:70px">AW '+(t.fc-t.pwp)+'%</td></tr>';
+  });
+  $("texTable").innerHTML=h;
+}
+function draw2(){
+  const cv=canv.c2; if(!cv||!S2.t) return; const {ctx,w:W,h:H}=cv, t=S2.t, th=S2.th;
+  ctx.clearRect(0,0,W,H);
+  const pw=Math.round(W*0.58);
+  ctx.drawImage(soilImage(S2.key,pw,H,th/t.sat,23,0),0,0,pw,H);
+  label(ctx,"Close-up of soil pores: "+t.name,8,20,"#2a2118","left");
+  label(ctx,"blue = water · cream = air",8,H-10,"#2a6fb3","left");
+  // draining drops for gravitational water
+  if(th>t.fc+0.6){
+    const n=Math.round((th-t.fc)/(t.sat-t.fc)*14)+2, tm=vnow2()/1000;
+    ctx.fillStyle="#1f6fd0";
+    for(let i=0;i<n;i++){ const x=(i*73%97)/97*pw, y=((tm*60*(0.6+i%3*0.3)+i*53)%H); ctx.beginPath(); ctx.arc(x,y,3,0,7); ctx.fill(); }
+    arrow(ctx,pw-24,H*0.25,pw-24,H*0.7,"rgba(31,111,208,.85)",4);
+  }
+  // water "tank" column
+  const x0=pw+64, colW=Math.min(70,(W-pw)*0.24), top=34, bot=H-24, ht=bot-top, maxTh=t.sat;
+  const y=v=>bot-v/maxTh*ht;
+  const st=stressPt(t);
+  const bands=[[0,t.hyg,"#c9bfae"],[t.hyg,t.pwp,"#e6b8a2"],[t.pwp,st,"#f2cf74"],[st,t.fc,"#7cc38e"],[t.fc,t.sat,"#8ec3f0"]];
+  bands.forEach(b=>{ ctx.fillStyle=b[2]; ctx.globalAlpha=0.35; ctx.fillRect(x0,y(b[1]),colW,y(b[0])-y(b[1])); });
+  ctx.globalAlpha=1;
+  bands.forEach(b=>{ const top2=Math.max(y(b[1]),y(th)); if(y(b[0])>top2){ ctx.fillStyle=b[2]; ctx.fillRect(x0,top2,colW,y(b[0])-top2); } });
+  ctx.strokeStyle="#6b6155"; ctx.lineWidth=2; ctx.strokeRect(x0,top,colW,ht);
+  ctx.strokeStyle="#1f5f9e"; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(x0-6,y(th)); ctx.lineTo(x0+colW+6,y(th)); ctx.stroke();
+  ctx.fillStyle="#1f5f9e"; ctx.font="bold 11px sans-serif"; ctx.textAlign="right"; ctx.fillText("θ "+th.toFixed(1)+"%",x0-8,y(th)+4);
+  ctx.fillStyle="#2a2118"; ctx.textAlign="center"; ctx.font="bold 11px sans-serif"; ctx.fillText("Water in soil",x0+colW/2,top-8);
+  // tick labels on left
+  ctx.font="10px sans-serif"; ctx.textAlign="right"; ctx.fillStyle="#6b6155";
+  [["sat",t.sat],["FC",t.fc],["stress",st],["PWP",t.pwp],["HC",t.hyg],["0",0]].forEach(e=>{ if(Math.abs(y(e[1])-y(th))>11) ctx.fillText(e[0]+" "+(e[0]==="0"?"":Math.round(e[1])+"%"),x0-8,y(e[1])+3); });
+  // brackets on right
+  const br=(a,b,x,text,col,sub)=>{
+    const ya=y(b), yb=y(a); ctx.strokeStyle=col; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(x,ya+1); ctx.lineTo(x+6,ya+1); ctx.lineTo(x+6,yb-1); ctx.lineTo(x,yb-1); ctx.stroke();
+    ctx.fillStyle=col; ctx.textAlign="left"; ctx.font="bold 11px sans-serif";
+    const mid=(ya+yb)/2; ctx.fillText(text,x+10,mid+(sub?-2:4));
+    if(sub){ ctx.font="10px sans-serif"; ctx.fillText(sub,x+10,mid+10); }
+  };
+  const bx1=x0+colW+8, bx2=Math.min(bx1+Math.max(92,(W-bx1)*0.48), W-84);
+  br(t.fc,t.sat,bx1,"Gravitational","#2a7bd6","drains away");
+  br(t.hyg,t.fc,bx1,"Capillary","#2f7d4a","held in pores");
+  br(0,t.hyg,bx1,"Hygroscopic","#6b6155","");
+  if(bx2>bx1+86){
+    br(t.pwp,t.fc,bx2,"Available","#2f9e5a","FC − PWP");
+    br(0,t.pwp,bx2,"Unavailable","#c8423b","< −1.5 MPa");
+  }
+}
+function draw2b(){
+  const cv=canv.c2b; if(!cv||!S2.t) return; const {ctx,w:W,h:H}=cv, t=S2.t;
+  ctx.clearRect(0,0,W,H);
+  const L=44,Rr=W-10,T=10,B=H-30;
+  const lmin=Math.log10(0.0003), lmax=Math.log10(1000);
+  const yv=v=>T+(Math.log10(-v)-lmin)/(lmax-lmin)*(B-T);
+  const xv=th=>L+th/52*(Rr-L);
+  const st=stressPt(t);
+  [[t.fc,t.sat,"#8ec3f0"],[st,t.fc,"#7cc38e"],[t.pwp,st,"#f2cf74"],[t.hyg,t.pwp,"#e6b8a2"],[0,t.hyg,"#c9bfae"]].forEach(b=>{ ctx.fillStyle=b[2]; ctx.globalAlpha=0.3; ctx.fillRect(xv(b[0]),T,xv(b[1])-xv(b[0]),B-T); });
+  ctx.globalAlpha=1;
+  ctx.strokeStyle="#a39889"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(L,T); ctx.lineTo(L,B); ctx.lineTo(Rr,B); ctx.stroke();
+  ctx.fillStyle="#6b6155"; ctx.font="10px sans-serif"; ctx.textAlign="right";
+  [-0.001,-0.033,-1.5,-100].forEach(v=>{ ctx.fillText(v,L-3,yv(v)+3); ctx.strokeStyle="#ebe4d8"; ctx.beginPath(); ctx.moveTo(L,yv(v)); ctx.lineTo(Rr,yv(v)); ctx.stroke(); });
+  ctx.textAlign="center"; [0,10,20,30,40,50].forEach(v=>ctx.fillText(v,xv(v),B+12));
+  ctx.fillText("water content θ (%)",(L+Rr)/2,H-4);
+  ctx.save(); ctx.translate(10,(T+B)/2); ctx.rotate(-Math.PI/2); ctx.fillText("Ψm (MPa, log scale)",0,0); ctx.restore();
+  // other textures faint
+  TEX_KEYS.forEach(k=>{ const tt=TEX[k]; ctx.strokeStyle= k===S2.key? "#8b5a2b":"rgba(139,90,43,.18)"; ctx.lineWidth= k===S2.key?2.5:1.2;
+    ctx.beginPath(); for(let th=0.3;th<=tt.sat;th+=0.25){ const x=xv(th), y=yv(psiM(tt,th)); th<0.4?ctx.moveTo(x,y):ctx.lineTo(x,y);} ctx.stroke(); });
+  ctx.fillStyle="#2a7bd6"; ctx.beginPath(); ctx.arc(xv(S2.th),yv(Math.min(S2.pm,-0.0003)),6,0,7); ctx.fill();
+  ctx.strokeStyle="#fff"; ctx.lineWidth=2; ctx.stroke();
+}
+
+/* =========================================================
+   TAB 3 — infiltration & permeability
+   ========================================================= */
+const S3={running:false,done:false,t:0,F:0,pond:0,runoff:0,rain:0,hist:[],firstInch:null,N:{surf:1,leach:0,run:0}};
+fillTexSelect("t3Tex","loam");
+const presets3={
+  sandy:{t3Tex:"sand",t3I:20,t3C:10,t3O:1,t3Mode:"ring"},
+  healthy:{t3Tex:"loam",t3I:30,t3C:5,t3O:6,t3Mode:"ring"},
+  compacted:{t3Tex:"loam",t3I:30,t3C:85,t3O:1,t3Mode:"ring"},
+  clayflood:{t3Tex:"clay",t3I:60,t3C:30,t3O:1.5,t3Mode:"rain",t3R:1.5}
+};
+document.querySelectorAll("[data-p3]").forEach(b=>b.addEventListener("click",()=>{ setVals(presets3[b.dataset.p3]); reset3(); }));
+["t3Mode","t3Tex","t3I","t3C","t3O","t3R"].forEach(id=>$(id).addEventListener("input",reset3));
+["t3S","t3N"].forEach(id=>$(id).addEventListener("input",update3));
+$("t3Go").addEventListener("click",()=>{ if(S3.done) reset3(); S3.running=true; $("t3Pause").textContent="Pause"; });
+$("t3Pause").addEventListener("click",()=>{ if(S3.done) return; S3.running=!S3.running; $("t3Pause").textContent=S3.running?"Pause":"Resume"; });
+$("t3Reset").addEventListener("click",reset3);
+
+function params3(){
+  const t=TEX[$("t3Tex").value], init=+$("t3I").value/100, comp=+$("t3C").value/100, om=+$("t3O").value;
+  const thi = t.hyg + init*(t.fc-t.hyg);
+  const dTh = Math.max(0.02,(t.sat-thi)/100);
+  const Keff = t.Ks * Math.pow(10,-1.4*comp) * (0.7+0.15*om) / 0.724;
+  return {t,thi,dTh,Keff,comp,om,mode:$("t3Mode").value,rate:+$("t3R").value*2.54};
+}
+function reset3(){ Object.assign(S3,{running:false,done:false,t:0,F:0,pond:0,runoff:0,rain:0,hist:[],firstInch:null,N:{surf:1,leach:0,run:0}}); $("t3Pause").textContent="Pause"; update3(); }
+function permClass(inph){
+  const c=[[0.06,"Very slow"],[0.2,"Slow"],[0.6,"Moderately slow"],[2,"Moderate"],[6,"Moderately rapid"],[20,"Rapid"],[1e9,"Very rapid"]];
+  for(const e of c) if(inph<e[0]) return e[1];
+}
+function step3(){
+  if(!S3.running) return;
+  const p=params3(), sp=+$("t3S").value;
+  const sub=6, dt=sp*0.25/sub;          // minutes per substep
+  for(let k=0;k<sub;k++){
+    const F=Math.max(S3.F,0.02);
+    const head = p.mode==="ring" ? 5.08 : S3.pond;
+    const fp = p.Keff*(1+(p.t.psi+head)*p.dTh/F);         // cm/h
+    let inf, supply;
+    if(p.mode==="ring"){ inf=fp*dt/60; S3.pond=5.08; }
+    else{
+      supply = p.rate*dt/60; S3.rain+=supply;
+      const avail = S3.pond+supply;
+      inf=Math.min(avail,fp*dt/60);
+      S3.pond=avail-inf;
+      if(S3.pond>0.4){ S3.runoff+=S3.pond-0.4; S3.pond=0.4; }
+    }
+    S3.F+=inf; S3.t+=dt; S3.rateNow=inf/dt*60;
+    if(S3.firstInch===null && S3.F>=2.54) S3.firstInch=S3.t;
+  }
+  S3.front = S3.F/p.dTh;
+  if(S3.hist.length===0 || S3.t-S3.hist[S3.hist.length-1][0]>=1) S3.hist.push([S3.t,S3.rateNow/2.54]);
+  // nitrate
+  if(p.mode==="rain" && S3.rain>0){ const rf=S3.runoff/S3.rain; S3.N.run=Math.min(0.6,rf*0.55); }
+  S3.N.leach = clamp((S3.front-60)/60,0,1)*(1-S3.N.run)*0.8;
+  if(S3.t>=180 || S3.front>=150){ S3.running=false; S3.done=true; }
+  update3();
+}
+function update3(){
+  const p=params3();
+  $("t3RainBox").style.display = p.mode==="rain"?"":"none";
+  $("t3Iv").textContent=$("t3I").value+"% (θ "+p.thi.toFixed(1)+"%)";
+  $("t3Cv").textContent=$("t3C").value+"%";
+  $("t3Ov").textContent=(+$("t3O").value).toFixed(1)+"%";
+  $("t3Rv").textContent=(+$("t3R").value).toFixed(1)+" in/h";
+  $("t3Sv").textContent=$("t3S").value+"×";
+  const kin=p.Keff/2.54, rate=(S3.rateNow||0)/2.54;
+  $("read3").innerHTML=
+    '<div class="pill">Time <b>'+Math.floor(S3.t)+' min</b></div>'+
+    '<div class="pill" style="border-color:#2a7bd6">Infiltration rate <b>'+rate.toFixed(2)+' in/h</b> <span class="small">('+(rate*2.54).toFixed(1)+' cm/h)</span></div>'+
+    '<div class="pill">Total infiltrated <b>'+(S3.F/2.54).toFixed(2)+' in</b></div>'+
+    '<div class="pill">Wetting front <b>'+((S3.front||0)/2.54).toFixed(1)+' in</b> deep</div>'+
+    (p.mode==="rain"?'<div class="pill" style="border-color:#c8423b">Runoff <b>'+(S3.runoff/2.54).toFixed(2)+' in</b></div>':'')+
+    (p.mode==="ring"?'<div class="pill">Time for 1st inch <b>'+(S3.firstInch===null?"—":S3.firstInch.toFixed(1)+" min")+'</b></div>':'')+
+    '<div class="pill" style="border-color:#8b5a2b">Permeability (Ksat) <b>'+kin.toFixed(2)+' in/h · '+permClass(kin)+'</b></div>';
+  const m=$("msg3");
+  if(S3.t===0){ m.className="msg"; m.innerHTML="Press <b>Start test</b>. "+(p.mode==="ring"?"The ring keeps 2 inches of water ponded, like the infiltration test you run outside. Watch how fast the water level would drop.":"Rain falls at "+(p.rate/2.54).toFixed(1)+" in/h. Any rain the soil can't absorb ponds and runs off."); return; }
+  let txt="";
+  if(p.mode==="rain" && S3.runoff>0.05){ m.className="msg bad"; txt="Rain ("+(p.rate/2.54).toFixed(1)+" in/h) is falling faster than this soil can absorb, so <b>runoff</b> starts → flooding, erosion, and fertilizer washed toward streams (eutrophication). "; }
+  else if(S3.N.leach>0.05){ m.className="msg warn"; txt="Water is moving quickly past the root zone (≈ 2 ft). Dissolved <b>nitrate leaches</b> toward groundwater. "; }
+  else { m.className="msg good"; txt="Water is soaking in. "; }
+  txt+="Rate started high because dry soil pulls water in (matric potential), then slowed toward the soil's permeability ("+kin.toFixed(2)+" in/h).";
+  if(p.comp>0.6) txt+=" <b>Compaction</b> has crushed the macropores, cutting permeability.";
+  if(p.om>=5) txt+=" High <b>organic matter</b> keeps aggregates and channels open.";
+  m.innerHTML=txt;
+}
+let rainDrops=[];
+function draw3(){
+  const cv=canv.c3; if(!cv) return; const {ctx,w:W,h:H}=cv, p=params3();
+  ctx.clearRect(0,0,W,H);
+  const cw=Math.round(Math.max(200,W*0.52)), skyH=70, soilTop=skyH, depthCm=150, pxcm=(H-soilTop-10)/depthCm;
+  // sky
+  ctx.fillStyle="#e9f3fc"; ctx.fillRect(0,0,cw,skyH);
+  // soil (dry + wet)
+  const sw=cw, sh=H-soilTop;
+  const dryImg=soilImage($("t3Tex").value,sw,sh,p.thi/p.t.sat,41,0);
+  const wetImg=soilImage($("t3Tex").value,sw,sh,0.94,41,0);
+  ctx.drawImage(dryImg,0,soilTop,sw,sh);
+  const front=(S3.front||0)*pxcm;
+  if(front>0){
+    ctx.save(); ctx.beginPath(); ctx.moveTo(0,soilTop);
+    for(let x=0;x<=sw;x+=10){ ctx.lineTo(x,soilTop+front+Math.sin(x/23+S3.t/9)*4*(1+p.om/4)); }
+    ctx.lineTo(sw,soilTop); ctx.closePath(); ctx.clip(); ctx.drawImage(wetImg,0,soilTop,sw,sh); ctx.restore();
+    ctx.strokeStyle="rgba(20,80,160,.7)"; ctx.setLineDash([6,4]); ctx.lineWidth=2; ctx.beginPath();
+    for(let x=0;x<=sw;x+=10){ const yy=soilTop+front+Math.sin(x/23+S3.t/9)*4*(1+p.om/4); x?ctx.lineTo(x,yy):ctx.moveTo(x,yy);} ctx.stroke(); ctx.setLineDash([]);
+    label(ctx,"wetting front",sw-6,Math.min(H-6,soilTop+front+18),"#1f5f9e","right");
+  }
+  // compaction layer
+  if(p.comp>0.3){ ctx.fillStyle="rgba(80,60,40,"+(p.comp*0.35)+")"; ctx.fillRect(0,soilTop,sw,6+p.comp*14); }
+  // depth ticks
+  ctx.fillStyle="#2a2118"; ctx.font="10px sans-serif"; ctx.textAlign="left";
+  for(let inch=12;inch*2.54<depthCm;inch+=12){ const yy=soilTop+inch*2.54*pxcm; ctx.fillStyle="rgba(255,255,255,.85)"; ctx.fillRect(2,yy-9,34,12); ctx.fillStyle="#2a2118"; ctx.fillText(inch/12+" ft",5,yy); ctx.fillRect(36,yy-1,6,2); }
+  // root zone line
+  const rz=soilTop+60*pxcm; ctx.strokeStyle="rgba(47,125,74,.7)"; ctx.setLineDash([3,4]); ctx.beginPath(); ctx.moveTo(0,rz); ctx.lineTo(sw,rz); ctx.stroke(); ctx.setLineDash([]);
+  label(ctx,"bottom of root zone",sw-6,rz-4,"#2f7d4a","right");
+  // ring or rain
+  if(p.mode==="ring"){
+    const rx=sw*0.2, rw=sw*0.6;
+    ctx.fillStyle="rgba(90,160,230,.55)"; ctx.fillRect(rx,soilTop-26,rw,26);
+    ctx.strokeStyle="#4a4a4a"; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(rx,soilTop-40); ctx.lineTo(rx,soilTop+18); ctx.moveTo(rx+rw,soilTop-40); ctx.lineTo(rx+rw,soilTop+18); ctx.stroke();
+    label(ctx,"ring: 2 in ponded",rx+rw/2,soilTop-46,"#2a2118");
+  } else {
+    if(rainDrops.length===0) for(let i=0;i<50;i++) rainDrops.push({x:Math.random()*sw,y:Math.random()*skyH});
+    if(S3.running){ const n=Math.round(10+p.rate*8); ctx.strokeStyle="rgba(42,123,214,.7)"; ctx.lineWidth=1.5;
+      rainDrops.slice(0,n).forEach(d=>{ d.y+=4+p.rate; if(d.y>skyH){d.y=0;d.x=Math.random()*sw;} ctx.beginPath(); ctx.moveTo(d.x,d.y); ctx.lineTo(d.x-1,d.y+6); ctx.stroke(); }); }
+    if(S3.pond>0.02){ ctx.fillStyle="rgba(90,160,230,.6)"; ctx.fillRect(0,soilTop-Math.min(14,S3.pond*25),sw,Math.min(14,S3.pond*25)); }
+    if(S3.runoff>0.02){ arrow(ctx,sw*0.55,soilTop-8,sw-6,soilTop-8,"#c8423b",4); label(ctx,"runoff",sw*0.8,soilTop-16,"#c8423b"); }
+  }
+  // nitrate dots
+  if($("t3N").checked){
+    const rnd=mulberry(5), n=36;
+    for(let i=0;i<n;i++){
+      const f=i/n; let x=rnd()*sw, yy;
+      if(f<S3.N.run){ x = sw - (1-f/Math.max(S3.N.run,0.01))*sw*0.4; yy=soilTop-4; }
+      else if(f<S3.N.run+S3.N.leach){ yy=soilTop+front*(0.7+rnd()*0.28); }
+      else { yy=soilTop+Math.min(front*0.6,22*pxcm)*rnd()+3; }
+      ctx.fillStyle="#7a4fc0"; ctx.beginPath(); ctx.arc(x,Math.min(yy,H-4),3,0,7); ctx.fill();
+    }
+    label(ctx,"● nitrate (NO₃⁻)",6,skyH-6,"#7a4fc0","left");
+  }
+  label(ctx,p.t.name,6,16,"#2a2118","left");
+  // ----- graph
+  const gx=cw+40, gw=W-gx-12, gy=24, gh=H-70;
+  ctx.fillStyle="#2a2118"; ctx.font="bold 12px sans-serif"; ctx.textAlign="center"; ctx.fillText("Infiltration rate over time",gx+gw/2,14);
+  const maxR = Math.max(1, ...S3.hist.map(h=>h[1]), p.mode==="rain"?p.rate/2.54*1.2:0, p.Keff/2.54*3);
+  const ymax = maxR>8? Math.ceil(maxR/5)*5 : maxR>2 ? Math.ceil(maxR) : Math.ceil(maxR*2)/2;
+  const X=t=>gx+t/180*gw, Y=r=>gy+gh-clamp(r/ymax,0,1)*gh;
+  ctx.strokeStyle="#a39889"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(gx,gy); ctx.lineTo(gx,gy+gh); ctx.lineTo(gx+gw,gy+gh); ctx.stroke();
+  ctx.font="10px sans-serif"; ctx.fillStyle="#6b6155"; ctx.textAlign="right";
+  for(let i=0;i<=4;i++){ const v=ymax*i/4; ctx.fillText(v.toFixed(v<10?1:0),gx-4,Y(v)+3); ctx.strokeStyle="#efe8dc"; ctx.beginPath(); ctx.moveTo(gx,Y(v)); ctx.lineTo(gx+gw,Y(v)); ctx.stroke(); }
+  ctx.textAlign="center"; [0,30,60,90,120,150,180].forEach(t=>ctx.fillText(t,X(t),gy+gh+12));
+  ctx.fillText("minutes",gx+gw/2,gy+gh+26);
+  ctx.save(); ctx.translate(gx-30,gy+gh/2); ctx.rotate(-Math.PI/2); ctx.fillText("in / hour",0,0); ctx.restore();
+  // Ksat line
+  ctx.strokeStyle="#8b5a2b"; ctx.setLineDash([5,4]); ctx.beginPath(); ctx.moveTo(gx,Y(p.Keff/2.54)); ctx.lineTo(gx+gw,Y(p.Keff/2.54)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle="#8b5a2b"; ctx.textAlign="right"; ctx.fillText("permeability (Ksat)",gx+gw,Y(p.Keff/2.54)-4);
+  if(p.mode==="rain"){ ctx.strokeStyle="#2a7bd6"; ctx.setLineDash([2,3]); ctx.beginPath(); ctx.moveTo(gx,Y(p.rate/2.54)); ctx.lineTo(gx+gw,Y(p.rate/2.54)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle="#2a7bd6"; ctx.fillText("rainfall rate",gx+gw,Y(p.rate/2.54)-4); }
+  if(S3.hist.length>1){ ctx.strokeStyle="#1f5f9e"; ctx.lineWidth=2.5; ctx.beginPath(); S3.hist.forEach((h,i)=>{ const x=X(h[0]),y=Y(h[1]); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke(); }
+}
+
+/* =========================================================
+   TAB 4 — redox
+   ========================================================= */
+const STEPS=[
+  {k:"O2", name:"Aerobic respiration", acc:"O₂ → H₂O", rx:"O₂ + 4H⁺ + 4e⁻ → 2H₂O", top:600, bot:350, pool:1.0, col:"#2f9e5a", note:"Oxygen is the best electron acceptor. Soil is oxidized: brown/red colors from Fe³⁺ oxides."},
+  {k:"NO3",name:"Denitrification", acc:"NO₃⁻ → N₂ gas", rx:"2NO₃⁻ + 12H⁺ + 10e⁻ → N₂ + 6H₂O", top:350, bot:220, pool:1.0, col:"#7a4fc0", note:"O₂ is gone. Bacteria use nitrate instead, and nitrogen fertilizer escapes to the air as N₂ (and N₂O)."},
+  {k:"Mn", name:"Manganese reduction", acc:"Mn⁴⁺ → Mn²⁺", rx:"MnO₂ + 4H⁺ + 2e⁻ → Mn²⁺ + 2H₂O", top:220, bot:150, pool:1.5, col:"#5b4a6b", note:"Manganese oxides dissolve. Black Mn concretions can form when the soil later drains."},
+  {k:"Fe", name:"Iron reduction", acc:"Fe³⁺ → Fe²⁺", rx:"Fe(OH)₃ + 3H⁺ + e⁻ → Fe²⁺ + 3H₂O", top:150, bot:-100, pool:8.0, col:"#6f8a92", note:"Red/brown Fe³⁺ oxides become soluble Fe²⁺. The soil turns gray (gleyed). Phosphorus held by iron is released."},
+  {k:"SO4",name:"Sulfate reduction", acc:"SO₄²⁻ → H₂S", rx:"SO₄²⁻ + 10H⁺ + 8e⁻ → H₂S + 4H₂O", top:-100, bot:-200, pool:3.0, col:"#3a3a3a", note:"Rotten-egg smell (H₂S). Black iron sulfides form. H₂S is toxic to roots."},
+  {k:"CH4",name:"Methanogenesis", acc:"CO₂ → CH₄", rx:"CO₂ + 8H⁺ + 8e⁻ → CH₄ + 2H₂O", top:-200, bot:-280, pool:Infinity, col:"#b5521b", note:"The most reduced condition. Archaea make methane, a strong greenhouse gas (rice paddies, wetlands)."}
+];
+const S4={};
+function reset4(){
+  Object.assign(S4,{day:0,flooded:false,running:false,pools:STEPS.map(s=>s.k==="NO3"? +$("t4N").value : s.pool),
+    methDays:0,hist:[],mottles:[],depletions:[],cycles:0,feWasReduced:false,n2:0,ch4:0,h2s:0,bubbles:[]});
+  $("t4Pause").textContent="Pause"; update4();
+}
+const presets4={
+  rice:{t4O:5,t4T:30,t4N:1.5,t4P:6.5},
+  cold:{t4O:1,t4T:8,t4N:1,t4P:7},
+  cycles:{t4O:4,t4T:25,t4N:1,t4P:6.5}
+};
+document.querySelectorAll("[data-p4]").forEach(b=>b.addEventListener("click",()=>{
+  setVals(presets4[b.dataset.p4]); reset4(); S4.flooded=true; S4.running=true;
+  S4.autoCycle = b.dataset.p4==="cycles"; update4(); }));
+$("t4Flood").addEventListener("click",()=>{ S4.flooded=true; S4.running=true; S4.autoCycle=false; $("t4Pause").textContent="Pause"; update4(); });
+$("t4Drain").addEventListener("click",()=>{ drain4(); S4.running=true; S4.autoCycle=false; update4(); });
+$("t4Pause").addEventListener("click",()=>{ S4.running=!S4.running; $("t4Pause").textContent=S4.running?"Pause":"Resume"; });
+$("t4Reset").addEventListener("click",reset4);
+["t4O","t4T","t4P","t4S"].forEach(id=>$(id).addEventListener("input",update4));
+$("t4N").addEventListener("input",()=>{ if(!S4.flooded && S4.day===0) S4.pools[1]=+$("t4N").value; update4(); });
+
+function drain4(){
+  if(!S4.flooded) return;
+  S4.flooded=false; S4.methDays=0;
+  const feRed = 1 - S4.pools[3]/STEPS[3].pool;
+  if(feRed>0.1){ S4.cycles++; const rnd=mulberry(S4.cycles*31);
+    for(let i=0;i<Math.round(6+feRed*10);i++) S4.mottles.push({x:rnd(),y:0.15+rnd()*0.8,r:3+rnd()*7});
+    if(S4.depletions.length<8) for(let i=0;i<1;i++) S4.depletions.push({x:0.08+rnd()*0.84,w:4+rnd()*6});
+  }
+}
+function curEh(){
+  for(let i=0;i<STEPS.length-1;i++){
+    const s=STEPS[i], tot = s.k==="NO3"? Math.max(+$("t4N").value,0.0001) : s.pool;
+    if(S4.pools[i]>0.0005){ const frac=clamp(S4.pools[i]/tot,0,1); return {i, eh: s.bot+(s.top-s.bot)*frac}; }
+  }
+  return {i:5, eh: -200-80*(1-Math.exp(-S4.methDays/6))};
+}
+function step4(){
+  if(!S4.running) return;
+  const sp=+$("t4S").value, dt=0.01*sp; // days per frame
+  const om=+$("t4O").value, T=+$("t4T").value;
+  const rate=0.6*(0.2+om/2)*Math.pow(2,(T-20)/10);
+  if(S4.flooded){
+    let e=rate*dt;
+    for(let i=0;i<5 && e>0;i++){ const use=Math.min(S4.pools[i],e); S4.pools[i]-=use; e-=use;
+      if(i===1) S4.n2+=use; if(i===4) S4.h2s+=use; }
+    if(e>0){ S4.methDays+=dt; S4.ch4+=e; }
+    const c=curEh().i;
+    if(Math.random()<0.25*sp/4 && (c===1||c>=4)) S4.bubbles.push({x:0.1+Math.random()*0.8,y:1,kind:c===1?"N₂":c===4?"H₂S":"CH₄",life:1});
+    if(S4.autoCycle && c>=3 && S4.pools[3]<STEPS[3].pool*0.4) drain4();
+  } else {
+    // re-oxidation: O2 returns quickly, Mn/Fe/S re-oxidize over days, nitrate stays lost
+    S4.pools[0]=Math.min(STEPS[0].pool,S4.pools[0]+2.5*dt);
+    [2,3,4].forEach(i=>{ S4.pools[i]=Math.min(STEPS[i].pool,S4.pools[i]+STEPS[i].pool*0.35*dt); });
+    if(S4.autoCycle && S4.pools[3]>=STEPS[3].pool*0.95){ S4.flooded=true; }
+  }
+  S4.day+=dt;
+  const now=curEh();
+  if(S4.hist.length===0 || S4.day-S4.hist[S4.hist.length-1][0]>0.05) S4.hist.push([S4.day,now.eh,S4.flooded]);
+  if(S4.day>60 && !S4.autoCycle){ S4.running=false; }
+  if(S4.day>90){ S4.running=false; }
+  update4();
+}
+function update4(){
+  const om=+$("t4O").value, T=+$("t4T").value, pH=+$("t4P").value, shift=59*(7-pH);
+  $("t4Ov").textContent=om.toFixed(1)+"%"; $("t4Tv").textContent=T+" °C"; $("t4Nv").textContent=(+$("t4N").value).toFixed(1)+" (relative)";
+  $("t4Pv").textContent=pH.toFixed(1); $("t4Sv").textContent=$("t4S").value+"×";
+  if(!S4.pools) return;
+  const c=curEh(), eh=c.eh+shift;
+  S4.cur=c.i; S4.ehNow=eh; S4.shift=shift;
+  let lh="";
+  STEPS.forEach((s,i)=>{
+    const cls = i===c.i ? "rung on" : i<c.i ? "rung done" : "rung";
+    lh+='<div class="'+cls+'" style="'+(i===c.i?'border-color:'+s.col:'')+'"><div class="dot" style="background:'+s.col+'"></div><div><b>'+(i+1)+'. '+s.name+' <span class="small">('+(s.top+shift>0?"+":"")+Math.round(s.top+shift)+' mV and below)</span></b>'+s.acc+' &nbsp; <code>'+s.rx+'</code></div></div>';
+  });
+  $("ladder").innerHTML=lh;
+  const feRed=1-S4.pools[3]/STEPS[3].pool;
+  $("read4").innerHTML=
+    '<div class="pill">Day <b>'+S4.day.toFixed(1)+'</b> · '+(S4.flooded?'<b style="color:#1f66b8">FLOODED</b>':'<b style="color:#8b5a2b">drained</b>')+'</div>'+
+    '<div class="pill" style="border-color:'+STEPS[c.i].col+'">Redox potential Eh <b>'+(eh>0?"+":"")+Math.round(eh)+' mV</b></div>'+
+    '<div class="pill">Electron acceptor <b>'+STEPS[c.i].acc+'</b></div>'+
+    '<div class="pill">Nitrate lost as N₂ <b>'+Math.round(S4.n2/Math.max(+$("t4N").value,0.0001)*100)+'%</b></div>'+
+    '<div class="pill">Iron reduced <b>'+Math.round(feRed*100)+'%</b></div>'+
+    '<div class="pill">Wet/dry cycles <b>'+S4.cycles+'</b></div>';
+  const m=$("msg4");
+  if(!S4.flooded && S4.day===0){ m.className="msg"; m.innerHTML="The soil is drained and aerobic. Press <b>Flood</b> to fill the pores with water and watch microbes run through the electron acceptors. Organic matter is the electron <b>donor</b>: CH₂O + H₂O → CO₂ + 4H⁺ + 4e⁻."; return; }
+  if(!S4.flooded){ m.className="msg good"; m.innerHTML="<b>Drained:</b> air re-enters the pores and O₂ returns. Fe²⁺ re-oxidizes to Fe³⁺ in spots, forming <b>red-orange mottles</b>; gray streaks remain where iron was washed away. Lost nitrate does <b>not</b> come back."; return; }
+  m.className = c.i>=3 ? "msg bad" : c.i>=1 ? "msg warn" : "msg";
+  m.innerHTML="<b>"+STEPS[c.i].name+":</b> "+STEPS[c.i].note;
+}
+function draw4(){
+  const cv=canv.c4; if(!cv||!S4.pools) return; const {ctx,w:W,h:H}=cv;
+  ctx.clearRect(0,0,W,H);
+  const pw=Math.round(Math.max(170,W*0.36)), top=46, bot=H-16;
+  // sky + water
+  ctx.fillStyle="#eef6fd"; ctx.fillRect(0,0,pw,top);
+  if(S4.flooded){ ctx.fillStyle="#9cc9ef"; ctx.fillRect(0,top-18,pw,18); label(ctx,"standing water",pw/2,top-24,"#1f5f9e"); }
+  // soil color
+  const feRed=1-S4.pools[3]/STEPS[3].pool, sRed=1-S4.pools[4]/STEPS[4].pool;
+  const mix=(a,b,f)=>a.map((v,i)=>Math.round(v+(b[i]-v)*f));
+  let col=mix([150,92,52],[118,128,128],clamp(feRed,0,1));
+  col=mix(col,[52,52,52],clamp(sRed*0.8,0,0.8));
+  ctx.fillStyle="rgb("+col.join(",")+")"; ctx.fillRect(0,top,pw,bot-top);
+  // gray depletions (root channels)
+  S4.depletions.forEach(d=>{ ctx.fillStyle="rgba(170,175,172,.85)"; ctx.fillRect(d.x*pw,top+10,d.w,bot-top-20); });
+  // mottles
+  S4.mottles.forEach(mo=>{ ctx.fillStyle="rgba(214,104,40,.9)"; ctx.beginPath(); ctx.ellipse(mo.x*pw,top+mo.y*(bot-top),mo.r,mo.r*0.7,mo.x*3,0,7); ctx.fill(); });
+  // Mn specks
+  if(S4.cycles>0 && S4.pools[2]<STEPS[2].pool){ const rnd=mulberry(9); ctx.fillStyle="#1e1a1a"; for(let i=0;i<S4.cycles*5;i++){ ctx.beginPath(); ctx.arc(rnd()*pw,top+rnd()*(bot-top),1.6,0,7); ctx.fill(); } }
+  // pores view inset: air vs water
+  const ix=10, iy=top+12, iw=pw-20, ih=60;
+  ctx.fillStyle="rgba(255,255,255,.9)"; rrect(ctx,ix,iy,iw,ih,8); ctx.fill();
+  const g=mulberry(77);
+  for(let i=0;i<26;i++){ const x=ix+8+g()*(iw-16), y=iy+8+g()*(ih-16); ctx.fillStyle=S4.flooded?"#8fc4ef":"#fbf6ea"; ctx.beginPath(); ctx.arc(x,y,6,0,7); ctx.fill(); }
+  for(let i=0;i<18;i++){ const x=ix+8+g()*(iw-16), y=iy+8+g()*(ih-16); ctx.fillStyle="#a97a4a"; ctx.beginPath(); ctx.arc(x,y,5,0,7); ctx.fill(); }
+  ctx.fillStyle="#2a2118"; ctx.font="bold 11px sans-serif"; ctx.textAlign="center"; ctx.fillText(S4.flooded?"pores full of WATER (no O₂)":"pores have AIR (O₂)",ix+iw/2,iy+ih+14);
+  // bubbles
+  S4.bubbles=S4.bubbles.filter(b=>b.life>0);
+  S4.bubbles.forEach(b=>{ b.y-=0.006*(+$("t4S").value/4+0.5); b.life-=0.006; const y=top+(bot-top)*b.y;
+    ctx.strokeStyle="rgba(255,255,255,.9)"; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(b.x*pw,y,5,0,7); ctx.stroke();
+    if(b.life>0.6){ ctx.fillStyle="#fff"; ctx.font="bold 9px sans-serif"; ctx.fillText(b.kind,b.x*pw,y-8); } });
+  if(S4.bubbles.length>60) S4.bubbles.splice(0,S4.bubbles.length-60);
+  label(ctx,"Soil profile",6,16,"#2a2118","left");
+  // ---- Eh graph
+  const gx=pw+48, gw=W-gx-12, gy=20, gh=H-60, sh=S4.shift||0;
+  const ehMax=700+Math.max(0,sh), ehMin=-350+Math.min(0,sh);
+  const Y=v=>gy+(ehMax-v)/(ehMax-ehMin)*gh;
+  const tMax=Math.max(30,Math.ceil(S4.day/10)*10);
+  const X=d=>gx+d/tMax*gw;
+  STEPS.forEach((s,i)=>{ const t1=s.top+sh, t2=(i===5?-350:s.bot)+sh; ctx.fillStyle=s.col; ctx.globalAlpha= i===S4.cur?0.22:0.08; ctx.fillRect(gx,Y(i===0?ehMax:t1),gw,Y(t2)-Y(i===0?ehMax:t1)); ctx.globalAlpha=1;
+    ctx.fillStyle=s.col; ctx.font=(i===S4.cur?"bold ":"")+"10px sans-serif"; ctx.textAlign="right"; ctx.fillText(s.name,gx+gw-4,Y((i===0?Math.min(ehMax,650+sh):t1))+(i===0?0:12)); });
+  ctx.strokeStyle="#a39889"; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(gx,gy); ctx.lineTo(gx,gy+gh); ctx.lineTo(gx+gw,gy+gh); ctx.stroke();
+  ctx.fillStyle="#6b6155"; ctx.font="10px sans-serif"; ctx.textAlign="right";
+  for(let v=-300; v<=ehMax; v+=100){ if(v<ehMin) continue; ctx.fillText((v>0?"+":"")+v,gx-4,Y(v)+3); }
+  ctx.strokeStyle="#cfc6b8"; ctx.setLineDash([2,3]); ctx.beginPath(); ctx.moveTo(gx,Y(0)); ctx.lineTo(gx+gw,Y(0)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.textAlign="center"; for(let d=0; d<=tMax; d+=tMax/6) ctx.fillText(Math.round(d),X(d),gy+gh+12);
+  ctx.fillText("days",gx+gw/2,gy+gh+26);
+  ctx.save(); ctx.translate(gx-36,gy+gh/2); ctx.rotate(-Math.PI/2); ctx.fillText("Eh, redox potential (mV)",0,0); ctx.restore();
+  ctx.font="bold 11px sans-serif"; ctx.fillStyle="#2f7d4a"; ctx.textAlign="left"; ctx.fillText("oxidized ↑",gx+4,gy+10);
+  ctx.fillStyle="#6b6155"; ctx.fillText("reduced ↓",gx+4,gy+gh-4);
+  // flooded shading on time axis
+  for(let i=1;i<S4.hist.length;i++){ if(S4.hist[i][2]){ ctx.fillStyle="rgba(42,123,214,.5)"; ctx.fillRect(X(S4.hist[i-1][0]),gy+gh-4,X(S4.hist[i][0])-X(S4.hist[i-1][0])+0.5,4); } }
+  if(S4.hist.length>1){ ctx.strokeStyle="#1d2b22"; ctx.lineWidth=2.5; ctx.beginPath(); S4.hist.forEach((h,i)=>{ const x=X(h[0]),y=Y(h[1]+sh); i?ctx.lineTo(x,y):ctx.moveTo(x,y); }); ctx.stroke(); }
+  ctx.fillStyle=STEPS[S4.cur].col; ctx.beginPath(); ctx.arc(X(S4.day),Y(S4.ehNow),5,0,7); ctx.fill();
+}
+
+/* ---------- paused-aware clock for tab 2 drips ---------- */
+let _vt2=0,_vl2=performance.now();
+function vnow2(){ const n=performance.now(); if(!S2.userPaused) _vt2+=n-_vl2; _vl2=n; return _vt2; }
+$("t2Pause").addEventListener("click",()=>{ S2.userPaused=!S2.running; });
+$("t2Rain").addEventListener("click",()=>{ S2.userPaused=false; });
+
+/* ---------- loop ---------- */
+function refreshAll(){ update1(); update2(); update3(); update4(); }
+function loop(){
+  if(activeTab==="t1") draw1();
+  else if(activeTab==="t2"){ step2(); draw2(); }
+  else if(activeTab==="t3"){ step3(); draw3(); }
+  else if(activeTab==="t4"){ step4(); draw4(); }
+  requestAnimationFrame(loop);
+}
+allCanvases(); syncT1Range(); reset3(); reset4(); refreshAll(); loop();
+})();
+</script>
+<script>
+window.A11Y = {
+  css: ':root{--orange:#a35a00;--blue:#1f66b8} .presets button,.btn{color:#24683b} .btn.red{color:#a8322c}',
+  main: 'body',
+  tabsLabel: 'Simulation sections',
+  img: [
+    ['#c1', 'Diagram comparing the water potential of the soil and of a root cell, with bars for each component (solute, pressure, gravitational, and matric potential) and an arrow showing which way water moves. The message below states whether the root can take up water.'],
+    ['#c2b', 'Graph of the soil water retention curve for the selected texture, showing matric potential against water content, with field capacity, the stress point, the permanent wilting point, and the current water content marked.'],
+    ['#c2', 'Close-up of soil pores for the selected texture. Blue is water and cream is air; the pores fill with water as water content rises. When the soil is wetter than field capacity, falling drops show gravitational water draining. The readout below gives the water content and potentials.'],
+    ['#c3', 'Animated soil profile during an infiltration test or rainstorm. A wetting front moves down through the soil, ponding and runoff appear at the surface when water arrives faster than the soil can absorb it, and nitrate moves with the water. The readout below and the graph give infiltration rate, total infiltration, and runoff.'],
+    ['#c4', 'Animated view of a flooded soil and a graph of redox potential (Eh) over time. As oxygen runs out, microbes use oxygen, then nitrate, manganese, iron, sulfate, and finally carbon dioxide, and Eh falls step by step. The ladder beside the graph highlights the current step.']
+  ],
+  live: ['#msg1', '#msg2', '#msg3', '#msg4']
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>

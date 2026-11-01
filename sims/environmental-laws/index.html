@@ -1,0 +1,1391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Environmental Laws for Field Biologists</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4efe2; --card:#fffdf7; --ink:#2a2922; --muted:#6b6658; --line:#d9d1bc;
+  --olive:#56662f; --olive-soft:#e6ebd6; --rust:#a3502a; --rust-soft:#f5e1d6;
+  --sky:#2f6787; --sky-soft:#dcebf3; --gold:#a07a12; --gold-soft:#f6ecc9;
+  --red:#a32b2b; --red-soft:#f6dcdc;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;font-size:16px;line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding:16px}
+header{border-bottom:3px double var(--line);padding-bottom:12px;margin-bottom:14px}
+h1,h2,h3{font-family:"Fraunces",Georgia,serif;margin:.2em 0 .3em;line-height:1.15}
+h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800}
+h2{font-size:1.35rem}
+h3{font-size:1.1rem}
+.sub{color:var(--muted);margin:0}
+.kicker{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--olive);font-weight:700}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 16px}
+nav.tabs button{font:inherit;font-weight:600;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+nav.tabs button.on{background:var(--olive);color:#fff;border-color:var(--olive)}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.notice{background:var(--gold-soft);border-left:5px solid var(--gold);border-radius:8px;padding:10px 14px;margin:0 0 14px;font-size:.95rem}
+.notice b{color:#6d520b}
+.grid{display:grid;gap:12px}
+.lawgrid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.lawtile{cursor:pointer;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;transition:transform .12s, box-shadow .12s}
+.lawtile:hover,.lawtile:focus{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08);outline:none}
+.lawtile.sel{border:2px solid var(--olive)}
+.lawtile .ab{font-family:"Fraunces",serif;font-weight:800;font-size:1.25rem}
+.lawtile .nm{font-size:.9rem;color:var(--muted)}
+.badge{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin:4px 4px 0 0}
+.fed{background:var(--sky-soft);color:var(--sky)}
+.st{background:var(--olive-soft);color:var(--olive)}
+.des{background:var(--rust-soft);color:var(--rust)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.filters button{font:inherit;font-size:.9rem;border:1px solid var(--line);background:var(--card);padding:5px 12px;border-radius:8px;cursor:pointer}
+.filters button.on{border-color:var(--ink);font-weight:700}
+input[type=search],input[type=text]{font:inherit;padding:8px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;min-width:0;flex:1 1 200px}
+#lawDetail{margin-top:14px}
+.detail-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;align-items:baseline}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:8px}
+.box{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+.box h4{margin:0 0 6px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.box.bio{background:var(--olive-soft);border-color:#c9d3ac}
+.box.bio h4{color:var(--olive)}
+.box.upd{background:var(--gold-soft);border-color:#e3d398}
+ul{margin:.2em 0;padding-left:1.2em}
+li{margin:.15em 0}
+.tip{margin-top:10px;padding:8px 12px;border-radius:8px;background:var(--sky-soft);font-size:.95rem}
+/* screener */
+.screen{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px}
+@media (max-width:800px){.screen{grid-template-columns:1fr}}
+fieldset{border:1px solid var(--line);border-radius:10px;margin:0 0 10px;padding:8px 12px;background:var(--card)}
+legend{font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.06em;color:var(--olive);padding:0 4px}
+label.chk{display:flex;gap:8px;align-items:flex-start;padding:4px 0;cursor:pointer;font-size:.95rem}
+label.chk input{margin-top:4px;accent-color:var(--olive)}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.presets button{font:inherit;font-size:.85rem;border:1px dashed var(--olive);background:var(--olive-soft);color:var(--olive);padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:600}
+.presets button.clr{border-color:var(--muted);background:transparent;color:var(--muted)}
+.trig{border-left:5px solid var(--olive);background:#fff;border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.trig.fedb{border-left-color:var(--sky)}
+.trig.desb{border-left-color:var(--rust)}
+.trig.warn{border-left-color:var(--red);background:var(--red-soft)}
+.trig h4{margin:0 0 4px;font-size:1rem}
+.trig .why{font-size:.85rem;color:var(--muted);margin-bottom:4px}
+.trig ul{font-size:.92rem}
+.empty{color:var(--muted);font-style:italic;padding:12px}
+.reportlist{counter-reset:r;list-style:none;padding:0}
+.reportlist li{counter-increment:r;padding:4px 0 4px 30px;position:relative}
+.reportlist li::before{content:counter(r);position:absolute;left:0;top:4px;width:22px;height:22px;border-radius:50%;background:var(--olive);color:#fff;font-size:.75rem;display:flex;align-items:center;justify-content:center;font-weight:700}
+/* decoder */
+.codes{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.code{font:inherit;font-weight:700;border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 9px;cursor:pointer;font-size:.9rem}
+.code.fedc{color:var(--sky)} .code.stc{color:var(--olive)} .code.desc{color:var(--rust)}
+.decoded .row{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.decoded .row:last-child{border-bottom:0}
+.decoded .tag{flex:0 0 78px;font-weight:800;font-family:"Fraunces",serif}
+.species{display:flex;flex-wrap:wrap;gap:6px}
+.species button{font:inherit;font-size:.88rem;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:5px 10px;cursor:pointer}
+.species button i{color:var(--muted)}
+/* workflow */
+.flow{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.flow button{flex:1 1 120px;font:inherit;font-size:.88rem;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;cursor:pointer;position:relative}
+.flow button b{display:block;font-family:"Fraunces",serif;font-size:1.2rem;color:var(--olive)}
+.flow button.on{background:var(--olive);color:#fff;border-color:var(--olive)}
+.flow button.on b{color:#fff}
+.chips span{display:inline-block;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:1px 9px;margin:2px 3px 0 0;font-size:.8rem;font-weight:600}
+/* quiz */
+.q{font-weight:600;margin-bottom:8px}
+.opts button{display:block;width:100%;text-align:left;font:inherit;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 12px;margin:5px 0;cursor:pointer}
+.opts button.right{background:var(--olive-soft);border-color:var(--olive)}
+.opts button.wrong{background:var(--red-soft);border-color:var(--red)}
+.opts button:disabled{cursor:default}
+.expl{margin-top:8px;padding:8px 12px;border-radius:8px;background:var(--sky-soft);display:none}
+.qnav{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:8px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;background:var(--olive);color:#fff;border:0;border-radius:8px;padding:8px 16px;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--olive);border:1px solid var(--olive)}
+.progress{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:12px}
+.progress div{height:100%;background:var(--olive);width:0;transition:width .3s}
+footer{color:var(--muted);font-size:.82rem;border-top:1px solid var(--line);margin-top:20px;padding-top:10px}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+/* species builder */
+.sp-layout{display:grid;grid-template-columns:260px minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:820px){.sp-layout{grid-template-columns:1fr}}
+.sp-pick{position:sticky;top:8px;max-height:85vh;overflow:auto}
+@media (max-width:820px){.sp-pick{position:static;max-height:none}}
+.sp-pick input{width:100%;margin-bottom:8px}
+.sp-grp{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px}
+.sp-item{display:block;width:100%;text-align:left;font:inherit;font-size:.92rem;border:1px solid transparent;background:transparent;border-radius:8px;padding:5px 8px;cursor:pointer;color:var(--ink)}
+.sp-item small{display:block;color:var(--muted);font-size:.78rem}
+.sp-item:hover{background:var(--paper)}
+.sp-item.on{background:var(--olive);color:#fff}
+.sp-item.on small{color:#e8eedb}
+.step{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.step>summary{cursor:pointer;list-style:none;padding:12px 16px;font-family:"Fraunces",serif;font-weight:600;font-size:1.05rem;display:flex;gap:10px;align-items:center}
+.step>summary::-webkit-details-marker{display:none}
+.step>summary .n{flex:0 0 28px;height:28px;border-radius:50%;background:var(--olive);color:#fff;font-family:"Source Sans 3",sans-serif;font-size:.85rem;font-weight:700;display:flex;align-items:center;justify-content:center}
+.step>summary::after{content:"▾";margin-left:auto;color:var(--muted)}
+.step[open]>summary::after{content:"▴"}
+.step .body{padding:0 16px 14px}
+.cal{display:grid;grid-template-columns:120px repeat(12,minmax(0,1fr));gap:2px;font-size:.75rem;margin:8px 0}
+.cal div{padding:4px 2px;text-align:center;border-radius:3px}
+.cal .lbl{text-align:left;font-weight:700;color:var(--muted);padding-left:0}
+.cal .mh{font-weight:700;color:var(--muted)}
+.cal .c{background:#ece6d4}
+.cal .c.sv{background:#8fa65c}
+.cal .c.sn{background:#d1835c}
+.cal .c.wk{background:#6b9ab5}
+@media (max-width:520px){.cal{grid-template-columns:70px repeat(12,minmax(0,1fr));font-size:.62rem}}
+.legend span{display:inline-flex;align-items:center;gap:4px;margin-right:12px;font-size:.82rem}
+.legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:10px}
+.form-row label{font-size:.85rem;font-weight:600;display:flex;flex-direction:column;gap:3px}
+.form-row input,.form-row select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:#fff}
+.radio-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.radio-row label{border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer;background:#fff;font-size:.9rem;display:flex;gap:6px;align-items:center}
+.radio-row input{accent-color:var(--olive)}
+.itag{display:inline-block;font-size:.7rem;font-weight:700;padding:1px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.itag.d{background:var(--rust-soft);color:var(--rust)}
+.itag.i{background:var(--sky-soft);color:var(--sky)}
+.itag.c{background:var(--gold-soft);color:#6d520b}
+.mm-group h4{margin:10px 0 4px;font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--olive)}
+.hlevel{font-size:.7rem;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--paper);border:1px solid var(--line);margin-left:6px}
+textarea{width:100%;font:inherit;font-size:.92rem;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;resize:vertical}
+#draft{min-height:420px;font-family:Georgia,serif;line-height:1.55}
+.alert{background:var(--red-soft);border-left:5px solid var(--red);border-radius:8px;padding:8px 12px;margin:8px 0;font-size:.95rem}
+.hier{display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:10px}
+.hier button{font:inherit;font-weight:700;border:0;color:#fff;border-radius:8px;padding:9px 12px;cursor:pointer;text-align:center}
+.hier button.on{outline:3px solid var(--ink);outline-offset:2px}
+.cls-item{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#fff}
+.cls-item .opts2{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.cls-item .opts2 button{font:inherit;font-size:.85rem;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:4px 10px;cursor:pointer}
+.cls-item .opts2 button.right{background:var(--olive-soft);border-color:var(--olive)}
+.cls-item .opts2 button.wrong{background:var(--red-soft);border-color:var(--red)}
+.cls-fb{font-size:.88rem;margin-top:6px;color:var(--muted)}
+.sig label.chk{border-bottom:1px dashed var(--line)}
+.check-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line);font-size:.93rem}
+.check-row .ok{color:var(--olive);font-weight:800}
+.check-row .no{color:var(--red);font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">Wildlife &amp; Plant Conservation Field Methods</div>
+  <h1>Environmental Laws in the Field</h1>
+  <p class="sub">From the perspective of a consulting or agency biologist: what triggers each law, what you survey for, and what goes in your report.</p>
+</header>
+
+<nav class="tabs" role="tablist">
+  <button class="on" data-tab="explore">📚 Law Explorer</button>
+  <button data-tab="species">🦊 Species Report Builder</button>
+  <button data-tab="impacts">🛡️ Impacts &amp; Mitigation</button>
+  <button data-tab="screen">🗺️ Project Screener</button>
+  <button data-tab="decode">🏷️ Status Decoder</button>
+  <button data-tab="flow">🥾 Survey → Report</button>
+  <button data-tab="quiz">✅ Quiz</button>
+</nav>
+
+<!-- EXPLORER -->
+<section class="panel on" id="explore">
+  <div class="notice"><b>Updated October 2026.</b> Three federal frameworks have shifted recently: CEQ's NEPA regulations are gone (agencies now use their own procedures), the federal ESA regulatory definition of "harm" was rescinded (effective September 2026, under litigation), and a narrower WOTUS rule is proposed but not final. State laws (CEQA, CESA, Porter-Cologne, Fish &amp; Game Code) are not affected by these federal changes.</div>
+  <div class="filters">
+    <button class="on" data-f="all">All</button>
+    <button data-f="fed">Federal</button>
+    <button data-f="st">California</button>
+    <button data-f="des">Designations / Ranks</button>
+    <input type="search" id="lawSearch" placeholder="Search (e.g., nest, wetland, take, 1B)…">
+  </div>
+  <div class="grid lawgrid" id="lawGrid"></div>
+  <div id="lawDetail"></div>
+</section>
+
+<!-- SPECIES BUILDER -->
+<section class="panel" id="species">
+  <div class="card">
+    <h2>Species Report Builder</h2>
+    <p class="sub">Pick a species you found (or could find) during surveys. Work through the steps to see its status, survey protocol and timing, likely impacts, avoidance and minimization measures, and compensation. Step 7 drafts report language you can edit.</p>
+  </div>
+  <div class="sp-layout">
+    <aside class="card sp-pick">
+      <input type="search" id="spSearch" placeholder="Search species…" aria-label="Search species">
+      <div id="spList"></div>
+    </aside>
+    <div id="spMain"></div>
+  </div>
+</section>
+
+<!-- IMPACTS & MITIGATION -->
+<section class="panel" id="impacts">
+  <div class="card">
+    <h2>Impact analysis &amp; the mitigation hierarchy</h2>
+    <p class="sub">The strongest biological reports show how the project avoids impacts first, then minimizes what's left, and only then compensates. Work through each tool below.</p>
+  </div>
+  <div class="card">
+    <h3>1 · The mitigation hierarchy (CEQA Guidelines §15370)</h3>
+    <p class="sub">Click each level. Agencies expect you to show why a higher level wasn't feasible before relying on a lower one.</p>
+    <div class="hier" id="hier"></div>
+    <div id="hierDetail" class="box" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
+    <h3>2 · Types of impacts</h3>
+    <div class="tablewrap"><table>
+      <tr><th>Type</th><th>Definition</th><th>Field examples</th></tr>
+      <tr><td><b>Direct</b></td><td>Caused by the project at the same time and place (CEQA §15358(a)(1))</td><td>Grading removes habitat; equipment crushes a burrow; tree removal destroys a nest</td></tr>
+      <tr><td><b>Indirect</b></td><td>Caused by the project but later in time or farther away, and reasonably foreseeable (§15358(a)(2))</td><td>Noise or lighting disturbs nesting birds; runoff sediments a downslope pool; new residents' pets prey on wildlife; weeds spread from disturbed soil</td></tr>
+      <tr><td><b>Permanent</b></td><td>Habitat or individuals lost for the life of the project</td><td>Building pads, roads, solar arrays, fill in wetlands, mortality</td></tr>
+      <tr><td><b>Temporary</b></td><td>Disturbance that ends and is restored, typically within a year or two</td><td>Staging areas, temporary access roads, pipeline trenches that are backfilled and reseeded</td></tr>
+      <tr><td><b>Cumulative</b></td><td>The project's contribution combined with past, present, and reasonably foreseeable projects (§15355, §15130)</td><td>Several solar projects together fragment a kit fox movement corridor</td></tr>
+    </table></div>
+    <h4 style="margin:14px 0 6px">Practice: classify each impact</h4>
+    <div id="classify"></div>
+  </div>
+  <div class="card">
+    <h3>3 · Is the impact significant?</h3>
+    <p class="sub">CEQA asks whether the project would have a "substantial adverse effect." There's no single formula; this checklist shows the factors reviewers expect you to weigh and discuss.</p>
+    <div id="sigForm" class="sig"></div>
+    <div id="sigOut" class="tip"></div>
+  </div>
+  <div class="card">
+    <h3>4 · Write an enforceable mitigation measure</h3>
+    <p class="sub">Paste or write a measure. The checker looks for the parts reviewers and agencies expect: who, what, when, where, how much, a performance standard, and reporting.</p>
+    <div class="cols">
+      <div>
+        <textarea id="mmText" rows="7" aria-label="Mitigation measure text">Avoid impacts to nesting birds if possible.</textarea>
+        <div class="presets" style="margin-top:8px">
+          <button id="mmWeak">Load weak example</button>
+          <button id="mmStrong">Load strong example</button>
+        </div>
+      </div>
+      <div id="mmOut"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>5 · General measures library</h3>
+    <p class="sub">Standard measures that apply to most projects with sensitive biological resources. The Species Report Builder adds these to its draft when checked.</p>
+    <div id="genLib"></div>
+  </div>
+</section>
+
+<!-- SCREENER -->
+<section class="panel" id="screen">
+  <div class="card">
+    <h2>Which laws apply to this project?</h2>
+    <p class="sub">Check what you know about the project and what your surveys found. The panel builds a regulatory checklist, the permits/consultations that may be needed, and an outline for your biological report. Try a preset scenario.</p>
+  </div>
+  <div class="presets" id="presets"></div>
+  <div class="screen">
+    <div id="screenForm"></div>
+    <div>
+      <div class="card" style="position:sticky;top:8px">
+        <h3>Regulatory checklist</h3>
+        <div id="screenOut"><div class="empty">Check some boxes to see which laws are triggered.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DECODER -->
+<section class="panel" id="decode">
+  <div class="card">
+    <h2>Decode a species status string</h2>
+    <p class="sub">CNDDB lists, survey tables, and agency letters stack codes together, like <b>FE/SE/1B.1</b>. Type a string, click codes below, or pick an example species. Separate codes with / , or spaces.</p>
+    <div class="filters" style="margin-top:10px">
+      <input type="text" id="codeInput" value="FE / SE / FP" aria-label="Status codes">
+      <button class="btn" id="decodeBtn">Decode</button>
+    </div>
+    <div class="codes" id="codeBtns"></div>
+  </div>
+  <div class="card">
+    <h3>Example San Joaquin Valley &amp; Sierra species</h3>
+    <div class="species" id="speciesBtns"></div>
+    <p class="sub" style="font-size:.82rem;margin-top:8px">Statuses change. Always verify current status in CNDDB, the CNPS Inventory, and USFWS IPaC before a survey or report.</p>
+  </div>
+  <div class="card decoded" id="decoded"></div>
+  <div class="card">
+    <h3>CRPR quick reference</h3>
+    <div class="tablewrap"><table>
+      <tr><th>Rank</th><th>Meaning</th><th>Under CEQA</th></tr>
+      <tr><td><b>1A</b></td><td>Presumed extirpated in California and either rare or extinct elsewhere</td><td>Treat as meeting CEQA §15380 if rediscovered</td></tr>
+      <tr><td><b>1B</b></td><td>Rare, threatened, or endangered in California <i>and</i> elsewhere</td><td>Generally meets §15380; analyze impacts</td></tr>
+      <tr><td><b>2A</b></td><td>Presumed extirpated in California, more common elsewhere</td><td>Generally meets §15380</td></tr>
+      <tr><td><b>2B</b></td><td>Rare, threatened, or endangered in California, more common elsewhere</td><td>Generally meets §15380; analyze impacts</td></tr>
+      <tr><td><b>3</b></td><td>Review list: more information needed</td><td>Consider; evaluate case by case</td></tr>
+      <tr><td><b>4</b></td><td>Watch list: limited distribution</td><td>Consider, especially at range edges or type localities</td></tr>
+      <tr><th colspan="3">Threat code (added after the rank)</th></tr>
+      <tr><td><b>.1</b></td><td colspan="2">Seriously threatened in California (high degree/immediacy of threat)</td></tr>
+      <tr><td><b>.2</b></td><td colspan="2">Moderately threatened in California</td></tr>
+      <tr><td><b>.3</b></td><td colspan="2">Not very threatened in California</td></tr>
+    </table></div>
+  </div>
+</section>
+
+<!-- WORKFLOW -->
+<section class="panel" id="flow">
+  <div class="card">
+    <h2>From desktop review to final report</h2>
+    <p class="sub">Click each stage of a typical biological resources project to see the tasks, tools, and laws that drive it.</p>
+  </div>
+  <div class="flow" id="flowBtns"></div>
+  <div class="card" id="flowDetail"></div>
+</section>
+
+<!-- QUIZ -->
+<section class="panel" id="quiz">
+  <div class="card">
+    <div class="progress"><div id="qbar"></div></div>
+    <div id="qbox"></div>
+  </div>
+</section>
+
+<footer>
+  Educational overview for a field methods course, not legal advice. Laws, rules, and species statuses change; confirm with the lead agency, CDFW, USFWS/NMFS, USACE, and the Regional Water Board before relying on any determination. Content current as of October 2026.
+</footer>
+</div>
+
+<script>
+/* ================= DATA: LAWS ================= */
+const LAWS = [
+{id:"ceqa",ab:"CEQA",name:"California Environmental Quality Act",lv:"st",yr:"1970 · PRC §21000 et seq.; CEQA Guidelines (14 CCR §15000+)",
+agency:"Lead agency (city, county, special district, or state agency) approving the project. CDFW acts as a Trustee Agency for fish, wildlife, and plants and as a Responsible Agency when it issues a permit.",
+purpose:"Requires California public agencies to identify, disclose, and avoid or mitigate significant environmental impacts of the projects they approve. It is a disclosure and mitigation law; it does not by itself prohibit take.",
+trigger:["Discretionary approval by a California public agency (permit, funding, or the agency's own project)","The project may cause a physical change in the environment","Not covered by a statutory or categorical exemption (exceptions apply, e.g., sensitive environments)"],
+terms:["Initial Study (IS) → Negative Declaration (ND), Mitigated ND (MND), or Environmental Impact Report (EIR)","Appendix G, Section IV Biological Resources, questions (a)–(f)","§15380: a species not formally listed can still be treated as rare/endangered (e.g., CRPR 1B, many SSC)","§15065 Mandatory Findings of Significance","Mitigation Monitoring and Reporting Program (MMRP)"],
+bio:["Desktop review: CNDDB, CNPS Inventory, IPaC, Calflora, NWI, soils, aerials","Reconnaissance habitat assessment and focused/protocol surveys","Answer Appendix G (a) special-status species, (b) riparian/sensitive natural communities, (c) state/federal wetlands, (d) wildlife movement and nursery sites, (e) local ordinances such as oak/tree ordinances, (f) HCP/NCCP conflicts","Determine significance before and after mitigation; consider direct, indirect, and cumulative effects","Write enforceable mitigation measures: pre-construction surveys, buffers, worker training (WEAP), biological monitor, compensatory mitigation"],
+docs:["Biological Resources Assessment / Technical Report","Biological Resources section of the IS or EIR","Mitigation measures that go into the MMRP"],
+permits:["None by itself; it is the umbrella review that other state permits (CESA ITP, LSA Agreement, WDRs) rely on"],
+tip:"Writing tip: a mitigation measure must be specific and enforceable. \"Avoid impacts to nesting birds\" is weak; \"conduct a pre-construction nesting bird survey no more than X days before ground disturbance from February 1 to August 31 and establish species-appropriate no-disturbance buffers\" is defensible. Use the lead agency's or CDFW's preferred timing and buffers.",
+upd:"2025 budget trailer bills (AB 130 and SB 131) expanded CEQA exemptions for certain infill housing and other project types. Check whether an exemption's conditions exclude sites with sensitive habitat or special-status species."},
+
+{id:"nepa",ab:"NEPA",name:"National Environmental Policy Act",lv:"fed",yr:"1969 · 42 U.S.C. §4321 et seq.",
+agency:"The lead federal agency for the action (e.g., USACE, USFS, BLM, FHWA, Bureau of Reclamation), following that agency's own NEPA procedures.",
+purpose:"Requires federal agencies to consider the environmental effects of their proposed actions and reasonable alternatives before deciding. Like CEQA, it is procedural: it requires informed decisions, not particular outcomes.",
+trigger:["A \"major federal action\": federal land, federal funding, or a federal permit (a Corps 404 permit is a common trigger)","Not covered by a Categorical Exclusion (CE), or extraordinary circumstances apply"],
+terms:["Categorical Exclusion (CE)","Environmental Assessment (EA) → Finding of No Significant Impact (FONSI)","Environmental Impact Statement (EIS) → Record of Decision (ROD)","Fiscal Responsibility Act of 2023: page limits (75 pp EA / 150 pp EIS) and deadlines (1 yr EA / 2 yr EIS)","Joint documents with CEQA: IS/EA, EIR/EIS"],
+bio:["Write the Affected Environment and Environmental Consequences sections for biological resources","Compare alternatives' effects on habitats and species","Prepare supporting reports: Biological Assessment (ESA), Biological Evaluation or specialist report (USFS/BLM)","Coordinate so ESA Section 7 consultation is completed before the decision"],
+docs:["Biological Assessment / Biological Evaluation","Wildlife and botany specialist reports","Biology chapters of the EA or EIS"],
+permits:["None by itself; it runs alongside ESA §7, NHPA §106, and CWA §404"],
+tip:"Field reality: on a Forest Service or BLM project, NEPA, ESA §7, and the agency's sensitive species policy are usually handled together. Your one field season feeds the BA, the BE, and the NEPA document.",
+upd:"CEQ rescinded all of its NEPA regulations (interim final rule effective April 11, 2025; final rule January 2026). Each agency now applies its own NEPA procedures, and the Supreme Court's 2025 Seven County Infrastructure Coalition decision emphasized deference to agencies on the scope of review."},
+
+{id:"fesa",ab:"FESA",name:"Federal Endangered Species Act",lv:"fed",yr:"1973 · 16 U.S.C. §1531 et seq.",
+agency:"U.S. Fish and Wildlife Service (terrestrial and freshwater species) and NOAA's National Marine Fisheries Service (anadromous fish like salmon and steelhead, and marine species).",
+purpose:"Lists endangered and threatened species, designates critical habitat, prohibits take, and requires federal agencies not to jeopardize listed species.",
+trigger:["Listed, proposed, or candidate species or critical habitat may be present (check IPaC)","Federal nexus → Section 7 consultation","No federal nexus but take of listed wildlife is likely → Section 10 incidental take permit"],
+terms:["§4 Listing and critical habitat","§7 Consultation: No Effect · May Affect, Not Likely to Adversely Affect (NLAA, informal) · Likely to Adversely Affect (formal → Biological Opinion with Incidental Take Statement)","§9 Take = harass, harm, pursue, hunt, shoot, wound, kill, trap, capture, collect","§9(a)(2) Plants: no general take ban on private land; protected on federal land and where state law is violated","§10(a)(1)(A) Recovery permit · §10(a)(1)(B) Incidental Take Permit with a Habitat Conservation Plan (HCP)"],
+bio:["Run an IPaC species list for the action area","Conduct USFWS protocol surveys where they exist (e.g., vernal pool branchiopods, California tiger salamander, San Joaquin kit fox)","Hold a §10(a)(1)(A) recovery permit before surveys that capture or handle listed species (e.g., dip-netting for listed fairy shrimp)","Write the Biological Assessment with an effect determination for each species and critical habitat"],
+docs:["Biological Assessment (BA)","Protocol survey reports submitted to USFWS","HCP (for Section 10)"],
+permits:["Biological Opinion / Incidental Take Statement (§7)","Incidental Take Permit (§10(a)(1)(B))","Recovery permit for surveyors (§10(a)(1)(A))"],
+tip:"Effect determinations are a biologist's judgment call. \"No Effect\" means the species and its habitat really are absent or untouched. If the species could be present, even at low probability, the determination is usually \"May Affect.\"",
+upd:"USFWS and NMFS rescinded the regulatory definition of \"harm\" (final rule July 14, 2026, effective September 2026), so habitat modification alone is no longer treated as take. The rule is being challenged in court. Section 7 consultation still applies, and CESA is unaffected."},
+
+{id:"cesa",ab:"CESA",name:"California Endangered Species Act",lv:"st",yr:"1984 · Fish &amp; Game Code §2050–2116",
+agency:"California Department of Fish and Wildlife (CDFW). The Fish and Game Commission decides listings.",
+purpose:"Protects state-listed endangered, threatened, and candidate species (animals and plants) by prohibiting take without authorization.",
+trigger:["A state-listed or candidate species is present or likely, and the project could cause take","Applies on all land in California, regardless of federal nexus"],
+terms:["§2080: take prohibited, including candidate species during review","§86 Take = hunt, pursue, catch, capture, or kill, or attempt to (narrower than federal take; there is no \"harm\" or \"harass\")","§2081(b) Incidental Take Permit: take must be minimized and fully mitigated","§2080.1 Consistency Determination for species that are both federally and state listed and already covered by a federal BO or ITP","Covers plants on private land, unlike the federal ESA"],
+bio:["Identify state-listed and candidate species in CNDDB","Survey following CDFW protocols (e.g., Swainson's hawk nesting surveys, CDFW 2018 botanical protocol)","Prepare ITP application content: species impacts, minimization, full mitigation (often habitat acquisition or mitigation bank credits)","Implement monitoring and reporting required by the ITP"],
+docs:["ITP application","Mitigation and Monitoring plan","Annual compliance reports"],
+permits:["2081(b) Incidental Take Permit","2080.1 Consistency Determination","2081(a) permit/MOU for scientific collecting and research"],
+tip:"Because state take requires death or capture (or an attempt), projects can often avoid CESA take through avoidance measures such as work windows and buffers, but the analysis still goes in the CEQA document."},
+
+{id:"nppa",ab:"NPPA",name:"Native Plant Protection Act",lv:"st",yr:"1977 · Fish &amp; Game Code §1900–1913",
+agency:"CDFW. The Fish and Game Commission designates plants as \"rare\" or \"endangered.\"",
+purpose:"Preserves, protects, and enhances endangered and rare native plants. It predates CESA; plants designated endangered under NPPA are also covered by CESA, while NPPA \"rare\" plants remain a separate category.",
+trigger:["A plant designated rare or endangered under NPPA occurs on the project site"],
+terms:["State Rare (SR) plant designation","§1908: prohibits take, possession, or sale of designated plants, with exemptions","§1913: exemptions for some agricultural, fire-control, and right-of-way activities; a landowner changing land use must notify CDFW at least 10 days ahead so plants can be salvaged"],
+bio:["Conduct floristic, seasonally timed botanical surveys","Map and count NPPA-designated plant populations","Coordinate with CDFW on salvage, avoidance, or take authorization (CDFW may handle this through a CESA-style permit; confirm with the regional office)"],
+docs:["Rare plant survey report","Salvage or translocation plan, if CDFW requires one"],
+permits:["Authorization from CDFW for take of NPPA rare plants","10-day notification for land-use change under §1913"],
+tip:"In a CNDDB printout, the state status column shows \"SR\" for NPPA rare plants. It is easy to overlook because it is not \"SE\" or \"ST.\""},
+
+{id:"cfgc",ab:"CFGC",name:"CDFW & the California Fish and Game Code",lv:"st",yr:"Fish &amp; Game Code; Title 14 CCR",
+agency:"CDFW (enforcement, permits, Trustee Agency under CEQA) and the Fish and Game Commission (regulations and listings).",
+purpose:"The statutory home of most California wildlife protections, including streambed alteration, nest protection, and Fully Protected species.",
+trigger:["Work in or near a river, stream, or lake, including ephemeral and intermittent drainages (§1602)","Active bird nests present (§3503, §3503.5, §3513)","Any species listed in the Code (CESA, NPPA, Fully Protected)"],
+terms:["§1602 Lake or Streambed Alteration (LSA): notify CDFW before substantially diverting or obstructing flow; changing the bed, channel, or bank; or depositing material where it can enter the water","§3503: nests and eggs of any bird (except English sparrow, European starling)","§3503.5: birds of prey (hawks, eagles, owls) and their nests and eggs","§3513: adopts the federal Migratory Bird Treaty Act prohibitions into state law","Species of Special Concern (SSC) and Watch List: CDFW administrative designations considered under CEQA"],
+bio:["Map stream features: top of bank, OHWM, riparian vegetation edge","Prepare LSA notification content: site description, impacts, avoidance and restoration measures","Run pre-construction nesting bird and raptor surveys during the nesting season (commonly about Feb 1 to Aug 31; confirm the project's window)","Set no-disturbance buffers around active nests until young fledge"],
+docs:["LSA Notification package","Nesting bird survey memos","Stream/riparian mapping exhibits"],
+permits:["Lake or Streambed Alteration Agreement","Scientific Collecting Permit for anyone capturing or handling wildlife during surveys"],
+tip:"An LSA can apply to a dry wash that only runs after storms. If there is a defined bed and bank, map it and talk to CDFW."},
+
+{id:"fp",ab:"FP",name:"California Fully Protected Species",lv:"des",yr:"Fish &amp; Game Code §3511 (birds), §4700 (mammals), §5050 (reptiles &amp; amphibians), §5515 (fish)",
+agency:"CDFW",
+purpose:"California's oldest and strictest designation. Historically, take could not be permitted except for scientific research or under an approved Natural Community Conservation Plan (NCCP).",
+trigger:["A Fully Protected species uses or could use the site (nesting, denning, foraging)"],
+terms:["Examples: white-tailed kite, golden eagle, bald eagle, California condor, California black rail, ringtail, blunt-nosed leopard lizard, unarmored threespine stickleback","SB 147 (2023) allows CDFW to authorize take for certain renewable energy, transportation, and water infrastructure projects through 2033, using a CESA-style ITP with full mitigation","SB 147 also removed a few recovered species from the Fully Protected lists (e.g., American peregrine falcon, California brown pelican)"],
+bio:["Identify FP species early; avoidance is usually the only option","Design avoidance: large nest buffers, seasonal work windows, exclusion surveys","Determine whether the project qualifies under SB 147 or an NCCP"],
+docs:["Avoidance and minimization plan","Nest monitoring reports"],
+permits:["Generally none; SB 147 authorization only for qualifying projects; NCCP coverage"],
+tip:"White-tailed kites often nest in trees along ag fields in the San Joaquin Valley. A kite nest near a project means planning for avoidance from day one."},
+
+{id:"cwa",ab:"CWA",name:"Clean Water Act",lv:"fed",yr:"1972 · 33 U.S.C. §1251 et seq.",
+agency:"U.S. Army Corps of Engineers (USACE) issues §404 permits with EPA oversight. In California, the State Water Board and Regional Water Boards issue §401 water quality certifications.",
+purpose:"Restores and maintains the integrity of the nation's waters. For biologists, the key piece is §404: discharging dredged or fill material into waters of the United States (WOTUS) requires a permit.",
+trigger:["Placing fill or dredged material into wetlands, streams, or other WOTUS","Construction disturbing 1 acre or more → §402 NPDES Construction General Permit (SWPPP)"],
+terms:["§404 Nationwide Permits (general) vs. Individual Permits","§401 Water Quality Certification from the state","Wetland delineation uses 3 parameters: hydrophytic vegetation, hydric soils, wetland hydrology (1987 Manual + Arid West or Western Mountains, Valleys, and Coast Regional Supplement)","Ordinary High Water Mark (OHWM) for non-wetland waters","Sackett v. EPA (2023): wetlands must have a continuous surface connection to a relatively permanent water"],
+bio:["Complete a formal aquatic resources delineation with data sheets at paired sample points","Map OHWM, wetlands, and other waters with GPS","Prepare the delineation report for a Corps jurisdictional determination","Because a 404 permit is a federal action, it triggers ESA §7 and NEPA"],
+docs:["Aquatic Resources Delineation Report","Wetland determination data sheets","404 permit application and mitigation plan"],
+permits:["§404 permit (Nationwide or Individual)","§401 Water Quality Certification","§402 NPDES Construction General Permit"],
+tip:"Many isolated vernal pools and some ephemeral drainages are no longer federal waters after Sackett, but they are still waters of the state under Porter-Cologne and may still need state permits.",
+upd:"The 2023 rule conforming to Sackett is the current federal definition. EPA and the Corps proposed a narrower WOTUS definition in November 2025 and added a supplemental proposal in September 2026; it was not yet final as of this update."},
+
+{id:"pc",ab:"Porter-Cologne",name:"Porter-Cologne Water Quality Control Act",lv:"st",yr:"1969 · Water Code §13000 et seq.",
+agency:"State Water Resources Control Board and the nine Regional Water Quality Control Boards (Fresno is in the Central Valley Region).",
+purpose:"California's water quality law. It covers \"waters of the state,\" defined as any surface or groundwater in California, which is broader than WOTUS.",
+trigger:["Any discharge of waste, including dredged or fill material, that could affect waters of the state","Applies to waters the Corps does not regulate (isolated wetlands, many vernal pools, some ephemeral streams)"],
+terms:["Report of Waste Discharge → Waste Discharge Requirements (WDRs)","State Wetland Definition and Procedures for Discharges of Dredged or Fill Material (effective 2020)","State wetland: saturated or inundated long enough to cause anaerobic conditions, with hydric substrate, and vegetation dominated by hydrophytes or no vegetation at all","Basin Plans set water quality objectives for each region"],
+bio:["Delineate state waters as well as federal waters; unvegetated areas such as playas or mudflats can be state wetlands","Show avoidance and minimization and an alternatives analysis, as the State Procedures require","Prepare compensatory mitigation proposals"],
+docs:["Delineation report covering state and federal waters","401 or WDR application"],
+permits:["§401 Certification (when there is a federal permit)","Waste Discharge Requirements (when there is no federal permit)"],
+tip:"After Sackett, Porter-Cologne is often the main protection for San Joaquin Valley vernal pools and alkali wetlands."},
+
+{id:"usfs",ab:"USFS Sensitive",name:"Forest Service Sensitive Species & Species of Conservation Concern",lv:"des",yr:"Forest Service Manual 2670; 2012 Planning Rule (36 CFR 219)",
+agency:"U.S. Forest Service. The Regional Forester designates the species (Region 5 for California).",
+purpose:"Agency policy to prevent species on National Forest land from trending toward federal listing. It is a management policy rather than a statute, implemented through NEPA.",
+trigger:["Any project on National Forest System land (timber, fuels reduction, grazing, trails, special-use permits, road work)","Species on the Regional Forester's Sensitive list, or on the Species of Conservation Concern (SCC) list for forests with revised plans"],
+terms:["Regional Forester Sensitive Species (RFSS)","Biological Evaluation (BE) for sensitive species; Biological Assessment for ESA species","Classic BE finding: \"may impact individuals but is not likely to result in a trend toward federal listing or loss of viability\"","Species of Conservation Concern replace RFSS on forests with revised plans under the 2012 Planning Rule (e.g., Inyo, Sequoia, and Sierra NFs)"],
+bio:["Check which list applies (RFSS or SCC) for that forest","Survey suitable habitat for sensitive plants and wildlife, often using Forest Service survey protocols","Write the BE or specialist report with a determination for each species","Recommend design features and Limited Operating Periods (LOPs), e.g., around California spotted owl or northern goshawk activity centers"],
+docs:["Biological Evaluation / Wildlife and Botany Specialist Reports","Input to the NEPA CE, EA, or EIS"],
+permits:["None; compliance is through the NEPA decision"],
+tip:"Sierra National Forest projects near Fresno use the forest's revised plan, so check for SCC rather than assuming the older sensitive species list."},
+
+{id:"blm",ab:"BLM Sensitive",name:"Bureau of Land Management Sensitive Species",lv:"des",yr:"BLM Manual 6840, Special Status Species Management",
+agency:"Bureau of Land Management. The BLM State Director designates sensitive species for each state.",
+purpose:"Agency policy to conserve species on public lands and take proactive steps so listing under the ESA becomes unnecessary.",
+trigger:["Any project or authorization on BLM-administered public land (grazing permits, renewable energy rights-of-way, OHV routes, mining)"],
+terms:["BLM Special Status Species = ESA-listed, proposed, and candidate species + BLM Sensitive species","BLM California's sensitive list has traditionally included many CRPR 1B plants found on BLM land","Analyzed in the BLM's NEPA documents"],
+bio:["Obtain the current BLM California sensitive species list for the field office","Survey and map sensitive species habitat in the project area","Assess effects and recommend conservation measures in the NEPA document"],
+docs:["Special status species report","Biology sections of the BLM EA or EIS"],
+permits:["None; compliance is through the NEPA decision and right-of-way or permit terms"],
+tip:"BLM land in the southern San Joaquin Valley and the Carrizo/Temblor areas supports kit fox, blunt-nosed leopard lizard, and many rare plants, so one project may trigger FESA, CESA, FP, and BLM Sensitive at once."},
+
+{id:"crpr",ab:"CRPR",name:"California Rare Plant Ranks",lv:"des",yr:"CNPS Inventory, maintained with CDFW",
+agency:"California Native Plant Society (CNPS) and CDFW, through the CNPS Inventory and CNDDB.",
+purpose:"A ranking system for the rarity and threat of California plants. CRPR is not a law, but CEQA lead agencies rely on it to decide which plants are rare under §15380.",
+trigger:["CRPR plants are documented within or near the project area in CNDDB or the CNPS Inventory","Suitable habitat (soils, community, elevation) exists on site"],
+terms:["Ranks 1A, 1B, 2A, 2B, 3, 4 with threat codes .1, .2, .3 (see Status Decoder)","CDFW 2018 Protocols for Surveying and Evaluating Impacts to Special Status Native Plant Populations and Sensitive Natural Communities","Floristic survey: identify every plant to the level needed to determine rarity"],
+bio:["Run a CNPS Inventory search for the project quad and surrounding quads","Time surveys to blooming periods; visit reference populations to confirm plants are detectable that year","Record negative findings carefully; a drought year may make results inconclusive","Report population size, extent, and condition; submit occurrences to CNDDB"],
+docs:["Botanical survey report with a complete floristic list","CNDDB field survey forms"],
+permits:["None by itself; impacts are addressed through CEQA mitigation (and CESA/NPPA if the plant is also listed)"],
+tip:"A 1B.1 plant that is not state or federally listed still usually needs a CEQA significance analysis and mitigation. Never drop it from a report because it has \"no legal status.\""}
+];
+
+/* ================= EXPLORER ================= */
+const LVNAME={fed:"Federal",st:"California",des:"Designation / Rank"};
+let filt="all", selected=null;
+function renderGrid(){
+  const q=document.getElementById("lawSearch").value.trim().toLowerCase();
+  const g=document.getElementById("lawGrid"); g.innerHTML="";
+  LAWS.filter(L=>(filt==="all"||L.lv===filt)&&(!q||JSON.stringify(L).toLowerCase().includes(q))).forEach(L=>{
+    const b=document.createElement("button");
+    b.className="lawtile"+(selected===L.id?" sel":"");
+    b.innerHTML=`<span class="badge ${L.lv}">${LVNAME[L.lv]}</span><div class="ab">${L.ab}</div><div class="nm">${L.name}</div>`;
+    b.onclick=()=>{selected=L.id;renderGrid();renderDetail();document.getElementById("lawDetail").scrollIntoView({behavior:"smooth",block:"start"});};
+    g.appendChild(b);
+  });
+  if(!g.children.length) g.innerHTML='<div class="empty">No matches.</div>';
+}
+const li=a=>"<ul>"+a.map(x=>`<li>${x}</li>`).join("")+"</ul>";
+function renderDetail(){
+  const L=LAWS.find(x=>x.id===selected); const d=document.getElementById("lawDetail");
+  if(!L){d.innerHTML="";return;}
+  d.innerHTML=`<div class="card">
+   <div class="detail-head"><h2>${L.ab}: ${L.name}</h2><span class="badge ${L.lv}">${LVNAME[L.lv]}</span></div>
+   <p class="sub">${L.yr}</p>
+   <p><b>Purpose.</b> ${L.purpose}</p>
+   <p><b>Who administers it.</b> ${L.agency}</p>
+   <div class="cols">
+     <div class="box"><h4>What triggers it</h4>${li(L.trigger)}</div>
+     <div class="box"><h4>Key terms &amp; sections</h4>${li(L.terms)}</div>
+     <div class="box bio"><h4>🥾 What the biologist does</h4>${li(L.bio)}</div>
+     <div class="box"><h4>📄 Reports you write</h4>${li(L.docs)}<h4 style="margin-top:8px">📝 Permits / approvals</h4>${li(L.permits)}</div>
+     ${L.upd?`<div class="box upd"><h4>⚠️ Recent change</h4><p style="margin:0">${L.upd}</p></div>`:""}
+   </div>
+   <div class="tip">💡 ${L.tip}</div></div>`;
+}
+document.querySelectorAll("#explore .filters button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("#explore .filters button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); filt=b.dataset.f; renderGrid();});
+document.getElementById("lawSearch").oninput=renderGrid;
+
+/* ================= SCREENER ================= */
+const QS=[
+ {g:"Who is approving or funding it?",items:[
+  ["caAgency","A California public agency must approve, fund, or carry out the project (discretionary)"],
+  ["fedPermit","A federal permit or federal funding is needed"],
+  ["usfs","The project is on National Forest land"],
+  ["blm","The project is on BLM land"]]},
+ {g:"Aquatic resources found",items:[
+  ["stream","Work in or near a stream, wash, lake, or riparian zone (bed, bank, or channel)"],
+  ["wotus","Fill in wetlands/waters with a continuous surface connection to a relatively permanent water (likely WOTUS)"],
+  ["isolated","Fill in isolated wetlands, vernal pools, or ephemeral features (likely state-only waters)"],
+  ["acre","Ground disturbance of 1 acre or more"]]},
+ {g:"Species found or likely",items:[
+  ["fedAnimal","Federally listed animal (FE/FT) present or likely"],
+  ["fedPlant","Federally listed plant present or likely"],
+  ["stateListed","State-listed or candidate species (SE/ST/SC) present or likely"],
+  ["fp","Fully Protected species present or nesting nearby"],
+  ["nppa","NPPA \"Rare\" (SR) plant present"],
+  ["crpr","CRPR 1B or 2B plant present"],
+  ["ssc","Species of Special Concern present (e.g., American badger, pallid bat)"],
+  ["nests","Active bird nests or raptor nests during work period"],
+  ["sensitiveSp","Agency sensitive species / SCC present on USFS or BLM land"]]}
+];
+const PRESETS=[
+ {n:"Solar farm on fallowed farmland (private land, county approval) with kit fox sign",s:["caAgency","acre","fedAnimal","stateListed","nests","ssc"]},
+ {n:"Culvert replacement on a Sierra NF road crossing a perennial creek",s:["fedPermit","usfs","stream","wotus","acre","sensitiveSp","nests"]},
+ {n:"Housing tract with vernal pools and fairy shrimp",s:["caAgency","isolated","acre","fedAnimal","crpr","nests"]},
+ {n:"BLM grazing permit renewal with rare plants",s:["fedPermit","blm","sensitiveSp","crpr","fedAnimal"]},
+ {n:"Orchard removal near a white-tailed kite nest (no permits needed)",s:["nests","fp"]}
+];
+function buildForm(){
+  const f=document.getElementById("screenForm");
+  f.innerHTML=QS.map(G=>`<fieldset><legend>${G.g}</legend>${G.items.map(([id,t])=>`<label class="chk"><input type="checkbox" id="q_${id}"> <span>${t}</span></label>`).join("")}</fieldset>`).join("");
+  f.querySelectorAll("input").forEach(i=>i.onchange=runScreen);
+  const p=document.getElementById("presets");
+  p.innerHTML=PRESETS.map((P,i)=>`<button data-i="${i}">${P.n}</button>`).join("")+'<button class="clr" data-i="-1">Clear all</button>';
+  p.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    f.querySelectorAll("input").forEach(i=>i.checked=false);
+    const i=+b.dataset.i; if(i>=0) PRESETS[i].s.forEach(id=>document.getElementById("q_"+id).checked=true);
+    runScreen();});
+}
+function runScreen(){
+  const c=id=>document.getElementById("q_"+id).checked;
+  const fedNexus=c("fedPermit")||c("usfs")||c("blm")||c("wotus");
+  const out=[]; const report=new Set(["Project description, location map, and survey dates/personnel","Methods: desktop review (CNDDB, CNPS Inventory, IPaC, NWI) and field surveys"]);
+  const add=(cls,title,why,items)=>out.push({cls,title,why,items});
+  if(c("caAgency")){add("","CEQA","A California agency has discretionary approval.",["Answer Appendix G Biological Resources (a)–(f)","Determine significance and write mitigation measures for the MMRP"]);report.add("CEQA impact analysis and significance determinations");report.add("Mitigation measures (avoidance, minimization, compensation)");}
+  if(fedNexus){add("fedb","NEPA","There is a federal permit, funding, or federal land.",["Lead federal agency picks CE, EA, or EIS under its own procedures","Biology feeds the Affected Environment and Environmental Consequences sections"]);report.add("NEPA affected environment and effects by alternative");}
+  if(c("wotus")){add("fedb","Clean Water Act §404 + §401","Fill in likely federal waters.",["Formal delineation and Corps jurisdictional determination","§404 permit from USACE; §401 certification from the Regional Water Board","The 404 permit is a federal nexus for ESA §7"]);report.add("Aquatic resources delineation (wetland data sheets, OHWM)");}
+  if(c("isolated")||c("wotus")){add("","Porter-Cologne","Discharge of fill to waters of the state.",["Delineate under the State Wetland Definition too","WDRs from the Regional Board if no federal permit applies"]);report.add("State waters mapping and alternatives analysis");}
+  if(c("acre")) add("fedb","CWA §402 NPDES Construction General Permit","1 acre or more of disturbance.",["SWPPP with erosion and sediment BMPs (often prepared by an engineer or QSD, but biologists flag sensitive areas)"]);
+  if(c("stream")){add("","Fish & Game Code §1602 (LSA)","Work affects bed, bank, channel, or riparian zone.",["Submit an LSA Notification to CDFW","Map top of bank and riparian edge; propose restoration"]);report.add("Stream and riparian habitat mapping");}
+  if(c("fedAnimal")||c("fedPlant")){
+    if(fedNexus) add("fedb","Federal ESA §7 consultation","Listed species + federal nexus.",["Biological Assessment with effect determinations","Informal (NLAA) or formal consultation → Biological Opinion"]);
+    else if(c("fedAnimal")) add("fedb","Federal ESA §9 / §10","Listed animal, no federal nexus.",["Avoid take, or apply for a §10 ITP with an HCP","Protocol surveys with a §10(a)(1)(A) permit if handling is needed"]);
+    if(c("fedPlant")&&!fedNexus) add("warn","Note on federal plants","No federal nexus on non-federal land.",["FESA §9 does not ban take of plants on private land unless state law is violated; CESA, NPPA, and CEQA may still apply"]);
+    report.add("Special-status species accounts and effect determinations");}
+  if(c("stateListed")){add("","CESA","State-listed or candidate species.",["Avoid take, or obtain a §2081(b) ITP (minimize and fully mitigate)","Use a §2080.1 Consistency Determination if also federally listed with a BO/ITP"]);report.add("CESA take analysis and mitigation");}
+  if(c("fp")) add("warn","Fully Protected species","Take generally cannot be permitted.",["Design full avoidance: nest buffers, work windows, biological monitor","Check whether SB 147 (qualifying infrastructure) or an NCCP applies"]);
+  if(c("nppa")) add("","NPPA","NPPA-designated rare plant on site.",["Coordinate with CDFW on avoidance, salvage, or take authorization","10-day notice to CDFW before a land-use change under §1913"]);
+  if(c("crpr")){add("desb","CRPR plants (via CEQA §15380)","CRPR 1B/2B plants usually count as rare under CEQA.",["Protocol-level floristic surveys at blooming time; document reference sites","Mitigation: avoidance, seed collection, transplantation, or preservation"]);report.add("Botanical survey results and floristic list");}
+  if(c("ssc")) add("desb","Species of Special Concern (via CEQA)","SSC are not listed but are considered under CEQA.",["Pre-construction surveys (e.g., badger dens, bat roosts)","Passive relocation or exclusion measures as appropriate"]);
+  if(c("nests")){add("","Nesting birds: FGC §3503, §3503.5, §3513 + MBTA","Active nests during the work period.",["Pre-construction nesting bird surveys in the nesting season","No-disturbance buffers until young fledge; monitor nests"]);report.add("Nesting bird measures");}
+  if(c("usfs")){add("desb","USFS Sensitive / SCC","National Forest land.",["Biological Evaluation or specialist report for sensitive species/SCC","Design features and Limited Operating Periods"]);report.add("USFS BE determinations");}
+  if(c("blm")){add("desb","BLM Sensitive (Manual 6840)","BLM land.",["Analyze sensitive species in the BLM NEPA document","Propose conservation measures to avoid trend toward listing"]);report.add("BLM special status species analysis");}
+  if(c("sensitiveSp")&&!c("usfs")&&!c("blm")) add("warn","Check the land manager","You flagged agency sensitive species, but neither USFS nor BLM land is checked.",["Agency sensitive lists only apply on that agency's lands"]);
+  report.add("Figures: survey area, habitat map, occurrences, aquatic features");
+  report.add("References and survey data appendices");
+  const o=document.getElementById("screenOut");
+  if(!out.length){o.innerHTML='<div class="empty">Check some boxes to see which laws are triggered.</div>';return;}
+  o.innerHTML=out.map(t=>`<div class="trig ${t.cls}"><h4>${t.title}</h4><div class="why">${t.why}</div>${li(t.items)}</div>`).join("")+
+   `<h3 style="margin-top:14px">📄 Your report outline</h3><ol class="reportlist">${[...report].map(r=>`<li>${r}</li>`).join("")}</ol>`;
+}
+
+/* ================= DECODER ================= */
+const CODES={
+ "FE":["fedc","Federally Endangered","In danger of extinction throughout all or a significant portion of its range. FESA §9 prohibits take of animals; §7 consultation if there is a federal nexus."],
+ "FT":["fedc","Federally Threatened","Likely to become endangered in the foreseeable future. Take protections apply through §4(d) rules; §7 consultation if federal nexus."],
+ "FPE":["fedc","Federally Proposed Endangered","Proposed for listing. Federal agencies must confer (§7(a)(4)) if their action may jeopardize it."],
+ "FPT":["fedc","Federally Proposed Threatened","Proposed for listing as threatened. Conference may be needed; treat as special-status under CEQA."],
+ "FC":["fedc","Federal Candidate","Listing warranted but precluded. No legal take protection, but considered under CEQA/NEPA and often BLM Sensitive."],
+ "FD":["fedc","Federally Delisted","Removed from the list; often monitored for 5 years after delisting."],
+ "SE":["stc","State Endangered (CESA)","Take prohibited under FGC §2080. Needs a §2081(b) ITP or §2080.1 Consistency Determination."],
+ "ST":["stc","State Threatened (CESA)","Same take protection as SE under CESA."],
+ "SC":["stc","State Candidate (CESA)","Under review by the Fish and Game Commission. Protected as if listed during candidacy."],
+ "SCE":["stc","State Candidate Endangered","Candidate for endangered status; protected as if listed during review."],
+ "SCT":["stc","State Candidate Threatened","Candidate for threatened status; protected as if listed during review."],
+ "SR":["stc","State Rare (NPPA)","Plant designated rare under the Native Plant Protection Act (FGC §1900–1913)."],
+ "FP":["stc","Fully Protected","FGC §3511/4700/5050/5515. Take generally cannot be authorized (exceptions: research, NCCP, and SB 147 qualifying projects)."],
+ "SSC":["desc","CDFW Species of Special Concern","No statutory take protection, but considered under CEQA as a special-status species."],
+ "WL":["desc","CDFW Watch List","Species of concern that do not meet SSC criteria; may be considered under CEQA."],
+ "BLM-S":["desc","BLM Sensitive","Managed under BLM Manual 6840 on BLM lands; analyzed in BLM NEPA documents."],
+ "FS-S":["desc","USFS Sensitive","Regional Forester Sensitive Species; needs a Biological Evaluation on National Forest projects."],
+ "SCC":["desc","USFS Species of Conservation Concern","Replaces sensitive species on forests with plans revised under the 2012 Planning Rule."],
+ "MBTA":["fedc","Migratory Bird Treaty Act","Protects native migratory birds, nests, and eggs; mirrored in state law by FGC §3513."],
+ "BGEPA":["fedc","Bald and Golden Eagle Protection Act","Prohibits take and disturbance of bald and golden eagles; USFWS issues eagle permits."]
+};
+const CRPR={"1A":"Presumed extirpated in CA; rare or extinct elsewhere","1B":"Rare, threatened, or endangered in CA and elsewhere","2A":"Presumed extirpated in CA; more common elsewhere","2B":"Rare, threatened, or endangered in CA; more common elsewhere","3":"Review list: needs more information","4":"Watch list: limited distribution"};
+const THREAT={"1":"seriously threatened in California","2":"moderately threatened in California","3":"not very threatened in California"};
+const SPECIES=[
+ ["San Joaquin kit fox","Vulpes macrotis mutica","FE/ST"],
+ ["Blunt-nosed leopard lizard","Gambelia sila","FE/SE/FP"],
+ ["California tiger salamander (Central DPS)","Ambystoma californiense","FT/ST"],
+ ["Giant garter snake","Thamnophis gigas","FT/ST"],
+ ["Swainson's hawk","Buteo swainsoni","ST/MBTA"],
+ ["White-tailed kite","Elanus leucurus","FP/MBTA"],
+ ["Golden eagle","Aquila chrysaetos","FP/BGEPA/MBTA"],
+ ["Tricolored blackbird","Agelaius tricolor","ST/MBTA"],
+ ["Vernal pool fairy shrimp","Branchinecta lynchi","FT"],
+ ["Valley elderberry longhorn beetle","Desmocerus californicus dimorphus","FT"],
+ ["American badger","Taxidea taxus","SSC"],
+ ["Pallid bat","Antrozous pallidus","SSC"],
+ ["Ringtail","Bassariscus astutus","FP"],
+ ["Bakersfield cactus","Opuntia basilaris var. treleasei","FE/SE/1B.1"],
+ ["San Joaquin adobe sunburst","Pseudobahia peirsonii","FT/SE/1B.1"],
+ ["Hairy Orcutt grass","Orcuttia pilosa","FE/SE/1B.1"],
+ ["Heartscale","Atriplex cordulata var. cordulata","1B.2"],
+ ["Spiny-sepaled button-celery","Eryngium spinosepalum","1B.2"]
+];
+function decode(){
+  const raw=document.getElementById("codeInput").value.toUpperCase();
+  const toks=raw.split(/[\/,\s;]+/).filter(Boolean);
+  const out=document.getElementById("decoded");
+  if(!toks.length){out.innerHTML='<div class="empty">Enter at least one code.</div>';return;}
+  let rows=[], laws=new Set();
+  toks.forEach(t=>{
+    const m=t.match(/^(?:CRPR)?(1A|1B|2A|2B|3|4)(?:\.([123]))?$/);
+    if(CODES[t]){const [cls,n,d]=CODES[t];rows.push(`<div class="row"><div class="tag">${t}</div><div><b>${n}.</b> ${d}</div></div>`);
+      if(/^F(E|T|P|C)/.test(t))laws.add("FESA");if(/^S(E|T|C)/.test(t))laws.add("CESA");if(t==="SR")laws.add("NPPA");if(t==="FP")laws.add("Fully Protected");if(t==="SSC"||t==="WL")laws.add("CEQA");if(t==="BLM-S")laws.add("BLM 6840");if(t==="FS-S"||t==="SCC")laws.add("USFS policy");if(t==="MBTA")laws.add("FGC §3513");}
+    else if(m){rows.push(`<div class="row"><div class="tag">CRPR ${t}</div><div><b>California Rare Plant Rank ${m[1]}.</b> ${CRPR[m[1]]}${m[2]?`; threat code .${m[2]}: ${THREAT[m[2]]}`:""}. ${/^(1|2)/.test(m[1])?"Generally treated as rare under CEQA §15380.":"Evaluate case by case under CEQA."}</div></div>`);laws.add("CEQA");}
+    else rows.push(`<div class="row"><div class="tag">${t}</div><div style="color:var(--red)">Not recognized. Check spelling (e.g., FE, ST, FP, SSC, 1B.1).</div></div>`);
+  });
+  out.innerHTML=`<h3>Decoded: ${toks.join(" / ")}</h3>${rows.join("")}${laws.size?`<div class="tip">⚖️ Laws/policies to address in your report: <b>${[...laws].join(", ")}</b>${laws.has("FESA")||laws.has("CESA")||laws.has("Fully Protected")?", plus CEQA analysis if there is a California discretionary approval":""}.</div>`:""}`;
+}
+function buildDecoder(){
+  const cb=document.getElementById("codeBtns");
+  cb.innerHTML=Object.keys(CODES).map(k=>`<button class="code ${CODES[k][0]}" title="${CODES[k][1]}">${k}</button>`).join("")+
+   ["1B.1","1B.2","2B.2","3","4.3"].map(k=>`<button class="code desc">${k}</button>`).join("");
+  cb.querySelectorAll("button").forEach(b=>b.onclick=()=>{const i=document.getElementById("codeInput");i.value=(i.value.trim()?i.value.trim()+" / ":"")+b.textContent;decode();});
+  const sb=document.getElementById("speciesBtns");
+  sb.innerHTML=SPECIES.map((s,i)=>`<button data-i="${i}">${s[0]} <i>(${s[1]})</i></button>`).join("");
+  sb.querySelectorAll("button").forEach(b=>b.onclick=()=>{const s=SPECIES[+b.dataset.i];document.getElementById("codeInput").value=s[2];decode();
+    document.getElementById("decoded").insertAdjacentHTML("afterbegin",`<p class="kicker">${s[0]} · <i>${s[1]}</i></p>`);});
+  document.getElementById("decodeBtn").onclick=decode;
+  document.getElementById("codeInput").onkeydown=e=>{if(e.key==="Enter")decode();};
+  decode();
+}
+
+/* ================= WORKFLOW ================= */
+const FLOW=[
+ {t:"Scoping & desktop review",laws:["CEQA","NEPA","FESA","CESA","CRPR"],tasks:["Define the project footprint and a survey buffer (study area)","Query CNDDB and the CNPS Inventory for the project quad and surrounding quads (a common approach is the 9-quad search)","Generate an IPaC official species list (USFWS) and check NMFS species if anadromous waters are nearby","Review critical habitat, NWI wetlands, NRCS soils, aerial imagery, and prior reports","Build a list of special-status species with potential to occur"],out:"Species list and a \"potential to occur\" table (Present / High / Moderate / Low / Absent, with reasons)"},
+ {t:"Reconnaissance habitat assessment",laws:["CEQA","CFGC","CWA"],tasks:["Walk the site and map vegetation communities (e.g., Manual of California Vegetation alliances)","Flag sensitive natural communities and riparian habitat","Note burrows, dens, roosts, raptor nests, elderberry shrubs, pools, and drainages","Refine the potential-to-occur table based on habitat on the ground"],out:"Habitat map and recommendations for focused surveys"},
+ {t:"Focused / protocol surveys",laws:["FESA","CESA","NPPA","CRPR","FP"],tasks:["Follow agency protocols and timing (e.g., botanical surveys at bloom; Swainson's hawk survey periods; wet- and dry-season branchiopod surveys)","Confirm surveyor qualifications and permits: §10(a)(1)(A) recovery permit, CDFW Scientific Collecting Permit or MOU","Check reference populations so a negative botanical result is meaningful","Record GPS locations, counts, photos, and conditions; submit CNDDB forms"],out:"Protocol survey reports with methods, dates, personnel, weather, and results"},
+ {t:"Aquatic resources delineation",laws:["CWA","Porter-Cologne","CFGC"],tasks:["Complete wetland data sheets at paired upland/wetland points (vegetation, soils, hydrology)","Map OHWM for streams and other waters","Map top of bank and riparian extent for CDFW §1602","Classify features as likely federal, state-only, or CDFW-jurisdictional"],out:"Aquatic Resources Delineation Report and GIS shapefiles"},
+ {t:"Impact analysis",laws:["CEQA","NEPA","FESA"],tasks:["Overlay the project footprint on habitat and species data","Quantify permanent vs. temporary impacts (acres, linear feet, individuals)","Address direct, indirect (noise, lighting, dust, edge effects), and cumulative impacts","Make CEQA significance calls and FESA effect determinations"],out:"Impact tables and significance/effect determinations. Practice in the Impacts & Mitigation tab, and draft species-specific analysis in the Species Report Builder."},
+ {t:"Avoidance, minimization & mitigation",laws:["CEQA","CESA","FP","CFGC"],tasks:["Avoid first: redesign, buffers, seasonal work windows","Minimize: WEAP training, biological monitors, exclusion fencing, pre-construction surveys","Compensate: habitat preservation, restoration, or mitigation bank credits at agreed ratios","Write measures that are specific, measurable, and enforceable"],out:"Mitigation measures for the MMRP, BA conservation measures, ITP and LSA conditions. The Species Report Builder drafts numbered BIO measures for each species."},
+ {t:"Reports & agency coordination",laws:["CEQA","NEPA","FESA","CESA","CWA","USFS Sensitive","BLM Sensitive"],tasks:["Biological Resources Assessment (CEQA)","Biological Assessment (FESA §7) and Biological Evaluation (USFS/BLM)","Delineation report, 404/401 or WDR applications, LSA Notification, CESA ITP application","Respond to agency comments and revise"],out:"Final reports and permit packages"},
+ {t:"Construction compliance",laws:["CEQA","CESA","FESA","CFGC"],tasks:["Conduct pre-construction surveys within the required window","Deliver WEAP training to construction crews","Monitor work, enforce buffers, and stop work if a listed species is found","Document compliance and file reports required by the MMRP, BO, ITP, and LSA"],out:"Daily monitoring logs and compliance reports"}
+];
+let flowOn=0;
+function renderFlow(){
+  const fb=document.getElementById("flowBtns");
+  fb.innerHTML=FLOW.map((s,i)=>`<button class="${i===flowOn?"on":""}" data-i="${i}"><b>${i+1}</b>${s.t}</button>`).join("");
+  fb.querySelectorAll("button").forEach(b=>b.onclick=()=>{flowOn=+b.dataset.i;renderFlow();});
+  const s=FLOW[flowOn];
+  document.getElementById("flowDetail").innerHTML=`<div class="kicker">Stage ${flowOn+1} of ${FLOW.length}</div><h2>${s.t}</h2>
+   <div class="chips">${s.laws.map(l=>`<span>${l}</span>`).join("")}</div>
+   <div class="cols"><div class="box bio"><h4>Field &amp; office tasks</h4>${li(s.tasks)}</div><div class="box"><h4>Product</h4><p style="margin:0">${s.out}</p></div></div>
+   <div class="qnav"><button class="btn ghost" ${flowOn===0?"disabled":""} id="fPrev">← Previous</button><button class="btn" ${flowOn===FLOW.length-1?"disabled":""} id="fNext">Next →</button></div>`;
+  document.getElementById("fPrev").onclick=()=>{if(flowOn>0){flowOn--;renderFlow();}};
+  document.getElementById("fNext").onclick=()=>{if(flowOn<FLOW.length-1){flowOn++;renderFlow();}};
+}
+
+/* ================= QUIZ ================= */
+const QUIZ=[
+ {q:"A county must approve a grading permit for a project with no federal involvement. Which environmental review law applies?",o:["NEPA","CEQA","Both CEQA and NEPA","Neither"],a:1,e:"CEQA applies to discretionary approvals by California public agencies. NEPA needs a federal action (federal land, funding, or permit)."},
+ {q:"You find a federally endangered plant on private land with no federal permit, funding, or land involved. What does FESA §9 prohibit?",o:["Any destruction of the plant","Nothing on private land unless it violates state law","Only collecting seeds","Only grading during bloom"],a:1,e:"FESA's plant protections in §9(a)(2) apply on federal land and where removal violates state law. CESA, NPPA, and CEQA can still apply on private land."},
+ {q:"Under the California Fish and Game Code, \"take\" means:",o:["Harass, harm, pursue, hunt, shoot, wound, kill, trap, capture, or collect","Hunt, pursue, catch, capture, or kill, or attempt to","Any habitat modification","Disturbing a species during breeding"],a:1,e:"FGC §86 is narrower than the federal definition: it has no \"harm\" or \"harass.\""},
+ {q:"A plant ranked CRPR 1B.1 but not state or federally listed is on your site. In a CEQA document you should:",o:["Ignore it; it has no legal status","Analyze impacts because it generally meets CEQA §15380","Get a CESA ITP","Consult with USFWS"],a:1,e:"CRPR 1 and 2 plants generally meet the definition of rare under CEQA §15380 and need an impact analysis and mitigation if impacts are significant."},
+ {q:"What does the \".1\" in CRPR 1B.1 mean?",o:["Only one population is known","Seriously threatened in California","Federally listed","Low priority for surveys"],a:1,e:"Threat codes: .1 seriously threatened, .2 moderately threatened, .3 not very threatened in California."},
+ {q:"After Sackett v. EPA (2023), an isolated vernal pool with no surface connection to other waters is most likely regulated under:",o:["CWA §404 only","Porter-Cologne as a water of the state","Nothing at all","NEPA"],a:1,e:"Isolated features often fall outside WOTUS, but California regulates them as waters of the state under Porter-Cologne."},
+ {q:"Your project will replace a culvert in a dry wash that only flows after storms. Which CDFW requirement should you check?",o:["Fish and Game Code §1602 Lake or Streambed Alteration","CESA §2081","Fully Protected statutes","None, because it is dry"],a:0,e:"§1602 covers rivers, streams, and lakes including intermittent and ephemeral drainages with a defined bed and bank."},
+ {q:"A white-tailed kite is nesting 100 m from a planned work area. What is the usual approach?",o:["Get a CESA ITP","Avoid the nest with a buffer and timing, since Fully Protected take generally can't be permitted","Relocate the nest","Nothing, kites are common"],a:1,e:"White-tailed kite is Fully Protected. Except for narrow cases (research, NCCP, SB 147 qualifying projects), avoidance is the path."},
+ {q:"On a Forest Service fuels project, which document addresses Regional Forester Sensitive Species?",o:["Biological Opinion","Biological Evaluation (BE)","LSA Agreement","Waste Discharge Requirements"],a:1,e:"The BE addresses sensitive species; a Biological Assessment addresses ESA species. Forests with revised plans use Species of Conservation Concern."},
+ {q:"Which permit should a surveyor hold before dip-netting pools for federally listed fairy shrimp?",o:["CEQA permit","§10(a)(1)(A) recovery permit from USFWS","BLM right-of-way","401 certification"],a:1,e:"Surveys that capture or handle listed species require a §10(a)(1)(A) recovery permit (plus state authorization as needed)."},
+ {q:"A species is listed both federally and by the state, and the project already has a federal Biological Opinion with an incidental take statement. What state option may apply?",o:["§2080.1 Consistency Determination","NPPA salvage notice","§1602 LSA","No state action is ever needed"],a:0,e:"Under FGC §2080.1, CDFW can find the federal authorization consistent with CESA, so a separate §2081 ITP isn't needed."},
+ {q:"Which statement about NEPA in 2026 is accurate?",o:["CEQ's NEPA regulations still control every agency","CEQ rescinded its regulations, and agencies follow their own NEPA procedures","NEPA was repealed by Congress","NEPA only applies to EISs now"],a:1,e:"CEQ removed its NEPA regulations (interim rule 2025, final rule January 2026). The statute remains, and agencies use their own procedures."}
+];
+let qi=0,score=0,answered=false;
+function renderQ(){
+  const box=document.getElementById("qbox"); document.getElementById("qbar").style.width=(qi/QUIZ.length*100)+"%";
+  if(qi>=QUIZ.length){box.innerHTML=`<h2>Score: ${score} / ${QUIZ.length}</h2><p>${score>=10?"Excellent. You're ready to scope a project.":score>=7?"Solid. Review the Law Explorer for the ones you missed.":"Keep studying. Try the Project Screener presets, then retake."}</p><button class="btn" id="qr">Retake</button>`;
+    document.getElementById("qr").onclick=()=>{qi=0;score=0;renderQ();};return;}
+  const Q=QUIZ[qi]; answered=false;
+  box.innerHTML=`<div class="kicker">Question ${qi+1} of ${QUIZ.length} · Score ${score}</div><div class="q">${Q.q}</div>
+   <div class="opts">${Q.o.map((o,i)=>`<button data-i="${i}">${o}</button>`).join("")}</div>
+   <div class="expl" id="qe"></div><div class="qnav"><span></span><button class="btn" id="qn" style="display:none">Next →</button></div>`;
+  box.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>{
+    if(answered)return; answered=true; const i=+b.dataset.i;
+    box.querySelectorAll(".opts button").forEach((x,j)=>{x.disabled=true;if(j===Q.a)x.classList.add("right");});
+    if(i===Q.a)score++; else b.classList.add("wrong");
+    const e=document.getElementById("qe"); e.style.display="block"; e.innerHTML=(i===Q.a?"<b>Correct.</b> ":"<b>Not quite.</b> ")+Q.e;
+    const n=document.getElementById("qn"); n.style.display="inline-block"; n.onclick=()=>{qi++;renderQ();};});
+}
+
+/* ================= TABS & INIT ================= */
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll("nav.tabs button").forEach(x=>x.classList.remove("on"));
+  document.querySelectorAll("section.panel").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); document.getElementById(b.dataset.tab).classList.add("on");});
+renderGrid(); buildForm(); buildDecoder(); renderFlow(); renderQ();
+</script>
+<script>
+/* ================= GENERAL MEASURES ================= */
+const GEN=[
+ {id:"weap",t:"Worker environmental awareness training",x:"Before starting work, all construction personnel shall attend a Worker Environmental Awareness Program (WEAP) presented by a qualified biologist. The training shall cover the special-status species and sensitive habitats that may occur on site, their legal protections, project avoidance and minimization measures, and the procedure if a protected species is encountered. Sign-in sheets shall be kept on site and provided to the lead agency on request."},
+ {id:"mon",t:"Qualified biological monitor",x:"A qualified biologist approved by the lead agency shall be on site during initial vegetation clearing and ground disturbance within or adjacent to suitable habitat. The biologist shall have authority to halt work that could harm a special-status species until the animal leaves on its own or the appropriate agency is consulted."},
+ {id:"esa",t:"Environmentally sensitive area fencing",x:"Before ground disturbance, the limits of work and all avoided sensitive resources shall be clearly marked with high-visibility fencing or flagging under the direction of the qualified biologist. Fencing shall be maintained until construction is complete, and no equipment, materials, or personnel shall enter fenced areas."},
+ {id:"foot",t:"Limit the footprint",x:"Vehicles and equipment shall be confined to the approved project footprint, designated staging areas, and existing roads. New disturbance outside these areas shall require prior review by the qualified biologist."},
+ {id:"speed",t:"Speed limit",x:"Project vehicles shall observe a maximum speed limit of 20 miles per hour on unpaved roads and within the project area. Nighttime vehicle travel shall be minimized."},
+ {id:"trench",t:"Trenches, pipes, and holes",x:"All excavations deeper than 2 feet shall be covered at the end of each workday or provided with earthen or plank escape ramps no steeper than 45 degrees. Excavations shall be inspected each morning before work. Pipes, culverts, and similar materials with a diameter of 4 inches or more shall be capped or inspected before being moved, buried, or used."},
+ {id:"trash",t:"Trash and attractants",x:"All food-related trash shall be placed in closed containers and removed from the site at least weekly. No pets or firearms shall be allowed on site, and no feeding of wildlife shall occur."},
+ {id:"chem",t:"Rodenticides and herbicides",x:"No rodenticides shall be used on the project site. Herbicides shall be applied only by a licensed applicator, following label directions, and not within buffers established for sensitive resources."},
+ {id:"bmp",t:"Erosion control and water quality",x:"Erosion and sediment control best management practices shall be installed before ground disturbance and maintained throughout construction. Erosion control materials shall not contain plastic monofilament netting. Refueling and equipment maintenance shall occur at least 100 feet from waters, wetlands, and drainages."},
+ {id:"light",t:"Lighting",x:"Construction and permanent lighting shall be shielded and directed downward and away from adjacent habitat. Nighttime construction shall be avoided within 500 feet of sensitive habitat unless approved by the qualified biologist."},
+ {id:"weed",t:"Invasive species prevention",x:"Equipment shall be cleaned of soil and plant material before entering the site. Temporarily disturbed areas shall be revegetated with a locally appropriate native seed mix, and invasive plants shall be controlled in disturbed areas for at least 3 years or until performance standards are met."},
+ {id:"rep",t:"Encounter and reporting procedures",x:"If a special-status species is found in the work area, work in the vicinity shall stop and the qualified biologist shall be notified immediately. Any injury or mortality of a listed species shall be reported to CDFW and/or USFWS within the timeframe required by applicable permits. The qualified biologist shall prepare a compliance report summarizing implementation of these measures and submit it to the lead agency within 30 days of construction completion."}
+];
+
+/* ================= SPECIES PROFILES =================
+ cal arrays use month numbers 1-12. sv = survey window, sn = sensitive period, wk = preferred work window */
+const SP=[
+{id:"sjkf",n:"San Joaquin kit fox",s:"Vulpes macrotis mutica",g:"Mammals",st:"FE / ST",fp:false,
+ laws:["FESA (endangered)","CESA (threatened)","CEQA"],ag:"USFWS (Sacramento FWO) and CDFW",
+ hab:"Annual grassland, valley saltbush scrub, alkali sink, and oak savanna in the San Joaquin Valley and surrounding foothills. Also uses agricultural edges, canal banks, and some urban areas (e.g., Bakersfield). Kit foxes use multiple dens year-round, so dens are the key survey target.",
+ det:["Dens with small, keyhole-shaped entrances (commonly about 5–8 inches tall), often with fresh dirt, tracks, scat, or prey remains","Atypical dens in culverts, pipes, and debris piles","Tracks and scat; camera stations, spotlighting, or scat-detection dogs for presence surveys","Look-alikes: coyote and gray fox dens are larger; badger dens are wider than tall"],
+ pro:"USFWS (2011) Standardized Recommendations for Protection of the Endangered San Joaquin Kit Fox Prior to or During Ground Disturbance; USFWS (1999) survey protocol for the northern range",
+ pts:["Pre-construction den survey no less than 14 days and no more than 30 days before ground disturbance","Survey the footprint plus a surrounding buffer (commonly 200 feet)","Classify each den: potential, known, natal/pupping, or atypical","Potential dens may be monitored (tracking medium or cameras) before agencies allow hand excavation; follow the agencies' direction"],
+ cal:{sv:[1,2,3,4,5,6,7,8,9,10,11,12],sn:[2,3,4,5,6],wk:[7,8,9,10,11,12,1]},calN:"Natal/pupping period shown is approximate. Pre-construction surveys are needed whenever work occurs.",
+ imp:[["Permanent loss of denning and foraging habitat in the footprint","d"],["Crushing or entombing kit foxes in dens during grading","d"],["Vehicle strikes on access roads","d"],["Entrapment in open trenches, pipes, or culverts","i"],["Rodenticide exposure and attraction of predators or competitors by trash","i"],["Fragmentation and barriers to movement from fencing or development","i"],["Noise, lighting, and human activity causing den abandonment","i"],["Contribution to regional habitat loss in combination with other projects","c"]],
+ mm:[["Pre-construction den survey","A qualified biologist shall conduct a pre-construction survey for San Joaquin kit fox dens within the project footprint and a 200-foot buffer no less than 14 days and no more than 30 days before ground disturbance, following the USFWS (2011) Standardized Recommendations. Results shall be submitted to USFWS and CDFW before work begins.","avoid"],
+  ["Den exclusion zones","Exclusion zones shall be established around dens using flagging or fencing: at least 50 feet for potential and atypical dens and at least 100 feet for known dens. If a natal or pupping den is found, no work shall occur near it and USFWS and CDFW shall be contacted immediately for direction.","avoid"],
+  ["Den excavation only with agency approval","Dens within the footprint that cannot be avoided shall be excavated only after receiving written approval from USFWS and CDFW, and only by hand under the supervision of a qualified biologist, after the den has been confirmed unoccupied.","min"],
+  ["Kit fox–permeable fencing","Where perimeter security fencing is required, fencing shall be designed with openings or a raised bottom edge that allows kit fox passage, as approved by USFWS and CDFW.","min"],
+  ["No rodenticides","Rodenticides shall not be used on the project site, during construction or operation, to protect kit foxes and their prey base.","min"]],
+ comp:["Preserve suitable kit fox habitat in perpetuity through a conservation easement or purchase of credits at a USFWS/CDFW-approved conservation bank, at a ratio determined by the agencies","Participate in an applicable regional HCP or NCCP where one covers the project area"],
+ gen:["weap","mon","foot","speed","trench","trash","chem","light","rep"],
+ per:["FESA §7 Biological Opinion (federal nexus) or §10 Incidental Take Permit","CESA §2081(b) ITP or §2080.1 Consistency Determination"]},
+
+{id:"bnll",n:"Blunt-nosed leopard lizard",s:"Gambelia sila",g:"Reptiles & Amphibians",st:"FE / SE / FP",fp:true,
+ laws:["FESA (endangered)","CESA (endangered)","Fully Protected (FGC §5050)","CEQA"],ag:"USFWS and CDFW",
+ hab:"Sparsely vegetated alkali sink scrub, saltbush scrub, and open grassland on flat or gently sloping ground in the San Joaquin Valley and adjacent foothills. Relies on small mammal burrows (especially kangaroo rat burrows) for shelter and egg-laying. Dense nonnative grass reduces habitat quality.",
+ det:["Visual encounter surveys on warm, sunny days while lizards are above ground","Adults are active above ground mainly in spring and early summer; hatchlings appear in mid to late summer","Look-alikes: side-blotched lizard and western fence lizard are much smaller; long-nosed leopard lizard does not overlap in most of the range"],
+ pro:"CDFW Approved Survey Methodology for the Blunt-nosed Leopard Lizard (confirm the current version)",
+ pts:["The protocol sets the number of survey days for adults and hatchlings, the survey season, time of day, and air and ground temperature limits","Surveyors walk closely spaced transects through all suitable habitat","Negative results are valid only for a limited time","Because BNLL is Fully Protected, surveyors may not capture or handle lizards without specific authorization"],
+ cal:{sv:[4,5,6,7,8,9],sn:[1,2,3,4,5,6,7,8,9,10,11,12],wk:[5,6,7,8,9]},calN:"Take is prohibited year-round. Work is commonly scheduled while lizards are active above ground (and can be seen and avoided) after negative surveys, with a monitor present. Confirm timing with CDFW.",
+ imp:[["Crushing lizards or collapsing occupied burrows during grading or vehicle travel","d"],["Permanent loss of scrub and open grassland habitat and burrows","d"],["New perches (fences, poles) that increase raven and raptor predation","i"],["Increased nonnative grass cover from soil disturbance, degrading open habitat","i"],["Fragmentation of remaining habitat patches","c"]],
+ mm:[["Full avoidance","Because blunt-nosed leopard lizard is Fully Protected, the project shall be designed and implemented to avoid all take. Take cannot be authorized under CESA for this species unless the project qualifies under SB 147 or an approved NCCP.","avoid"],
+  ["Protocol surveys before ground disturbance","Protocol-level surveys following the current CDFW Approved Survey Methodology shall be completed in all suitable habitat before ground disturbance. Results shall be submitted to CDFW and USFWS for review.","avoid"],
+  ["Burrow avoidance","All small mammal burrows within suitable habitat in or adjacent to the work area shall be flagged and avoided by at least 50 feet, or a distance approved by CDFW.","avoid"],
+  ["Exclusion fencing","With CDFW and USFWS approval, exclusion fencing shall be installed around work areas under the supervision of a qualified biologist and inspected daily.","min"],
+  ["No handling","No one shall capture, handle, or relocate a blunt-nosed leopard lizard. If a lizard is seen in or near the work area, work within 50 feet shall stop until the lizard leaves on its own.","min"],
+  ["Perch deterrents","Perch deterrents shall be installed on new fences, poles, and structures within 500 feet of suitable habitat.","min"]],
+ comp:["Preserve and manage occupied habitat in perpetuity, including grazing or other vegetation management that keeps habitat open, at a ratio determined by USFWS and CDFW"],
+ gen:["weap","mon","esa","foot","speed","trench","trash","chem","rep"],
+ per:["FESA §7 or §10 for federal take coverage","No CESA take authorization available (Fully Protected) unless SB 147 or NCCP applies"]},
+
+{id:"cts",n:"California tiger salamander (Central DPS)",s:"Ambystoma californiense",g:"Reptiles & Amphibians",st:"FT / ST",fp:false,
+ laws:["FESA (threatened)","CESA (threatened)","CEQA","Often Porter-Cologne / CWA for breeding pools"],ag:"USFWS and CDFW",
+ hab:"Breeds in vernal pools and seasonal ponds, including stock ponds, that hold water long enough for larvae to metamorphose. Adults spend most of the year underground in California ground squirrel and gopher burrows in surrounding grassland and open oak woodland, sometimes more than a mile from the breeding pond.",
+ det:["Aquatic larval surveys by dip-netting or seining in spring","Upland drift fences with pitfall traps during rainy-night migrations","Adults are rarely seen except on rainy nights; road surveys on rainy nights"],
+ pro:"USFWS and CDFG (2003) Interim Guidance on Site Assessment and Field Surveys for Determining Presence or a Negative Finding of the California Tiger Salamander",
+ pts:["Start with a site assessment of breeding and upland habitat within about 1.3 miles of the project","A negative finding generally requires surveys over two seasons, combining upland drift fencing in the rainy season and aquatic larval surveys","Anyone capturing CTS needs a §10(a)(1)(A) permit and CDFW authorization","Many projects assume presence and mitigate instead of surveying"],
+ cal:{sv:[11,12,1,2,3,4,5],sn:[11,12,1,2,3],wk:[5,6,7,8,9,10]},calN:"Migration and breeding follow the first heavy fall/winter rains. Upland ground disturbance is usually scheduled for the dry season.",
+ imp:[["Permanent loss of upland burrow habitat","d"],["Fill or grading of breeding pools","d"],["Crushing or entombing salamanders in burrows","d"],["Road mortality during migration","i"],["Fragmentation between breeding pools and upland habitat","i"],["Altered hydrology or sedimentation of breeding pools","i"],["Introduction of nonnative predators (bullfrogs, fish) to ponds","i"]],
+ mm:[["Avoid breeding pools","Project design shall avoid known and potential CTS breeding pools and maintain an undeveloped upland buffer around them, as approved by USFWS and CDFW.","avoid"],
+  ["Dry-season ground disturbance","Initial ground disturbance in suitable upland habitat shall occur during the dry season (approximately May through mid-October) and shall stop for 24 hours after any rain event of 0.25 inch or more, unless exclusion fencing is in place.","avoid"],
+  ["Exclusion fencing","Before the rainy season, wildlife exclusion fencing approved by USFWS and CDFW shall be installed between breeding habitat and the work area and inspected daily by a qualified biologist.","min"],
+  ["Relocation by approved biologist only","Any CTS found in the work area shall be relocated only by a USFWS- and CDFW-approved biologist to suitable habitat outside the work area, following permit conditions.","min"],
+  ["No rodent control","Ground squirrel and gopher control shall not occur in upland habitat within 1.3 miles of breeding pools, to protect burrows used by CTS.","min"]],
+ comp:["Preserve occupied breeding and upland habitat or purchase CTS credits at an approved conservation bank, at ratios determined by USFWS and CDFW","Create or enhance breeding pools within a protected preserve"],
+ gen:["weap","mon","esa","foot","speed","trench","bmp","chem","rep"],
+ per:["FESA §7 BO or §10 ITP","CESA §2081(b) ITP or §2080.1 Consistency Determination","CWA §404/§401 or Porter-Cologne WDRs if pools are filled"]},
+
+{id:"ggs",n:"Giant garter snake",s:"Thamnophis gigas",g:"Reptiles & Amphibians",st:"FT / ST",fp:false,
+ laws:["FESA (threatened)","CESA (threatened)","CEQA","CFGC §1602 for canal and slough work"],ag:"USFWS and CDFW",
+ hab:"Marshes, sloughs, irrigation canals, drainage ditches, and rice fields with slow-moving water, emergent vegetation, and open banks for basking. Adjacent uplands with burrows and crevices are used for winter brumation.",
+ det:["Visual surveys on warm days along banks and emergent vegetation","Funnel trapping by permitted biologists","Look-alikes: valley garter snake and common garter snake; identification requires care"],
+ pro:"USFWS standard avoidance and minimization measures for giant garter snake (programmatic guidance; confirm the current version)",
+ pts:["Assess aquatic and upland habitat within about 200 feet of the work area","Pre-construction survey within 24 hours before work, repeated if work stops for 2 weeks or more","Trapping requires a §10(a)(1)(A) permit"],
+ cal:{sv:[4,5,6,7,8,9,10],sn:[10,11,12,1,2,3,4],wk:[5,6,7,8,9]},calN:"Snakes are in brumation and cannot move away from equipment from about October through April. Work in habitat is commonly limited to May 1–October 1.",
+ imp:[["Crushing during excavation or vehicle travel on banks and uplands","d"],["Permanent fill of aquatic habitat","d"],["Temporary dewatering of canals or ditches","d"],["Degraded water quality from sediment or contaminants","i"],["Fragmentation of the canal and wetland network","c"]],
+ mm:[["Active-season work window","Construction within giant garter snake aquatic habitat and adjacent uplands within 200 feet shall occur only between May 1 and October 1, when snakes are active and able to move away.","avoid"],
+  ["Dewatering before excavation","Aquatic habitat that must be disturbed shall be dewatered and kept dry for at least 15 consecutive days before excavation or fill.","min"],
+  ["Pre-construction survey","A qualified biologist shall survey the work area no more than 24 hours before work begins and again if work stops for 2 weeks or more.","min"],
+  ["Restore temporary impacts","Temporarily disturbed aquatic and upland habitat shall be restored to pre-project contours and revegetated with native species.","min"]],
+ comp:["Restore or create giant garter snake habitat, or purchase credits at an approved bank, at ratios set by USFWS and CDFW"],
+ gen:["weap","mon","esa","foot","bmp","chem","rep"],
+ per:["FESA §7 BO or §10 ITP","CESA §2081(b) ITP or §2080.1","CFGC §1602 LSA Agreement","CWA §404/§401 if waters are filled"]},
+
+{id:"vpfs",n:"Vernal pool fairy shrimp",s:"Branchinecta lynchi",g:"Invertebrates",st:"FT",fp:false,
+ laws:["FESA (threatened)","CEQA","CWA §404 or Porter-Cologne for pool fill"],ag:"USFWS; Regional Water Board and USACE for the pools themselves",
+ hab:"Vernal pools, swales, and other seasonal pools in grassland on hardpan or clay soils. Also found in some roadside ditches and stock ponds that pond during winter. Cysts (eggs) persist in dry soil for years.",
+ det:["Dip-netting while pools are inundated","Identifying cysts from dry-season soil samples","Look-alikes: other Branchinecta species require microscope identification"],
+ pro:"USFWS (2017) Survey Guidelines for the Listed Large Branchiopods",
+ pts:["Surveyors must hold a §10(a)(1)(A) recovery permit","Wet-season sampling begins soon after pools fill and repeats at regular intervals while water remains","Dry-season soil sampling looks for cysts","A full survey usually combines wet- and dry-season sampling (or two wet seasons); many projects assume presence"],
+ cal:{sv:[11,12,1,2,3,4,6,7,8,9,10],sn:[12,1,2,3,4],wk:[6,7,8,9,10]},calN:"Dry-season work avoids active shrimp, but grading still destroys the cyst bank, so a dry-season schedule reduces but does not avoid impacts.",
+ imp:[["Permanent fill or grading of pools, destroying the cyst bank","d"],["Compaction of pools by equipment","d"],["Altered pool hydrology from grading in the pool's watershed","i"],["Sediment and contaminants in runoff","i"],["Fragmentation of pool complexes","c"]],
+ mm:[["Avoid pools and their watersheds","Project design shall avoid vernal pools and the surrounding upland areas that supply their water. Pools within 250 feet of the project shall be evaluated for indirect effects in coordination with USFWS.","avoid"],
+  ["Fence avoided pools","Avoided pools and buffers shall be enclosed with environmentally sensitive area fencing before ground disturbance, and no equipment or runoff shall enter them.","avoid"],
+  ["Dry-season work","Work near avoided pools shall be scheduled for the dry season when pools are not inundated.","min"],
+  ["Hydrology protection","Grading and drainage shall be designed so that the volume and timing of runoff to avoided pools is maintained, as confirmed by a qualified hydrologist.","min"]],
+ comp:["Preserve and create vernal pool habitat or purchase credits at an approved bank; USFWS commonly uses separate preservation and creation ratios","Fund long-term management of preserved pools"],
+ gen:["weap","mon","esa","foot","bmp","weed","rep"],
+ per:["FESA §7 (if Corps or other federal nexus) or §10 ITP","CWA §404/§401 if pools are WOTUS; Porter-Cologne WDRs if state-only waters"]},
+
+{id:"velb",n:"Valley elderberry longhorn beetle",s:"Desmocerus californicus dimorphus",g:"Invertebrates",st:"FT",fp:false,
+ laws:["FESA (threatened)","CEQA"],ag:"USFWS",
+ hab:"Lives only in blue elderberry shrubs (Sambucus), mainly in riparian corridors and adjacent uplands of the Central Valley and lower foothills. Larvae bore inside stems for 1–2 years.",
+ det:["Map every elderberry shrub; count stems 1 inch or more in diameter at ground level","Look for round to oval exit holes on stems","Adults are rarely seen; the shrub is the survey target"],
+ pro:"USFWS (2017) Framework for Assessing Impacts to the Valley Elderberry Longhorn Beetle",
+ pts:["Survey all elderberry shrubs within 165 feet of the project","Record stem counts by diameter, exit holes, and whether the shrub is in riparian habitat","Shrubs within the range are treated as habitat even without exit holes"],
+ cal:{sv:[1,2,3,4,5,6,7,8,9,10,11,12],sn:[3,4,5,6],wk:[11,12,1,2]},calN:"Adults fly in spring. Trimming and transplanting are done while shrubs are dormant (about November–February).",
+ imp:[["Permanent removal of elderberry shrubs","d"],["Trimming of stems that may hold larvae","d"],["Dust, herbicide drift, or altered water supply stressing shrubs","i"],["Fragmentation of riparian elderberry corridors","c"]],
+ mm:[["Avoidance area","Elderberry shrubs shall be protected with a fenced avoidance area at least 20 feet from the dripline, consistent with the USFWS (2017) Framework.","avoid"],
+  ["Dormant-season trimming only","Any trimming shall occur between November and February and shall avoid removing stems 1 inch or more in diameter.","min"],
+  ["Dust and chemical controls","Water shall be applied to control dust within 100 feet of shrubs, and no insecticides or herbicides shall be applied within the distance specified in the USFWS Framework.","min"],
+  ["Transplanting","Shrubs that cannot be avoided shall be transplanted during dormancy to a USFWS-approved conservation area under the supervision of a qualified biologist.","min"]],
+ comp:["Purchase VELB credits at a USFWS-approved conservation bank or plant elderberry seedlings and associated natives at an approved site, per the 2017 Framework"],
+ gen:["weap","mon","esa","foot","rep"],
+ per:["FESA §7 BO (federal nexus) or §10 ITP; not state listed"]},
+
+{id:"swha",n:"Swainson's hawk",s:"Buteo swainsoni",g:"Birds",st:"ST / MBTA",fp:false,
+ laws:["CESA (threatened)","FGC §3503, §3503.5, §3513","MBTA","CEQA"],ag:"CDFW",
+ hab:"Nests in tall trees in riparian areas, along roads and canals, field edges, and isolated trees, often near agriculture. Forages over grassland and crops such as alfalfa, hay, and grain. Conversion of foraging habitat is a major impact in the Central Valley.",
+ det:["Adults perched or soaring near nest trees; territorial calls","Nests are large stick platforms high in trees","Multiple visits are needed because nests can be hard to see once trees leaf out"],
+ pro:"Swainson's Hawk Technical Advisory Committee (2000) Recommended Timing and Methodology for Swainson's Hawk Nesting Surveys in California's Central Valley; CDFG (1994) Staff Report regarding Mitigation for Impacts to Swainson's Hawks in the Central Valley",
+ pts:["Survey potential nest trees within 0.5 mile of the project","Complete the recommended number of visits in the defined survey periods before construction","Record nest location, occupancy, and behavior; map foraging habitat"],
+ cal:{sv:[3,4,5,6,7],sn:[3,4,5,6,7,8,9],wk:[10,11,12,1,2]},calN:"The nesting season commonly runs from about March 1 to September 15.",
+ imp:[["Removal of nest trees","d"],["Disturbance causing nest abandonment or loss of eggs or young (take)","d"],["Permanent loss of foraging habitat within 10 miles of active nests","d"],["Noise and human activity near nests","i"],["Regional loss of foraging habitat from urban and solar development","c"]],
+ mm:[["Protocol nesting surveys","A qualified biologist shall conduct Swainson's hawk nesting surveys within 0.5 mile of the project following the 2000 Technical Advisory Committee methodology during the nesting season before construction.","avoid"],
+  ["Active nest buffer","If an active nest is found, a no-disturbance buffer of at least 0.25 mile (or another distance approved by CDFW) shall be established and maintained until a qualified biologist confirms the young have fledged and are no longer dependent on the nest.","avoid"],
+  ["Remove nest trees outside the nesting season","Trees that must be removed shall be removed between September 16 and February 28.","avoid"],
+  ["Nest monitoring","If work must occur within the buffer, a qualified biologist shall monitor the nest daily and have authority to stop work if the birds show signs of distress, as approved by CDFW.","min"]],
+ comp:["Preserve foraging habitat consistent with the CDFG (1994) staff report: 1:1 for loss within 1 mile of an active nest, 0.75:1 within 1–5 miles, and 0.5:1 within 5–10 miles","Plant replacement nest trees if nest trees are removed"],
+ gen:["weap","mon","esa","foot","rep"],
+ per:["CESA §2081(b) ITP if take cannot be avoided","MBTA and FGC §3503.5 (no permit; avoid take of active nests)"]},
+
+{id:"wtki",n:"White-tailed kite",s:"Elanus leucurus",g:"Birds",st:"FP / MBTA",fp:true,
+ laws:["Fully Protected (FGC §3511)","FGC §3503, §3503.5","MBTA","CEQA"],ag:"CDFW",
+ hab:"Nests in the tops of dense trees in riparian areas, oak woodland, and trees at the edges of agricultural fields. Forages over grassland, pasture, crops, and marsh, often hovering.",
+ det:["Distinctive hovering (kiting) while hunting","Nests in dense upper canopy; adults carry prey and sticks","Gathers at communal roosts in winter"],
+ pro:"No species-specific state protocol; nesting raptor surveys in suitable habitat during the nesting season",
+ pts:["Survey suitable nesting trees within at least 0.25 mile of the project, or the distance CDFW recommends","Repeat surveys close to the start of work, since kites may nest late"],
+ cal:{sv:[2,3,4,5,6,7,8],sn:[2,3,4,5,6,7,8],wk:[9,10,11,12,1]},calN:"Nesting season shown is approximate; kites can nest into late summer.",
+ imp:[["Disturbance causing nest failure (take of a Fully Protected species)","d"],["Removal of nest trees","d"],["Loss of foraging habitat","d"],["Noise and lighting near nest sites","i"]],
+ mm:[["Pre-construction nesting survey","A qualified biologist shall survey for active white-tailed kite nests within 0.25 mile of the work area no more than 7 days before work during the nesting season.","avoid"],
+  ["Nest buffer","Because the species is Fully Protected and take cannot be authorized for most projects, a no-disturbance buffer approved by CDFW shall be established around each active nest and maintained until the young are independent.","avoid"],
+  ["Tree removal outside the nesting season","Removal of potential nest trees shall occur between September 1 and January 31.","avoid"]],
+ comp:["Preserve foraging habitat and plant replacement nest trees, as determined in consultation with CDFW"],
+ gen:["weap","mon","esa","light","rep"],
+ per:["No take authorization (Fully Protected) unless SB 147 or an NCCP applies; full avoidance required"]},
+
+{id:"trbl",n:"Tricolored blackbird",s:"Agelaius tricolor",g:"Birds",st:"ST / MBTA",fp:false,
+ laws:["CESA (threatened)","FGC §3503, §3513","MBTA","CEQA"],ag:"CDFW",
+ hab:"Nests in dense colonies in cattail and bulrush marsh, Himalayan blackberry, thistle, and grain or silage fields. Forages in grassland, pasture, and agricultural fields near the colony. Colony sites can change from year to year.",
+ det:["Large, noisy colonies","Males have red epaulets with a white lower margin (red-winged blackbird's margin is yellow)","Check silage and grain fields in spring"],
+ pro:"CDFW guidance and the Statewide Tricolored Blackbird Survey methods",
+ pts:["Survey suitable nesting substrate in and near the project during the nesting season","Repeat surveys before work, since colonies may form quickly"],
+ cal:{sv:[3,4,5,6,7],sn:[3,4,5,6,7],wk:[8,9,10,11,12,1,2]},calN:"Most colonies are active from about March through July.",
+ imp:[["Destruction of an active colony, including by harvest or vegetation removal (take)","d"],["Disturbance causing colony abandonment","i"],["Loss of nearby foraging habitat","d"]],
+ mm:[["Pre-construction colony survey","A qualified biologist shall survey for tricolored blackbird colonies within 500 feet of the work area no more than 7 days before work during the nesting season.","avoid"],
+  ["Colony buffer","If an active colony is found, a no-disturbance buffer of at least 300 feet (or another distance approved by CDFW) shall be maintained until the young have fledged.","avoid"],
+  ["Remove nesting substrate outside the season","Removal of marsh or blackberry nesting substrate shall occur outside the nesting season, in coordination with CDFW.","avoid"]],
+ comp:["Preserve or restore nesting and foraging habitat, as determined with CDFW"],
+ gen:["weap","mon","esa","rep"],
+ per:["CESA §2081(b) ITP if take cannot be avoided"]},
+
+{id:"buow",n:"Western burrowing owl",s:"Athene cunicularia hypugaea",g:"Birds",st:"SC / SSC / MBTA",fp:false,
+ laws:["CESA (candidate: protected as if listed)","FGC §3503, §3503.5, §3513","MBTA","CEQA"],ag:"CDFW",
+ hab:"Open grassland, desert scrub, agricultural edges, levees, canal banks, airports, and vacant lots. Uses ground squirrel burrows and artificial burrows such as culverts, pipes, and debris piles.",
+ det:["Owls standing at burrow entrances, especially at dawn and dusk","Whitewash, pellets, feathers, and prey remains at burrows","Burrows decorated with debris"],
+ pro:"CDFG (2012) Staff Report on Burrowing Owl Mitigation",
+ pts:["Habitat assessment of the site and a 150-meter (about 500-foot) buffer","Breeding-season surveys: 4 visits, at least 1 between February 15 and April 15 and 3 between April 15 and July 15, at least 3 weeks apart","Take avoidance survey no more than 14 days before ground disturbance, repeated if work lapses","Because the species is a CESA candidate, confirm current survey and permitting expectations with CDFW"],
+ cal:{sv:[2,3,4,5,6,7],sn:[2,3,4,5,6,7,8],wk:[9,10,11,12,1]},calN:"The 2012 Staff Report defines the breeding season as February 1–August 31. Wintering owls are also present outside that period.",
+ imp:[["Collapsing occupied burrows, killing owls, eggs, or young","d"],["Permanent loss of burrows and foraging habitat","d"],["Eviction from burrows (may be take while the species is a CESA candidate)","d"],["Disturbance causing nest abandonment","i"],["Regional habitat loss from development","c"]],
+ mm:[["Take avoidance survey","A qualified biologist shall conduct a burrowing owl take avoidance survey of the project site and a 500-foot buffer no more than 14 days before ground disturbance, following the CDFG (2012) Staff Report, and repeat it if work stops for more than 14 days.","avoid"],
+  ["Burrow buffers","Occupied burrows shall be protected with no-disturbance buffers based on season and disturbance level as described in the 2012 Staff Report (for example, 200–500 meters at nesting sites during the breeding season), or as approved by CDFW.","avoid"],
+  ["No eviction without CDFW authorization","Because the western burrowing owl is a CESA candidate, no owl shall be evicted or excluded from a burrow without prior written authorization from CDFW. Any approved exclusion shall occur outside the breeding season under an approved exclusion and mitigation plan.","min"],
+  ["Artificial burrows","If owls are excluded with CDFW approval, replacement artificial burrows shall be installed in protected habitat before exclusion.","min"]],
+ comp:["Preserve occupied burrowing owl habitat in perpetuity with management, at a ratio determined with CDFW"],
+ gen:["weap","mon","esa","foot","speed","chem","rep"],
+ per:["CESA §2081(b) ITP may be needed for take, including eviction, while the species is a candidate","MBTA and FGC §3503.5 (avoid take of active nests)"]},
+
+{id:"nest",n:"Nesting birds (general)",s:"All native birds and raptors",g:"Birds",st:"MBTA / FGC",fp:false,
+ laws:["MBTA","FGC §3503 (nests and eggs)","FGC §3503.5 (raptors and owls)","FGC §3513","CEQA"],ag:"CDFW (state) and USFWS (MBTA)",
+ hab:"Any vegetation, structure, or ground surface on or near the site: trees, shrubs, grassland, bridges, buildings, and bare ground (killdeer).",
+ det:["Adults carrying nest material or food, alarm calls, distraction displays","Search vegetation and structures systematically"],
+ pro:"No single protocol; surveys by a qualified biologist during the nesting season",
+ pts:["Survey the work area and a buffer (commonly 100 feet for songbirds and 500 feet for raptors)","Survey shortly before work begins (commonly within 3–7 days)","Resurvey if work stops for more than a week during the season"],
+ cal:{sv:[2,3,4,5,6,7,8],sn:[2,3,4,5,6,7,8],wk:[9,10,11,12,1]},calN:"The nesting season is commonly defined as February 1–August 31 (some agencies use January 15–September 15).",
+ imp:[["Destruction of active nests during vegetation removal or grading","d"],["Disturbance causing nest abandonment","i"],["Loss of nesting habitat","d"]],
+ mm:[["Work outside the nesting season","Vegetation removal and initial ground disturbance shall be scheduled between September 1 and January 31 to the extent feasible.","avoid"],
+  ["Pre-construction nesting bird survey","If work occurs between February 1 and August 31, a qualified biologist shall survey the work area and a 100-foot buffer (500 feet for raptors) no more than 7 days before work begins.","avoid"],
+  ["Nest buffers","Active nests shall be protected with no-disturbance buffers determined by the qualified biologist based on species, location, and activity (commonly at least 50–100 feet for songbirds and 300–500 feet for raptors) until the young have fledged.","avoid"],
+  ["Nest monitoring","Nests near active work shall be monitored by the qualified biologist, who may expand buffers if birds show signs of disturbance.","min"]],
+ comp:["Usually none needed when nests are avoided"],
+ gen:["weap","mon","rep"],
+ per:["None (avoidance); MBTA and FGC prohibit destroying active nests"]},
+
+{id:"amba",n:"American badger",s:"Taxidea taxus",g:"Mammals",st:"SSC",fp:false,
+ laws:["CEQA (Species of Special Concern)","FGC §4150 (nongame mammals)"],ag:"CDFW",
+ hab:"Open grassland, scrub, and agricultural edges with friable soils and abundant ground squirrels and gophers. Digs large burrows and moves between dens frequently.",
+ det:["Dens wider than tall (elliptical), commonly 8–12 inches wide, with a large mound of soil in front","Claw marks and excavated squirrel burrows","Look-alikes: kit fox dens are smaller and keyhole-shaped"],
+ pro:"No formal protocol; pre-construction den surveys by a qualified biologist",
+ pts:["Survey the footprint and a buffer for dens shortly before work","Determine whether dens are active (fresh digging, tracks, cameras)"],
+ cal:{sv:[1,2,3,4,5,6,7,8,9,10,11,12],sn:[2,3,4,5,6],wk:[7,8,9,10,11,12,1]},calN:"The maternity period shown is approximate.",
+ imp:[["Entombing badgers in dens during grading","d"],["Loss of foraging and denning habitat","d"],["Vehicle strikes","d"]],
+ mm:[["Pre-construction den survey","A qualified biologist shall survey the project footprint and a 100-foot buffer for American badger dens no more than 14 days before ground disturbance.","avoid"],
+  ["Den avoidance","Active dens shall be avoided with a buffer of at least 50 feet, or a larger buffer for maternity dens as determined in consultation with CDFW, until the den is vacated.","avoid"],
+  ["Passive relocation outside the maternity season","If an active non-maternity den cannot be avoided, a qualified biologist may encourage the badger to leave by gradually blocking the entrance over several nights, then excavate the den by hand once it is confirmed empty.","min"]],
+ comp:["Usually addressed through habitat preservation required for other species"],
+ gen:["weap","mon","speed","trench","rep"],
+ per:["None; analyzed under CEQA"]},
+
+{id:"paba",n:"Pallid bat",s:"Antrozous pallidus",g:"Mammals",st:"SSC",fp:false,
+ laws:["CEQA (Species of Special Concern)","FGC §4150 (bats are nongame mammals)"],ag:"CDFW",
+ hab:"Roosts in rock crevices, tree cavities, bridges, barns, and abandoned buildings. Forages low over grassland and oak woodland, often taking prey from the ground.",
+ det:["Guano and culled insect parts (Jerusalem cricket, scorpion pieces) below night roosts","Evening emergence counts","Acoustic detectors","Inspect bridges, buildings, and tree cavities with lights or borescopes"],
+ pro:"No single statewide protocol; roost habitat assessment, emergence surveys, and acoustic surveys following CDFW and Western Bat Working Group guidance",
+ pts:["Assess all structures and trees to be removed for roost potential","Do emergence surveys during the active season to confirm use","Identify maternity and hibernation roosts, which are the most sensitive"],
+ cal:{sv:[4,5,6,7,8,9,10],sn:[4,5,6,7,8,11,12,1,2],wk:[3,9,10]},calN:"Exclusion is usually limited to spring (after hibernation) and fall (after pups can fly), when bats are active but not raising young.",
+ imp:[["Killing bats during demolition, bridge work, or tree removal","d"],["Loss of maternity or hibernation roosts","d"],["Disturbance of a maternity colony","i"],["Lighting near roosts and foraging areas","i"]],
+ mm:[["Roost assessment","A qualified bat biologist shall assess structures and trees to be removed or modified for roosting bats before work, and conduct emergence surveys if suitable roosts are found.","avoid"],
+  ["Humane exclusion timing","If bats are present, they shall be excluded under the supervision of a qualified bat biologist using one-way exclusion devices only during periods when bats are active and not raising young (commonly March 1–April 15 and September 1–October 15), as approved by CDFW.","avoid"],
+  ["Two-step tree removal","Trees with roost potential shall be removed over two days: limbs on the first day and the trunk on the second, under biologist supervision.","min"],
+  ["Replacement roosts","Lost roosts shall be replaced with bat boxes or roost features built into new structures, as designed by a qualified bat biologist.","min"]],
+ comp:["Install replacement roost structures"],
+ gen:["weap","mon","light","rep"],
+ per:["None; analyzed under CEQA"]},
+
+{id:"wspa",n:"Western spadefoot",s:"Spea hammondii",g:"Reptiles & Amphibians",st:"SSC (proposed for federal listing)",fp:false,
+ laws:["CEQA (Species of Special Concern)","Proposed for federal listing: check IPaC for current status"],ag:"CDFW; USFWS if listed",
+ hab:"Grassland and open woodland with sandy or friable soils. Breeds in vernal pools and rain pools that hold water for at least a few weeks; adults spend most of the year buried underground.",
+ det:["Nighttime surveys during and after heavy rain","Breeding calls","Tadpoles in pools in spring"],
+ pro:"No formal protocol; nighttime and larval surveys during the breeding season",
+ pts:["Survey pools for tadpoles and egg masses after rains","Night surveys during rainy periods","Map upland habitat around breeding pools"],
+ cal:{sv:[1,2,3,4,5],sn:[12,1,2,3,4,5],wk:[6,7,8,9,10]},calN:"Breeding depends on rainfall and varies by year.",
+ imp:[["Fill of breeding pools","d"],["Crushing adults buried in upland soils","d"],["Road mortality on rainy nights","i"],["Altered pool hydrology","i"]],
+ mm:[["Avoid breeding pools","Project design shall avoid breeding pools and surrounding upland habitat to the extent feasible.","avoid"],
+  ["Pre-construction survey and relocation","A qualified biologist shall survey work areas near breeding habitat before ground disturbance and relocate any spadefoots found to suitable habitat outside the work area, as authorized by CDFW.","min"],
+  ["Exclusion fencing","Exclusion fencing shall be installed between breeding pools and the work area before the rainy season.","min"]],
+ comp:["Preserve or create breeding pools within protected habitat"],
+ gen:["weap","mon","esa","foot","trench","bmp","rep"],
+ per:["None currently required under CESA; FESA if the federal listing becomes final"]},
+
+{id:"wpt",n:"Western pond turtle",s:"Actinemys marmorata / A. pallida",g:"Reptiles & Amphibians",st:"SSC / FPT (proposed)",fp:false,
+ laws:["CEQA (Species of Special Concern)","Proposed federally threatened (2023; not final as of Sept 2026)","CFGC §1602 for work in ponds and streams"],ag:"CDFW; USFWS if listed",
+ hab:"Ponds, slow streams, canals, and reservoirs with basking sites (logs, rocks, banks). Females lay eggs in nearby uplands, sometimes far from water, and turtles may overwinter in uplands.",
+ det:["Visual basking surveys with binoculars on sunny mornings","Trapping by permitted biologists","Look-alikes: nonnative red-eared sliders"],
+ pro:"No formal protocol; visual basking surveys and trapping where authorized",
+ pts:["Survey aquatic habitat for basking turtles during warm weather","Assess nearby uplands for nesting habitat","Check IPaC: if the federal listing becomes final, USFWS requirements will apply"],
+ cal:{sv:[4,5,6,7,8,9],sn:[5,6,7,11,12,1,2],wk:[8,9,10]},calN:"Nesting (about May–July) and overwintering are the most sensitive periods.",
+ imp:[["Crushing turtles or nests during grading in uplands near water","d"],["Loss of aquatic or nesting habitat","d"],["Stranding during dewatering","d"],["Degraded water quality","i"]],
+ mm:[["Pre-construction survey","A qualified biologist shall survey aquatic and adjacent upland habitat for western pond turtles no more than 48 hours before work in or near water.","avoid"],
+  ["Dewatering monitoring","A qualified biologist shall be present during dewatering to capture and relocate any turtles to suitable habitat outside the work area, as authorized by CDFW.","min"],
+  ["Avoid nesting areas","Ground disturbance in suitable upland nesting habitat within 400 meters of occupied water shall be avoided during the nesting season when feasible.","avoid"]],
+ comp:["Restore aquatic and upland habitat"],
+ gen:["weap","mon","esa","bmp","rep"],
+ per:["CFGC §1602 LSA Agreement if work affects a stream or pond","FESA if the federal listing becomes final"]},
+
+{id:"baca",n:"Bakersfield cactus",s:"Opuntia basilaris var. treleasei",g:"Plants",st:"FE / SE / CRPR 1B.1",fp:false,
+ laws:["FESA (endangered; plant protections limited on private land)","CESA (endangered)","CEQA"],ag:"CDFW and USFWS",
+ hab:"Sandy or gravelly soils in chenopod scrub, grassland, and oak woodland edges around Bakersfield in Kern County.",
+ det:["Perennial cactus visible year-round","Bright magenta flowers in about April–May","Look-alike: typical beavertail cactus; identification by a qualified botanist"],
+ pro:"CDFW (2018) Protocols for Surveying and Evaluating Impacts to Special Status Native Plant Populations and Sensitive Natural Communities",
+ pts:["Floristic survey of all suitable habitat","Map and count every clump","Document condition and threats"],
+ cal:{sv:[1,2,3,4,5,6,7,8,9,10,11,12],sn:[],wk:[]},calN:"Because it is perennial and visible year-round, timing is flexible, though spring bloom aids identification.",
+ imp:[["Removal of plants in the footprint","d"],["Crushing by equipment","d"],["Dust, altered drainage, and invasive species near avoided plants","i"]],
+ mm:[["Avoidance","Project design shall avoid Bakersfield cactus populations with a buffer determined in consultation with CDFW and USFWS, protected by environmentally sensitive area fencing.","avoid"],
+  ["Salvage and transplant plan","If avoidance is not feasible, plants shall be salvaged and transplanted to a protected receiver site under a plan approved by CDFW, with success criteria and at least 5 years of monitoring.","min"]],
+ comp:["Preserve occupied habitat off-site in perpetuity at a ratio determined by CDFW and USFWS"],
+ gen:["weap","mon","esa","foot","bmp","weed","rep"],
+ per:["CESA §2081(b) ITP","FESA §7 if there is a federal nexus"]},
+
+{id:"sjas",n:"San Joaquin adobe sunburst",s:"Pseudobahia peirsonii",g:"Plants",st:"FT / SE / CRPR 1B.1",fp:false,
+ laws:["FESA (threatened; plant protections limited on private land)","CESA (endangered)","CEQA"],ag:"CDFW and USFWS",
+ hab:"Heavy adobe clay soils in grassland and foothill woodland in the eastern San Joaquin Valley foothills (Fresno, Tulare, and Kern counties).",
+ det:["Small annual sunflower with bright yellow heads","Blooms about March–April","Population size swings with rainfall; plants may not appear in dry years"],
+ pro:"CDFW (2018) Protocols for Surveying and Evaluating Impacts to Special Status Native Plant Populations and Sensitive Natural Communities",
+ pts:["Time surveys to the blooming period and check a reference population to confirm plants are visible that year","Repeat surveys over multiple years if a dry year makes results inconclusive","Map population extent and estimate numbers"],
+ cal:{sv:[2,3,4],sn:[3,4,5],wk:[6,7,8,9,10]},calN:"Ground disturbance after seed set (early summer) reduces direct impacts to the current year's plants but still affects the seed bank.",
+ imp:[["Removal of plants and the soil seed bank","d"],["Topsoil disturbance on adobe clay","d"],["Invasive annual grasses outcompeting plants","i"],["Changes in grazing regime","i"]],
+ mm:[["Avoidance","Project design shall avoid San Joaquin adobe sunburst populations with a buffer approved by CDFW, protected by environmentally sensitive area fencing.","avoid"],
+  ["Seed and topsoil salvage","If avoidance is not feasible, seed and topsoil shall be salvaged under a plan approved by CDFW and used to establish plants at a protected receiver site with defined success criteria and monitoring.","min"],
+  ["Timing","Ground disturbance in occupied habitat shall occur after seed set, as confirmed by a qualified botanist.","min"]],
+ comp:["Preserve occupied habitat off-site in perpetuity at a ratio determined by CDFW and USFWS"],
+ gen:["weap","mon","esa","foot","weed","rep"],
+ per:["CESA §2081(b) ITP","FESA §7 if there is a federal nexus"]},
+
+{id:"crpr",n:"Unlisted CRPR 1B/2B plant (general)",s:"e.g., heartscale, spiny-sepaled button-celery",g:"Plants",st:"CRPR 1B or 2B",fp:false,
+ laws:["CEQA §15380 (generally treated as rare)","May be BLM Sensitive or USFS SCC on federal land"],ag:"CEQA lead agency, with CDFW as trustee",
+ hab:"Depends on the species. Use the CNPS Inventory for habitat, soils, elevation, and blooming period.",
+ det:["Survey at the blooming or fruiting time needed for identification","Visit known reference populations to confirm detectability that year"],
+ pro:"CDFW (2018) Protocols for Surveying and Evaluating Impacts to Special Status Native Plant Populations and Sensitive Natural Communities; CNPS Botanical Survey Guidelines",
+ pts:["Floristic surveys: identify every plant to the level needed to determine rarity","Multiple visits across the blooming periods of all target species","Report population size, extent, and condition; submit CNDDB forms"],
+ cal:{sv:[3,4,5],sn:[],wk:[]},calN:"Survey months vary by species. Spring is shown as a typical window for Valley annuals.",
+ imp:[["Removal of plants and seed bank","d"],["Altered hydrology, dust, or invasive species near avoided populations","i"],["Loss of a significant portion of a regional population","c"]],
+ mm:[["Avoidance","Project design shall avoid the population with a buffer determined by a qualified botanist, protected by environmentally sensitive area fencing.","avoid"],
+  ["Salvage or seed collection","If avoidance is not feasible, a qualified botanist shall collect seed or salvage plants and topsoil for use at a protected site under a plan approved by the lead agency, in consultation with CDFW.","min"]],
+ comp:["Preserve an occupied population off-site at a ratio approved by the lead agency in consultation with CDFW"],
+ gen:["weap","mon","esa","foot","weed","rep"],
+ per:["None by itself; addressed through CEQA mitigation"]}
+];
+
+/* ================= SPECIES BUILDER UI ================= */
+const MON=["J","F","M","A","M","J","J","A","S","O","N","D"];
+const ITAG={d:'<span class="itag d">Direct</span>',i:'<span class="itag i">Indirect</span>',c:'<span class="itag c">Cumulative</span>'};
+const HLEV={avoid:"Avoid",min:"Minimize"};
+let spSel=null;
+function spList(){
+  const q=document.getElementById("spSearch").value.toLowerCase();
+  const grp={};SP.filter(s=>!q||(s.n+s.s+s.st).toLowerCase().includes(q)).forEach(s=>(grp[s.g]=grp[s.g]||[]).push(s));
+  const L=document.getElementById("spList");
+  L.innerHTML=Object.keys(grp).map(g=>`<div class="sp-grp">${g}</div>`+grp[g].map(s=>`<button class="sp-item ${spSel===s.id?"on":""}" data-id="${s.id}">${s.n}<small>${s.st}</small></button>`).join("")).join("")||'<div class="empty">No matches.</div>';
+  L.querySelectorAll(".sp-item").forEach(b=>b.onclick=()=>{spSel=b.dataset.id;spList();spRender();if(window.innerWidth<820)document.getElementById("spMain").scrollIntoView({behavior:"smooth"});});
+}
+function calRow(label,arr,cls){return `<div class="lbl">${label}</div>`+MON.map((m,i)=>`<div class="c ${arr.includes(i+1)?cls:""}"></div>`).join("");}
+function spRender(){
+  const s=SP.find(x=>x.id===spSel), M=document.getElementById("spMain");
+  if(!s){M.innerHTML='<div class="card empty">← Choose a species to start.</div>';return;}
+  const chk=(name,val,label,on)=>`<label class="chk"><input type="checkbox" name="${name}" value="${val}" ${on?"checked":""}> <span>${label}</span></label>`;
+  M.innerHTML=`
+  <div class="card"><div class="kicker">${s.g}</div><h2 style="margin-bottom:0">${s.n}</h2><p class="sub"><i>${s.s}</i> · <b>${s.st}</b></p>
+   ${s.fp?'<div class="alert">⚠️ <b>Fully Protected.</b> Take generally cannot be authorized. Your report must show how the project avoids take entirely (unless SB 147 or an NCCP applies).</div>':""}
+   ${s.id==="buow"?'<div class="alert">⚠️ <b>CESA candidate.</b> The Fish and Game Commission made the western burrowing owl a candidate in October 2024, and the status review was extended. Candidates are protected as if listed, so check the current status before relying on older eviction-based measures.</div>':""}
+  </div>
+  <details class="step" open><summary><span class="n">1</span>Status, laws &amp; agencies</summary><div class="body">
+    <div class="cols"><div class="box"><h4>Laws &amp; policies to address</h4>${li(s.laws)}</div><div class="box"><h4>Agencies to coordinate with</h4><p style="margin:0">${s.ag}</p><h4 style="margin-top:8px">Permits that may be needed</h4>${li(s.per)}</div></div>
+  </div></details>
+  <details class="step"><summary><span class="n">2</span>Habitat &amp; how to detect it</summary><div class="body">
+    <p>${s.hab}</p><div class="box bio"><h4>Detection cues</h4>${li(s.det)}</div>
+  </div></details>
+  <details class="step"><summary><span class="n">3</span>Survey protocol &amp; timing</summary><div class="body">
+    <p><b>Protocol / guidance:</b> ${s.pro}</p>${li(s.pts)}
+    <div class="cal"><div class="lbl"></div>${MON.map(m=>`<div class="mh">${m}</div>`).join("")}
+     ${calRow("Survey window",s.cal.sv,"sv")}${calRow("Sensitive period",s.cal.sn,"sn")}${calRow("Preferred work",s.cal.wk,"wk")}</div>
+    <div class="legend"><span><i style="background:#8fa65c"></i>Survey</span><span><i style="background:#d1835c"></i>Sensitive (avoid disturbance)</span><span><i style="background:#6b9ab5"></i>Preferred work window</span></div>
+    <p class="sub" style="font-size:.85rem;margin-top:6px">${s.calN} Always confirm dates against the current protocol and agency direction.</p>
+  </div></details>
+  <details class="step" open><summary><span class="n">4</span>Your survey findings</summary><div class="body">
+    <div class="form-row">
+      <label>Project name<input id="fProj" placeholder="e.g., Ashlan Avenue Solar Project"></label>
+      <label>Survey date(s)<input id="fDate" placeholder="e.g., April 8 and April 22, 2026"></label>
+      <label>Surveyor(s)<input id="fWho" placeholder="e.g., J. Lopez, qualified biologist"></label>
+    </div>
+    <div class="radio-row">
+      ${[["obs","Species observed"],["sign","Sign detected (dens, burrows, nests, exit holes)"],["hab","Suitable habitat; not detected"],["none","No suitable habitat"]].map(([v,t],i)=>`<label><input type="radio" name="fRes" value="${v}" ${i===0?"checked":""}> ${t}</label>`).join("")}
+    </div>
+    <div class="form-row">
+      <label>Nearest occurrence or habitat to footprint (feet)<input id="fDist" type="number" min="0" placeholder="e.g., 150"></label>
+      <label>Suitable habitat permanently affected (acres)<input id="fPerm" type="number" min="0" step="0.01" placeholder="e.g., 4.2"></label>
+      <label>Suitable habitat temporarily affected (acres)<input id="fTemp" type="number" min="0" step="0.01" placeholder="e.g., 0.8"></label>
+    </div>
+  </div></details>
+  <details class="step" open><summary><span class="n">5</span>Potential impacts (before mitigation)</summary><div class="body">
+    <p class="sub">Check the impacts that apply to this project.</p>
+    ${s.imp.map((im,i)=>chk("imp",i,im[0]+ITAG[im[1]],true)).join("")}
+  </div></details>
+  <details class="step" open><summary><span class="n">6</span>Avoidance, minimization &amp; compensation</summary><div class="body mm-group">
+    <h4>Species-specific measures</h4>
+    ${s.mm.map((m,i)=>chk("mm",i,`<b>${m[0]}</b><span class="hlevel">${HLEV[m[2]]}</span><br><span class="sub" style="font-size:.86rem">${m[1]}</span>`,true)).join("")}
+    <h4>General construction measures</h4>
+    ${GEN.map(g=>chk("gen",g.id,`<b>${g.t}</b><span class="hlevel">Minimize</span>`,s.gen.includes(g.id))).join("")}
+    <h4>Compensatory mitigation</h4>
+    ${s.comp.map((c,i)=>chk("comp",i,c+'<span class="hlevel">Compensate</span>',i===0&&!/none/i.test(c))).join("")}
+  </div></details>
+  <details class="step" open><summary><span class="n">7</span>Draft report language</summary><div class="body">
+    <p class="sub">This updates as you change steps 4–6. Edit it to fit your project. It's a starting draft: check every measure against current agency guidance and your project's details.</p>
+    <textarea id="draft" spellcheck="true"></textarea>
+    <div class="qnav"><span class="sub" id="copyMsg"></span><button class="btn" id="copyBtn">Copy draft</button></div>
+  </div></details>`;
+  M.querySelectorAll("input").forEach(el=>{el.oninput=draft;el.onchange=draft;});
+  document.getElementById("copyBtn").onclick=()=>{const t=document.getElementById("draft");t.select();
+    const done=()=>{document.getElementById("copyMsg").textContent="Copied.";};
+    if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t.value).then(done,()=>{document.execCommand("copy");done();});}else{document.execCommand("copy");done();}};
+  draft();
+}
+function draft(){
+  const s=SP.find(x=>x.id===spSel); if(!s)return;
+  const v=id=>document.getElementById(id).value.trim();
+  const proj=v("fProj")||"Project", date=v("fDate")||"[survey dates]", who=v("fWho")||"[surveyor names and qualifications]";
+  const dist=v("fDist"), perm=v("fPerm"), temp=v("fTemp");
+  const res=(document.querySelector('input[name="fRes"]:checked')||{}).value;
+  const got=n=>[...document.querySelectorAll(`input[name="${n}"]:checked`)].map(x=>x.value);
+  const imps=got("imp").map(i=>s.imp[+i]), mms=got("mm").map(i=>s.mm[+i]), gens=got("gen").map(id=>GEN.find(g=>g.id===id)), comps=got("comp").map(i=>s.comp[+i]);
+  const typeWord={d:"direct",i:"indirect",c:"cumulative"};
+  const nm=/^(San|Swainson|Bakersfield|California|American|Valley)/.test(s.n)?s.n:s.n.charAt(0).toLowerCase()+s.n.slice(1);
+  let t=`${s.n.toUpperCase()} (${s.s})\nStatus: ${s.st}\n\n`;
+  t+=`SPECIES ACCOUNT\n${s.n} is addressed under the following laws and policies: ${s.laws.join("; ")}. ${s.hab}\n\n`;
+  t+=`SURVEY METHODS AND RESULTS\n`;
+  const meth=`Surveys were conducted on ${date} by ${who}, following ${s.pro}.`;
+  if(res==="obs") t+=`${meth} ${s.n} was observed within the study area${dist?`, approximately ${dist} feet from the ${proj} footprint`:""}. The species is considered present.\n\n`;
+  else if(res==="sign") t+=`${meth} Sign of ${nm} was detected within the study area${dist?`, approximately ${dist} feet from the ${proj} footprint`:""}. The species is considered present.\n\n`;
+  else if(res==="hab") t+=`${meth} Suitable habitat for ${nm} is present within the study area${dist?`, approximately ${dist} feet from the ${proj} footprint`:""}, but the species was not detected. Because survey results can be limited by timing, conditions, and the species' detectability, ${nm} is considered to have potential to occur.\n\n`;
+  else { t+=`${meth} No suitable habitat for ${nm} occurs within the study area, and the species is not expected to occur. No impacts are anticipated, and the species is not discussed further.\n\nIMPACT DETERMINATION\nThe ${proj} would have no impact on ${nm}.\n`; document.getElementById("draft").value=t; return; }
+  t+=`IMPACT ANALYSIS\n`;
+  if(perm||temp) t+=`The ${proj} would `+[perm?`permanently affect approximately ${perm} acres`:"",temp?`temporarily affect approximately ${temp} acres`:""].filter(Boolean).join(" and ")+` of suitable ${nm} habitat. `;
+  if(imps.length){t+=`Without mitigation, the ${proj} could result in the following impacts:\n`+imps.map(im=>`  • ${im[0]} (${typeWord[im[1]]})`).join("\n")+"\n";}
+  const listed=/\b(FE|FT|SE|ST|SC|FP)\b/.test(s.st);
+  const what=s.id==="nest"?"Native birds are protected under the Migratory Bird Treaty Act and Fish and Game Code §3503, §3503.5, and §3513, so loss of active nests":
+    `Because ${nm} is ${listed?"a special-status species with legal protection":s.st.includes("SSC")?"a California Species of Special Concern":"considered rare under CEQA Guidelines §15380"}, these impacts`;
+  t+=`${what} would be potentially significant under CEQA Guidelines Appendix G, criterion IV(a).`;
+  if(s.fp) t+=` Because ${nm} is a Fully Protected species, take cannot be authorized, and the measures below are designed to avoid take entirely.`;
+  t+="\n\nMITIGATION MEASURES\n";
+  let n=1; const lines=[];
+  mms.forEach(m=>lines.push(`BIO-${n++}: ${m[0]}. ${m[1]}`));
+  gens.forEach(g=>lines.push(`BIO-${n++}: ${g.t}. ${g.x}`));
+  comps.forEach(c=>lines.push(`BIO-${n++}: Compensatory mitigation. ${c.charAt(0).toUpperCase()+c.slice(1)}. Mitigation shall be in place before ground disturbance, and evidence shall be provided to the lead agency.`));
+  t+=lines.length?lines.join("\n\n"):"[No measures selected.]";
+  t+=`\n\nSIGNIFICANCE AFTER MITIGATION\n`;
+  t+=lines.length?`With implementation of Mitigation Measures BIO-1 through BIO-${n-1}, impacts to ${nm} would be reduced to less than significant.`:`[Select measures to support a less-than-significant conclusion.]`;
+  t+=`\n\nREGULATORY APPROVALS\n`+s.per.map(p=>"  • "+p).join("\n");
+  document.getElementById("draft").value=t;
+}
+
+/* ================= IMPACTS TAB ================= */
+const HIER=[
+ ["Avoid","#56662f","Don't cause the impact at all by not taking an action or part of an action.","Redesign the site plan to stay out of vernal pools; move a road alignment away from a kit fox den complex; schedule work outside the nesting season."],
+ ["Minimize","#5e6d33","Limit the degree or magnitude of the action.","Shrink the footprint, use exclusion fencing, set nest buffers, use a biological monitor, enforce speed limits."],
+ ["Rectify","#6f6430","Repair, rehabilitate, or restore the affected environment.","Recontour and reseed temporary staging areas; restore a stream bank after culvert replacement."],
+ ["Reduce over time","#a06a2e","Preserve and maintain during the life of the action.","Long-term weed control and fence maintenance around avoided habitat; ongoing monitoring."],
+ ["Compensate","#a3502a","Replace or provide substitute resources or environments.","Buy credits at a conservation bank, record a conservation easement, create wetlands off-site."]
+];
+function buildHier(){
+  const h=document.getElementById("hier");
+  h.innerHTML=HIER.map((x,i)=>`<button data-i="${i}" style="background:${x[1]};width:${100-i*13}%">${i+1}. ${x[0]}</button>`).join("");
+  const show=i=>{h.querySelectorAll("button").forEach((b,j)=>b.classList.toggle("on",i===j));
+    document.getElementById("hierDetail").innerHTML=`<h4>${HIER[i][0]}</h4><p style="margin:0 0 6px">${HIER[i][2]}</p><p style="margin:0"><b>Field examples:</b> ${HIER[i][3]}</p>`;};
+  h.querySelectorAll("button").forEach(b=>b.onclick=()=>show(+b.dataset.i)); show(0);
+}
+const CLS=[
+ ["Grading removes 12 acres of kit fox foraging habitat for a building pad.","Direct · Permanent","Happens at the same time and place as the project and the habitat doesn't come back."],
+ ["Construction noise causes a Swainson's hawk to abandon its nest 600 feet away.","Indirect · Temporary","The effect happens away from the footprint and ends when construction ends (though the lost nest still counts as take)."],
+ ["A staging area compacts grassland for 6 months, then is ripped and reseeded.","Direct · Temporary","Disturbed within the footprint, then restored."],
+ ["New homes bring house cats and outdoor lighting next to a burrowing owl preserve.","Indirect · Permanent","Caused by the project, occurs off-site, and continues for the life of the development."],
+ ["Excavating a trench crushes a giant garter snake in its burrow.","Direct · Permanent","Mortality at the project site is direct, and a dead animal is a permanent loss."],
+ ["Stormwater from a new parking lot carries sediment into a downslope vernal pool.","Indirect · Permanent","Off-site effect that continues as long as the parking lot exists."],
+ ["This solar project plus three others nearby together remove most of the habitat linking two kit fox populations.","Cumulative","The concern is the combined effect of several projects."],
+ ["A new road increases vehicle strikes on salamanders migrating to a pond for decades.","Indirect · Permanent","Later in time, caused by the project's operation, and long-lasting."]
+];
+const CLSO=["Direct · Permanent","Direct · Temporary","Indirect · Temporary","Indirect · Permanent","Cumulative"];
+function buildClassify(){
+  const c=document.getElementById("classify"); let sc=0, done=0;
+  c.innerHTML=CLS.map((x,i)=>`<div class="cls-item" data-i="${i}"><div>${i+1}. ${x[0]}</div><div class="opts2">${CLSO.map(o=>`<button>${o}</button>`).join("")}</div><div class="cls-fb"></div></div>`).join("")+'<div class="tip" id="clsScore">Score: 0 / '+CLS.length+'</div>';
+  c.querySelectorAll(".cls-item").forEach(it=>{const x=CLS[+it.dataset.i];
+    it.querySelectorAll("button").forEach(b=>b.onclick=()=>{if(it.dataset.done)return;it.dataset.done=1;done++;
+      it.querySelectorAll("button").forEach(bb=>{bb.disabled=true;if(bb.textContent===x[1])bb.classList.add("right");});
+      if(b.textContent===x[1])sc++;else b.classList.add("wrong");
+      it.querySelector(".cls-fb").innerHTML=(b.textContent===x[1]?"✓ ":"✗ Answer: <b>"+x[1]+"</b>. ")+x[2];
+      document.getElementById("clsScore").textContent=`Score: ${sc} / ${CLS.length}`+(done===CLS.length?" · Done!":"");});});
+}
+const SIGF=[
+ ["listed","The species is state or federally listed, a candidate, or Fully Protected",2],
+ ["mort","Individuals could be killed, injured, or captured",2],
+ ["breed","Occupied or breeding habitat (nests, dens, pools, colonies) would be affected",2],
+ ["portion","A substantial portion of the local population or its habitat would be affected",2],
+ ["quality","The affected habitat is high quality or rare in the region",1],
+ ["perm","The impact is permanent rather than temporary",1],
+ ["move","The project would block a movement corridor or fragment habitat",1],
+ ["cum","Other past, present, or foreseeable projects affect the same species or habitat",1],
+ ["ssc","The species is a Species of Special Concern or CRPR 1B/2B plant (not listed)",1]
+];
+function buildSig(){
+  const f=document.getElementById("sigForm");
+  f.innerHTML=SIGF.map(x=>`<label class="chk"><input type="checkbox" value="${x[0]}"> <span>${x[1]}</span></label>`).join("");
+  const run=()=>{const on=[...f.querySelectorAll("input:checked")].map(i=>i.value);
+    const pts=SIGF.filter(x=>on.includes(x[0])).reduce((a,x)=>a+x[2],0);
+    let msg;
+    if(!on.length) msg="Check the factors that apply to your species and project.";
+    else if(on.includes("listed")&&(on.includes("mort")||on.includes("breed"))) msg="<b>Likely potentially significant.</b> Impacts to a protected species' individuals or occupied habitat are almost always treated as significant before mitigation. Your mitigation measures need to reduce them to less than significant, and permits may be required.";
+    else if(pts>=4) msg="<b>Likely potentially significant.</b> Several factors combine to suggest a substantial adverse effect. Explain each factor in your analysis and identify mitigation.";
+    else if(pts>=2) msg="<b>Could go either way.</b> Use professional judgment and explain your reasoning with data: population size, proportion affected, habitat quality, and regional context.";
+    else msg="<b>Likely less than significant.</b> Document why the effect is not substantial (for example, small, temporary, low-quality habitat with abundant habitat nearby).";
+    document.getElementById("sigOut").innerHTML=msg+'<br><span class="sub" style="font-size:.82rem">This is a teaching aid, not a formula. Significance is a reasoned conclusion supported by evidence.</span>';};
+  f.querySelectorAll("input").forEach(i=>i.onchange=run); run();
+}
+const MM_WEAK="Avoid impacts to nesting birds if possible.";
+const MM_STRONG="If vegetation removal or ground disturbance occurs between February 1 and August 31, a qualified biologist shall conduct a pre-construction nesting bird survey of the work area and a 100-foot buffer (500 feet for raptors) no more than 7 days before work begins. If an active nest is found, a no-disturbance buffer of at least 100 feet (300 feet for raptors) shall be established and maintained until the biologist confirms the young have fledged. Survey results and buffer locations shall be documented and submitted to the County within 7 days of each survey.";
+function lintMM(){
+  const t=document.getElementById("mmText").value;
+  const tests=[
+   ["Uses enforceable \"shall\" language",/\bshall\b/i.test(t)],
+   ["Avoids vague words (should, may, if possible, as feasible, try)",!/\b(should|may|if possible|as feasible|where feasible|try|attempt to|consider)\b/i.test(t)],
+   ["Names who is responsible (biologist, applicant, contractor)",/(biologist|botanist|applicant|proponent|contractor|monitor|county|city|district)/i.test(t)],
+   ["Says when (dates, season, days before work)",/(day|week|hour|month|season|prior to|before|during|between|january|february|march|april|may |june|july|august|september|october|november|december)/i.test(t)],
+   ["Includes measurable numbers (buffer distance, ratio, dates)",/\d/.test(t)],
+   ["States a performance standard or end point (until, ratio, success criteria)",/(until|ratio|success|criteri|performance|no-disturbance|maintained)/i.test(t)],
+   ["Requires documentation or reporting",/(report|submit|document|notify|record)/i.test(t)]
+  ];
+  const ok=tests.filter(x=>x[1]).length;
+  document.getElementById("mmOut").innerHTML=tests.map(x=>`<div class="check-row"><span class="${x[1]?"ok":"no"}">${x[1]?"✓":"✗"}</span><span>${x[0]}</span></div>`).join("")+
+   `<div class="tip">${ok}/${tests.length} · ${ok===tests.length?"Strong, enforceable measure.":ok>=5?"Close. Fix the items marked ✗.":"Too vague to enforce. A monitor couldn't tell whether it was met."}</div>`;
+}
+function buildMM(){
+  const t=document.getElementById("mmText"); t.oninput=lintMM;
+  document.getElementById("mmWeak").onclick=()=>{t.value=MM_WEAK;lintMM();};
+  document.getElementById("mmStrong").onclick=()=>{t.value=MM_STRONG;lintMM();};
+  lintMM();
+  document.getElementById("genLib").innerHTML=GEN.map(g=>`<details class="step"><summary><span class="n">✓</span>${g.t}</summary><div class="body"><p style="margin:0">${g.x}</p></div></details>`).join("");
+}
+
+document.getElementById("spSearch").oninput=spList;
+spList(); spRender(); buildHier(); buildClassify(); buildSig(); buildMM();
+
+</script>
+<script>
+window.A11Y = {
+  css: '.des{color:#8f4323} .filters button.btn{background:var(--olive);color:#fff;border-color:var(--olive)}',
+  tabsLabel: 'Sections',
+  main: 'main',
+  names: { '#lawSearch': 'Search laws' },
+  pressed: [['#explore .filters button', 'on']]
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
