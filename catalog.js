@@ -102,6 +102,14 @@ const ITEMS = [
     url: "sims/environmental-laws/",
     desc: "Learn environmental laws from the perspective of a consulting or agency biologist: what triggers each law, what you survey for, and what goes in your report.",
     tags: ["CEQA", "NEPA", "ESA", "CESA", "Clean Water Act", "quiz"]
+  },
+  {
+    title: "Field Biology Species Review",
+    topic: "field",
+    type: "sim",
+    url: "sims/field_bio_review/",
+    desc: "Flashcard study tools for the species from each semester's BIOL 7 field trips. Pick your semester and practice your IDs.",
+    tags: ["BIOL 7", "species ID", "flashcards"]
   }
 
   // ---------- Example web app (delete the two slashes at the start of each line to use) ----------
