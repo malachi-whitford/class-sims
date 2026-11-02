@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field Biology Species Review | Dr. Whitford's Class Simulations</title>
+<style>
+  :root{
+    --bg:#f5f7f3; --card:#fff; --ink:#1e2a20; --muted:#5c6a5e; --line:#d9e2d6;
+    --green:#2f6b3a; --green-dk:#1f4a28; --green-lt:#e4efe1;
+    --app:#1f5fa8; --app-lt:#e3edf9;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  a{color:inherit}
+
+  header{background:linear-gradient(120deg,var(--green-dk),var(--green));color:#fff;padding:28px 20px 22px}
+  .wrap{max-width:1100px;margin:0 auto}
+  header .back{display:inline-block;color:#fff;opacity:.85;text-decoration:none;font-size:.9rem;font-weight:600;margin-bottom:8px}
+  header .back:hover{opacity:1;text-decoration:underline}
+  header h1{margin:0;font-size:1.7rem}
+  header p{margin:6px 0 0;opacity:.9}
+
+  main{padding:18px 20px 40px}
+  .blurb{color:var(--muted);margin:0 0 14px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;transition:transform .12s, box-shadow .12s, border-color .12s}
+  .card:hover,.card:focus-visible{transform:translateY(-2px);box-shadow:0 6px 18px rgba(31,74,40,.12);border-color:var(--green);outline:none}
+  .card h2{font-size:1.08rem;margin:6px 0 6px;color:var(--green-dk)}
+  .card p{margin:0 0 10px;font-size:.92rem;color:#333;flex:1}
+  .badges{display:flex;flex-wrap:wrap;gap:6px}
+  .type{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px}
+  .type.app{background:var(--app-lt);color:var(--app)}
+  .type.cur{background:var(--green-lt);color:var(--green)}
+  .type.past{background:#eef0ec;color:var(--muted)}
+  .tags{display:flex;flex-wrap:wrap;gap:5px}
+  .tags span{font-size:.72rem;background:#f0f3ee;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted)}
+  .open{margin-top:12px;font-size:.85rem;font-weight:700;color:var(--app)}
+  :focus-visible{outline:3px solid #1557b0;outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover,.card:focus-visible{transform:none}}
+
+  footer{border-top:1px solid var(--line);padding:18px 20px 30px;font-size:.82rem;color:var(--muted)}
+  footer p{margin:4px 0}
+  @media(max-width:600px){header h1{font-size:1.35rem}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="back" href="../../#field">&larr; Back to Class Simulations</a>
+    <h1>Field Biology Species Review</h1>
+    <p>Flashcard study tools for the species from each semester's BIOL 7 field trips.</p>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+    <p class="blurb">Pick your semester. Each tool opens in a new tab and may ask you to sign in with your Google account.</p>
+    <div class="grid">
+
+      <!-- To add a semester: copy one <a class="card">…</a> block, paste it at the top, and change the link, title, and text.
+           Use "type cur" for the current semester and "type past" for older ones. -->
+
+      <a class="card" href="https://script.google.com/macros/s/AKfycbyzp2lSlXjYyB51SLdiDBi0lDH6BO0mi9ims9ubihNmajnXxGYmBfhZCoRPpywq2JGz/exec" target="_blank" rel="noopener">
+        <div class="badges"><span class="type app">Web app</span><span class="type cur">Current</span></div>
+        <h2>Field Biology Spring 2027 Study Tool</h2>
+        <p>Practice identifying the plants and animals from the Spring 2027 field trips for quizzes and exams.</p>
+        <div class="tags"><span>BIOL 7</span><span>species ID</span><span>flashcards</span></div>
+        <div class="open">Open in new tab ↗</div>
+      </a>
+
+      <a class="card" href="https://script.google.com/macros/s/AKfycbxFylUSF13ZssH0HRlasaxhyFrE4v5dmbugR88Ipzh_3Uv6yo4mP7s3QwReaG6aDQtqEg/exec" target="_blank" rel="noopener">
+        <div class="badges"><span class="type app">Web app</span><span class="type past">Past semester</span></div>
+        <h2>Field Biology Spring 2026 Study Tool</h2>
+        <p>Species from the Spring 2026 field trips. Good for extra practice or to preview what we see each spring.</p>
+        <div class="tags"><span>BIOL 7</span><span>species ID</span><span>flashcards</span></div>
+        <div class="open">Open in new tab ↗</div>
+      </a>
+
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Web apps run on Google Apps Script. If one won't load, try a private/incognito window and sign in with a single Google account.</p>
+    <p>Created by Dr. Malachi Whitford, Clovis Community College.</p>
+  </div>
+</footer>
+
+</body>
+</html>
