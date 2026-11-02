@@ -1,163 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Web Apps | Class Simulations</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f6f7f4;
-    --card: #ffffff;
-    --ink: #1f2a24;
-    --muted: #5b6b62;
-    --accent: #2f6b4f;
-    --accent-dark: #22513b;
-    --border: #dfe4df;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    line-height: 1.55;
-  }
-  header {
-    background: var(--accent);
-    color: #fff;
-    padding: 28px 20px 24px;
-  }
-  header .wrap { max-width: 1000px; margin: 0 auto; }
-  header a.back {
-    color: #dcefe5;
-    text-decoration: none;
-    font-size: 0.95rem;
-  }
-  header a.back:hover { text-decoration: underline; }
-  header h1 { margin: 8px 0 4px; font-size: 2rem; }
-  header p { margin: 0; color: #e4f2ea; }
-
-  main { max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
-
-  .search {
-    width: 100%;
-    padding: 11px 14px;
-    font-size: 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    margin-bottom: 24px;
-    background: #fff;
-  }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
-  }
-
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-  }
-  .card .tag {
-    align-self: flex-start;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--accent);
-    background: #e7f1eb;
-    padding: 3px 9px;
-    border-radius: 999px;
-    margin-bottom: 10px;
-  }
-  .card h2 { font-size: 1.2rem; margin: 0 0 8px; }
-  .card p { margin: 0 0 16px; color: var(--muted); flex-grow: 1; }
-
-  .btn {
-    display: inline-block;
-    text-align: center;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    background: var(--accent);
-    color: #fff;
-  }
-  .btn:hover { background: var(--accent-dark); }
-
-  .note {
-    margin-top: 32px;
-    font-size: 0.9rem;
-    color: var(--muted);
-  }
-  .empty { color: var(--muted); display: none; }
+.apptools{
+  --paper:#f4efe2; --card:#fffdf7; --ink:#2a2922; --muted:#6b6658; --line:#d9d1bc;
+  --olive:#56662f; --olive-soft:#e6ebd6; --sky:#2f6787; --sky-soft:#dcebf3;
+  font-family:"Source Sans 3",system-ui,sans-serif; color:var(--ink); line-height:1.5;
+  max-width:1100px; margin:0 auto; padding:16px;
+}
+.apptools .kicker{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--olive);font-weight:700}
+.apptools h2{font-family:"Fraunces",Georgia,serif;font-size:1.6rem;font-weight:800;margin:.2em 0 .3em;line-height:1.15}
+.apptools .sub{color:var(--muted);margin:0 0 14px}
+.apptools .appgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.apptools .apptile{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;transition:transform .12s, box-shadow .12s}
+.apptools .apptile:hover,.apptools .apptile:focus{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08);outline:none;border-color:var(--olive)}
+.apptools .apptile .ab{font-family:"Fraunces",serif;font-weight:800;font-size:1.25rem;line-height:1.2}
+.apptools .apptile .nm{font-size:.95rem;color:var(--muted);margin:6px 0 10px;flex-grow:1}
+.apptools .badge{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin:0 4px 8px 0}
+.apptools .cur{background:var(--olive-soft);color:var(--olive)}
+.apptools .past{background:var(--sky-soft);color:var(--sky)}
+.apptools .go{font-weight:700;color:var(--olive);font-size:.95rem}
 </style>
-</head>
-<body>
 
-<header>
-  <div class="wrap">
-    <a class="back" href="index.html">&larr; Back to Class Simulations</a>
-    <h1>Web Apps</h1>
-    <p>Study tools and class apps. Each one opens in a new tab and works in any browser.</p>
+<div class="apptools">
+  <div class="kicker">BIOL 7: Field Biology</div>
+  <h2>Species Study Tools</h2>
+  <p class="sub">Flashcards for the species from our field trips. Each tool opens in a new tab.</p>
+
+  <div class="appgrid">
+    <a class="apptile" href="https://script.google.com/macros/s/AKfycbyzp2lSlXjYyB51SLdiDBi0lDH6BO0mi9ims9ubihNmajnXxGYmBfhZCoRPpywq2JGz/exec" target="_blank" rel="noopener">
+      <div><span class="badge cur">Current</span></div>
+      <div class="ab">Field Biology Spring 2027 Study Tool</div>
+      <div class="nm">Study the species from our Spring 2027 field trips. Practice identifying the plants and animals you need to know for quizzes and exams.</div>
+      <div class="go">Open study tool &#8599;</div>
+    </a>
+
+    <a class="apptile" href="https://script.google.com/macros/s/AKfycbxFylUSF13ZssH0HRlasaxhyFrE4v5dmbugR88Ipzh_3Uv6yo4mP7s3QwReaG6aDQtqEg/exec" target="_blank" rel="noopener">
+      <div><span class="badge past">Past semester</span></div>
+      <div class="ab">Field Biology Spring 2026 Study Tool</div>
+      <div class="nm">Species from the Spring 2026 field trips. Good for extra practice or to preview the kinds of species we see each spring.</div>
+      <div class="go">Open study tool &#8599;</div>
+    </a>
   </div>
-</header>
-
-<main>
-  <input class="search" id="search" type="search" placeholder="Search apps..." aria-label="Search apps">
-  <div class="grid" id="grid"></div>
-  <p class="empty" id="empty">No apps match your search.</p>
-  <p class="note">Some apps ask you to sign in with your Google account the first time you open them.</p>
-</main>
-
-<script>
-  // ===== ADD NEW APPS HERE =====
-  // Copy one { ... } block, paste it below the last one, and change the details.
-  const apps = [
-    {
-      title: "Spring 2026 Field Biology Species Review",
-      tag: "Field Biology",
-      description: "Study the species from our Spring 2026 field trips with flashcards. Use it to practice identifying the plants and animals you need to know for quizzes and exams.",
-      url: "https://script.google.com/macros/s/AKfycbxFylUSF13ZssH0HRlasaxhyFrE4v5dmbugR88Ipzh_3Uv6yo4mP7s3QwReaG6aDQtqEg/exec"
-    }
-  ];
-  // =============================
-
-  const grid = document.getElementById("grid");
-  const empty = document.getElementById("empty");
-
-  function render(filter) {
-    const q = (filter || "").toLowerCase();
-    grid.innerHTML = "";
-    const shown = apps.filter(a =>
-      (a.title + " " + a.tag + " " + a.description).toLowerCase().includes(q)
-    );
-    shown.forEach(a => {
-      const card = document.createElement("div");
-      card.className = "card";
-      card.innerHTML = `
-        <span class="tag"></span>
-        <h2></h2>
-        <p></p>
-        <a class="btn" target="_blank" rel="noopener">Open app &#8599;</a>`;
-      card.querySelector(".tag").textContent = a.tag;
-      card.querySelector("h2").textContent = a.title;
-      card.querySelector("p").textContent = a.description;
-      card.querySelector(".btn").href = a.url;
-      grid.appendChild(card);
-    });
-    empty.style.display = shown.length ? "none" : "block";
-  }
-
-  document.getElementById("search").addEventListener("input", e => render(e.target.value));
-  render();
-</script>
-
-</body>
-</html>
+</div>
