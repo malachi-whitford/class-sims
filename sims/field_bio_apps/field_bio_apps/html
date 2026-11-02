@@ -1,0 +1,43 @@
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+.apptools{
+  --paper:#f4efe2; --card:#fffdf7; --ink:#2a2922; --muted:#6b6658; --line:#d9d1bc;
+  --olive:#56662f; --olive-soft:#e6ebd6; --sky:#2f6787; --sky-soft:#dcebf3;
+  font-family:"Source Sans 3",system-ui,sans-serif; color:var(--ink); line-height:1.5;
+  max-width:1100px; margin:0 auto; padding:16px;
+}
+.apptools .kicker{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--olive);font-weight:700}
+.apptools h2{font-family:"Fraunces",Georgia,serif;font-size:1.6rem;font-weight:800;margin:.2em 0 .3em;line-height:1.15}
+.apptools .sub{color:var(--muted);margin:0 0 14px}
+.apptools .appgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.apptools .apptile{display:flex;flex-direction:column;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;transition:transform .12s, box-shadow .12s}
+.apptools .apptile:hover,.apptools .apptile:focus{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.08);outline:none;border-color:var(--olive)}
+.apptools .apptile .ab{font-family:"Fraunces",serif;font-weight:800;font-size:1.25rem;line-height:1.2}
+.apptools .apptile .nm{font-size:.95rem;color:var(--muted);margin:6px 0 10px;flex-grow:1}
+.apptools .badge{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin:0 4px 8px 0}
+.apptools .cur{background:var(--olive-soft);color:var(--olive)}
+.apptools .past{background:var(--sky-soft);color:var(--sky)}
+.apptools .go{font-weight:700;color:var(--olive);font-size:.95rem}
+</style>
+
+<div class="apptools">
+  <div class="kicker">BIOL 7: Field Biology</div>
+  <h2>Species Study Tools</h2>
+  <p class="sub">Flashcards for the species from our field trips. Each tool opens in a new tab.</p>
+
+  <div class="appgrid">
+    <a class="apptile" href="https://script.google.com/macros/s/AKfycbyzp2lSlXjYyB51SLdiDBi0lDH6BO0mi9ims9ubihNmajnXxGYmBfhZCoRPpywq2JGz/exec" target="_blank" rel="noopener">
+      <div><span class="badge cur">Current</span></div>
+      <div class="ab">Field Biology Spring 2027 Study Tool</div>
+      <div class="nm">Study the species from our Spring 2027 field trips. Practice identifying the plants and animals you need to know for quizzes and exams.</div>
+      <div class="go">Open study tool &#8599;</div>
+    </a>
+
+    <a class="apptile" href="https://script.google.com/macros/s/AKfycbxFylUSF13ZssH0HRlasaxhyFrE4v5dmbugR88Ipzh_3Uv6yo4mP7s3QwReaG6aDQtqEg/exec" target="_blank" rel="noopener">
+      <div><span class="badge past">Past semester</span></div>
+      <div class="ab">Field Biology Spring 2026 Study Tool</div>
+      <div class="nm">Species from the Spring 2026 field trips. Good for extra practice or to preview the kinds of species we see each spring.</div>
+      <div class="go">Open study tool &#8599;</div>
+    </a>
+  </div>
+</div>
