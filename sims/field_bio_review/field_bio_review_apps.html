@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Apps | Class Simulations</title>
+<style>
+  :root {
+    --bg: #f6f7f4;
+    --card: #ffffff;
+    --ink: #1f2a24;
+    --muted: #5b6b62;
+    --accent: #2f6b4f;
+    --accent-dark: #22513b;
+    --border: #dfe4df;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  header {
+    background: var(--accent);
+    color: #fff;
+    padding: 28px 20px 24px;
+  }
+  header .wrap { max-width: 1000px; margin: 0 auto; }
+  header a.back {
+    color: #dcefe5;
+    text-decoration: none;
+    font-size: 0.95rem;
+  }
+  header a.back:hover { text-decoration: underline; }
+  header h1 { margin: 8px 0 4px; font-size: 2rem; }
+  header p { margin: 0; color: #e4f2ea; }
+
+  main { max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  .search {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 24px;
+    background: #fff;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card .tag {
+    align-self: flex-start;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    background: #e7f1eb;
+    padding: 3px 9px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .card h2 { font-size: 1.2rem; margin: 0 0 8px; }
+  .card p { margin: 0 0 16px; color: var(--muted); flex-grow: 1; }
+
+  .btn {
+    display: inline-block;
+    text-align: center;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    background: var(--accent);
+    color: #fff;
+  }
+  .btn:hover { background: var(--accent-dark); }
+
+  .note {
+    margin-top: 32px;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+  .empty { color: var(--muted); display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="back" href="index.html">&larr; Back to Class Simulations</a>
+    <h1>Web Apps</h1>
+    <p>Study tools and class apps. Each one opens in a new tab and works in any browser.</p>
+  </div>
+</header>
+
+<main>
+  <input class="search" id="search" type="search" placeholder="Search apps..." aria-label="Search apps">
+  <div class="grid" id="grid"></div>
+  <p class="empty" id="empty">No apps match your search.</p>
+  <p class="note">Some apps ask you to sign in with your Google account the first time you open them.</p>
+</main>
+
+<script>
+  // ===== ADD NEW APPS HERE =====
+  // Copy one { ... } block, paste it below the last one, and change the details.
+  const apps = [
+    {
+      title: "Spring 2026 Field Biology Species Review",
+      tag: "Field Biology",
+      description: "Study the species from our Spring 2026 field trips with flashcards. Use it to practice identifying the plants and animals you need to know for quizzes and exams.",
+      url: "https://script.google.com/macros/s/AKfycbxFylUSF13ZssH0HRlasaxhyFrE4v5dmbugR88Ipzh_3Uv6yo4mP7s3QwReaG6aDQtqEg/exec"
+    }
+  ];
+  // =============================
+
+  const grid = document.getElementById("grid");
+  const empty = document.getElementById("empty");
+
+  function render(filter) {
+    const q = (filter || "").toLowerCase();
+    grid.innerHTML = "";
+    const shown = apps.filter(a =>
+      (a.title + " " + a.tag + " " + a.description).toLowerCase().includes(q)
+    );
+    shown.forEach(a => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <span class="tag"></span>
+        <h2></h2>
+        <p></p>
+        <a class="btn" target="_blank" rel="noopener">Open app &#8599;</a>`;
+      card.querySelector(".tag").textContent = a.tag;
+      card.querySelector("h2").textContent = a.title;
+      card.querySelector("p").textContent = a.description;
+      card.querySelector(".btn").href = a.url;
+      grid.appendChild(card);
+    });
+    empty.style.display = shown.length ? "none" : "block";
+  }
+
+  document.getElementById("search").addEventListener("input", e => render(e.target.value));
+  render();
+</script>
+
+</body>
+</html>
