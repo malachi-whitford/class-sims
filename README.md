@@ -20,7 +20,9 @@ class-sims/
     ├── soil-water/index.html
     ├── soil-cation-exchange/index.html
     ├── soil-ph/index.html
-    └── environmental-laws/index.html
+    ├── environmental-laws/index.html
+    ├── field_bio_review/index.html
+    └── species-diversity/index.html
 ```
 
 Each simulation lives in its own folder as `index.html`, so it gets a clean link:

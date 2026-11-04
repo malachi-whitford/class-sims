@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Species Diversity Calculator: Simpson, Shannon, Alpha, Beta, Gamma</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;--heat:42,120,214;
+--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--s4:#eda100;--s5:#e87ba4;--s6:#008300;--s7:#6250d6;--s8:#e34948;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;--heat:57,135,229;
+--s1:#3987e5;--s2:#d95926;--s3:#199e70;--s4:#c98500;--s5:#d55181;--s6:#008300;--s7:#9085e9;--s8:#e66767;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:12px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(420px,1fr));gap:12px}
+.grid2>.card{margin-bottom:0}
+.settings{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:.85rem;color:var(--muted);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.settings label{display:flex;gap:6px;align-items:center}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+select,input[type=text],input[type=number],textarea{font:inherit;font-size:.85rem;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+/* data table */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:.85rem}
+th,td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+thead th{background:var(--soft);position:sticky;top:0;z-index:1}
+tfoot td{background:var(--soft);font-weight:600}
+#dtable input.cnt{width:64px;text-align:right}
+#dtable input.spname{width:190px}
+#dtable input.sname{width:110px;font-weight:600}
+.sitehead{display:flex;align-items:center;gap:4px}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;flex:none}
+button.x{padding:0 7px;line-height:1.4;font-size:.95rem;border-radius:6px;color:var(--muted)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+/* stat tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 0 4px}
+.tile{background:var(--soft);border-radius:10px;padding:10px 12px}
+.tile .k{font-size:.78rem;color:var(--muted)}
+.tile .v{font-size:1.5rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .d{font-size:.76rem;color:var(--muted)}
+/* charts */
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:11px;font-family:system-ui,Arial,sans-serif}
+.chart .lab{fill:var(--text);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);margin:2px 0 6px}
+.legend span{display:flex;align-items:center;gap:5px}
+#tip{position:fixed;pointer-events:none;background:var(--text);color:var(--bg);font-size:.8rem;padding:6px 9px;border-radius:7px;max-width:280px;z-index:50;display:none;line-height:1.35}
+.msg{font-size:.88rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:8px 12px;margin-top:8px}
+.formula{font-family:ui-monospace,Consolas,monospace;font-size:.85rem;background:var(--soft);border-radius:8px;padding:8px 10px;margin:6px 0;line-height:1.7;overflow-x:auto}
+.heat td.h{text-align:center;font-variant-numeric:tabular-nums;min-width:52px}
+.heat td.h.dk{color:#fff}
+.mat td.h{cursor:pointer}
+.mat td.h.sel{outline:3px solid var(--text);outline-offset:-3px}
+.ok{color:var(--good);font-weight:700}.no{color:var(--bad);font-weight:700}
+.chk input{width:100px}
+.chk td{border:none;padding:3px 6px}
+.hideans .ans{filter:blur(6px);user-select:none}
+.explore-ctrl label{display:flex;justify-content:space-between;font-size:.88rem;margin:8px 0 2px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+details summary{cursor:pointer;font-weight:600;font-size:.9rem}
+textarea{width:100%;min-height:110px;font-family:ui-monospace,Consolas,monospace}
+.pill{display:inline-block;padding:1px 8px;border-radius:999px;background:var(--soft);border:1px solid var(--line);font-size:.78rem;margin:2px}
+@media(max-width:520px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>Species Diversity Calculator</h1>
+<p class="sub">Enter how many individuals of each species you found at each site. The calculator finds richness, Simpson's and Shannon's indices for each site (alpha diversity), how different the sites are from each other (beta diversity), and the diversity of all sites combined (gamma diversity).</p>
+
+<div class="settings" id="settings">
+  <label>Simpson's D uses
+    <select id="setSimp">
+      <option value="nn">&Sigma; n(n&minus;1) / N(N&minus;1)  (sample formula)</option>
+      <option value="p2">&Sigma; p&sup2;  (proportion formula)</option>
+    </select></label>
+  <label>Shannon log
+    <select id="setBase">
+      <option value="e">natural log, ln</option>
+      <option value="2">log base 2</option>
+      <option value="10">log base 10</option>
+    </select></label>
+  <span class="small">Use whichever your lab handout uses.</span>
+</div>
+
+<nav class="tabs">
+  <button class="on" data-tab="data">1. Enter data</button>
+  <button data-tab="alpha">2. Compare sites (alpha)</button>
+  <button data-tab="math">3. Show the math</button>
+  <button data-tab="beta">4. Beta &amp; gamma</button>
+  <button data-tab="explore">5. Richness vs evenness</button>
+</nav>
+
+<!-- ============ DATA ============ -->
+<section class="panel on" id="data">
+  <div class="card">
+    <div class="row">
+      <label class="small">Example data set
+        <select id="preset">
+          <option value="birds">Bird point counts: 4 Central Valley habitats</option>
+          <option value="plants">Grassland plant quadrats: 4 sites</option>
+          <option value="ponds">Pond macroinvertebrates: 3 ponds (textbook)</option>
+          <option value="blank">Blank sheet</option>
+        </select></label>
+      <button id="loadPreset">Load</button>
+      <span class="muted small" id="presetNote"></span>
+    </div>
+    <div class="tablewrap"><table id="dtable"></table></div>
+    <div class="row">
+      <button id="addSp">+ Add species</button>
+      <button id="addSite">+ Add site</button>
+      <button id="sortSp">Sort species by total</button>
+      <button id="zero">Clear all counts</button>
+      <button id="dlcsv">Download CSV</button>
+    </div>
+    <p class="small muted">Up to 8 sites. Leave a cell empty for zero. Your data is kept in this browser until you load another data set.</p>
+    <details>
+      <summary>Paste data from Google Sheets or Excel</summary>
+      <p class="small muted">Copy a block of cells and paste it below. The first row should be the site names (the top-left cell can say "Species"). Each row after that is a species name followed by its count at each site.</p>
+      <textarea id="paste" placeholder="Species&#9;Site A&#9;Site B&#10;Western Meadowlark&#9;12&#9;3&#10;Horned Lark&#9;4&#9;0"></textarea>
+      <div class="row"><button class="primary" id="usePaste">Use pasted data</button><span id="pasteMsg" class="small"></span></div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ ALPHA ============ -->
+<section class="panel" id="alpha">
+  <div class="card">
+    <h2>Alpha diversity: the diversity within each site</h2>
+    <div class="row">
+      <label class="small">Show
+        <select id="metric">
+          <option value="S">Species richness (S)</option>
+          <option value="simp" selected>Simpson's index of diversity (1 &minus; D)</option>
+          <option value="inv">Simpson's reciprocal index (1 / D)</option>
+          <option value="D">Simpson's dominance (D)</option>
+          <option value="H">Shannon index (H&prime;)</option>
+          <option value="eff">Effective number of species (e^H&prime;)</option>
+          <option value="J">Pielou's evenness (J&prime;)</option>
+          <option value="N">Total individuals (N)</option>
+        </select></label>
+    </div>
+    <div class="chart" id="alphaChart"></div>
+    <div class="msg" id="alphaMsg"></div>
+    <p class="small muted" id="metricHelp"></p>
+  </div>
+  <div class="card">
+    <h2>All indices</h2>
+    <div class="tablewrap"><table id="alphaTable"></table></div>
+  </div>
+  <div class="card">
+    <h2>Rank-abundance curves</h2>
+    <p class="small muted">Each site's species are ranked from most to least common. A long, flat line means many species with similar abundances (rich and even). A short, steep line means few species with one or two dominating.</p>
+    <div class="row"><label class="small"><input type="checkbox" id="logY" checked> Log scale for relative abundance</label></div>
+    <div class="legend" id="raLegend"></div>
+    <div class="chart" id="raChart"></div>
+  </div>
+</section>
+
+<!-- ============ MATH ============ -->
+<section class="panel" id="math">
+  <div class="card">
+    <div class="row">
+      <label class="small">Site <select id="mathSite"></select></label>
+      <label class="small"><input type="checkbox" id="practice"> Practice mode: hide the answers so I can calculate them myself</label>
+    </div>
+    <p class="small muted">Only species present at this site (n &gt; 0) are listed, because absent species add nothing to these sums.</p>
+    <div class="tablewrap"><table id="mathTable"></table></div>
+    <div id="mathSteps"></div>
+  </div>
+  <div class="card">
+    <h2>Check your work</h2>
+    <p class="small muted">Type the values you calculated by hand for this site. Answers within 1% (or &plusmn;0.01) count as correct.</p>
+    <table class="chk" id="chkTable"></table>
+    <div class="row"><button class="primary" id="chkBtn">Check my answers</button></div>
+    <div id="chkOut"></div>
+  </div>
+</section>
+
+<!-- ============ BETA / GAMMA ============ -->
+<section class="panel" id="beta">
+  <div class="card">
+    <h2>Alpha, beta, and gamma diversity (species richness)</h2>
+    <div class="tiles" id="bgTiles"></div>
+    <div class="chart" id="bgChart"></div>
+    <div class="msg" id="bgMsg"></div>
+    <details style="margin-top:10px">
+      <summary>Same idea with Shannon diversity (effective number of species)</summary>
+      <p class="small muted">Richness ignores abundance. Converting Shannon's H&prime; to an effective number of species (e^H&prime;, Jost 2007) lets abundance count too, and the parts still multiply: &gamma; = &alpha; &times; &beta;. Sites are weighted equally.</p>
+      <div class="tiles" id="hillTiles"></div>
+    </details>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <h2>How similar are the sites?</h2>
+      <div class="row">
+        <label class="small">Index
+          <select id="simIdx">
+            <option value="jac">Jaccard similarity (presence/absence)</option>
+            <option value="sor">S&oslash;rensen similarity (presence/absence)</option>
+            <option value="bc">Bray&ndash;Curtis dissimilarity (uses counts)</option>
+          </select></label>
+      </div>
+      <div class="tablewrap"><table class="heat mat" id="simTable"></table></div>
+      <p class="small muted" id="simHelp"></p>
+    </div>
+    <div class="card">
+      <h2>Compare two sites</h2>
+      <p class="small muted">Click a cell in the table to choose a pair.</p>
+      <div id="pairOut"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h2>Where each species was found</h2>
+    <p class="small muted">Numbers are counts. Shading shows each species' share of the individuals at that site (darker = more of that site's individuals). Species found at only one site are what drive beta diversity up.</p>
+    <div class="tablewrap"><table class="heat" id="occTable"></table></div>
+  </div>
+</section>
+
+<!-- ============ EXPLORE ============ -->
+<section class="panel" id="explore">
+  <div class="card">
+    <h2>Richness vs. evenness</h2>
+    <p class="small muted">Diversity has two parts: <b>richness</b> (how many species) and <b>evenness</b> (how equally individuals are spread among them). Build two imaginary communities and see how each index responds. This tab uses &Sigma;p&sup2; for Simpson's D.</p>
+    <div class="row">
+      <button data-ex="even">Same richness, different evenness</button>
+      <button data-ex="rich">Same evenness, different richness</button>
+      <button data-ex="trade">Rich but uneven vs. poor but even</button>
+    </div>
+  </div>
+  <div class="grid2" id="exGrid"></div>
+  <div class="card" style="margin-top:12px">
+    <div class="tablewrap"><table id="exTable"></table></div>
+    <div class="msg" id="exMsg"></div>
+  </div>
+</section>
+</div>
+<div id="tip" role="presentation"></div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const MAXSITES=8, STORE='divcalc-v1';
+const col=j=>`var(--s${j%8+1})`;
+function f(x,d=3){if(x===Infinity)return '∞';if(x===undefined||x===null||Number.isNaN(x))return '—';return (+x).toFixed(d)}
+
+/* ---------------- example data ---------------- */
+const PRESETS={
+ birds:{note:'Counts of birds detected in 10-minute point counts.',sites:['Valley oak riparian','Blue oak woodland','Annual grassland','Almond orchard'],rows:[
+  ['Acorn Woodpecker',6,14,0,0],['Oak Titmouse',5,9,0,0],['Western Bluebird',3,8,2,0],['California Scrub-Jay',7,6,0,2],['Yellow-billed Magpie',2,5,1,0],
+  ['Spotted Towhee',6,2,0,0],['California Towhee',4,5,1,1],["Bewick's Wren",5,3,0,0],['Song Sparrow',9,0,0,0],['Black Phoebe',4,1,0,2],
+  ['Bushtit',12,7,0,0],["Nuttall's Woodpecker",4,3,0,0],['White-breasted Nuthatch',3,4,0,0],['Western Meadowlark',0,2,18,0],['Savannah Sparrow',0,0,9,0],
+  ['Horned Lark',0,0,7,0],['Red-winged Blackbird',8,0,6,3],['Lark Sparrow',0,3,4,0],['Killdeer',0,0,3,2],['Red-tailed Hawk',1,1,2,1],
+  ['House Finch',3,2,3,14],['Mourning Dove',2,3,5,11],['European Starling',2,1,2,31],['American Crow',1,0,1,9],["Brewer's Blackbird",0,0,3,6],
+  ["Anna's Hummingbird",4,2,0,1],['Yellow-rumped Warbler',6,3,0,2]]},
+ plants:{note:'Stems counted in ten 0.25 m² quadrats per site.',sites:['Grazed native grassland','Ungrazed invaded grassland','Serpentine grassland','Roadside edge'],rows:[
+  ['Purple needlegrass',22,3,14,0],['Wild oat',8,40,0,25],['Ripgut brome',5,55,0,30],['Soft chess',18,20,4,12],['Medusahead',2,35,0,6],
+  ['Yellow star-thistle',0,6,0,28],['Redstem filaree',15,4,2,18],['Italian ryegrass',4,12,0,20],['California poppy',9,1,6,3],['Miniature lupine',12,2,8,2],
+  ['Fiddleneck',7,3,0,9],['Popcorn flower',10,0,5,0],["Owl's clover",6,0,9,0],['Blue dicks',5,1,4,0],['Goldfields',14,0,26,0],
+  ['Tidy tips',6,0,7,0],['Small fescue',3,0,12,0],['Dwarf plantain',2,0,18,0]]},
+ ponds:{note:'Pond A and B have the same 5 species; Pond C has 10. Compare them!',sites:['Pond A (even)','Pond B (one dominant)','Pond C (more species)'],rows:[
+  ['Mayfly larva',20,80,10],['Caddisfly larva',20,5,10],['Dragonfly nymph',20,5,10],['Water strider',20,5,10],['Snail',20,5,10],
+  ['Damselfly nymph',0,0,10],['Midge larva',0,0,10],['Leech',0,0,10],['Water boatman',0,0,10],['Stonefly nymph',0,0,10]]},
+ blank:{note:'',sites:['Site A','Site B'],rows:[['Species 1',0,0],['Species 2',0,0],['Species 3',0,0],['Species 4',0,0],['Species 5',0,0]]}
+};
+
+let D={sites:[],species:[],counts:[]};
+function load(name){const p=PRESETS[name];D={sites:p.sites.slice(),species:p.rows.map(r=>r[0]),counts:p.rows.map(r=>r.slice(1).map(Number))};$('#presetNote').textContent=p.note;save()}
+function save(){try{localStorage.setItem(STORE,JSON.stringify({D,simp:$('#setSimp').value,base:$('#setBase').value}))}catch(e){}}
+function restore(){try{const s=JSON.parse(localStorage.getItem(STORE));if(s&&s.D&&s.D.sites.length){D=s.D;$('#setSimp').value=s.simp||'nn';$('#setBase').value=s.base||'e';return true}}catch(e){}return false}
+
+/* ---------------- math ---------------- */
+const base=()=>$('#setBase').value, simpMode=()=>$('#setSimp').value;
+const lnB=()=>base()==='e'?1:Math.log(+base());
+const logName=()=>base()==='e'?'ln':base()==='2'?'log₂':'log₁₀';
+const col_j=j=>D.counts.map(r=>+r[j]||0);
+function stats(arr,mode){
+  mode=mode||simpMode();
+  const N=arr.reduce((a,b)=>a+b,0), S=arr.filter(n=>n>0).length;
+  let sp2=0,snn=0,Hln=0,maxP=0,maxI=-1;
+  arr.forEach((n,i)=>{if(n<=0)return;const p=n/N;sp2+=p*p;snn+=n*(n-1);Hln-=p*Math.log(p);if(p>maxP){maxP=p;maxI=i}});
+  const nnD=N>1?snn/(N*(N-1)):NaN;
+  const Dv=N===0?NaN:(mode==='nn'?nnD:sp2);
+  return {N,S,D:Dv,simp:1-Dv,inv:Dv>0?1/Dv:(Dv===0?Infinity:NaN),H:N?Hln/lnB():NaN,Hln,eff:N?Math.exp(Hln):NaN,J:S>1?Hln/Math.log(S):NaN,maxP,maxI,sp2,snn};
+}
+function pres(arr){return arr.map(n=>n>0)}
+function pairStats(j,k){
+  const A=col_j(j),B=col_j(k);let a=0,b=0,c=0,mn=0,sa=0,sb=0;
+  A.forEach((x,i)=>{const y=B[i];if(x>0&&y>0)a++;else if(x>0)b++;else if(y>0)c++;mn+=Math.min(x,y);sa+=x;sb+=y});
+  return {a,b,c,jac:(a+b+c)?a/(a+b+c):NaN,sor:(2*a+b+c)?2*a/(2*a+b+c):NaN,bc:(sa+sb)?1-2*mn/(sa+sb):NaN,mn,sa,sb};
+}
+
+/* ---------------- tooltip ---------------- */
+const tip=$('#tip');
+document.addEventListener('mousemove',e=>{const t=e.target.closest&&e.target.closest('[data-tip]');if(!t){tip.style.display='none';return}
+  tip.innerHTML=t.getAttribute('data-tip');tip.style.display='block';const w=tip.offsetWidth,h=tip.offsetHeight;
+  let x=e.clientX+14,y=e.clientY+14;if(x+w>innerWidth-6)x=e.clientX-w-14;if(y+h>innerHeight-6)y=e.clientY-h-14;tip.style.left=x+'px';tip.style.top=y+'px'});
+document.addEventListener('scroll',()=>tip.style.display='none',true);
+
+/* ---------------- chart helpers (SVG) ---------------- */
+function niceStep(raw){const p=Math.pow(10,Math.floor(Math.log10(raw)));const m=raw/p;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*p}
+function wrap2(s,n){const w=String(s).split(/\s+/);const L=['',''];let i=0;for(const x of w){if(i<2&&(L[i]+' '+x).trim().length>n&&L[i])i++;if(i>1){L[1]=L[1].replace(/…?$/,'…');break}L[i]=(L[i]+' '+x).trim()}return L.filter(Boolean)}
+function barSVG(o){
+  const W=680,H=o.h||290,m={l:52,r:16,t:22,b:46};
+  const vals=o.values.map(v=>Number.isFinite(v)?v:0);
+  let top=Math.max(...vals,o.ref||0);if(!(top>0))top=1;
+  let step=niceStep(top/5);top=Math.ceil(top*1.08/step)*step;
+  if(o.top){top=o.top;step=o.top/5}
+  const iw=W-m.l-m.r,ih=H-m.t-m.b,n=vals.length,bw=Math.min(80,iw/n*0.62),gap=iw/n;
+  const y=v=>m.t+ih-(v/top)*ih;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  for(let v=0;v<=top+1e-9;v+=step){s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(v)}" y2="${y(v)}" style="stroke:var(--line)" stroke-width="1"/><text x="${m.l-6}" y="${y(v)+4}" text-anchor="end">${+v.toFixed(3)}</text>`}
+  if(o.yTitle)s+=`<text x="14" y="${m.t+ih/2}" transform="rotate(-90 14 ${m.t+ih/2})" text-anchor="middle">${esc(o.yTitle)}</text>`;
+  vals.forEach((v,i)=>{const cx=m.l+gap*i+gap/2,x=cx-bw/2,yy=y(v),hh=Math.max(0,m.t+ih-yy),r=Math.min(4,hh);
+    s+=`<path d="M${x},${m.t+ih} V${yy+r} Q${x},${yy} ${x+r},${yy} H${x+bw-r} Q${x+bw},${yy} ${x+bw},${yy+r} V${m.t+ih} Z" style="fill:${o.colors[i]}"/>`;
+    s+=`<text class="lab" x="${cx}" y="${yy-6}" text-anchor="middle">${o.fmt(o.values[i])}</text>`;
+    wrap2(o.labels[i],15).forEach((ln,k)=>s+=`<text x="${cx}" y="${m.t+ih+16+k*13}" text-anchor="middle">${esc(ln)}</text>`);
+    s+=`<rect x="${m.l+gap*i}" y="${m.t}" width="${gap}" height="${ih+40}" fill="transparent" data-tip="${esc(o.tips[i])}"/>`;});
+  if(o.ref){s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(o.ref)}" y2="${y(o.ref)}" style="stroke:var(--text)" stroke-width="2" stroke-dasharray="6 4"/><text class="lab" x="${W-m.r}" y="${y(o.ref)-6}" text-anchor="end">${esc(o.refLabel)}</text>`}
+  s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${m.t+ih}" y2="${m.t+ih}" style="stroke:var(--muted)"/></svg>`;
+  return s;
+}
+function legendHTML(){return D.sites.map((s,j)=>`<span><i class="sw" style="background:${col(j)}"></i>${esc(s)}</span>`).join('')}
+
+/* ---------------- DATA tab ---------------- */
+function renderTable(){
+  let h='<thead><tr><th>Species</th>';
+  D.sites.forEach((s,j)=>h+=`<th><div class="sitehead"><span class="sw" style="background:${col(j)}"></span><input type="text" class="sname" data-j="${j}" value="${esc(s)}" aria-label="Name of site ${j+1}"><button class="x" data-delsite="${j}" aria-label="Remove site ${esc(s)}" title="Remove site">×</button></div></th>`);
+  h+='<th class="num">Total</th><th></th></tr></thead><tbody>';
+  D.species.forEach((sp,i)=>{h+=`<tr><td><input type="text" class="spname" data-i="${i}" value="${esc(sp)}" aria-label="Name of species ${i+1}"></td>`;
+    D.sites.forEach((s,j)=>{const v=+D.counts[i][j]||0;h+=`<td><input class="cnt" type="number" min="0" step="1" inputmode="numeric" data-i="${i}" data-j="${j}" value="${v||''}" placeholder="0" aria-label="Count of ${esc(sp)} at ${esc(s)}"></td>`});
+    h+=`<td class="num" id="rt${i}"></td><td><button class="x" data-delsp="${i}" aria-label="Remove ${esc(sp)}" title="Remove species">×</button></td></tr>`});
+  h+='</tbody><tfoot><tr><td>Total individuals (N)</td>'+D.sites.map((s,j)=>`<td class="num" id="ft${j}"></td>`).join('')+'<td class="num" id="ftAll"></td><td></td></tr>';
+  h+='<tr><td>Species present (S)</td>'+D.sites.map((s,j)=>`<td class="num" id="fs${j}"></td>`).join('')+'<td class="num" id="fsAll"></td><td></td></tr></tfoot>';
+  $('#dtable').innerHTML=h;updateTotals();
+  $('#addSite').disabled=D.sites.length>=MAXSITES;
+}
+function updateTotals(){
+  D.species.forEach((s,i)=>{const e=$('#rt'+i);if(e)e.textContent=D.counts[i].reduce((a,b)=>a+(+b||0),0)});
+  let all=0;D.sites.forEach((s,j)=>{const st=stats(col_j(j));$('#ft'+j).textContent=st.N;$('#fs'+j).textContent=st.S;all+=st.N});
+  $('#ftAll').textContent=all;$('#fsAll').textContent=D.counts.filter(r=>r.some(n=>+n>0)).length;
+}
+$('#dtable').addEventListener('input',e=>{const t=e.target;
+  if(t.classList.contains('cnt')){let v=Math.max(0,Math.round(+t.value||0));D.counts[+t.dataset.i][+t.dataset.j]=v;updateTotals();save()}
+  else if(t.classList.contains('spname')){D.species[+t.dataset.i]=t.value;save()}
+  else if(t.classList.contains('sname')){D.sites[+t.dataset.j]=t.value;save()}});
+$('#dtable').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.delsite!==undefined){if(D.sites.length<=1)return;const j=+b.dataset.delsite;D.sites.splice(j,1);D.counts.forEach(r=>r.splice(j,1))}
+  else if(b.dataset.delsp!==undefined){if(D.species.length<=1)return;const i=+b.dataset.delsp;D.species.splice(i,1);D.counts.splice(i,1)}
+  else return;save();renderTable()});
+$('#addSp').onclick=()=>{D.species.push('Species '+(D.species.length+1));D.counts.push(D.sites.map(()=>0));save();renderTable();const ins=$$('#dtable input.spname');ins[ins.length-1].select()};
+$('#addSite').onclick=()=>{if(D.sites.length>=MAXSITES)return;D.sites.push('Site '+String.fromCharCode(65+D.sites.length));D.counts.forEach(r=>r.push(0));save();renderTable()};
+$('#sortSp').onclick=()=>{const idx=D.species.map((s,i)=>i).sort((a,b)=>D.counts[b].reduce((x,y)=>x+y,0)-D.counts[a].reduce((x,y)=>x+y,0));D.species=idx.map(i=>D.species[i]);D.counts=idx.map(i=>D.counts[i]);save();renderTable()};
+$('#zero').onclick=()=>{if(!confirmZero())return;D.counts=D.counts.map(r=>r.map(()=>0));save();renderTable()};
+function confirmZero(){const b=$('#zero');if(b.dataset.arm){delete b.dataset.arm;b.textContent='Clear all counts';return true}b.dataset.arm=1;b.textContent='Click again to clear';setTimeout(()=>{delete b.dataset.arm;b.textContent='Clear all counts'},3000);return false}
+$('#loadPreset').onclick=()=>{load($('#preset').value);renderTable()};
+$('#dlcsv').onclick=()=>{const q=s=>/[",\n]/.test(s)?'"'+String(s).replace(/"/g,'""')+'"':s;
+  const lines=[['Species',...D.sites].map(q).join(',')].concat(D.species.map((s,i)=>[q(s),...D.counts[i]].join(',')));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/csv'}));a.download='diversity-data.csv';document.body.appendChild(a);a.click();a.remove()};
+$('#usePaste').onclick=()=>{const txt=$('#paste').value.trim(),msg=$('#pasteMsg');
+  if(!txt){msg.textContent='Nothing to paste yet.';return}
+  const lines=txt.split(/\r?\n/).filter(l=>l.trim());const delim=lines[0].includes('\t')?'\t':',';
+  const split=l=>{if(delim==='\t')return l.split('\t');const out=[];let cur='',q=false;for(const ch of l){if(ch==='"')q=!q;else if(ch===','&&!q){out.push(cur);cur=''}else cur+=ch}out.push(cur);return out};
+  const head=split(lines[0]).map(s=>s.trim());let sites=head.slice(1).filter(Boolean);
+  if(!sites.length){msg.innerHTML='<span class="no">The first row needs site names.</span>';return}
+  let cut=false;if(sites.length>MAXSITES){sites=sites.slice(0,MAXSITES);cut=true}
+  const sp=[],ct=[];lines.slice(1).forEach(l=>{const c=split(l);const name=(c[0]||'').trim();if(!name)return;sp.push(name);ct.push(sites.map((s,j)=>Math.max(0,Math.round(+String(c[j+1]||'').replace(/[^0-9.\-]/g,'')||0))))});
+  if(!sp.length){msg.innerHTML='<span class="no">No species rows found.</span>';return}
+  D={sites,species:sp,counts:ct};save();renderTable();
+  msg.innerHTML=`<span class="ok">Loaded ${sp.length} species × ${sites.length} sites.</span>`+(cut?' Only the first 8 sites were kept.':'')};
+
+/* ---------------- ALPHA tab ---------------- */
+const METRICS={
+  S:{name:'Species richness (S)',d:0,help:'Richness is simply the number of species present. It ignores how many individuals each species has.'},
+  simp:{name:"Simpson's index of diversity (1 − D)",d:3,help:"1 − D is the probability that two individuals picked at random belong to different species. It runs from 0 (one species) toward 1 (many equally common species). It is mostly sensitive to the common species."},
+  inv:{name:"Simpson's reciprocal index (1 / D)",d:2,help:"1 / D is the number of equally common species that would give the same D. Higher means more diverse. With the Σp² formula it can never exceed S."},
+  D:{name:"Simpson's dominance (D)",d:3,help:"D is the probability that two individuals picked at random are the same species. High D means low diversity (one species dominates)."},
+  H:{name:'Shannon index (H′)',d:3,help:"H′ measures how uncertain you are about the species of the next individual you find. It rises with both richness and evenness and is more sensitive to rare species than Simpson's index. Values usually fall between 1.5 and 3.5 (with ln) in field data."},
+  eff:{name:'Effective number of species (e^H′)',d:2,help:"e^H′ (a Hill number) converts Shannon diversity back into a number of species: the number of equally common species that would give the same H′. It can never exceed S."},
+  J:{name:"Pielou's evenness (J′)",d:3,help:"J′ = H′ / ln S compares H′ to the largest value possible with that many species. J′ = 1 means every species is equally common; values near 0 mean one species dominates."},
+  N:{name:'Total individuals (N)',d:0,help:'N is the sample size. Larger samples usually find more species, so compare richness carefully when N differs a lot between sites.'}
+};
+function renderAlpha(){
+  const key=$('#metric').value,M=METRICS[key];
+  const st=D.sites.map((s,j)=>stats(col_j(j)));
+  const vals=st.map(x=>x[key]);
+  const ymax=key==='simp'||key==='J'||key==='D'?1:undefined;
+  $('#alphaChart').innerHTML=barSVG({labels:D.sites,values:vals.map(v=>v===Infinity?0:v),colors:D.sites.map((s,j)=>col(j)),yTitle:M.name,fmt:v=>f(v,M.d),
+    top:ymax,tips:st.map((x,j)=>`<b>${esc(D.sites[j])}</b><br>${M.name}: ${f(x[key],M.d)}<br>S = ${x.S}, N = ${x.N}`)});
+  $('#alphaChart').setAttribute('role','img');
+  $('#alphaChart').setAttribute('aria-label','Bar chart of '+M.name+' by site: '+D.sites.map((s,j)=>s+' '+f(vals[j],M.d)).join('; ')+'. The same numbers are in the All indices table.');
+  $('#metricHelp').textContent=M.help;
+  // message
+  const ok=st.map((x,j)=>({j,v:x[key]})).filter(o=>Number.isFinite(o.v));
+  let msg='';
+  if(ok.length>=2){
+    const higherBetter=key!=='D';ok.sort((a,b)=>b.v-a.v);
+    const hi=ok[higherBetter?0:ok.length-1],lo=ok[higherBetter?ok.length-1:0];
+    msg=key==='N'?`<b>${esc(D.sites[ok[0].j])}</b> had the most individuals (${ok[0].v}).`:
+      `By this measure, <b>${esc(D.sites[hi.j])}</b> is the most diverse site and <b>${esc(D.sites[lo.j])}</b> is the least diverse.`;
+    // rank disagreement richness vs simpson
+    const rS=st.map((x,j)=>j).sort((a,b)=>st[b].S-st[a].S),rH=st.map((x,j)=>j).sort((a,b)=>(st[b].Hln||0)-(st[a].Hln||0));
+    if(st[rS[0]].S>st[rH[0]].S&&rS[0]!==rH[0])msg+=` Notice that <b>${esc(D.sites[rS[0]])}</b> has the most species (S = ${st[rS[0]].S}), but <b>${esc(D.sites[rH[0]])}</b> has the highest Shannon index because its individuals are spread more evenly.`;
+  }
+  const dom=st.map((x,j)=>({j,x})).filter(o=>o.x.maxP>=0.35&&o.x.S>1);
+  dom.forEach(o=>msg+=` At <b>${esc(D.sites[o.j])}</b>, ${esc(D.species[o.x.maxI])} makes up ${Math.round(o.x.maxP*100)}% of all individuals, which pulls evenness and Simpson's index down.`);
+  if(st.some(x=>x.N>0&&x.N<20))msg+=' <i>Some sites have fewer than 20 individuals, so their indices are rough estimates.</i>';
+  $('#alphaMsg').innerHTML=msg||'Enter counts on the Enter data tab to compare sites.';
+  // table
+  const cols=[['S','S',0],['N','N',0],['D','D',3],['simp','1 − D',3],['inv','1 / D',2],['H',"H′ ("+logName()+")",3],['eff','e^H′',2],['J','J′',3]];
+  let h='<thead><tr><th>Site</th>'+cols.map(c=>`<th class="num">${c[1]}</th>`).join('')+'</tr></thead><tbody>';
+  st.forEach((x,j)=>h+=`<tr><td><span class="sw" style="background:${col(j)}"></span> ${esc(D.sites[j])}</td>`+cols.map(c=>`<td class="num">${f(x[c[0]],c[2])}</td>`).join('')+'</tr>');
+  $('#alphaTable').innerHTML=h+'</tbody>';
+  renderRA(st);
+}
+function renderRA(st){
+  const W=680,H=320,m={l:58,r:16,t:16,b:40},iw=W-m.l-m.r,ih=H-m.t-m.b,logY=$('#logY').checked;
+  const curves=D.sites.map((s,j)=>{const a=col_j(j),N=a.reduce((x,y)=>x+y,0);return a.map((n,i)=>({p:N?n/N:0,i})).filter(o=>o.p>0).sort((x,y)=>y.p-x.p)});
+  const maxR=Math.max(1,...curves.map(c=>c.length));
+  const ps=curves.flat().map(o=>o.p);const pmin=ps.length?Math.min(...ps):0.01;
+  const lo=Math.min(0.1,Math.pow(10,Math.floor(Math.log10(pmin))));
+  const x=r=>m.l+(maxR===1?iw/2:(r-1)/(maxR-1)*iw);
+  const y=p=>logY?m.t+ih-(Math.log10(p)-Math.log10(lo))/(0-Math.log10(lo))*ih:m.t+ih-p*ih;
+  let s=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  const ticks=logY?Array.from({length:-Math.log10(lo)+1},(v,k)=>lo*Math.pow(10,k)):[0,.2,.4,.6,.8,1];
+  ticks.forEach(t=>s+=`<line x1="${m.l}" x2="${W-m.r}" y1="${y(t)}" y2="${y(t)}" style="stroke:var(--line)"/><text x="${m.l-6}" y="${y(t)+4}" text-anchor="end">${t>=0.01||t===0?+t.toFixed(2):t}</text>`);
+  const xs=niceStep(maxR/8);for(let r=1;r<=maxR;r+=(r===1&&xs>1?xs-1:xs))s+=`<text x="${x(r)}" y="${m.t+ih+16}" text-anchor="middle">${r}</text>`;
+  s+=`<text x="${m.l+iw/2}" y="${H-4}" text-anchor="middle">Species rank (1 = most common)</text>`;
+  s+=`<text x="14" y="${m.t+ih/2}" transform="rotate(-90 14 ${m.t+ih/2})" text-anchor="middle">Relative abundance (p)</text>`;
+  curves.forEach((c,j)=>{if(!c.length)return;s+=`<polyline fill="none" style="stroke:${col(j)}" stroke-width="2" stroke-linejoin="round" points="${c.map((o,k)=>x(k+1)+','+y(o.p)).join(' ')}"/>`;
+    c.forEach((o,k)=>s+=`<circle cx="${x(k+1)}" cy="${y(o.p)}" r="4" style="fill:${col(j)};stroke:var(--card)" stroke-width="2"/><circle cx="${x(k+1)}" cy="${y(o.p)}" r="9" fill="transparent" data-tip="<b>${esc(D.sites[j])}</b><br>Rank ${k+1}: ${esc(D.species[o.i])}<br>p = ${f(o.p,3)} (${f(o.p*100,1)}%)"/>`)});
+  $('#raChart').innerHTML=s+`<line x1="${m.l}" x2="${W-m.r}" y1="${m.t+ih}" y2="${m.t+ih}" style="stroke:var(--muted)"/></svg>`;
+  $('#raChart').setAttribute('role','img');
+  $('#raChart').setAttribute('aria-label','Rank-abundance curves. '+D.sites.map((s,j)=>`${s}: ${curves[j].length} species, most common makes up ${curves[j].length?f(curves[j][0].p*100,0):0} percent`).join('; ')+'.');
+  $('#raLegend').innerHTML=legendHTML();
+}
+$('#metric').onchange=renderAlpha;$('#logY').onchange=renderAlpha;
+
+/* ---------------- MATH tab ---------------- */
+let curSt=null;
+function renderMath(){
+  const sel=$('#mathSite');const prev=+sel.value||0;
+  sel.innerHTML=D.sites.map((s,j)=>`<option value="${j}">${esc(s)}</option>`).join('');sel.value=Math.min(prev,D.sites.length-1);
+  const j=+sel.value,a=col_j(j),st=stats(a),N=st.N,L=logName(),k=lnB(),nn=simpMode()==='nn';curSt=st;
+  const rows=a.map((n,i)=>({n,i})).filter(o=>o.n>0);
+  let h=`<thead><tr><th>Species</th><th class="num">n</th><th class="num">p = n / N</th>`+(nn?`<th class="num">n(n − 1)</th>`:`<th class="num">p²</th>`)+`<th class="num">${L} p</th><th class="num">p × ${L} p</th></tr></thead><tbody>`;
+  let s1=0,s2=0,s3=0;
+  rows.forEach(o=>{const p=o.n/N,lp=Math.log(p)/k;const sq=nn?o.n*(o.n-1):p*p;s1+=p;s2+=sq;s3+=p*lp;
+    h+=`<tr><td>${esc(D.species[o.i])}</td><td class="num">${o.n}</td><td class="num ans">${f(p,4)}</td><td class="num ans">${nn?sq:f(sq,4)}</td><td class="num ans">${f(lp,4)}</td><td class="num ans">${f(p*lp,4)}</td></tr>`});
+  h+=`</tbody><tfoot><tr><td>Sum (&Sigma;)</td><td class="num">N = ${N}</td><td class="num ans">${f(s1,4)}</td><td class="num ans">${nn?s2:f(s2,4)}</td><td></td><td class="num ans">${f(s3,4)}</td></tr></tfoot>`;
+  $('#mathTable').innerHTML=rows.length?h:'<tbody><tr><td>No individuals recorded at this site yet.</td></tr></tbody>';
+  let m='';
+  if(rows.length){
+    m+=`<h3>Richness</h3><div class="formula">S = number of species with n &gt; 0 = <b>${st.S}</b><br>N = total individuals = <b>${N}</b></div>`;
+    m+=`<h3>Simpson's index</h3><div class="formula">`+(nn?`D = &Sigma; n(n − 1) / [N(N − 1)] = <span class="ans">${s2} / (${N} × ${N-1}) = ${s2} / ${N*(N-1)} = <b>${f(st.D,4)}</b></span>`:`D = &Sigma; p² = <span class="ans"><b>${f(st.D,4)}</b></span>`)+
+      `<br>Simpson's index of diversity: 1 − D = <span class="ans"><b>${f(st.simp,4)}</b></span><br>Simpson's reciprocal index: 1 / D = <span class="ans"><b>${f(st.inv,3)}</b></span></div>`;
+    m+=`<h3>Shannon index</h3><div class="formula">H′ = −&Sigma; p × ${L} p = −(<span class="ans">${f(s3,4)}</span>) = <span class="ans"><b>${f(st.H,4)}</b></span>`+
+      (st.S>1?`<br>Evenness: J′ = H′ / ${L} S = <span class="ans">${f(st.H,4)} / ${f(Math.log(st.S)/k,4)} = <b>${f(st.J,4)}</b></span>`:'')+
+      `<br>Effective number of species: e^H′ (using ln) = <span class="ans"><b>${f(st.eff,3)}</b></span></div>`;
+  }
+  $('#mathSteps').innerHTML=m;
+  $('#math').classList.toggle('hideans',$('#practice').checked);
+  const fields=[['S','Species richness, S'],['N','Total individuals, N'],['D',"Simpson's D"],['simp',"1 − D"],['H',`Shannon H′ (${L})`],['J',"Evenness J′"]];
+  const old={};$$('#chkTable input').forEach(i=>old[i.dataset.k]=i.value);
+  $('#chkTable').innerHTML='<tbody>'+fields.map(([k2,lab])=>`<tr><td><label for="ck_${k2}">${lab}</label></td><td><input type="number" step="any" id="ck_${k2}" data-k="${k2}" value="${old[k2]||''}"></td><td id="cr_${k2}"></td></tr>`).join('')+'</tbody>';
+  $('#chkOut').innerHTML='';
+}
+$('#mathSite').onchange=()=>{$$('#chkTable input').forEach(i=>i.value='');renderMath()};
+$('#practice').onchange=()=>$('#math').classList.toggle('hideans',$('#practice').checked);
+$('#chkBtn').onclick=()=>{
+  const st=curSt;if(!st)return;let right=0,tried=0;const hints=[];
+  $$('#chkTable input').forEach(inp=>{const k=inp.dataset.k,cell=$('#cr_'+k);if(inp.value===''){cell.innerHTML='';return}
+    tried++;const v=+inp.value,t=st[k],ok=Math.abs(v-t)<=Math.max(0.01,Math.abs(t)*0.01);
+    cell.innerHTML=ok?'<span class="ok">✓ Correct</span>':'<span class="no">✗ Not quite</span>';if(ok)right++;
+    else{
+      if(k==='D'&&simpMode()==='nn'&&Math.abs(v-st.sp2)<0.005)hints.push("For D you used Σp². This page is set to the sample formula Σn(n−1)/N(N−1). Check which one your handout uses (you can change it at the top).");
+      else if(k==='D'&&simpMode()==='p2'&&Number.isFinite(st.snn)&&st.N>1&&Math.abs(v-st.snn/(st.N*(st.N-1)))<0.005)hints.push("For D you used Σn(n−1)/N(N−1). This page is set to Σp². Check which one your handout uses.");
+      else if(k==='simp'&&Math.abs(v-st.D)<0.01)hints.push("For 1 − D it looks like you entered D itself. Subtract it from 1.");
+      else if(k==='H'&&Math.abs(v+st.H)<0.01)hints.push("Your H′ has the wrong sign. Each p × ln p is negative, so H′ = −Σ p ln p comes out positive.");
+      else if(k==='H'&&base()==='e'&&Math.abs(v-st.Hln/Math.LN10)<0.01)hints.push("Your H′ matches log base 10. This page is set to natural log (ln). Use the LN key, or change the setting at the top.");
+      else if(k==='H')hints.push("For H′, check that every p adds up to 1 and that you multiplied each p by its own ln p before summing.");
+      else if(k==='J')hints.push("J′ = H′ divided by the log of S (same log you used for H′).");
+    }});
+  $('#chkOut').innerHTML=tried?`<div class="msg">${right} of ${tried} correct.${hints.length?'<br>'+hints.map(esc).join('<br>'):''}${right===tried?' Nice work!':''}</div>`:'<div class="msg">Type at least one answer first.</div>';
+};
+
+/* ---------------- BETA / GAMMA tab ---------------- */
+let pair=[0,1];
+function heatBg(v){const a=Math.max(0,Math.min(1,v));return `background:rgba(var(--heat),${(0.08+0.87*a).toFixed(3)})`}
+function renderBeta(){
+  const n=D.sites.length,cols=D.sites.map((s,j)=>col_j(j));
+  const alphaS=cols.map(c=>c.filter(x=>x>0).length);
+  const gammaS=D.counts.filter(r=>r.some(x=>+x>0)).length;
+  const used=alphaS.map((a,j)=>j).filter(j=>cols[j].some(x=>x>0));
+  const meanA=used.length?used.reduce((t,j)=>t+alphaS[j],0)/used.length:0;
+  const beta=meanA?gammaS/meanA:NaN;
+  const unique=D.counts.filter(r=>r.filter(x=>+x>0).length===1).length;
+  const everywhere=D.counts.filter(r=>used.length>1&&used.every(j=>+r[j]>0)).length;
+  $('#bgTiles').innerHTML=`<div class="tile"><div class="k">Gamma (&gamma;): species in all sites combined</div><div class="v">${gammaS}</div><div class="d">regional richness</div></div>
+   <div class="tile"><div class="k">Mean alpha (&alpha;&#772;): average species per site</div><div class="v">${f(meanA,2)}</div><div class="d">(${used.map(j=>alphaS[j]).join(' + ')}) / ${used.length}</div></div>
+   <div class="tile"><div class="k">Whittaker's beta: &beta; = &gamma; / &alpha;&#772;</div><div class="v">${f(beta,2)}</div><div class="d">${gammaS} / ${f(meanA,2)}; ranges 1 to ${used.length}</div></div>
+   <div class="tile"><div class="k">Turnover: &beta; − 1</div><div class="v">${f(beta-1,2)}</div><div class="d">0 = every site has the same species</div></div>`;
+  $('#bgChart').innerHTML=barSVG({labels:D.sites,values:alphaS,colors:D.sites.map((s,j)=>col(j)),yTitle:'Species richness',fmt:v=>v,ref:gammaS,refLabel:`γ = ${gammaS} species (all sites combined)`,
+    tips:alphaS.map((a,j)=>`<b>${esc(D.sites[j])}</b><br>α = ${a} species<br>${gammaS?Math.round(a/gammaS*100):0}% of the γ species pool`)});
+  $('#bgChart').setAttribute('role','img');
+  $('#bgChart').setAttribute('aria-label',`Bar chart of species richness at each site (alpha) with a dashed line at gamma = ${gammaS}. `+D.sites.map((s,j)=>s+' '+alphaS[j]).join('; '));
+  let msg='';
+  if(used.length>=2){
+    const frac=(beta-1)/(used.length-1);
+    msg=`On average a site holds ${f(meanA,1)} of the ${gammaS} species in the region, so the region contains about <b>${f(beta,1)} times</b> as many species as a typical site. `;
+    msg+=frac<0.25?'The sites share most of their species (low beta diversity).':frac<0.6?'The sites share some species but each also has its own (moderate beta diversity).':'The sites have very different species (high beta diversity), so protecting just one site would miss much of the region\'s diversity.';
+    msg+=` ${unique} species ${unique===1?'was':'were'} found at only one site${everywhere?`, and ${everywhere} ${everywhere===1?'was':'were'} found at every site`:''}.`;
+  } else msg='Add counts for at least two sites to calculate beta diversity.';
+  $('#bgMsg').innerHTML=msg;
+  // Hill q=1 partition, equal weights
+  const ps=used.map(j=>{const N=cols[j].reduce((a,b)=>a+b,0);return cols[j].map(x=>x/N)});
+  if(ps.length){
+    const Hs=ps.map(p=>-p.reduce((t,x)=>t+(x>0?x*Math.log(x):0),0));
+    const aE=Math.exp(Hs.reduce((a,b)=>a+b,0)/Hs.length);
+    const pbar=D.species.map((s,i)=>ps.reduce((t,p)=>t+p[i],0)/ps.length);
+    const gE=Math.exp(-pbar.reduce((t,x)=>t+(x>0?x*Math.log(x):0),0));
+    $('#hillTiles').innerHTML=`<div class="tile"><div class="k">&gamma; (effective species, pooled)</div><div class="v">${f(gE,2)}</div></div><div class="tile"><div class="k">&alpha; (effective species per site)</div><div class="v">${f(aE,2)}</div></div><div class="tile"><div class="k">&beta; = &gamma; / &alpha;</div><div class="v">${f(gE/aE,2)}</div><div class="d">effective number of distinct communities</div></div>`;
+  } else $('#hillTiles').innerHTML='';
+  renderSim();renderOcc();
+}
+function renderSim(){
+  const n=D.sites.length,idx=$('#simIdx').value;if(pair[0]>=n||pair[1]>=n)pair=[0,Math.min(1,n-1)];
+  const HELP={jac:'Jaccard = shared species ÷ all species found at either site = a / (a + b + c). 1 = identical species lists, 0 = nothing in common.',
+    sor:'Sørensen = 2 × shared ÷ (species at site 1 + species at site 2) = 2a / (2a + b + c). It gives shared species double weight, so it is always ≥ Jaccard.',
+    bc:'Bray–Curtis dissimilarity = 1 − 2 × Σ min(count₁, count₂) ÷ (N₁ + N₂). It uses abundances: 0 = identical communities, 1 = no species in common. Darker = more different.'};
+  let h='<thead><tr><th></th>'+D.sites.map((s,j)=>`<th class="num"><span class="sw" style="background:${col(j)}"></span> ${esc(s)}</th>`).join('')+'</tr></thead><tbody>';
+  for(let r=0;r<n;r++){h+=`<tr><th><span class="sw" style="background:${col(r)}"></span> ${esc(D.sites[r])}</th>`;
+    for(let c=0;c<n;c++){const p=pairStats(r,c),v=p[idx];const sel=(pair[0]===r&&pair[1]===c)||(pair[0]===c&&pair[1]===r);
+      h+=`<td class="h${v>0.55?' dk':''}${sel&&r!==c?' sel':''}" style="${heatBg(Number.isFinite(v)?v:0)}" data-r="${r}" data-c="${c}" tabindex="${r!==c?0:-1}" data-tip="${esc(D.sites[r])} vs ${esc(D.sites[c])}<br>shared species a = ${p.a}" aria-label="${esc(D.sites[r])} versus ${esc(D.sites[c])}: ${f(v,2)}">${f(v,2)}</td>`}
+    h+='</tr>'}
+  $('#simTable').innerHTML=h+'</tbody>';$('#simHelp').textContent=HELP[idx];
+  renderPair();
+}
+function renderPair(){
+  const [j,k]=pair;if(j===k||D.sites.length<2){$('#pairOut').innerHTML='<p class="small muted">Need two different sites.</p>';return}
+  const p=pairStats(j,k),A=col_j(j),B=col_j(k);
+  const list=f2=>D.species.filter((s,i)=>f2(A[i],B[i])).map(s=>`<span class="pill">${esc(s)}</span>`).join('')||'<span class="small muted">none</span>';
+  $('#pairOut').innerHTML=`<p><b><span class="sw" style="background:${col(j)}"></span> ${esc(D.sites[j])}</b> vs <b><span class="sw" style="background:${col(k)}"></span> ${esc(D.sites[k])}</b></p>
+   <div class="formula">a = shared species = ${p.a}<br>b = only at ${esc(D.sites[j])} = ${p.b}<br>c = only at ${esc(D.sites[k])} = ${p.c}<br>
+   Jaccard = a / (a + b + c) = ${p.a} / ${p.a+p.b+p.c} = <b>${f(p.jac,3)}</b><br>
+   Sørensen = 2a / (2a + b + c) = ${2*p.a} / ${2*p.a+p.b+p.c} = <b>${f(p.sor,3)}</b><br>
+   Bray–Curtis = 1 − 2 × ${p.mn} / (${p.sa} + ${p.sb}) = <b>${f(p.bc,3)}</b></div>
+   <h3>Shared (${p.a})</h3>${list((x,y)=>x>0&&y>0)}<h3>Only at ${esc(D.sites[j])} (${p.b})</h3>${list((x,y)=>x>0&&!(y>0))}<h3>Only at ${esc(D.sites[k])} (${p.c})</h3>${list((x,y)=>!(x>0)&&y>0)}`;
+}
+function pickCell(td){if(!td||td.dataset.r===undefined)return;const r=+td.dataset.r,c=+td.dataset.c;if(r===c)return;pair=[r,c];renderSim();const t=$(`#simTable td[data-r="${r}"][data-c="${c}"]`);if(t)t.focus()}
+$('#simTable').addEventListener('click',e=>pickCell(e.target.closest('td')));
+$('#simTable').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pickCell(e.target.closest('td'))}});
+$('#simIdx').onchange=renderSim;
+function renderOcc(){
+  const cols=D.sites.map((s,j)=>col_j(j)),Ns=cols.map(c=>c.reduce((a,b)=>a+b,0));
+  const order=D.species.map((s,i)=>i).sort((a,b)=>{const pa=D.counts[a].filter(x=>+x>0).length,pb=D.counts[b].filter(x=>+x>0).length;return pb-pa||D.counts[b].reduce((x,y)=>x+y,0)-D.counts[a].reduce((x,y)=>x+y,0)});
+  let h='<thead><tr><th>Species</th>'+D.sites.map((s,j)=>`<th class="num"><span class="sw" style="background:${col(j)}"></span> ${esc(s)}</th>`).join('')+'<th class="num">Sites present</th></tr></thead><tbody>';
+  order.forEach(i=>{const np=D.counts[i].filter(x=>+x>0).length;
+    h+=`<tr><td>${esc(D.species[i])}</td>`+D.sites.map((s,j)=>{const n=+D.counts[i][j]||0,p=Ns[j]?n/Ns[j]:0,sh=Math.min(1,p/0.3);return n?`<td class="h${sh>0.55?' dk':''}" style="${heatBg(sh)}" data-tip="${esc(D.species[i])} at ${esc(s)}<br>n = ${n}, p = ${f(p,3)}">${n}</td>`:'<td class="h muted">·</td>'}).join('')+`<td class="num">${np}${np===1?' (unique)':''}</td></tr>`});
+  $('#occTable').innerHTML=h+'</tbody>';
+}
+
+/* ---------------- EXPLORE tab ---------------- */
+const EX=[{name:'Community 1',S:6,E:100},{name:'Community 2',S:6,E:25}];
+const EXCOL=['var(--s1)','var(--s2)'];
+function exAbund(c){const k=0.3+0.7*Math.pow(c.E/100,0.8);const w=Array.from({length:c.S},(v,i)=>Math.pow(k,i));const t=w.reduce((a,b)=>a+b,0);return w.map(x=>x/t)}
+function exStats(p){let sp2=0,H=0;p.forEach(x=>{sp2+=x*x;H-=x*Math.log(x)});return {S:p.length,D:sp2,simp:1-sp2,inv:1/sp2,H,eff:Math.exp(H),J:p.length>1?H/Math.log(p.length):NaN}}
+function buildExplore(){
+  $('#exGrid').innerHTML=EX.map((c,q)=>`<div class="card"><h2><span class="sw" style="background:${EXCOL[q]}"></span> ${c.name}</h2>
+   <div class="explore-ctrl"><label for="exS${q}">Richness (number of species) <b id="exSv${q}"></b></label><input type="range" id="exS${q}" min="1" max="30" value="${c.S}">
+   <label for="exE${q}">Evenness <b id="exEv${q}"></b></label><input type="range" id="exE${q}" min="0" max="100" value="${c.E}"></div>
+   <div class="chart" id="exC${q}"></div></div>`).join('');
+  EX.forEach((c,q)=>{$('#exS'+q).oninput=e=>{c.S=+e.target.value;renderExplore()};$('#exE'+q).oninput=e=>{c.E=+e.target.value;renderExplore()}});
+}
+function renderExplore(){
+  const P=EX.map(exAbund),St=P.map(exStats);
+  EX.forEach((c,q)=>{$('#exS'+q).value=c.S;$('#exE'+q).value=c.E;$('#exSv'+q).textContent=c.S;$('#exEv'+q).textContent=c.E>=97?'perfectly even':c.E>=60?'fairly even':c.E>=30?'uneven':'one species dominates';
+    const p=P[q];
+    $('#exC'+q).innerHTML=barSVG({h:230,labels:p.map((x,i)=>p.length<=12||i===0||(i+1)%5===0?'sp '+(i+1):''),values:p.map(x=>x*100),colors:p.map(()=>EXCOL[q]),yTitle:'% of individuals',fmt:v=>p.length<=12?f(v,0):'',tips:p.map((x,i)=>`Species ${i+1}: ${f(x*100,1)}% of individuals`)});
+    $('#exC'+q).setAttribute('role','img');$('#exC'+q).setAttribute('aria-label',`${c.name}: ${c.S} species; most common species is ${f(p[0]*100,0)} percent of individuals.`)});
+  const rows=[['S','Richness (S)',0],['simp',"Simpson's 1 − D",3],['inv',"Simpson's 1 / D",2],['H',"Shannon H′ (ln)",3],['eff',"Effective species e^H′",2],['J',"Evenness J′",3]];
+  $('#exTable').innerHTML='<thead><tr><th>Index</th><th class="num">Community 1</th><th class="num">Community 2</th><th>Higher</th></tr></thead><tbody>'+
+    rows.map(([k,lab,d])=>{const a=St[0][k],b=St[1][k];const w=!Number.isFinite(a)||!Number.isFinite(b)?'—':Math.abs(a-b)<1e-6?'tie':a>b?'Community 1':'Community 2';
+      return `<tr><td>${lab}</td><td class="num">${f(a,d)}</td><td class="num">${f(b,d)}</td><td>${w}</td></tr>`}).join('')+'</tbody>';
+  let m='';const a=St[0],b=St[1];
+  if(a.S===b.S&&Math.abs(a.J-b.J)>0.02)m=`Both communities have ${a.S} species, so richness can't tell them apart, but Simpson's and Shannon's indices can: the more even community scores higher.`;
+  else if(a.S!==b.S&&Math.abs(EX[0].E-EX[1].E)<3)m='With the same evenness, the community with more species has higher Shannon and Simpson values. Notice Simpson\'s 1 − D levels off near 1 while Shannon keeps climbing: Shannon is more sensitive to adding rare species.';
+  else if((a.S-b.S)*(a.H-b.H)<0||(a.S-b.S)*(a.simp-b.simp)<0)m='The two indices can disagree with richness! A community with fewer species can be "more diverse" by Shannon or Simpson if its individuals are spread more evenly.';
+  else m='Try changing one slider at a time to see how each index responds to richness and to evenness.';
+  if(a.S===1||b.S===1)m+=' With only one species, diversity is zero: H′ = 0 and 1 − D = 0.';
+  $('#exMsg').innerHTML=m;
+}
+$$('[data-ex]').forEach(b=>b.onclick=()=>{const t=b.dataset.ex;
+  if(t==='even'){EX[0].S=6;EX[0].E=100;EX[1].S=6;EX[1].E=20}
+  if(t==='rich'){EX[0].S=5;EX[0].E=70;EX[1].S=20;EX[1].E=70}
+  if(t==='trade'){EX[0].S=15;EX[0].E=10;EX[1].S=5;EX[1].E=100}
+  renderExplore()});
+
+/* ---------------- tabs & settings ---------------- */
+const RENDER={data:renderTable,alpha:renderAlpha,math:renderMath,beta:renderBeta,explore:renderExplore};
+let cur='data';
+$$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));cur=b.dataset.tab;RENDER[cur]();try{history.replaceState(null,'','#'+cur)}catch(e){}});
+$('#setSimp').onchange=()=>{save();RENDER[cur]()};$('#setBase').onchange=()=>{save();RENDER[cur]()};
+
+if(!restore())load('birds');
+buildExplore();renderTable();renderExplore();
+const h=location.hash.slice(1);if(RENDER[h]&&h!=='data'){const b=$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click()}
+})();
+</script>
+<script>
+window.A11Y = {
+  tabsLabel: 'Calculator sections',
+  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
+  live: ['#alphaMsg', '#bgMsg', '#exMsg', '#chkOut', '#pasteMsg']
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
