@@ -110,6 +110,14 @@ const ITEMS = [
     url: "sims/field_bio_review/",
     desc: "Flashcard study tools for the species from each semester's BIOL 7 field trips. Pick your semester and practice your IDs.",
     tags: ["BIOL 7", "species ID", "flashcards"]
+  },
+  {
+    title: "Species Diversity Calculator",
+    topic: "field",
+    type: "sim",
+    url: "sims/species-diversity/",
+    desc: "Enter species counts from several sites (or use an example data set) to calculate richness, Simpson's and Shannon's indices, and alpha, beta, and gamma diversity, with charts, step-by-step math, and a check-your-work tool.",
+    tags: ["biodiversity", "Simpson", "Shannon", "beta diversity", "Jaccard"]
   }
 
   // ---------- Example web app (delete the two slashes at the start of each line to use) ----------
