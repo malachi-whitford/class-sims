@@ -146,11 +146,11 @@ const ITEMS = [
 
   // ---------- Ecosystems ----------
   {
-    title: "Energy Flow Through a Food Chain",
+    title: "The Energy Pyramid",
     topic: "ecosystems",
     type: "sim",
     url: "sims/energy-flow/",
-    desc: "Follow packets of energy from the sun through grass, grasshoppers, frogs, snakes, and hawks. See the losses to heat and decomposers, the pyramid of energy, and why eating lower on the food chain feeds more people.",
+    desc: "A live energy pyramid from grass to hawks: each level is drawn as wide as its energy, with glowing energy dots, losses to heat and decomposers, and why eating lower on the food chain feeds more people.",
     tags: ["trophic levels", "10% rule", "energy pyramid", "food chain"]
   },
   {

@@ -347,7 +347,7 @@ function ui(force){const now=performance.now();if(!force&&now-lastUI<200)return;
   $('#msg').innerHTML=m}
 let lf=0;
 function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;
-  if(phase===2.5){const d=Math.min(waitLeft,dt*1.5);fish.forEach(f=>move(f,d));waitLeft-=d;if(waitLeft<=1e-6){phase=3;ui(true)}}
+  if(phase===2.5){const d=Math.min(waitLeft,dt*1.0);fish.forEach(f=>move(f,d));waitLeft-=d;if(waitLeft<=1e-6){phase=3;ui(true)}}
   draw();ui();requestAnimationFrame(frame)}
 $('#act').onclick=()=>act();
 $('#pond').addEventListener('click',e=>{if(phase!==0&&phase!==3)return;const r=$('#pond').getBoundingClientRect();const x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;if(inPond(x,y))act(x,y)});
