@@ -98,36 +98,36 @@ const ITEMS = [
 
   // ---------- Community Ecology ----------
   {
-    title: "Competition: Gause's Yeasts & Paramecia",
+    title: "Competition: Four Classic Papers",
     topic: "community",
     type: "sim",
     url: "sims/competition/",
-    desc: "Fit the Lotka–Volterra model to Gause's real 1932 yeast data, predict who wins, then explore the phase plane and why Gause's Paramecium species could or could not share a tube.",
-    tags: ["Gause", "competition", "Lotka–Volterra", "niche overlap", "competitive exclusion", "real data", "quiz"]
+    desc: "Work through Gause (1932) yeasts, Connell (1961) barnacles, MacArthur (1958) warblers, and Tilman (1977) diatoms: the question, the design, your prediction, the real results, and interpretation.",
+    tags: ["Gause", "Connell", "MacArthur", "Tilman", "competition", "real data", "quiz"]
   },
   {
-    title: "Predator–Prey: The Snowshoe Hare Cycle",
+    title: "Predation: Four Classic Papers",
     topic: "community",
     type: "sim",
     url: "sims/predator-prey/",
-    desc: "Model the 10-year hare cycle, rerun Krebs's Kluane food-and-fence experiment and compare with the paper, add fear like Zanette's song sparrows, and explore Holling's functional responses.",
-    tags: ["Krebs", "Kluane", "snowshoe hare", "predation", "landscape of fear", "functional response", "quiz"]
+    desc: "Work through Paine (1966) keystone sea stars, Huffaker (1958) mites, Krebs et al. (1995) snowshoe hares, and Holling (1959) functional responses, including running Holling’s disc experiment yourself.",
+    tags: ["Paine", "keystone", "Huffaker", "Krebs", "Holling", "predation", "quiz"]
   },
   {
-    title: "Island Biogeography: Mangrove Island Experiments",
+    title: "Island Biogeography & Fragmentation: Four Classic Papers",
     topic: "community",
     type: "sim",
     url: "sims/island-biogeography/",
-    desc: "Fumigate Simberloff & Wilson's Florida Keys mangrove islands and watch them recolonize against the paper's counts, then shrink islands like Simberloff did and estimate species lost to habitat loss.",
-    tags: ["Simberloff & Wilson", "MacArthur–Wilson", "species–area", "fragmentation", "turnover", "quiz"]
+    desc: "Work through MacArthur & Wilson (1963), Simberloff & Wilson’s (1969) defaunated mangrove islands, Newmark’s (1987) national park extinctions, and Haddad et al. (2015) on global forest fragmentation.",
+    tags: ["MacArthur & Wilson", "Simberloff", "Newmark", "Haddad", "fragmentation", "real data", "quiz"]
   },
   {
-    title: "Disturbance & Succession: Sousa's Boulder Field",
+    title: "Succession & Disturbance: Four Classic Papers",
     topic: "community",
     type: "sim",
     url: "sims/disturbance-succession/",
-    desc: "Watch seaweeds take over intertidal boulders, roll boulders like winter waves, compare a whole boulder field with Sousa's 1979 census, and test the intermediate disturbance hypothesis.",
-    tags: ["Sousa", "intertidal", "succession", "intermediate disturbance", "real data", "quiz"]
+    desc: "Work through Connell & Slatyer (1977) succession models, Connell (1978) intermediate disturbance, Sousa’s (1979) boulder field data, and Tilman’s (1994) competition–colonization model.",
+    tags: ["Connell", "Sousa", "Tilman", "succession", "intermediate disturbance", "real data", "quiz"]
   },
 
   // ---------- Field Methods & Conservation ----------

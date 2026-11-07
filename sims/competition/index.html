@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Competition: Gause's Yeasts and Paramecia</title>
+<title>Competition: Four Classic Papers</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -94,188 +94,49 @@ table.cmp td.num{text-align:right;font-variant-numeric:tabular-nums}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .steps li::before{color:#0d1b2a}}
 label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .layout>*{min-width:0}
+/* paper tabs */
+.pp-sec{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.pp-sec>h2{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.pp-sec>h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:.85rem;flex:none}
+.pp-sec p,.pp-sec li{font-size:.93rem}
+.pp-head{border-left:5px solid var(--s4)}
+.pp-head h2{font-size:1.15rem;margin-bottom:4px}
+.pp-head .cite{font-size:.85rem;color:var(--muted);margin:4px 0 0}
+.hyp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:6px}
+.hyp div{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:.88rem}
+.pred-opts{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.pred-opts button{text-align:left}
+.pred-opts button.picked{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card));font-weight:600}
+.locked{position:relative}
+.locked>.lockmsg{display:block;padding:16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.locked>.lockbody{display:none}
+.locked.unlocked>.lockmsg{display:none}
+.locked.unlocked>.lockbody{display:block}
+.discuss li{margin:6px 0}
+.datatbl{margin-top:8px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-sec>h2 .num{color:#0d1b2a}}
+.pp-sec .chart svg{max-width:760px;margin:0 auto}
 
-.ctrl h3 .sw{margin-right:4px}
-.charts3{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
-.charts3 .card{margin-bottom:0}
+.tree{max-width:520px;margin:0 auto}
+.wsel button{font-size:.82rem;padding:5px 10px}
+.wsel button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Competition: Gause's Yeasts and Paramecia</h1>
-<p class="sub">In the early 1930s, a young Russian biologist, Georgy Gause, tested the new mathematical theory of competition (the Lotka–Volterra equations) with real organisms in glass tubes. His experiments gave us the <b>competitive exclusion principle</b>. Work through his data and his ideas below.</p>
-
+<h1>Competition: Four Classic Papers</h1>
+<p class="sub">Each tab walks through one landmark study of competition. Read the question, see how the study was designed, make a prediction, then look at what the authors actually found and decide what it means.</p>
 <nav class="tabs">
-  <button class="on" data-tab="yeast">1. Gause's yeast experiment</button>
-  <button data-tab="lv">2. Phase plane: who wins?</button>
-  <button data-tab="niche">3. Paramecia &amp; niches</button>
-  <button data-tab="quiz">4. Check your understanding</button>
+  <button class="on" data-tab="t1">Gause 1932: yeasts</button>
+  <button data-tab="t2">Connell 1961: barnacles</button>
+  <button data-tab="t3">MacArthur 1958: warblers</button>
+  <button data-tab="t4">Tilman 1977: diatoms</button>
 </nav>
-
-<!-- ============ TAB 1: YEAST ============ -->
-<section class="panel on" id="yeast">
-<div class="paper">
-  <b>The paper.</b> Gause grew two yeasts in a sugar solution: <i>Saccharomyces cerevisiae</i> (brewer's yeast, fast-growing) and <i>Schizosaccharomyces kephir</i> (slow-growing). He grew each one alone and then both together, and measured the volume of yeast in each tube over time. Both yeasts make alcohol, and the alcohol is what limits their growth, so each species' alcohol slows down the other one too.
-  <p class="cite">Gause, G. F. (1932). Experimental studies on the struggle for existence. I. Mixed population of two species of yeast. <i>Journal of Experimental Biology</i> 9: 389–402. Also in Gause (1934), <a href="https://archive.org/details/struggleforexist00gauz" target="_blank" rel="noopener"><i>The Struggle for Existence</i></a>, chapter IV.<br>Data points: Gause's Table 1 as tabulated by J. Mahaffy (San Diego State University), with time measured from the first sample.</p>
-</div>
-<div class="layout">
-  <div class="card ctrl">
-    <h3><i class="sw" style="background:var(--s1)"></i><i>S. cerevisiae</i> (species 1)</h3>
-    <label for="yr1">Growth rate r₁ (per hour) <span class="val" id="yr1V"></span></label>
-    <input type="range" id="yr1" min="0.01" max="1" step="0.005" value="0.15" data-d="3">
-    <label for="yK1">Carrying capacity K₁ (volume) <span class="val" id="yK1V"></span></label>
-    <input type="range" id="yK1" min="1" max="20" step="0.1" value="10" data-d="2">
-    <label for="yA1">Starting volume, alone <span class="val" id="yA1V"></span></label>
-    <input type="range" id="yA1" min="0.05" max="3" step="0.01" value="0.4" data-d="2">
-    <h3><i class="sw" style="background:var(--s2)"></i><i>S. kephir</i> (species 2)</h3>
-    <label for="yr2">Growth rate r₂ (per hour) <span class="val" id="yr2V"></span></label>
-    <input type="range" id="yr2" min="0.005" max="0.3" step="0.001" value="0.1" data-d="3">
-    <label for="yK2">Carrying capacity K₂ (volume) <span class="val" id="yK2V"></span></label>
-    <input type="range" id="yK2" min="1" max="20" step="0.1" value="8" data-d="2">
-    <label for="yA2">Starting volume, alone <span class="val" id="yA2V"></span></label>
-    <input type="range" id="yA2" min="0.05" max="3" step="0.01" value="0.4" data-d="2">
-    <h3>Grown together</h3>
-    <label for="ya12">α₁₂: effect of kephir on cerevisiae <span class="val" id="ya12V"></span></label>
-    <input type="range" id="ya12" min="0" max="6" step="0.01" value="1" data-d="2">
-    <label for="ya21">α₂₁: effect of cerevisiae on kephir <span class="val" id="ya21V"></span></label>
-    <input type="range" id="ya21" min="0" max="3" step="0.01" value="1" data-d="2">
-    <label for="yM1">Starting cerevisiae, mixed <span class="val" id="yM1V"></span></label>
-    <input type="range" id="yM1" min="0.05" max="3" step="0.01" value="0.375" data-d="2">
-    <label for="yM2">Starting kephir, mixed <span class="val" id="yM2V"></span></label>
-    <input type="range" id="yM2" min="0.05" max="3" step="0.01" value="0.29" data-d="2">
-    <label for="yT">Run the mixed culture for <span class="val" id="yTV"></span></label>
-    <input type="range" id="yT" min="47" max="1000" step="1" value="50" data-suf=" h">
-    <p class="hint">Gause's experiment ended at 47 hours. Push this further to ask the model what would have happened next.</p>
-    <details><summary>Gause's data</summary><div class="tablewrap" style="margin-top:6px"><table class="cmp" id="dataTbl"></table></div></details>
-  </div>
-  <div>
-    <div class="card">
-      <h2>Follow along</h2>
-      <ol class="steps">
-        <li><b>Fit <i>S. cerevisiae</i> grown alone.</b> Move r₁, K₁, and its starting volume until the blue line runs through the blue dots. Get the "error" (sum of squared differences) as low as you can. K is where the curve levels off; r controls how steep the rise is.<br><button data-reveal="1">Show the best fit</button></li>
-        <li><b>Fit <i>S. kephir</i> grown alone</b> the same way. It is much slower: notice the x-axis runs to 140 hours.<br><button data-reveal="2">Show the best fit</button></li>
-        <li><b>Grow them together.</b> Keep your r and K values. Now change α₁₂ and α₂₁ until both lines in the mixed-culture graph fit both sets of dots. Which yeast has the bigger effect on the other, per unit of volume?<br><button data-reveal="3">Show the best fit</button></li>
-        <li><b>Predict the future.</b> With the best-fit values, slide "Run the mixed culture for" up to 1000 hours. Gause saw two yeasts living together for two days. What does the model say happens after that? Then change the starting volumes in the mixed culture and run it again.<br><button data-reveal="4">Set it up for me</button></li>
-      </ol>
-    </div>
-    <div class="charts3">
-      <div class="card chart"><h2><i>S. cerevisiae</i> alone</h2><svg id="cY1"></svg><div class="small">Error: <b id="e1"></b></div></div>
-      <div class="card chart"><h2><i>S. kephir</i> alone</h2><svg id="cY2"></svg><div class="small">Error: <b id="e2"></b></div></div>
-      <div class="card chart"><h2>Grown together</h2><svg id="cY3"></svg><div class="small">Error: <b id="e3"></b></div></div>
-    </div>
-    <div class="legend" style="margin-top:8px"><span><i class="sw" style="background:var(--s1)"></i>S. cerevisiae</span><span><i class="sw" style="background:var(--s2)"></i>S. kephir</span><span>● Gause's measurements, — model</span></div>
-    <div class="msg" id="yMsg"></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 2: PHASE PLANE ============ -->
-<section class="panel" id="lv">
-<div class="layout">
-  <div class="card ctrl">
-    <h3>Try a scenario</h3>
-    <div class="row presets">
-      <button data-p="gause">Gause's yeasts (fitted)</button>
-      <button data-p="coexist">Coexistence</button>
-      <button data-p="win1">Species 1 wins</button>
-      <button data-p="priority">Priority effect</button>
-    </div>
-    <button id="fromYeast" style="width:100%;margin-bottom:4px">Use my values from tab 1</button>
-    <h3><i class="sw" style="background:var(--s1)"></i>Species 1</h3>
-    <label for="K1">Carrying capacity K₁ <span class="val" id="K1V"></span></label>
-    <input type="range" id="K1" min="1" max="300" step="0.5" value="100" data-d="1">
-    <label for="a12">Effect of sp. 2 on sp. 1, α₁₂ <span class="val" id="a12V"></span></label>
-    <input type="range" id="a12" min="0" max="4" step="0.01" value="0.5" data-d="2">
-    <label for="r1">Growth rate r₁ <span class="val" id="r1V"></span></label>
-    <input type="range" id="r1" min="0.01" max="2" step="0.01" value="0.8" data-d="2">
-    <label for="N10">Starting N₁ <span class="val" id="N10V"></span></label>
-    <input type="range" id="N10" min="0.1" max="300" step="0.1" value="10" data-d="1">
-    <h3><i class="sw" style="background:var(--s2)"></i>Species 2</h3>
-    <label for="K2">Carrying capacity K₂ <span class="val" id="K2V"></span></label>
-    <input type="range" id="K2" min="1" max="300" step="0.5" value="90" data-d="1">
-    <label for="a21">Effect of sp. 1 on sp. 2, α₂₁ <span class="val" id="a21V"></span></label>
-    <input type="range" id="a21" min="0" max="4" step="0.01" value="0.6" data-d="2">
-    <label for="r2">Growth rate r₂ <span class="val" id="r2V"></span></label>
-    <input type="range" id="r2" min="0.01" max="2" step="0.01" value="0.8" data-d="2">
-    <label for="N20">Starting N₂ <span class="val" id="N20V"></span></label>
-    <input type="range" id="N20" min="0.1" max="300" step="0.1" value="40" data-d="1">
-    <label for="Tmax">Run for <span class="val" id="TmaxV"></span></label>
-    <input type="range" id="Tmax" min="5" max="1000" step="1" value="50" data-suf=" time units">
-    <details><summary>The equations</summary>
-      <div class="formula">dN₁/dt = r₁N₁ (K₁ − N₁ − α₁₂N₂) / K₁<br>dN₂/dt = r₂N₂ (K₂ − N₂ − α₂₁N₁) / K₂</div>
-      <p class="small">Gause wrote these same equations in 1934, calling them "equations of the struggle for existence." The α values convert individuals of the other species into equivalents of your own species.</p>
-    </details>
-  </div>
-  <div>
-    <div class="tiles">
-      <div class="tile"><div class="k">Species 1 at end</div><div class="v" id="tN1" style="color:var(--s1)"></div></div>
-      <div class="tile"><div class="k">Species 2 at end</div><div class="v" id="tN2" style="color:var(--s2)"></div></div>
-      <div class="tile"><div class="k">Predicted outcome</div><div class="v" id="tOut" style="font-size:1.05rem"></div></div>
-    </div>
-    <div class="grid2">
-      <div class="card chart"><h2>Populations over time</h2><div class="legend" id="legT"></div><svg id="cT"></svg></div>
-      <div class="card chart"><h2>Phase plane</h2><div class="legend" id="legP"></div><svg id="cP" style="cursor:crosshair"></svg>
-        <div class="row small"><span class="muted">Tap the graph to start a population there.</span><button id="clearPts">Clear extra starts</button></div></div>
-    </div>
-    <div class="msg" id="lvMsg"></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 3: PARAMECIA ============ -->
-<section class="panel" id="niche">
-<div class="paper">
-  <b>The book.</b> Gause also grew three species of <i>Paramecium</i> in tubes containing both bacteria and yeast. <i>P. aurelia</i> and <i>P. caudatum</i> both fed on bacteria floating in the liquid, and when they were grown together, <i>P. caudatum</i> always died out. But <i>P. caudatum</i> could live alongside <i>P. bursaria</i>, which fed mostly on yeast cells that settled near the bottom of the tube. Different feeding places meant less overlap in their niches.
-  <p class="cite">Gause, G. F. (1934). <a href="https://archive.org/details/struggleforexist00gauz" target="_blank" rel="noopener"><i>The Struggle for Existence</i></a>. Williams &amp; Wilkins, Baltimore. Chapter V. The curve positions below are illustrative, not measured values.</p>
-</div>
-<div class="layout">
-  <div class="card ctrl">
-    <h3>Choose the competitor</h3>
-    <div class="row presets"><button data-comp="aurelia" class="primary"><i>P. aurelia</i></button><button data-comp="bursaria"><i>P. bursaria</i></button></div>
-    <h3><i class="sw" style="background:var(--s1)"></i><i>P. caudatum</i></h3>
-    <label for="m1">Feeding position <span class="val" id="m1V"></span></label>
-    <input type="range" id="m1" min="0" max="10" step="0.1" value="2.5" data-d="1">
-    <label for="w1">Niche width <span class="val" id="w1V"></span></label>
-    <input type="range" id="w1" min="0.3" max="4" step="0.1" value="1.4" data-d="1">
-    <h3><i class="sw" style="background:var(--s2)"></i><span id="compName"><i>P. aurelia</i></span></h3>
-    <label for="m2">Feeding position <span class="val" id="m2V"></span></label>
-    <input type="range" id="m2" min="0" max="10" step="0.1" value="3" data-d="1">
-    <label for="w2">Niche width <span class="val" id="w2V"></span></label>
-    <input type="range" id="w2" min="0.3" max="4" step="0.1" value="1.3" data-d="1">
-    <label for="kr">Competitor's K ÷ <i>caudatum</i>'s K <span class="val" id="krV"></span></label>
-    <input type="range" id="kr" min="0.3" max="3" step="0.05" value="1.4" data-d="2">
-    <p class="hint">Gause found that <i>P. aurelia</i> reached higher densities than <i>P. caudatum</i>.</p>
-    <details><summary>How overlap becomes α</summary>
-      <div class="formula">α₁₂ = Σ u₁u₂ / Σ u₁²</div>
-      <p class="small">u₁ and u₂ are the heights of the two curves at each position in the tube. α₁₂ is the overlap divided by how much species 1 overlaps with itself (MacArthur &amp; Levins 1967).</p>
-    </details>
-  </div>
-  <div>
-    <div class="card"><h2>Follow along</h2><ol class="steps">
-      <li><b><i>P. caudatum</i> vs. <i>P. aurelia</i>.</b> Both feed on bacteria near the top of the tube. Look at how much the curves overlap and at the population graph. Does this match what Gause saw?</li>
-      <li><b>Switch to <i>P. bursaria</i>.</b> It feeds lower in the tube, on yeast. What happens to α and to <i>P. caudatum</i>?</li>
-      <li><b>Find the limit.</b> Slowly move <i>P. bursaria</i>'s feeding position up toward <i>P. caudatum</i>'s. At what distance does coexistence break down? Does the answer change if you make both niches wider?</li>
-      <li><b>Rescue <i>P. caudatum</i> from <i>P. aurelia</i>.</b> Without changing K, how far apart do their feeding positions need to be for both to survive?</li>
-    </ol></div>
-    <div class="tiles">
-      <div class="tile"><div class="k">α₁₂ (competitor on <i>caudatum</i>)</div><div class="v" id="nA12"></div></div>
-      <div class="tile"><div class="k">α₂₁ (<i>caudatum</i> on competitor)</div><div class="v" id="nA21"></div></div>
-      <div class="tile"><div class="k">Predicted outcome</div><div class="v" id="nOut" style="font-size:1.05rem"></div></div>
-    </div>
-    <div class="grid2">
-      <div class="card chart"><h2>Where each species feeds</h2><div class="legend" id="legN"></div><svg id="cN"></svg></div>
-      <div class="card chart"><h2>Grown together in one tube</h2><div class="legend" id="legN2"></div><svg id="cN2"></svg></div>
-    </div>
-    <div class="msg" id="nMsg"></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 4 ============ -->
-<section class="panel" id="quiz">
-  <div class="card"><h2>Check your understanding</h2><div id="quizBox"></div></div>
-</section>
+<section class="panel on" id="t1"></section>
+<section class="panel" id="t2"></section>
+<section class="panel" id="t3"></section>
+<section class="panel" id="t4"></section>
 </div>
 
 <script>
@@ -337,166 +198,261 @@ function initTabs(RENDER){let cur=$('nav.tabs button.on').dataset.tab;
   const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();
   return()=>cur}
 /* quiz */
-function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted" id="score"></p>';
+function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted score"></p>';
   const got={};
   $$('.q',el).forEach(d=>{const q=QS[+d.dataset.i];$$('.opts button',d).forEach(b=>b.onclick=()=>{const j=+b.dataset.j,ok=j===q.a;
     $$('.opts button',d).forEach(x=>x.classList.remove('right','wrong'));b.classList.add(ok?'right':'wrong');
-    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the simulation.'));
-    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('#score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the results.'));
+    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('.score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+/* bar chart: bars(svg,{cats:[...],series:[{name,color,vals:[...]}],ymax,ylab,xlab,w,h,fmt}) */
+function bars(svg,o){
+  const W=o.w||560,H=o.h||330,m={l:o.ml||56,r:14,t:16,b:o.mb||52},pw=W-m.l-m.r,ph=H-m.t-m.b,n=o.cats.length,k=o.series.length;
+  const ymax=o.ymax||Math.max(...o.series.flatMap(s=>s.vals))*1.15||1,Y=v=>m.t+ph-v/ymax*ph,gw=pw/n,bw=Math.min(60,gw*0.8/k);
+  let s='';niceTicks(0,ymax,5).forEach(v=>{const y=Y(v);s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${y}" y2="${y}"/><text x="${m.l-6}" y="${y+4}" text-anchor="end">${fmtTick(v)}</text>`});
+  s+=`<line class="ax" x1="${m.l}" x2="${m.l+pw}" y1="${m.t+ph}" y2="${m.t+ph}"/>`;
+  o.cats.forEach((c,i)=>{const cx=m.l+gw*(i+0.5);
+    o.series.forEach((se,j)=>{const v=se.vals[i];if(v==null||!Number.isFinite(v))return;const x=cx-k*bw/2+j*bw,y=Y(v);
+      s+=`<rect x="${x+1}" y="${y}" width="${bw-2}" height="${m.t+ph-y}" fill="${se.color}" rx="2" ${se.hatch?'fill-opacity=".45" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 2"':''}/>`;
+      s+=`<text x="${x+bw/2}" y="${y-4}" text-anchor="middle" style="fill:var(--text);font-size:11px">${o.fmt?o.fmt(v):fmtTick(+v.toFixed(2))}</text>`});
+    String(c).split('\n').forEach((line,li)=>{s+=`<text x="${cx}" y="${m.t+ph+16+li*13}" text-anchor="middle">${line}</text>`})});
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
+  if(o.xlab)s+=`<text class="lab" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab}</text>`;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s}
+
+/* ---------- paper-tab engine ----------
+ P = {id, cite, doi, why, question, hyps:[[title,text]], design(html), predict:{q,opts:[text],note?:[fb per option]},
+      results(html), afterResults(fn), found(html), interpret:[quiz items], model(html)?, afterModel(fn)?, discuss:[...] } */
+function paperTab(el,P){
+  const sec=(n,t,body,cls='')=>`<div class="pp-sec ${cls}"><h2>${n?`<span class="num">${n}</span>`:''}${t}</h2>${body}</div>`;
+  let n=1,h='';
+  h+=`<div class="pp-sec pp-head"><h2>${P.title}</h2><p style="margin:0">${P.why}</p><p class="cite">${P.cite}${P.doi?` <a href="https://doi.org/${P.doi}" target="_blank" rel="noopener">doi:${P.doi}</a>`:''}${P.url?` <a href="${P.url}" target="_blank" rel="noopener">Read it</a>`:''}</p></div>`;
+  h+=sec(n++,'The question',`<p>${P.question}</p>${P.hyps?`<div class="hyp">${P.hyps.map(x=>`<div><b>${x[0]}</b><br>${x[1]}</div>`).join('')}</div>`:''}`);
+  h+=sec(n++,'What they did',P.design);
+  h+=sec(n++,'Your prediction',`<p>${P.predict.q}</p><div class="pred-opts" id="${P.id}-pred">${P.predict.opts.map((o,i)=>`<button data-i="${i}" aria-pressed="false">${o}</button>`).join('')}</div><div class="msg small" id="${P.id}-predfb" style="display:none" aria-live="polite"></div>`);
+  h+=sec(n++,'What they found',`<div class="locked" id="${P.id}-lock"><div class="lockmsg">Make a prediction above to unlock the results.</div><div class="lockbody">${P.results}<div class="msg" style="margin-top:10px">${P.found}</div></div></div>`);
+  h+=sec(n++,'Interpret the results',`<div id="${P.id}-quiz"></div>`);
+  if(P.model)h+=sec(n++,P.modelTitle||'Try the model',P.model);
+  h+=sec(n++,'Discuss',`<ol class="discuss">${P.discuss.map(d=>`<li>${d}</li>`).join('')}</ol>`);
+  el.innerHTML=h;
+  quiz($(`#${P.id}-quiz`),P.interpret);
+  let shown=false;
+  $$(`#${P.id}-pred button`).forEach(b=>b.onclick=()=>{
+    $$(`#${P.id}-pred button`).forEach(x=>{x.classList.toggle('picked',x===b);x.setAttribute('aria-pressed',x===b?'true':'false')});
+    const fb=$(`#${P.id}-predfb`);fb.style.display='block';fb.innerHTML=`<b>Prediction saved.</b> ${P.predict.note?P.predict.note[+b.dataset.i]:''} Scroll down to compare with what the authors found.`;
+    const L=$(`#${P.id}-lock`);L.classList.add('unlocked');if(!shown){shown=true;if(P.afterResults)P.afterResults()}});
+  if(P.afterModel)P.afterModel();
+  return{redraw:()=>{if(shown&&P.afterResults)P.afterResults();if(P.afterModel)P.afterModel()}};
+}
 
 (function(){
 const C1='var(--s1)',C2='var(--s2)';
-addBoxes();
-/* ---------- Gause's data ---------- */
+const tabs={};
+
+/* =================== 1. GAUSE =================== */
 const D1=[[0,.37],[1.5,1.63],[9,6.2],[10,8.87],[18,10.66],[18,10.97],[23,12.5],[25.5,12.6],[27,12.9],[34,13.27],[38,12.77],[42,12.87],[45.5,12.9],[47,12.7]];
 const D2=[[9,1.27],[10,1.0],[23,1.7],[25.5,2.33],[42,2.73],[45.5,4.56],[66,4.87],[87,5.67],[111,5.8],[135,5.83]];
 const DM=[[0,.375,.29],[1.5,.92,.37],[9,3.08,.63],[10,3.99,.98],[18,4.69,1.47],[18,5.78,1.22],[23,6.15,1.46],[25.5,9.91,1.11],[27,9.47,1.225],[38,10.57,1.1],[42,7.27,1.71],[45.5,9.88,.96],[47,8.3,1.84]];
-$('#dataTbl').innerHTML='<thead><tr><th>Hour</th><th>cerevisiae alone</th><th>kephir alone</th><th>Mixed: cerevisiae</th><th>Mixed: kephir</th></tr></thead><tbody>'+
-  [...new Set([...D1,...D2,...DM].map(d=>d[0]))].sort((a,b)=>a-b).map(t=>{const a=D1.filter(d=>d[0]===t).map(d=>d[1]).join(', '),b=D2.filter(d=>d[0]===t).map(d=>d[1]).join(', '),m=DM.filter(d=>d[0]===t);
-    return `<tr><td>${t}</td><td>${a}</td><td>${b}</td><td>${m.map(d=>d[1]).join(', ')}</td><td>${m.map(d=>d[2]).join(', ')}</td></tr>`}).join('')+'</tbody>';
 const logi=(t,r,K,N0)=>K/(1+(K/N0-1)*Math.exp(-r*t));
 function lvRun(p,n1,n2,T,keep=400){const dt=Math.min(0.05,T/2000),every=Math.max(1,Math.round(T/dt/keep)),out=[[0,n1,n2]];
   const d=(a,b)=>[p.r1*a*(p.K1-a-p.a12*b)/p.K1,p.r2*b*(p.K2-b-p.a21*a)/p.K2];
   for(let i=1;i<=Math.round(T/dt);i++){const k1=d(n1,n2),k2=d(n1+dt/2*k1[0],n2+dt/2*k1[1]),k3=d(n1+dt/2*k2[0],n2+dt/2*k2[1]),k4=d(n1+dt*k3[0],n2+dt*k3[1]);
     n1=Math.max(0,n1+dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]));n2=Math.max(0,n2+dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]));if(i%every===0)out.push([i*dt,n1,n2])}
   return out}
-function at(tr,t,j){let i=0;while(i<tr.length-1&&tr[i+1][0]<t)i++;const a=tr[i],b=tr[Math.min(i+1,tr.length-1)];if(b[0]===a[0])return a[j];return a[j]+(b[j]-a[j])*(t-a[0])/(b[0]-a[0])}
-function outcome(p){const e=1e-9,c1=p.a12>0?p.K1/p.a12:Infinity,c2=p.a21>0?p.K2/p.a21:Infinity;
-  if(Math.abs(p.a12-1)<e&&Math.abs(p.a21-1)<e&&Math.abs(p.K1-p.K2)<e)return'neutral';
-  const w1=p.K1>c2-e,w2=p.K2>c1-e;if(!w1&&!w2)return'coexist';if(w1&&w2)return'priority';return w1?'sp1':'sp2'}
-const LABEL={coexist:'Coexistence',sp1:'Species 1 wins',sp2:'Species 2 wins',priority:'Depends on start',neutral:'Neutral (drift)'};
-const BEST={1:{yr1:0.2586,yK1:12.74,yA1:1.23},2:{yr2:0.0574,yK2:5.88,yA2:0.68},3:{ya12:2.81,ya21:0.49,yM1:0.42,yM2:0.63}};
-function yeast(){showVals();
-  const r1=val('yr1'),K1=val('yK1'),A1=val('yA1'),r2=val('yr2'),K2=val('yK2'),A2=val('yA2'),T=val('yT');
-  const xs1=[],xs2=[];for(let i=0;i<=100;i++){xs1.push(50*i/100);xs2.push(140*i/100)}
-  const e1=D1.reduce((s,d)=>s+(logi(d[0],r1,K1,A1)-d[1])**2,0),e2=D2.reduce((s,d)=>s+(logi(d[0],r2,K2,A2)-d[1])**2,0);
-  const ymax=Math.max(14,K1*1.1,K2*1.1);
-  chart($('#cY1'),{xmin:0,xmax:50,ymin:0,ymax:ymax,w:380,h:300,xlab:'Hours',ylab:'Yeast volume',series:[{pts:xs1.map(t=>[t,logi(t,r1,K1,A1)]),color:C1,width:2.6}],points:D1.map(d=>({x:d[0],y:d[1],color:C1,r:4.5}))});
-  chart($('#cY2'),{xmin:0,xmax:140,ymin:0,ymax:ymax,w:380,h:300,xlab:'Hours',ylab:'Yeast volume',series:[{pts:xs2.map(t=>[t,logi(t,r2,K2,A2)]),color:C2,width:2.6}],points:D2.map(d=>({x:d[0],y:d[1],color:C2,r:4.5}))});
-  const p={r1,K1,r2,K2,a12:val('ya12'),a21:val('ya21')};
-  const tr=lvRun(p,val('yM1'),val('yM2'),T);
-  const e3=DM.reduce((s,d)=>s+(at(tr,d[0],1)-d[1])**2+(at(tr,d[0],2)-d[2])**2,0);
-  chart($('#cY3'),{xmin:0,xmax:T,ymin:0,ymax:ymax,w:380,h:300,xlab:'Hours',ylab:'Yeast volume',
-    series:[{pts:[[47,0],[47,ymax]],color:'var(--muted)',dash:'3 4',width:1.2},{pts:tr.map(r=>[r[0],r[1]]),color:C1,width:2.6},{pts:tr.map(r=>[r[0],r[2]]),color:C2,width:2.6}],
-    points:[...DM.map(d=>({x:d[0],y:d[1],color:C1,r:4.5})),...DM.map(d=>({x:d[0],y:d[2],color:C2,r:4.5}))],texts:T>80?[{x:47,y:ymax*0.95,t:'experiment ended',color:'var(--muted)',dx:4}]:[]});
-  $('#e1').textContent=f(e1,2);$('#e2').textContent=f(e2,2);$('#e3').textContent=f(e3,2);
-  $('#cY1').setAttribute('aria-label',`S. cerevisiae grown alone: Gause's 14 measurements rise from 0.37 to about 13 by 47 hours. Model line with r ${f(r1,3)} and K ${f(K1,2)}; error ${f(e1,2)}.`);
-  $('#cY2').setAttribute('aria-label',`S. kephir grown alone: measurements rise slowly from about 1 to 5.8 by 135 hours. Model line with r ${f(r2,3)} and K ${f(K2,2)}; error ${f(e2,2)}.`);
-  const last=tr[tr.length-1];
-  $('#cY3').setAttribute('aria-label',`Mixed culture over ${T} hours with Gause's measurements to 47 hours. Model ends with cerevisiae ${f(last[1],2)} and kephir ${f(last[2],2)}; error ${f(e3,2)}.`);
-  const oc=outcome(p);let m=`<b>Fit so far:</b> error ${f(e1,1)} (cerevisiae alone), ${f(e2,1)} (kephir alone), ${f(e3,1)} (together). `;
-  m+=`With these values, the model predicts: <b>${oc==='sp1'?'S. cerevisiae eventually wins':oc==='sp2'?'S. kephir eventually wins':oc==='coexist'?'the two yeasts coexist':oc==='priority'?'the winner depends on the starting amounts':'neutral drift'}</b>. `;
-  if(T>200&&oc!=='coexist'){const w=last[1]>last[2]?'S. cerevisiae':'S. kephir';m+=`At ${T} hours the model has <b>${w}</b> taking over. `;
-    if(oc==='priority')m+='Because α₁₂ × α₂₁ is greater than 1, each yeast hurts the other more than itself per unit volume, and whichever gets a lead keeps it. Change the starting volumes to see the winner flip. ';
-    m+='Gause only watched for two days, and over that time the two yeasts did look like they were coexisting. A model fitted to short-term data can make a prediction about the long term that the experiment never tested.'}
-  else if(oc==='coexist')m+='Each yeast limits itself more than it limits the other.';
-  $('#yMsg').innerHTML=m;
-}
-$$('[data-reveal]').forEach(b=>b.onclick=()=>{const k=b.dataset.reveal;
-  if(k==='4'){setSliders({...BEST[1],...BEST[2],...BEST[3],yT:1000})}else setSliders(BEST[k]);
-  if(k==='3')setSliders({...BEST[1],...BEST[2],...BEST[3]});yeast()});
-$$('#yeast input').forEach(i=>i.addEventListener('input',yeast));
+const at=(tr,t,j)=>{let i=0;while(i<tr.length-1&&tr[i+1][0]<t)i++;const a=tr[i],b=tr[Math.min(i+1,tr.length-1)];return b[0]===a[0]?a[j]:a[j]+(b[j]-a[j])*(t-a[0])/(b[0]-a[0])};
+tabs.t1=paperTab($('#t1'),{id:'g',title:'Experimental studies on the struggle for existence: two yeasts',
+  why:'The first experiments to test the mathematical theory of competition with real organisms. They led to the competitive exclusion principle.',
+  cite:'Gause, G. F. (1932). Experimental studies on the struggle for existence. I. Mixed population of two species of yeast. <i>Journal of Experimental Biology</i> 9: 389–402. Expanded in Gause (1934), <a href="https://archive.org/details/struggleforexist00gauz" target="_blank" rel="noopener"><i>The Struggle for Existence</i></a>.',
+  question:'Lotka and Volterra had written equations predicting how two species competing for the same resource should grow. No one had tested them. Gause asked: <b>do real populations follow these equations, and can the equations tell us how strongly each species affects the other?</b>',
+  hyps:[['Prediction A','Each species grows as if the other were not there (no competition).'],['Prediction B','Each species is held below its normal maximum by the other (competition), and the size of the effect can be measured.']],
+  design:`<p>Gause grew two yeasts in tubes of the same sugar medium: brewer's yeast, <i>Saccharomyces cerevisiae</i> (fast-growing), and <i>Schizosaccharomyces kephir</i> (slow-growing). He grew <b>each alone</b> and <b>both together</b>, and measured the volume of yeast in each tube over time. Both yeasts produce alcohol, and it is the alcohol that stops their growth.</p>
+    <p>The single-species tubes tell you each species' growth rate (r) and carrying capacity (K). The mixed tubes then reveal how much each species holds the other back (the competition coefficients, α).</p>`,
+  predict:{q:'When the two yeasts were grown together for two days, what do you expect?',opts:['Both grow just as well as when alone.','Both still grow, but each reaches less than it does alone.','<i>S. cerevisiae</i> wipes out <i>S. kephir</i> within two days.','<i>S. kephir</i> wipes out <i>S. cerevisiae</i> within two days.']},
+  results:`<div class="grid2"><div class="chart"><h3><i>S. cerevisiae</i>: alone vs. with <i>kephir</i></h3><svg id="gR1"></svg></div><div class="chart"><h3><i>S. kephir</i>: alone vs. with <i>cerevisiae</i></h3><svg id="gR2"></svg></div></div>
+    <div class="legend" id="gLeg"></div>
+    <details class="datatbl"><summary>Gause's data table</summary><div class="tablewrap"><table class="cmp" id="gTbl"></table></div><p class="small muted">From Gause's Table 1 as tabulated by J. Mahaffy (San Diego State University); time measured from the first sample.</p></details>`,
+  found:'Both yeasts persisted for the two days, but each reached less than it did alone. <i>S. cerevisiae</i> leveled near 9–10 instead of about 13, and <i>S. kephir</i> stayed near 1–2 instead of rising toward 6. Gause concluded that the competition equations described the mixed cultures well. The effect of one species on the other could be measured as a competition coefficient.',
+  afterResults:()=>{
+    const pts=(d,c,ring)=>d.map(x=>({x:x[0],y:x[1],color:c,r:4.5,ring}));
+    chart($('#gR1'),{xmin:0,xmax:50,ymin:0,ymax:14,w:460,h:320,xlab:'Hours',ylab:'Yeast volume',points:[...pts(D1,C1,1),...DM.map(x=>({x:x[0],y:x[1],color:C1,r:4.5}))]});
+    chart($('#gR2'),{xmin:0,xmax:140,ymin:0,ymax:7,w:460,h:320,xlab:'Hours',ylab:'Yeast volume',points:[...pts(D2,C2,1),...DM.map(x=>({x:x[0],y:x[2],color:C2,r:4.5}))]});
+    legend($('#gLeg'),[['var(--muted)','Open circles: grown alone',1],['var(--text)','Filled circles: grown together']]);
+    $('#gR1').setAttribute('aria-label','S. cerevisiae volume over 47 hours. Alone it rises to about 13; with kephir it rises to about 8 to 10.');
+    $('#gR2').setAttribute('aria-label','S. kephir volume. Alone it rises slowly to about 5.8 by 135 hours; with cerevisiae it stays between about 1 and 2 over 47 hours.');
+    $('#gTbl').innerHTML='<thead><tr><th>Hour</th><th>cerevisiae alone</th><th>kephir alone</th><th>Together: cerevisiae</th><th>Together: kephir</th></tr></thead><tbody>'+
+      [...new Set([...D1,...D2,...DM].map(d=>d[0]))].sort((a,b)=>a-b).map(t=>`<tr><td>${t}</td><td>${D1.filter(d=>d[0]===t).map(d=>d[1]).join(', ')}</td><td>${D2.filter(d=>d[0]===t).map(d=>d[1]).join(', ')}</td><td>${DM.filter(d=>d[0]===t).map(d=>d[1]).join(', ')}</td><td>${DM.filter(d=>d[0]===t).map(d=>d[2]).join(', ')}</td></tr>`).join('')+'</tbody>'},
+  interpret:[
+    {q:'Why did Gause need the single-species tubes?',opts:['To find each species\' r and K without competition','To measure the alcohol','To check for contamination','They were not needed'],a:0,why:'With r and K known from the single-species tubes, the only unknowns left in the mixed tubes are the competition coefficients.'},
+    {q:'Per unit of volume, which yeast had the bigger effect on the other?',opts:['S. cerevisiae on S. kephir','S. kephir on S. cerevisiae','They were equal','Neither had any effect'],a:1,why:'Fitting the model (below) gives α₁₂ ≈ 2.8 (kephir on cerevisiae) and α₂₁ ≈ 0.5 (cerevisiae on kephir). Unit for unit, kephir\'s presence slowed cerevisiae more. Cerevisiae still dominated because it grows faster and reaches a larger volume.'},
+    {q:'The experiment lasted two days and both species persisted. Does that prove they coexist?',opts:['Yes','No; exclusion can take longer than the experiment ran','Yes, if both were still growing','No, because yeasts never compete'],a:1,why:'Competitive exclusion can be slow. Use the model below to ask what the fitted equations predict over longer times.'}],
+  modelTitle:'Fit Gause\'s model yourself',
+  model:`<p class="small">Gause fitted the Lotka–Volterra competition equations: dN₁/dt = r₁N₁(K₁ − N₁ − α₁₂N₂)/K₁ and dN₂/dt = r₂N₂(K₂ − N₂ − α₂₁N₁)/K₂. Fit r and K to each yeast alone first, then fit the α values to the mixed tubes. Lower "error" (the sum of squared differences from the data) means a better fit.</p>
+   <div class="layout"><div class="ctrl">
+     <label for="yr1">r₁ (<i>cerevisiae</i>, per hour) <span class="val" id="yr1V"></span></label><input type="range" id="yr1" min="0.01" max="1" step="0.005" value="0.15" data-d="3">
+     <label for="yK1">K₁ <span class="val" id="yK1V"></span></label><input type="range" id="yK1" min="1" max="20" step="0.1" value="10" data-d="2">
+     <label for="yA1">Starting volume, alone <span class="val" id="yA1V"></span></label><input type="range" id="yA1" min="0.05" max="3" step="0.01" value="0.4" data-d="2">
+     <label for="yr2">r₂ (<i>kephir</i>, per hour) <span class="val" id="yr2V"></span></label><input type="range" id="yr2" min="0.005" max="0.3" step="0.001" value="0.1" data-d="3">
+     <label for="yK2">K₂ <span class="val" id="yK2V"></span></label><input type="range" id="yK2" min="1" max="20" step="0.1" value="8" data-d="2">
+     <label for="yA2">Starting volume, alone <span class="val" id="yA2V"></span></label><input type="range" id="yA2" min="0.05" max="3" step="0.01" value="0.4" data-d="2">
+     <label for="ya12">α₁₂ (<i>kephir</i> on <i>cerevisiae</i>) <span class="val" id="ya12V"></span></label><input type="range" id="ya12" min="0" max="6" step="0.01" value="1" data-d="2">
+     <label for="ya21">α₂₁ (<i>cerevisiae</i> on <i>kephir</i>) <span class="val" id="ya21V"></span></label><input type="range" id="ya21" min="0" max="3" step="0.01" value="1" data-d="2">
+     <label for="yM1">Starting <i>cerevisiae</i>, together <span class="val" id="yM1V"></span></label><input type="range" id="yM1" min="0.05" max="3" step="0.01" value="0.375" data-d="2">
+     <label for="yM2">Starting <i>kephir</i>, together <span class="val" id="yM2V"></span></label><input type="range" id="yM2" min="0.05" max="3" step="0.01" value="0.29" data-d="2">
+     <label for="yT">Run the mixed culture for (hours) <span class="val" id="yTV"></span></label><input type="range" id="yT" min="47" max="1000" step="1" value="50">
+     <div class="row"><button id="yBest">Show the best fit</button></div>
+   </div><div>
+     <div class="grid2"><div class="chart"><h3>Alone: model vs. data</h3><svg id="yC1"></svg><p class="small">Error: <b id="ye1"></b> (<i>cerevisiae</i>), <b id="ye2"></b> (<i>kephir</i>)</p></div>
+     <div class="chart"><h3>Together: model vs. data</h3><svg id="yC3"></svg><p class="small">Error: <b id="ye3"></b></p></div></div>
+     <div class="msg" id="yMsg"></div></div></div>`,
+  afterModel:()=>{const f2=()=>{showVals();
+      const r1=val('yr1'),K1=val('yK1'),A1=val('yA1'),r2=val('yr2'),K2=val('yK2'),A2=val('yA2'),T=val('yT');
+      const e1=D1.reduce((s,d)=>s+(logi(d[0],r1,K1,A1)-d[1])**2,0),e2=D2.reduce((s,d)=>s+(logi(d[0],r2,K2,A2)-d[1])**2,0);
+      const xs=[];for(let i=0;i<=120;i++)xs.push(140*i/120);
+      chart($('#yC1'),{xmin:0,xmax:140,ymin:0,ymax:15,w:460,h:320,xlab:'Hours',ylab:'Yeast volume',series:[{pts:xs.map(t=>[t,logi(t,r1,K1,A1)]),color:C1,width:2.4},{pts:xs.map(t=>[t,logi(t,r2,K2,A2)]),color:C2,width:2.4}],
+        points:[...D1.map(d=>({x:d[0],y:d[1],color:C1,r:4})),...D2.map(d=>({x:d[0],y:d[1],color:C2,r:4}))]});
+      const p={r1,K1,r2,K2,a12:val('ya12'),a21:val('ya21')},tr=lvRun(p,val('yM1'),val('yM2'),T);
+      const e3=DM.reduce((s,d)=>s+(at(tr,d[0],1)-d[1])**2+(at(tr,d[0],2)-d[2])**2,0);
+      chart($('#yC3'),{xmin:0,xmax:T,ymin:0,ymax:15,w:460,h:320,xlab:'Hours',ylab:'Yeast volume',series:[{pts:[[47,0],[47,15]],color:'var(--muted)',dash:'3 4',width:1.2},{pts:tr.map(r=>[r[0],r[1]]),color:C1,width:2.4},{pts:tr.map(r=>[r[0],r[2]]),color:C2,width:2.4}],
+        points:[...DM.map(d=>({x:d[0],y:d[1],color:C1,r:4})),...DM.map(d=>({x:d[0],y:d[2],color:C2,r:4}))]});
+      $('#ye1').textContent=f(e1,2);$('#ye2').textContent=f(e2,2);$('#ye3').textContent=f(e3,2);
+      $('#yC1').setAttribute('aria-label',`Single-species data with model curves. Errors ${f(e1,2)} and ${f(e2,2)}.`);
+      const last=tr[tr.length-1];$('#yC3').setAttribute('aria-label',`Mixed culture data with model curves over ${T} hours. Model ends with cerevisiae ${f(last[1],2)} and kephir ${f(last[2],2)}.`);
+      let m=`Fit error: ${f(e1,1)}, ${f(e2,1)}, ${f(e3,1)}. `;
+      if(T>200)m+=`At ${T} hours the model has <b>${last[1]>last[2]?'S. cerevisiae':'S. kephir'}</b> ahead (${f(last[1],2)} vs. ${f(last[2],2)}). `;
+      if(p.a12*p.a21>1)m+='Because α₁₂ × α₂₁ is greater than 1, the model predicts that one yeast eventually excludes the other, and which one wins depends on the starting amounts. Gause\'s two-day experiment could not test that long-term prediction.';
+      else m+='Because α₁₂ × α₂₁ is less than 1, coexistence is possible if each species limits itself more than the other.';
+      $('#yMsg').innerHTML=m};
+    if(!$('#yr1Box'))addBoxes($('#t1'));
+    $$('#t1 .ctrl input').forEach(i=>i.oninput=f2);
+    $('#yBest').onclick=()=>{setSliders({yr1:0.2586,yK1:12.74,yA1:1.23,yr2:0.0574,yK2:5.88,yA2:0.68,ya12:2.81,ya21:0.49,yM1:0.42,yM2:0.63});f2()};f2()},
+  discuss:['Gause used yeast and alcohol, not food, as the thing being competed over. Does it matter <i>what</i> limits growth for the competition equations to work?','The fitted model predicts one yeast eventually wins. Design an experiment to test that prediction.','Why might lab results with microbes not apply to animals or plants in the field? (Compare with Connell\'s barnacles in the next tab.)']});
 
-/* ---------- phase plane ---------- */
-let extra=[];
-function P(){return{K1:val('K1'),K2:val('K2'),a12:val('a12'),a21:val('a21'),r1:val('r1'),r2:val('r2')}}
-function render(){
-  showVals();const p=P(),T=val('Tmax');
-  const tr=lvRun(p,val('N10'),val('N20'),T);const last=tr[tr.length-1];
-  const ymax=Math.max(p.K1,p.K2,val('N10'),val('N20'),...tr.map(r=>Math.max(r[1],r[2])))*1.08;
-  chart($('#cT'),{xmin:0,xmax:T,ymin:0,ymax:ymax,w:460,h:400,xlab:'Time',ylab:'Population size (N)',
-    series:[{pts:[[0,p.K1],[T,p.K1]],color:C1,dash:'5 4',width:1.4,opacity:.7},{pts:[[0,p.K2],[T,p.K2]],color:C2,dash:'5 4',width:1.4,opacity:.7},
-      {pts:tr.map(r=>[r[0],r[1]]),color:C1,width:2.6},{pts:tr.map(r=>[r[0],r[2]]),color:C2,width:2.6}]});
-  legend($('#legT'),[[C1,'Species 1'],[C2,'Species 2'],['var(--muted)','Carrying capacities',1]]);
-  $('#tN1').textContent=f(last[1],last[1]<20?2:0);$('#tN2').textContent=f(last[2],last[2]<20?2:0);
-  const oc=outcome(p);$('#tOut').textContent=LABEL[oc];
-  const c1=p.a12>0?p.K1/p.a12:Infinity,c2=p.a21>0?p.K2/p.a21:Infinity;
-  const mx=Math.max(p.K1,p.K2,Math.min(c1,p.K1*4),Math.min(c2,p.K2*4),val('N10'),val('N20'))*1.1;
-  const arrows=[];const n=11;
-  const der=(a,b)=>[p.r1*a*(p.K1-a-p.a12*b)/p.K1,p.r2*b*(p.K2-b-p.a21*a)/p.K2];
-  for(let i=1;i<n;i++)for(let j=1;j<n;j++){const x=mx*i/n,y=mx*j/n,d=der(x,y),L=Math.hypot(d[0],d[1]);if(L<1e-12)continue;const s=mx/n*0.38;const ex=x+d[0]/L*s,ey=y+d[1]/L*s;
-    const ax=-(d[0]/L),ay=-(d[1]/L),hx=s*0.35;
-    arrows.push({pts:[[x,y],[ex,ey],[ex+(ax*0.8-ay*0.5)*hx,ey+(ay*0.8+ax*0.5)*hx],[ex,ey],[ex+(ax*0.8+ay*0.5)*hx,ey+(ay*0.8-ax*0.5)*hx]],color:'var(--muted)',width:1,opacity:.45})}
-  const trajs=extra.map(s=>lvRun(p,s[0],s[1],T*2));
-  const pts=[{x:val('N10'),y:val('N20'),color:'var(--text)',r:5,ring:1},...extra.map(s=>({x:s[0],y:s[1],color:'var(--text)',r:4,ring:1}))];
-  const eqs=[{x:p.K1,y:0},{x:0,y:p.K2}];
-  if(Math.abs(1-p.a12*p.a21)>1e-9){const e1=(p.K1-p.a12*p.K2)/(1-p.a12*p.a21),e2=(p.K2-p.a21*p.K1)/(1-p.a12*p.a21);if(e1>0&&e2>0)eqs.push({x:e1,y:e2,mid:1})}
-  eqs.forEach(e=>{let st;if(e.mid)st=oc==='coexist';else if(e.y===0)st=oc==='sp1'||oc==='priority';else st=oc==='sp2'||oc==='priority';pts.push({x:e.x,y:e.y,color:'var(--text)',r:6,ring:!st})});
-  const g=chart($('#cP'),{xmin:0,xmax:mx,ymin:0,ymax:mx,w:460,h:400,xlab:'Species 1 (N₁)',ylab:'Species 2 (N₂)',
-    series:[...arrows,{pts:[[p.K1,0],p.a12>0?[0,c1]:[p.K1,mx*3]],color:C1,width:3},{pts:[p.a21>0?[c2,0]:[mx*3,p.K2],[0,p.K2]],color:C2,width:3},
-      ...trajs.map(t=>({pts:t.map(r=>[r[1],r[2]]),color:'var(--text)',width:1.6,opacity:.7})),{pts:tr.map(r=>[r[1],r[2]]),color:'var(--text)',width:2.6}],points:pts});
-  $('#cP').onclick=e=>{const[x,y,inside]=g.inv(e.clientX,e.clientY);if(!inside)return;extra.push([Math.max(mx/500,x),Math.max(mx/500,y)]);if(extra.length>8)extra.shift();render()};
-  legend($('#legP'),[[C1,'Sp. 1 zero-growth line'],[C2,'Sp. 2 zero-growth line'],['var(--text)','Path of the populations']]);
-  $('#cP').setAttribute('aria-label',`Phase plane. Species 1 isocline runs from N1 = ${f(p.K1,1)} to N2 = ${f(c1,1)}. Species 2 isocline runs from N1 = ${f(c2,1)} to N2 = ${f(p.K2,1)}. Filled circles are stable equilibria, open circles unstable. Predicted outcome: ${LABEL[oc]}.`);
-  $('#cT').setAttribute('aria-label',`Both populations over ${T} time units. Species 1 ends at ${f(last[1],2)} and species 2 at ${f(last[2],2)}.`);
-  const M={coexist:'<b>Stable coexistence.</b> Each species limits itself more than it limits the other. Both zero-growth lines cross and every starting point ends at the same mix of species.',
-    sp1:'<b>Competitive exclusion: species 1 wins.</b> Species 1\'s line lies entirely outside species 2\'s, so species 1 can still grow when species 2 is at its carrying capacity, but not the other way around.',
-    sp2:'<b>Competitive exclusion: species 2 wins.</b> Species 2\'s line lies entirely outside species 1\'s.',
-    priority:'<b>Whoever gets ahead wins.</b> The lines cross, but the crossing point is unstable (open circle). Tap the phase plane in a few spots: one side ends with species 1, the other with species 2. This is a <b>priority effect</b>.',
-    neutral:'<b>Neutral.</b> The species are identical, so the lines overlap and the populations stop wherever they first hit the line.'};
-  $('#lvMsg').innerHTML=M[oc];
-}
-const PRE={gause:{K1:12.74,K2:5.88,a12:2.81,a21:0.49,r1:0.26,r2:0.06,N10:0.42,N20:0.63,Tmax:1000},coexist:{K1:100,K2:90,a12:0.5,a21:0.6,r1:0.8,r2:0.8,N10:10,N20:40,Tmax:50},
-  win1:{K1:150,K2:100,a12:0.6,a21:1.6,r1:1,r2:0.8,N10:5,N20:5,Tmax:50},priority:{K1:100,K2:100,a12:1.5,a21:1.5,r1:0.8,r2:0.8,N10:45,N20:55,Tmax:50}};
-const EXTRA={gause:[[1.5,.3],[.3,1.5],[8,3],[2,5]],priority:[[60,40],[30,70],[150,140],[10,12]]};
-$$('[data-p]').forEach(b=>b.onclick=()=>{setSliders(PRE[b.dataset.p]);extra=(EXTRA[b.dataset.p]||[]).map(v=>v.slice());render()});
-$('#fromYeast').onclick=()=>{extra=[];setSliders({K1:val('yK1'),K2:val('yK2'),a12:val('ya12'),a21:val('ya21'),r1:val('yr1'),r2:val('yr2'),N10:val('yM1'),N20:val('yM2'),Tmax:Math.max(val('yT'),200)});render()};
-$$('#lv input').forEach(i=>i.addEventListener('input',render));
-$('#clearPts').onclick=()=>{extra=[];render()};
+/* =================== 2. CONNELL =================== */
+const CT=[['Area 3','+2.2 ft',73,25,89,6],['Area 7','+0.7 ft',90,47,82,23],['Area 11','0.0 ft',62,28,50,25],['Area 12','0.0 ft (pool)',100,53,87,59],['Area 13','−1.0 ft',98,9,90,35]];
+tabs.t2=paperTab($('#t2'),{id:'c',title:'Interspecific competition and the distribution of the barnacle <i>Chthamalus</i>',
+  why:'The first field experiment to show that competition sets where a species can live. It introduced the ideas of fundamental and realized niches to a generation of ecologists.',
+  cite:'Connell, J. H. (1961). The influence of interspecific competition and other factors on the distribution of the barnacle <i>Chthamalus stellatus</i>. <i>Ecology</i> 42: 710–723.',doi:'10.2307/1933500',
+  question:'On the rocky shore at Millport, Scotland, the small barnacle <i>Chthamalus</i> lives high on the shore and the larger <i>Balanus</i> lives below it. Young <i>Chthamalus</i> settle in the <i>Balanus</i> zone, but adults are almost never found there. <b>What keeps <i>Chthamalus</i> out of the lower shore?</b>',
+  hyps:[['Physical stress','Being underwater longer lower on the shore kills <i>Chthamalus</i>.'],['Predation','The whelk <i>Thais</i>, common low on the shore, eats them.'],['Competition','<i>Balanus</i> crowds them out.']],
+  design:`<p>Connell mapped every <i>Chthamalus</i> on patches of rock at different heights on the shore and followed each one for a year. On one half of each patch he used a needle to <b>remove all <i>Balanus</i></b> touching the <i>Chthamalus</i>; the other half was left alone. Some patches were <b>caged</b> to keep out the predatory whelk <i>Thais</i>; others were open. He also recorded how each barnacle died.</p>
+    <p>This design tests all three hypotheses at once: compare heights (physical stress), caged vs. open (predation), and <i>Balanus</i> removed vs. present (competition).</p>`,
+  predict:{q:'Low on the shore, what happens to <i>Chthamalus</i> when <i>Balanus</i> is removed?',opts:['Most still die: being underwater too long kills them.','Most survive: <i>Balanus</i> was the main cause of death.','Most are eaten by whelks either way.','No difference: neither <i>Balanus</i> nor whelks matter.']},
+  results:`<div class="row"><b class="small">Show:</b><button class="primary" id="cA">Caged (no whelks)</button><button id="cB">Open (whelks present)</button></div>
+    <div class="chart"><svg id="cR"></svg></div><div class="legend" id="cLeg"></div>
+    <h3>How <i>Chthamalus</i> died where <i>Balanus</i> was present (Table II)</h3><div class="chart"><svg id="cD"></svg></div><div class="legend" id="cLeg2"></div>`,
+  found:'Wherever <i>Balanus</i> was removed, many more <i>Chthamalus</i> survived, at every height, even in a tide pool that never drains. Being lower on the shore was not what killed them. Most deaths with an identified cause came from <i>Balanus</i> smothering, undercutting, or crushing them. <i>Chthamalus</i> can live lower on the shore (its <b>fundamental niche</b>) but is restricted to the upper shore by competition (its <b>realized niche</b>).',
+  afterResults:()=>{let mode='a';const draw=()=>{const o=mode==='a'?[2,3]:[4,5];
+      bars($('#cR'),{cats:CT.map(r=>`${r[0]}\n${r[1]}`),series:[{name:'With Balanus',color:'var(--s2)',vals:CT.map(r=>r[o[0]])},{name:'Balanus removed',color:'var(--s1)',vals:CT.map(r=>r[o[1]])}],ymax:105,ylab:'Chthamalus mortality in one year (%)',w:700,h:340,mb:60,fmt:v=>v+'%'});
+      legend($('#cLeg'),[['var(--s2)','With Balanus'],['var(--s1)','Balanus removed']]);
+      $('#cR').setAttribute('aria-label',`Annual mortality of Chthamalus, ${mode==='a'?'caged':'open'} patches. `+CT.map(r=>`${r[0]} at ${r[1]}: ${r[o[0]]}% with Balanus, ${r[o[1]]}% with Balanus removed`).join('; ')+'.');
+      $('#cA').classList.toggle('primary',mode==='a');$('#cB').classList.toggle('primary',mode==='b')};
+    $('#cA').onclick=()=>{mode='a';draw()};$('#cB').onclick=()=>{mode='b';draw()};draw();
+    bars($('#cD'),{cats:['Smothered','Undercut','Other crowding','Unknown'],series:[{color:'var(--s4)',vals:[37,9,16,38]},{color:'var(--s5)',vals:[19,21,4,56]}],ymax:65,ylab:'% of deaths',w:600,h:280,fmt:v=>v+'%'});
+    legend($('#cLeg2'),[['var(--s4)','Upper areas (+3.5 to +0.7 ft), 264 deaths'],['var(--s5)','Lower areas (0 to −2.5 ft), 271 deaths']]);
+    $('#cD').setAttribute('aria-label','Causes of death with Balanus present. Upper areas: 37% smothered, 9% undercut, 16% other crowding, 38% unknown. Lower areas: 19%, 21%, 4%, 56%.')},
+  interpret:[
+    {q:'Look at Area 13 (−1.0 ft, caged). What does the 98% vs. 9% difference show?',opts:['Long submersion kills Chthamalus','Balanus, not submersion, kills Chthamalus low on the shore','Whelks are the main predator','Chthamalus outcompetes Balanus'],a:1,why:'With Balanus removed, only 9% died even at the lowest level, so being underwater was not the problem. Balanus caused the difference.'},
+    {q:'Compare the "difference" due to Balanus in caged vs. open patches at Area 13 (−1.0 ft). Caged: 98 − 9 = 89 points. Open: 90 − 35 = 55 points. What does this suggest about whelks?',opts:['Whelks increase competition','Whelks reduce the effect of competition low on the shore, probably by eating Balanus','Whelks have no effect anywhere','Whelks only eat Chthamalus'],a:1,why:'Where whelks were present, the extra mortality caused by Balanus was smaller. Connell later noted that predators reduced the intensity of competition where they were common, low on the shore.'},
+    {q:'Which term describes the full range of shore heights where Chthamalus can survive without Balanus?',opts:['Realized niche','Fundamental niche','Habitat','Keystone niche'],a:1,why:'The fundamental niche is where a species can live given physical conditions alone; the realized niche is where it actually lives once competitors and enemies are included.'}],
+  discuss:['Connell removed <i>Balanus</i> by hand. What are the strengths and weaknesses of removal experiments compared with just observing where species live?','Many deaths had "unknown" causes, especially low on the shore. How might that affect the conclusions?','Why can\'t <i>Balanus</i> live high on the shore where <i>Chthamalus</i> lives? (Connell found young <i>Balanus</i> there died during hot, dry weather.)']});
 
-/* ---------- Paramecia ---------- */
-const xs=[];for(let x=0;x<=10.0001;x+=0.02)xs.push(x);
-const gauss=(x,m,w)=>Math.exp(-((x-m)**2)/(2*w*w))/(w*Math.sqrt(2*Math.PI));
-let comp='aurelia';
-const COMP={aurelia:{name:'<i>P. aurelia</i>',m2:3,w2:1.3,kr:1.4,m1:2.5,w1:1.4},bursaria:{name:'<i>P. bursaria</i>',m2:8,w2:1.3,kr:0.8,m1:2.5,w1:1.4}};
-function niche(){showVals();
-  const m1=val('m1'),w1=val('w1'),m2=val('m2'),w2=val('w2'),kr=val('kr');
-  const u1=xs.map(x=>gauss(x,m1,w1)),u2=xs.map(x=>gauss(x,m2,w2));
-  let s11=0,s22=0,s12=0;for(let i=0;i<xs.length;i++){s11+=u1[i]*u1[i];s22+=u2[i]*u2[i];s12+=u1[i]*u2[i]}
-  const a12=s12/s11,a21=s12/s22,ov=xs.map((x,i)=>[x,Math.min(u1[i],u2[i])]);
-  const ymax=Math.max(...u1,...u2)*1.12;
-  chart($('#cN'),{xmin:0,xmax:10,ymin:0,ymax:ymax,w:460,h:330,xlab:'Position in tube (0 = top, 10 = bottom)',ylab:'Feeding activity',
-    series:[{pts:[[0,0],...ov,[10,0]],color:'var(--s6)',fill:.35},{pts:xs.map((x,i)=>[x,u1[i]]),color:C1,width:2.8},{pts:xs.map((x,i)=>[x,u2[i]]),color:C2,width:2.8}],
-    texts:[{x:0.2,y:ymax*0.93,t:'floating bacteria',color:'var(--muted)'},{x:9.8,y:ymax*0.93,t:'settled yeast',color:'var(--muted)',anchor:'end'}]});
-  const nm=comp==='aurelia'?'P. aurelia':'P. bursaria';
-  legend($('#legN'),[[C1,'P. caudatum'],[C2,nm],['var(--s6)','Overlap']]);
-  const p={K1:100,K2:100*kr,a12,a21,r1:0.8,r2:0.8};const oc=outcome(p);
-  const tr=lvRun(p,5,5,60);
-  chart($('#cN2'),{xmin:0,xmax:60,ymin:0,ymax:Math.max(100,100*kr)*1.1,w:460,h:330,xlab:'Days',ylab:'Cells (relative)',series:[{pts:tr.map(r=>[r[0],r[1]]),color:C1,width:2.6},{pts:tr.map(r=>[r[0],r[2]]),color:C2,width:2.6}]});
-  legend($('#legN2'),[[C1,'P. caudatum'],[C2,nm]]);
-  $('#nA12').textContent=f(a12,2);$('#nA21').textContent=f(a21,2);
-  const L2={coexist:'Both coexist',sp1:'P. caudatum wins',sp2:nm+' wins',priority:'Depends on start',neutral:'Neutral'};$('#nOut').textContent=L2[oc];
-  $('#cN').setAttribute('aria-label',`Feeding curves along the tube. P. caudatum centered at ${m1}, ${nm} centered at ${m2}. Alpha 1 2 = ${f(a12,2)}, alpha 2 1 = ${f(a21,2)}.`);
-  const last=tr[tr.length-1];$('#cN2').setAttribute('aria-label',`Populations over 60 days. P. caudatum ends at ${f(last[1],0)}, ${nm} at ${f(last[2],0)}.`);
-  let msg;
-  if(oc==='coexist')msg=`<b>Coexistence.</b> The species overlap ${a12>0.5?'quite a bit':'only a little'}, but each still competes more with its own kind. ${comp==='bursaria'?'This is what Gause saw: <i>P. caudatum</i> fed on floating bacteria and <i>P. bursaria</i> on yeast near the bottom, so they could share a tube.':'You have separated their feeding places enough to rescue <i>P. caudatum</i>.'}`;
-  else if(oc==='sp2')msg=`<b>${nm} excludes <i>P. caudatum</i>.</b> ${comp==='aurelia'?'This is what Gause saw. Both species feed on the same floating bacteria, and <i>P. aurelia</i> can reach a higher density, so <i>P. caudatum</i> is pushed out: complete competitors cannot coexist.':'They now overlap too much for the competitor\'s advantage in K.'}`;
-  else if(oc==='sp1')msg='<b><i>P. caudatum</i> wins.</b> With this much overlap, the species with the higher carrying capacity takes over.';
-  else msg='<b>Too much overlap:</b> each hurts the other more than itself, so whichever species starts ahead should win.';
-  $('#nMsg').innerHTML=msg;
-}
-$$('[data-comp]').forEach(b=>b.onclick=()=>{comp=b.dataset.comp;$$('[data-comp]').forEach(x=>x.classList.toggle('primary',x===b));$('#compName').innerHTML=COMP[comp].name;
-  const c=COMP[comp];setSliders({m1:c.m1,w1:c.w1,m2:c.m2,w2:c.w2,kr:c.kr});niche()});
-$$('#niche input').forEach(i=>i.addEventListener('input',niche));
+/* =================== 3. MACARTHUR =================== */
+const WARB=[
+ {name:'Cape May',col:'var(--s4)',zones:['top-out','top-mid'],note:'Mostly the outer tips at the top of the tree. Hawks flying insects more than the others and tends to move up and down rather than in and out.'},
+ {name:'Blackburnian',col:'var(--s2)',zones:['top-out','top-mid','top-in','upper-mid'],note:'High in the tree, but closer to the trunk than the Cape May, and also somewhat lower.'},
+ {name:'Black-throated green',col:'var(--s3)',zones:['upper-out','upper-mid','mid-out','mid-mid'],note:'The middle of the tree, from the middle of the branches out to the tips. Hovers more than the others.'},
+ {name:'Bay-breasted',col:'var(--s5)',zones:['mid-in','mid-mid','upper-in'],note:'The middle of the tree, deep inside near the trunk.'},
+ {name:'Myrtle (yellow-rumped)',col:'var(--s1)',zones:['low-in','low-mid','low-out','mid-out','ground'],note:'The lowest branches and near the ground, and the most variable: it moves from part to part of the tree more than the others.'}];
+tabs.t3=paperTab($('#t3'),{id:'w',title:'Population ecology of some warblers of northeastern coniferous forests',
+  why:'A famous example of resource partitioning. Five similar species share the same trees by feeding in different places and in different ways.',
+  cite:'MacArthur, R. H. (1958). Population ecology of some warblers of northeastern coniferous forests. <i>Ecology</i> 39: 599–619.',doi:'10.2307/1931600',
+  question:'Five warblers (Cape May, Blackburnian, black-throated green, bay-breasted, and myrtle) are about the same size, eat insects, and breed in the same spruce forests in Maine and Vermont. If species that use the same resources cannot coexist, <b>how do these five live together?</b>',
+  hyps:[['Same niche','They do overlap completely; food is so plentiful that they don\'t compete.'],['Partitioning','Each species feeds in a different part of the tree or in a different way, so they compete less.'],['Other limits','Something other than food (predators, weather, nest sites) keeps their numbers below the level where they compete.']],
+  design:`<p>MacArthur divided spruce trees into zones by height (in 10-ft bands from the top) and by position on the branch (bare base, middle, and new-needle tips): 16 zones in all. He then followed individual birds as they fed and recorded, with a stopwatch, how long each spent in each zone. He also recorded <i>how</i> they fed (hawking flying insects, hovering, gleaning) and how they moved through the tree.</p>`,
+  predict:{q:'What do you expect MacArthur found?',opts:['All five used the same parts of the tree in the same way.','Each species concentrated its feeding in different parts of the tree.','The birds fed in random places with no pattern.','One species fed everywhere and the others were rare.']},
+  results:`<p class="small">Choose a species to see the zones where it concentrated its feeding. The shading follows MacArthur's Figure 2, which marked the zones holding 50% of each species' feeding activity. This is a simplified redrawing, not his exact percentages.</p>
+    <div class="row wsel" id="wSel"></div>
+    <div class="grid2"><div><svg id="wTree" class="tree"></svg></div><div class="msg" id="wNote" style="align-self:start"></div></div>`,
+  found:'Each warbler concentrated its feeding in a different part of the tree, and the species also differed in how they fed. The Cape May hawked flying insects much more often, and the black-throated green hovered more. MacArthur concluded that these differences in where and how they fed reduced competition enough to let all five coexist. He also found evidence that food shortage limited the size of the warbler populations, so competition was a real possibility.',
+  afterResults:()=>{
+    $('#wSel').innerHTML=WARB.map((w,i)=>`<button data-w="${i}">${w.name}</button>`).join('')+'<button data-w="all">All five</button>';
+    const drawTree=sel=>{const W=480,H=460,cx=180;let s=`<rect x="${cx-6}" y="20" width="12" height="${H-60}" fill="#7a5a3a"/>`;
+      const bands=[['top',40,140],['upper',140,240],['mid',240,340],['low',340,420]];
+      const zx={in:[0,0.33],mid:[0.33,0.66],out:[0.66,1]};
+      const zoneFill={};const use=sel==='all'?WARB:[WARB[sel]];
+      use.forEach(w=>w.zones.forEach(z=>{(zoneFill[z]=zoneFill[z]||[]).push(w.col)}));
+      bands.forEach(([b,y0,y1],bi)=>{const half=40+bi*38;
+        ['in','mid','out'].forEach(p=>{const [a,c]=zx[p];const cols=zoneFill[b+'-'+p]||[];
+          [-1,1].forEach(sg=>{const x0=cx+sg*(8+a*half),x1=cx+sg*(8+c*half);const xa=Math.min(x0,x1),wd=Math.abs(x1-x0);
+            s+=`<rect x="${xa}" y="${y0}" width="${wd}" height="${y1-y0}" fill="${cols.length?cols[0]:'none'}" fill-opacity="${cols.length?0.75:0}" stroke="var(--line)"/>`;
+            if(cols.length>1)cols.slice(1).forEach((c2,k)=>{s+=`<rect x="${xa+2+k*5}" y="${y0+2}" width="4" height="${y1-y0-4}" fill="${c2}"/>`})})});
+        s+=`<text x="${cx+half+16}" y="${(y0+y1)/2+4}" style="font-size:11px">${['0–10 ft','10–20 ft','20–30 ft','30+ ft'][bi]} from top</text>`});
+      const g=zoneFill['ground']||[];s+=`<rect x="${cx-170}" y="${H-38}" width="340" height="18" fill="${g.length?g[0]:'none'}" fill-opacity="${g.length?0.6:0}" stroke="var(--line)"/><text x="${cx}" y="${H-25}" text-anchor="middle" style="font-size:11px">ground / lowest branches</text>`;
+      s+=`<text x="${cx}" y="14" text-anchor="middle" style="font-size:11px">trunk ← inner · middle · outer tips →</text>`;
+      $('#wTree').setAttribute('viewBox',`0 0 ${W} ${H}`);$('#wTree').innerHTML=s;
+      $('#wTree').setAttribute('role','img');$('#wTree').setAttribute('aria-label',sel==='all'?'Spruce tree diagram with all five species\' main feeding zones overlaid.':`Spruce tree diagram. ${WARB[sel].name}: ${WARB[sel].note}`);
+      $('#wNote').innerHTML=sel==='all'?'<b>All five together.</b> Where zones overlap you see more than one color. Overlap is partial: each species has its own center of activity.':`<b>${WARB[sel].name}.</b> ${WARB[sel].note}`;
+      $$('#wSel button').forEach(b=>b.classList.toggle('on',b.dataset.w===String(sel)))};
+    $$('#wSel button').forEach(b=>b.onclick=()=>drawTree(b.dataset.w==='all'?'all':+b.dataset.w));drawTree('all')},
+  interpret:[
+    {q:'The five warblers overlap partly in where they feed. Does partial overlap contradict the competitive exclusion principle?',opts:['Yes; any overlap means they must compete to exclusion','No; species can coexist if they overlap partly and each limits itself more than the others','Yes, because they eat the same insects','No, because warblers don\'t compete'],a:1,why:'Competitive exclusion applies to species with identical niches. Partial overlap can allow coexistence (compare α < 1 in the Lotka–Volterra model).'},
+    {q:'Why did MacArthur record HOW birds fed (hawking, hovering), not just WHERE?',opts:['To identify the species','Because differences in feeding method are another way of dividing up resources','To count the insects','It was required by his advisor'],a:1,why:'Species in the same zone may still take different prey if they feed differently.'},
+    {q:'What kind of study was this?',opts:['A removal experiment','An observational (descriptive) study','A lab experiment','A computer model'],a:1,why:'MacArthur observed and measured behavior but did not manipulate the birds. Partitioning is consistent with competition but does not prove competition caused it (compare Connell\'s removal experiment).'}],
+  discuss:['Partitioning today could be the result of competition in the past (the "ghost of competition past"), or the species might have evolved these differences for other reasons. How could you tell the difference?','Design a removal experiment to test whether one warbler species changes where it feeds when another is absent.','Some of these warbler species no longer breed in the Acadia forests where MacArthur worked. What might have changed?']});
 
-quiz($('#quizBox'),[
- {q:'In Gause\'s yeast model, what does α₁₂ = 2.8 mean?',opts:['S. kephir grows 2.8 times faster than S. cerevisiae','Each unit of S. kephir slows S. cerevisiae as much as 2.8 units of S. cerevisiae itself would','S. cerevisiae makes 2.8 times more alcohol','The experiment lasted 2.8 days'],a:1,why:'α converts the other species into equivalents of your own species. Per unit of volume, S. kephir has a strong effect on S. cerevisiae (both are limited by alcohol).'},
- {q:'Why did Gause grow each yeast alone first?',opts:['To find each species\' r and K without competition','To kill the bacteria','To make the yeast produce more alcohol','Because the mixed culture failed'],a:0,why:'Fitting the single-species curves gives r and K. Then the only unknowns left in the mixed culture are the competition coefficients.'},
- {q:'The fitted model predicts that one yeast eventually wins, even though both persisted for the 47-hour experiment. What is the best conclusion?',opts:['The model is wrong','Short experiments cannot show long-term outcomes; the prediction should be tested with a longer experiment','Competition does not happen in yeast','Gause measured the wrong species'],a:1,why:'Competitive exclusion can be slow. A model fitted to short-term data makes a long-term prediction that needs its own test.'},
- {q:'Stable coexistence in the Lotka–Volterra model happens when…',opts:['interspecific competition is stronger than intraspecific competition','each species limits its own growth more than it limits the other species','both species have the same growth rate','one species has a much larger K'],a:1,why:'When each species limits itself more than its competitor, each can increase when rare, so both persist.'},
- {q:'P. caudatum survived with P. bursaria but not with P. aurelia. Why?',opts:['P. bursaria is a predator of P. aurelia','P. bursaria fed mostly on yeast near the bottom of the tube, so it overlapped less with P. caudatum','P. aurelia grew more slowly','P. caudatum ate P. bursaria'],a:1,why:'Feeding on different foods in different parts of the tube reduced niche overlap, lowering α enough for coexistence.'},
- {q:'Changing r₁ and r₂ in the phase plane tab…',opts:['changes who wins','changes how fast the outcome is reached but not the outcome','always gives coexistence','has no effect'],a:1,why:'The outcome depends only on K and α. Growth rates change the speed and path, not the endpoint.'}
-]);
+/* =================== 4. TILMAN =================== */
+const DIA=[{n:'Asterionella',col:'var(--s1)',mu:1.1,KP:0.04,KS:3.9,qP:1,qS:99},{n:'Cyclotella',col:'var(--s2)',mu:1.1,KP:0.25,KS:1.4,qP:6,qS:94}];
+function chemostat(P0,S0,D,T=1200){let N=[1,1],P=P0,S=S0;const dt=0.05,sc=0.01;
+  for(let t=0;t<T;t+=dt){const g=DIA.map(s=>Math.min(s.mu*P/(s.KP+P),s.mu*S/(s.KS+S)));let uP=0,uS=0;DIA.forEach((s,i)=>{uP+=s.qP*sc*g[i]*N[i];uS+=s.qS*sc*g[i]*N[i]});
+    N=N.map((n,i)=>Math.max(1e-12,n+dt*n*(g[i]-D)));P=Math.max(0,P+dt*(D*(P0-P)-uP));S=Math.max(0,S+dt*(D*(S0-S)-uS))}
+  return N}
+tabs.t4=paperTab($('#t4'),{id:'d',title:'Resource competition between plankton algae',
+  why:'Tilman showed that the outcome of competition can be predicted from each species\' resource requirements, measured on its own. It launched resource-ratio theory.',
+  cite:'Tilman, D. (1977). Resource competition between plankton algae: an experimental and theoretical approach. <i>Ecology</i> 58: 338–348.',doi:'10.2307/1935608',
+  question:'The diatoms <i>Asterionella formosa</i> and <i>Cyclotella meneghiniana</i> both need phosphate (P) and silicate (Si). <b>Can we predict which species wins, or whether both coexist, from how each one grows on P and Si alone?</b>',
+  hyps:[['One always wins','The faster-growing species wins regardless of nutrients.'],['Depends on the ratio','Each species is a better competitor for a different nutrient, so the Si:P supply ratio decides the outcome.']],
+  design:`<p>First, Tilman and Kilham (1976) grew each diatom alone at many nutrient levels to measure its <b>half-saturation constant</b> (K): the nutrient concentration where it grows at half its top speed. A lower K means a species can keep growing at lower nutrient levels, which makes it a better competitor for that nutrient.</p>
+    <table class="cmp" style="max-width:480px"><tr><th>Species</th><th class="num">K for phosphate (µM)</th><th class="num">K for silicate (µM)</th></tr><tr><td><i>Asterionella</i></td><td class="num">0.04</td><td class="num">3.9</td></tr><tr><td><i>Cyclotella</i></td><td class="num">0.25</td><td class="num">1.4</td></tr></table>
+    <p>Then Tilman ran <b>76 long-term competition experiments</b>, growing the two species together in cultures supplied with different ratios of silicate to phosphate, and compared the winners with the predictions.</p>`,
+  predict:{q:'In cultures with lots of silicate but very little phosphate (high Si:P), which diatom should win?',opts:['<i>Asterionella</i>, the better phosphate competitor','<i>Cyclotella</i>, the better silicate competitor','Both coexist at every ratio','Whichever one is added first']},
+  results:`<div class="chart"><svg id="dR"></svg></div><div class="legend" id="dLeg"></div>`,
+  found:'The results matched the predictions. <i>Asterionella</i> won when both species were phosphate-limited (high Si:P). <i>Cyclotella</i> won when both were silicate-limited (low Si:P). The two <b>coexisted stably when each species was limited by a different nutrient</b>, at intermediate ratios. Tilman also found that the model explained almost 75% of the variation in the relative abundance of these two species along a natural silicate–phosphate gradient in Lake Michigan.',
+  afterResults:()=>{const W=760,H=180;let s='';const zones=[['Cyclotella wins','var(--s2)',0,0.35],['Both coexist','var(--s6)',0.35,0.62],['Asterionella wins','var(--s1)',0.62,1]];
+    zones.forEach(([t,c,a,b])=>{s+=`<rect x="${40+a*680}" y="40" width="${(b-a)*680}" height="70" fill="${c}" fill-opacity=".3" stroke="${c}"/><text x="${40+(a+b)/2*680}" y="80" text-anchor="middle" style="fill:var(--text);font-weight:600">${t}</text>`});
+    s+=`<text x="40" y="132">Low Si:P (silicate scarce)</text><text x="720" y="132" text-anchor="end">High Si:P (phosphate scarce)</text><text x="380" y="28" text-anchor="middle" class="lab">Silicate : phosphate supply ratio →</text>`;
+    s+=`<text x="380" y="160" text-anchor="middle" style="font-size:11px">Schematic of the three outcomes Tilman reported. Try the model below for predicted boundaries.</text>`;
+    $('#dR').setAttribute('viewBox',`0 0 ${W} ${H}`);$('#dR').innerHTML=s;$('#dR').setAttribute('role','img');$('#dR').setAttribute('aria-label','Schematic: at low silicate to phosphate ratios Cyclotella wins, at intermediate ratios both coexist, at high ratios Asterionella wins.')},
+  interpret:[
+    {q:'Asterionella has the lower K for phosphate. What does that mean?',opts:['It needs more phosphate','It can keep growing at lower phosphate levels, so it is the better phosphate competitor','It grows faster at all nutrient levels','It cannot use phosphate'],a:1,why:'A lower half-saturation constant means the species reaches a given growth rate at a lower nutrient concentration, so it can draw that nutrient down further.'},
+    {q:'Why can both species coexist at intermediate Si:P ratios?',opts:['They don\'t compete','Each species is limited by a different nutrient, so each limits itself more than it limits the other','They grow at the same rate','The cultures were too short'],a:1,why:'When Asterionella is limited by silicate and Cyclotella by phosphate, each is held back mostly by the nutrient it uses, which allows stable coexistence.'},
+    {q:'What makes Tilman\'s approach "mechanistic"?',opts:['It uses machines','It predicts competition outcomes from measured resource use, not just from fitting competition coefficients afterward','It ignores resources','It only works for algae'],a:1,why:'Unlike Gause\'s α values, which were estimated from the competition outcome, Tilman predicted the outcome in advance from each species\' resource requirements.'}],
+  modelTitle:'Try Tilman\'s model',
+  model:`<p class="small">A chemostat model using the K values above (both species grow at most 1.1 per day). Each species stops growing when the nutrient most limiting it falls too low. Consumption ratios (Si:P used per cell) are set to about 99:1 for <i>Asterionella</i> and 16:1 for <i>Cyclotella</i>; these are illustrative, not Tilman's measured values.</p>
+    <div class="layout"><div class="ctrl">
+      <label for="dD">Flow (dilution) rate, per day <span class="val" id="dDV"></span></label><input type="range" id="dD" min="0.05" max="0.8" step="0.01" value="0.25" data-d="2">
+      <label for="dP">Phosphate supplied (µM) <span class="val" id="dPV"></span></label><input type="range" id="dP" min="0.5" max="10" step="0.1" value="1" data-d="1">
+      <label for="dS">Single supply: Si:P ratio <span class="val" id="dSV"></span></label><input type="range" id="dS" min="1" max="500" step="1" value="40">
+      <div class="row"><button id="dRun" class="primary">Run the sweep</button></div>
+    </div><div><div class="tiles"><div class="tile"><div class="k">At the chosen Si:P</div><div class="v" id="dOut" style="font-size:1.05rem"></div></div></div>
+      <div class="chart"><h3>Predicted share of <i>Asterionella</i> across Si:P ratios</h3><svg id="dM"></svg></div><div class="msg small" id="dMsg"></div></div></div>`,
+  afterModel:()=>{if(!$('#dDBox'))addBoxes($('#t4'));
+    const one=()=>{showVals();const N=chemostat(val('dP'),val('dP')*val('dS'),val('dD'));const fa=N[0]/(N[0]+N[1]);
+      $('#dOut').textContent=fa>0.97?'Asterionella wins':fa<0.03?'Cyclotella wins':`Coexist (${f(fa*100,0)}% Asterionella)`};
+    const sweep=()=>{const xs=[];for(let i=0;i<=36;i++)xs.push(10**(i/36*3));const ys=xs.map(r=>{const N=chemostat(val('dP'),val('dP')*r,val('dD'),800);return N[0]/(N[0]+N[1])*100});
+      chart($('#dM'),{xmin:1,xmax:1000,ymin:0,ymax:100,logx:1,w:620,h:300,xlab:'Si:P supply ratio (log scale)',ylab:'Asterionella (% of cells)',series:[{pts:xs.map((x,i)=>[x,ys[i]]),color:'var(--s1)',width:2.6}],points:[{x:val('dS'),y:ys[Math.round(Math.log10(val('dS'))/3*36)],color:'var(--text)',r:6,ring:1}]});
+      const lo=xs.find((x,i)=>ys[i]>3),hi=xs.find((x,i)=>ys[i]>97);
+      $('#dM').setAttribute('aria-label',`Predicted percent Asterionella rises from 0 at low Si:P to 100 at high Si:P, with coexistence between about ${f(lo,0)} and ${f(hi,0)}.`);
+      $('#dMsg').innerHTML=`In this model, <i>Cyclotella</i> wins below a Si:P of about ${f(lo,0)}, the two coexist between about ${f(lo,0)} and ${f(hi,0)}, and <i>Asterionella</i> wins above that. Change the flow rate: the boundaries depend on how fast each species uses nutrients, not just on K.`};
+    $$('#t4 .ctrl input').forEach(i=>i.oninput=one);$('#dRun').onclick=sweep;one();sweep()},
+  discuss:['Gause estimated competition coefficients after watching the outcome; Tilman predicted the outcome in advance. Why is prediction a stronger test?','Lake nutrient ratios change with fertilizer runoff. Based on this paper, how might adding phosphate to a lake change which diatoms dominate?','What would you need to measure to apply this approach to two plant species competing for nitrogen and light?']});
 
-initTabs({yeast,lv:render,niche});
-setSliders({});yeast();render();niche();
+initTabs({t1:()=>tabs.t1.redraw(),t2:()=>tabs.t2.redraw(),t3:()=>tabs.t3.redraw(),t4:()=>tabs.t4.redraw()});
 })();
 </script>
 <script>
 window.A11Y = {
-  tabsLabel: 'Simulation sections',
-  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
-  live: ['#yMsg', '#lvMsg', '#tOut', '#nMsg', '#nOut', '#score']
+  tabsLabel: 'Papers',
+  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary, :root:not([data-theme="light"]) .wsel button.on{color:#0d1b2a}}',
+  live: ['#yMsg', '#wNote', '#dMsg', '#dOut', '#score']
 };
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->

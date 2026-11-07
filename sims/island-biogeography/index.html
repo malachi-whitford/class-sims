@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Island Biogeography: Simberloff &amp; Wilson's Mangrove Islands</title>
+<title>Island Biogeography: Four Classic Papers</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -94,154 +94,46 @@ table.cmp td.num{text-align:right;font-variant-numeric:tabular-nums}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .steps li::before{color:#0d1b2a}}
 label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .layout>*{min-width:0}
+/* paper tabs */
+.pp-sec{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.pp-sec>h2{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.pp-sec>h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:.85rem;flex:none}
+.pp-sec p,.pp-sec li{font-size:.93rem}
+.pp-head{border-left:5px solid var(--s4)}
+.pp-head h2{font-size:1.15rem;margin-bottom:4px}
+.pp-head .cite{font-size:.85rem;color:var(--muted);margin:4px 0 0}
+.hyp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:6px}
+.hyp div{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:.88rem}
+.pred-opts{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.pred-opts button{text-align:left}
+.pred-opts button.picked{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card));font-weight:600}
+.locked{position:relative}
+.locked>.lockmsg{display:block;padding:16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.locked>.lockbody{display:none}
+.locked.unlocked>.lockmsg{display:none}
+.locked.unlocked>.lockbody{display:block}
+.discuss li{margin:6px 0}
+.datatbl{margin-top:8px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-sec>h2 .num{color:#0d1b2a}}
+.pp-sec .chart svg{max-width:760px;margin:0 auto}
 
-#sim{aspect-ratio:900/400}
-#islEdit{font-size:.8rem}#islEdit th,#islEdit td{padding:4px 4px}#islEdit input[type=number]{width:52px}#islEdit button{font-size:.72rem;padding:3px 5px}
-.isl{border-top:1px solid var(--line);padding-top:6px;margin-top:10px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Island Biogeography: The Mangrove Island Experiments</h1>
-<p class="sub">MacArthur and Wilson (1967) proposed that the number of species on an island is a balance between new species arriving and resident species dying out. Two years later, Daniel Simberloff and E. O. Wilson tested the idea by wiping out every insect and spider on tiny mangrove islands in the Florida Keys and watching them come back.</p>
-
+<h1>Island Biogeography &amp; Fragmentation: Four Classic Papers</h1>
+<p class="sub">Each tab walks through one landmark study, from the theory of island biogeography to its use in conserving parks and fragmented forests. Read the question, see the design, make a prediction, then look at what the authors found.</p>
 <nav class="tabs">
-  <button class="on" data-tab="exp">1. Defaunate the islands</button>
-  <button data-tab="eq">2. Immigration &amp; extinction</button>
-  <button data-tab="cut">3. Shrinking islands</button>
-  <button data-tab="quiz">4. Check your understanding</button>
+  <button class="on" data-tab="t1">MacArthur &amp; Wilson 1963</button>
+  <button data-tab="t2">Simberloff &amp; Wilson 1969</button>
+  <button data-tab="t3">Newmark 1987: parks</button>
+  <button data-tab="t4">Haddad et al. 2015</button>
 </nav>
-
-<!-- ============ TAB 1 ============ -->
-<section class="panel on" id="exp">
-<div class="paper">
-  <b>The paper.</b> In 1966–67, Simberloff and Wilson chose small islands made only of red mangrove trees, about 11–12 m across, at different distances from larger mangrove "source" areas. They counted every arthropod species on each island, covered it with a tent, and fumigated it with methyl bromide, which killed the arthropods but not the trees. Then they recounted for two years. All but the most distant island (E1, 533 m away) were back to about their original number of species within about 250 days, and the nearest (E2, 2 m away) had the most. The species lists kept changing even after the numbers settled.
-  <p class="cite">Simberloff, D. S., &amp; E. O. Wilson (1969). Experimental zoogeography of islands: the colonization of empty islands. <i>Ecology</i> 50: 278–296. <a href="https://doi.org/10.2307/1934856" target="_blank" rel="noopener">doi:10.2307/1934856</a><br>
-  Simberloff, D. S., &amp; E. O. Wilson (1970). Experimental zoogeography of islands: a two-year record of colonization. <i>Ecology</i> 51: 934–937. <a href="https://doi.org/10.2307/1933995" target="_blank" rel="noopener">doi:10.2307/1933995</a><br>
-  Species counts before defaunation: Simberloff (1976), <i>Science</i> 194: 572–578, Table 1. Distances for E3 and ST2 are approximate.</p>
-</div>
-<div class="layout">
-  <div class="card ctrl">
-    <div class="row"><button class="primary" id="play">Play</button><button id="step">+10 days</button><button id="reset">Fumigate all islands</button></div>
-    <label for="speed">Speed <span class="val" id="speedV"></span></label>
-    <input type="range" id="speed" min="1" max="30" step="1" value="5" data-suf=" days/frame">
-    <h3>The species pool</h3>
-    <label for="pool">Species able to live on these islands <span class="val" id="poolV"></span></label>
-    <input type="range" id="pool" min="10" max="300" step="1" value="50">
-    <p class="hint">The Keys hold hundreds of arthropod species, but most are passing visitors that cannot live on a tiny mangrove island. This is the pool of species that could.</p>
-    <label for="iS">Immigration multiplier <span class="val" id="iSV"></span></label>
-    <input type="range" id="iS" min="0.1" max="5" step="0.05" value="1" data-d="2" data-suf="×">
-    <label for="eS">Extinction multiplier <span class="val" id="eSV"></span></label>
-    <input type="range" id="eS" min="0.1" max="5" step="0.05" value="1" data-d="2" data-suf="×">
-    <label class="check"><input type="checkbox" id="rescue"> Rescue effect (near islands lose fewer species)</label>
-    <h3>Edit the islands</h3>
-    <div class="tablewrap"><table class="cmp traits" id="islEdit"></table></div>
-    <details><summary>How the model works</summary><p class="small">Each day, every pool species not on an island has a small chance to arrive (lower for far islands), and every species on an island has a small chance to die out there (higher for small islands). Immigration per day = 0.095 + 0.26·e<sup>−distance/86 m</sup> when the island is empty; extinction per day = 0.15 × (11.5 m ÷ diameter) when every pool species is present. These values were tuned so the model's equilibria match the paper's counts.</p></details>
-  </div>
-  <div>
-    <div class="card"><h2>Follow along</h2><ol class="steps">
-      <li><b>Press Play.</b> Day 0 is right after fumigation. Which island refills fastest? Which is slowest?</li>
-      <li><b>Stop at about day 250</b> and compare each island with the dashed line (its count before fumigation). Simberloff and Wilson found every island except E1 back near its original count by then.</li>
-      <li><b>Keep running to day 700.</b> Does E1 catch up? The real E1 still had not fully recovered after two years.</li>
-      <li><b>Check the turnover column.</b> The real islands gained and lost species at roughly 0.05–0.5 species per day even after the counts leveled off. Does the model?</li>
-      <li><b>Move E1 to 2 m</b> in the island table and fumigate it. Now how does it compare with E2? What does that tell you about why E1 was different?</li>
-      <li><b>Something the model misses:</b> on the real islands, species numbers often rose slightly <i>above</i> the original count and then fell back as populations grew and species interacted. Why can't this model do that?</li>
-    </ol></div>
-    <div class="tiles"><div class="tile"><div class="k">Days since fumigation</div><div class="v" id="tDay">0</div></div></div>
-    <div class="card"><canvas id="sim" width="900" height="400"></canvas></div>
-    <div class="card chart"><h2>Species on each island</h2><div class="legend" id="legS"></div><svg id="cS"></svg></div>
-    <div class="card"><h2>Paper vs. model</h2><div class="tablewrap"><table class="cmp" id="cmpTbl"></table></div></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 2 ============ -->
-<section class="panel" id="eq">
-<div class="layout">
-  <div class="card ctrl">
-    <h3>Compare two islands</h3>
-    <div class="row presets"><button data-p="dist">E2 vs. E1 (near vs. far)</button><button data-p="size">Small vs. large, same distance</button></div>
-    <label for="qpool">Species pool <span class="val" id="qpoolV"></span></label>
-    <input type="range" id="qpool" min="10" max="300" step="1" value="50">
-    <div class="isl"><h3><i class="sw" style="background:var(--s1)"></i> Island A</h3>
-      <label for="dA">Distance from source (m) <span class="val" id="dAV"></span></label>
-      <input type="range" id="dA" min="0" max="1000" step="1" value="2">
-      <label for="wA">Diameter (m) <span class="val" id="wAV"></span></label>
-      <input type="range" id="wA" min="2" max="100" step="0.5" value="12" data-d="1"></div>
-    <div class="isl"><h3><i class="sw" style="background:var(--s2)"></i> Island B</h3>
-      <label for="dB">Distance from source (m) <span class="val" id="dBV"></span></label>
-      <input type="range" id="dB" min="0" max="1000" step="1" value="533">
-      <label for="wB">Diameter (m) <span class="val" id="wBV"></span></label>
-      <input type="range" id="wB" min="2" max="100" step="0.5" value="11" data-d="1"></div>
-    <details><summary>The model</summary>
-      <div class="formula">Immigration I(S) = I₀ (1 − S/P)<br>Extinction E(S) = E₀ (S/P)<br>Equilibrium Ŝ = P · I₀ / (I₀ + E₀)<br>Turnover at equilibrium = I₀E₀ / (I₀ + E₀)</div>
-    </details>
-  </div>
-  <div>
-    <div class="tiles">
-      <div class="tile"><div class="k">Island A: equilibrium species</div><div class="v" id="sA" style="color:var(--s1)"></div></div>
-      <div class="tile"><div class="k">Island B: equilibrium species</div><div class="v" id="sB" style="color:var(--s2)"></div></div>
-      <div class="tile"><div class="k">Turnover A (species/day)</div><div class="v" id="tA" style="color:var(--s1)"></div></div>
-      <div class="tile"><div class="k">Turnover B (species/day)</div><div class="v" id="tB" style="color:var(--s2)"></div></div>
-    </div>
-    <div class="card chart"><h2>MacArthur–Wilson graph</h2><div class="legend" id="legE"></div><svg id="cE"></svg></div>
-    <div class="msg" id="eqMsg"></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 3 ============ -->
-<section class="panel" id="cut">
-<div class="paper">
-  <b>The paper.</b> Does island area matter by itself, or only because big islands have more kinds of habitat? Simberloff answered with chainsaws: he censused the arthropods on eight small mangrove islands, then had crews cut away parts of some islands, leaving the same kind of habitat on a smaller area. Species numbers fell on the islands he shrank and stayed about the same on untouched control islands. Area alone changed the number of species.
-  <p class="cite">Simberloff, D. (1976). Experimental zoogeography of islands: effects of island size. <i>Ecology</i> 57: 629–648. <a href="https://doi.org/10.2307/1936179" target="_blank" rel="noopener">doi:10.2307/1936179</a></p>
-</div>
-<div class="layout">
-  <div class="card ctrl">
-    <h3>Shrink an island</h3>
-    <label for="cDiam">Starting diameter (m) <span class="val" id="cDiamV"></span></label>
-    <input type="range" id="cDiam" min="5" max="60" step="0.5" value="24" data-d="1">
-    <label for="cDist">Distance from source (m) <span class="val" id="cDistV"></span></label>
-    <input type="range" id="cDist" min="0" max="1000" step="1" value="50">
-    <label for="cKeep">Area left after cutting <span class="val" id="cKeepV"></span></label>
-    <input type="range" id="cKeep" min="5" max="100" step="1" value="25" data-suf="%">
-    <div class="row"><button class="primary" id="cPlay">Play</button><button id="cCut">Cut the island now</button><button id="cReset">Start over</button></div>
-    <p class="hint">The cut island and an uncut control start at equilibrium. Uses the species pool and multipliers from tab 1.</p>
-    <h3>Habitat loss calculator</h3>
-    <label for="keep">Habitat remaining <span class="val" id="keepV"></span></label>
-    <input type="range" id="keep" min="1" max="100" step="1" value="10" data-suf="%">
-    <label for="z">z value <span class="val" id="zV"></span></label>
-    <input type="range" id="z" min="0.05" max="0.6" step="0.01" value="0.25" data-d="2">
-    <p class="hint">S = cA<sup>z</sup>. Typical z: 0.12–0.17 within a continent; 0.25–0.35 for true islands and isolated fragments. The model's own z is shown at right.</p>
-  </div>
-  <div>
-    <div class="card"><h2>Follow along</h2><ol class="steps">
-      <li><b>Press Play</b> and let both islands run at equilibrium for a while.</li>
-      <li><b>Cut the island</b> to 25% of its area. Watch the cut island's species count. Does it drop right away, or slowly? (The slow loss is called <b>relaxation</b>, and the species that are doomed but not yet gone are an <b>extinction debt</b>.)</li>
-      <li><b>Compare with the control.</b> Simberloff's untouched islands stayed about the same. Does the control in the model?</li>
-      <li><b>Use the calculator.</b> If 90% of a habitat is cleared and z = 0.25, about what share of species is expected to be lost eventually?</li>
-    </ol></div>
-    <div class="tiles">
-      <div class="tile"><div class="k">Cut island: species now</div><div class="v" id="cNow" style="color:var(--s5)"></div></div>
-      <div class="tile"><div class="k">Control island: species now</div><div class="v" id="cCtl" style="color:var(--s1)"></div></div>
-      <div class="tile"><div class="k">Predicted after cutting</div><div class="v" id="cPred"></div></div>
-      <div class="tile"><div class="k">Model's z value</div><div class="v" id="cZ"></div></div>
-    </div>
-    <div class="grid2">
-      <div class="card chart"><h2>Species over time</h2><div class="legend" id="legC"></div><svg id="cC"></svg></div>
-      <div class="card chart"><h2>Species remaining after habitat loss</h2><svg id="cL"></svg>
-        <div class="tiles" style="margin-top:8px"><div class="tile"><div class="k">Expected to persist</div><div class="v" id="persist"></div></div><div class="tile"><div class="k">Eventually lost</div><div class="v" id="lost" style="color:var(--bad)"></div></div></div></div>
-    </div>
-    <div class="msg" id="cutMsg"></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 4 ============ -->
-<section class="panel" id="quiz">
-  <div class="card"><h2>Check your understanding</h2><div id="quizBox"></div></div>
-</section>
+<section class="panel on" id="t1"></section>
+<section class="panel" id="t2"></section>
+<section class="panel" id="t3"></section>
+<section class="panel" id="t4"></section>
 </div>
 
 <script>
@@ -303,145 +195,202 @@ function initTabs(RENDER){let cur=$('nav.tabs button.on').dataset.tab;
   const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();
   return()=>cur}
 /* quiz */
-function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted" id="score"></p>';
+function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted score"></p>';
   const got={};
   $$('.q',el).forEach(d=>{const q=QS[+d.dataset.i];$$('.opts button',d).forEach(b=>b.onclick=()=>{const j=+b.dataset.j,ok=j===q.a;
     $$('.opts button',d).forEach(x=>x.classList.remove('right','wrong'));b.classList.add(ok?'right':'wrong');
-    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the simulation.'));
-    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('#score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the results.'));
+    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('.score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+/* bar chart: bars(svg,{cats:[...],series:[{name,color,vals:[...]}],ymax,ylab,xlab,w,h,fmt}) */
+function bars(svg,o){
+  const W=o.w||560,H=o.h||330,m={l:o.ml||56,r:14,t:16,b:o.mb||52},pw=W-m.l-m.r,ph=H-m.t-m.b,n=o.cats.length,k=o.series.length;
+  const ymax=o.ymax||Math.max(...o.series.flatMap(s=>s.vals))*1.15||1,Y=v=>m.t+ph-v/ymax*ph,gw=pw/n,bw=Math.min(60,gw*0.8/k);
+  let s='';niceTicks(0,ymax,5).forEach(v=>{const y=Y(v);s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${y}" y2="${y}"/><text x="${m.l-6}" y="${y+4}" text-anchor="end">${fmtTick(v)}</text>`});
+  s+=`<line class="ax" x1="${m.l}" x2="${m.l+pw}" y1="${m.t+ph}" y2="${m.t+ph}"/>`;
+  o.cats.forEach((c,i)=>{const cx=m.l+gw*(i+0.5);
+    o.series.forEach((se,j)=>{const v=se.vals[i];if(v==null||!Number.isFinite(v))return;const x=cx-k*bw/2+j*bw,y=Y(v);
+      s+=`<rect x="${x+1}" y="${y}" width="${bw-2}" height="${m.t+ph-y}" fill="${se.color}" rx="2" ${se.hatch?'fill-opacity=".45" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 2"':''}/>`;
+      s+=`<text x="${x+bw/2}" y="${y-4}" text-anchor="middle" style="fill:var(--text);font-size:11px">${o.fmt?o.fmt(v):fmtTick(+v.toFixed(2))}</text>`});
+    String(c).split('\n').forEach((line,li)=>{s+=`<text x="${cx}" y="${m.t+ph+16+li*13}" text-anchor="middle">${line}</text>`})});
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
+  if(o.xlab)s+=`<text class="lab" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab}</text>`;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s}
+
+/* ---------- paper-tab engine ----------
+ P = {id, cite, doi, why, question, hyps:[[title,text]], design(html), predict:{q,opts:[text],note?:[fb per option]},
+      results(html), afterResults(fn), found(html), interpret:[quiz items], model(html)?, afterModel(fn)?, discuss:[...] } */
+function paperTab(el,P){
+  const sec=(n,t,body,cls='')=>`<div class="pp-sec ${cls}"><h2>${n?`<span class="num">${n}</span>`:''}${t}</h2>${body}</div>`;
+  let n=1,h='';
+  h+=`<div class="pp-sec pp-head"><h2>${P.title}</h2><p style="margin:0">${P.why}</p><p class="cite">${P.cite}${P.doi?` <a href="https://doi.org/${P.doi}" target="_blank" rel="noopener">doi:${P.doi}</a>`:''}${P.url?` <a href="${P.url}" target="_blank" rel="noopener">Read it</a>`:''}</p></div>`;
+  h+=sec(n++,'The question',`<p>${P.question}</p>${P.hyps?`<div class="hyp">${P.hyps.map(x=>`<div><b>${x[0]}</b><br>${x[1]}</div>`).join('')}</div>`:''}`);
+  h+=sec(n++,'What they did',P.design);
+  h+=sec(n++,'Your prediction',`<p>${P.predict.q}</p><div class="pred-opts" id="${P.id}-pred">${P.predict.opts.map((o,i)=>`<button data-i="${i}" aria-pressed="false">${o}</button>`).join('')}</div><div class="msg small" id="${P.id}-predfb" style="display:none" aria-live="polite"></div>`);
+  h+=sec(n++,'What they found',`<div class="locked" id="${P.id}-lock"><div class="lockmsg">Make a prediction above to unlock the results.</div><div class="lockbody">${P.results}<div class="msg" style="margin-top:10px">${P.found}</div></div></div>`);
+  h+=sec(n++,'Interpret the results',`<div id="${P.id}-quiz"></div>`);
+  if(P.model)h+=sec(n++,P.modelTitle||'Try the model',P.model);
+  h+=sec(n++,'Discuss',`<ol class="discuss">${P.discuss.map(d=>`<li>${d}</li>`).join('')}</ol>`);
+  el.innerHTML=h;
+  quiz($(`#${P.id}-quiz`),P.interpret);
+  let shown=false;
+  $$(`#${P.id}-pred button`).forEach(b=>b.onclick=()=>{
+    $$(`#${P.id}-pred button`).forEach(x=>{x.classList.toggle('picked',x===b);x.setAttribute('aria-pressed',x===b?'true':'false')});
+    const fb=$(`#${P.id}-predfb`);fb.style.display='block';fb.innerHTML=`<b>Prediction saved.</b> ${P.predict.note?P.predict.note[+b.dataset.i]:''} Scroll down to compare with what the authors found.`;
+    const L=$(`#${P.id}-lock`);L.classList.add('unlocked');if(!shown){shown=true;if(P.afterResults)P.afterResults()}});
+  if(P.afterModel)P.afterModel();
+  return{redraw:()=>{if(shown&&P.afterResults)P.afterResults();if(P.afterModel)P.afterModel()}};
+}
 
 (function(){
-addBoxes();
-const I0=d=>(0.095+0.26*Math.exp(-d/86))*val('iS'), E0=w=>0.15*(11.5/w)*val('eS');
-const ICOL=['var(--s1)','var(--s3)','var(--s4)','var(--s5)'];
-const ISL=[{name:'E2',d:2,w:12,before:35},{name:'ST2',d:150,w:11,before:25},{name:'E3',d:170,w:12,before:22},{name:'E1',d:533,w:11,before:20}];
-function rates(s){let i=I0(s.d),e=E0(s.w);if($('#rescue').checked)e*=0.35+0.65*Math.min(1,s.d/533);return{i,e}}
-let pool=50,day=0,hist=[],playing=false,state=[];
-function blank(){return{has:new Uint8Array(pool),col:[],ext:[]}}
-function resetAll(){pool=Math.round(val('pool'));day=0;hist=[[0,0,0,0,0]];state=ISL.map(blank)}
-function fumigate(k){state[k]=blank()}
-function stepDay(){day++;state.forEach((st,k)=>{const r=rates(ISL[k]),pc=r.i/pool,pe=r.e/pool;let c=0,x=0;
-  for(let s=0;s<pool;s++){if(st.has[s]){if(Math.random()<pe){st.has[s]=0;x++}}else if(Math.random()<pc){st.has[s]=1;c++}}
-  st.col.push(c);st.ext.push(x);if(st.col.length>100){st.col.shift();st.ext.shift()}});
-  hist.push([day,...state.map(st=>st.has.reduce((a,b)=>a+b,0))]);if(hist.length>4000)hist.shift()}
-function buildEdit(){
-  $('#islEdit').innerHTML='<thead><tr><th>Island</th><th>Dist. (m)</th><th>Diam. (m)</th><th></th></tr></thead><tbody>'+ISL.map((s,k)=>
-    `<tr><td><i class="sw" style="background:${ICOL[k]};display:inline-block;margin-right:4px"></i><b>${s.name}</b></td><td><input type="number" min="0" max="2000" step="1" value="${s.d}" data-k="${k}" data-f="d" aria-label="${s.name} distance in meters"></td><td><input type="number" min="1" max="200" step="0.5" value="${s.w}" data-k="${k}" data-f="w" aria-label="${s.name} diameter in meters"></td><td><button data-fum="${k}" style="font-size:.75rem;padding:3px 7px">Fumigate</button></td></tr>`).join('')+'</tbody>';
-  $$('#islEdit input').forEach(i=>i.onchange=()=>{const v=+i.value;if(Number.isFinite(v)&&v>=+i.min){ISL[+i.dataset.k][i.dataset.f]=v;draw()}});
-  $$('[data-fum]').forEach(b=>b.onclick=()=>{fumigate(+b.dataset.fum);draw()});
-}
-const cv=$('#sim'),ctx=cv.getContext('2d');
-function drawIslands(cvs,c,isl,st,poolN,label){
-  const W=cvs.width,H=cvs.height,dk=matchMedia('(prefers-color-scheme: dark)').matches;
-  c.clearRect(0,0,W,H);c.fillStyle=dk?'#16324a':'#cfe6f5';c.fillRect(0,0,W,H);
-  c.fillStyle=dk?'#2d5a35':'#5f9e5a';c.beginPath();c.moveTo(0,0);for(let y=0;y<=H;y+=20)c.lineTo(80+10*Math.sin(y/25),y);c.lineTo(0,H);c.fill();
-  c.fillStyle=dk?'#e7ecf2':'#fff';c.font='bold 13px system-ui';c.save();c.translate(36,H/2);c.rotate(-Math.PI/2);c.textAlign='center';c.fillText('Source: large mangrove keys',0,0);c.restore();
-  const n=isl.length;
-  isl.forEach((s,k)=>{const x=110+740*Math.log10(s.d+1)/Math.log10(1001),y=H*(k+0.5)/n,R=Math.max(10,Math.min(H/n/2-14,s.w*2.6));
-    c.fillStyle=dk?'#2f5b37':'#3f8f4a';c.beginPath();for(let a=0;a<6.3;a+=0.35){const rr=R*(0.85+0.15*Math.sin(a*5+k));c.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}c.fill();
-    const sp=[];st[k].has.forEach((h,i)=>{if(h)sp.push(i)});
-    sp.forEach((s2,j)=>{const ang=j*2.39996,rr=Math.sqrt((j+0.5)/Math.max(sp.length,poolN*0.8))*(R-4);c.fillStyle=`hsl(${(s2*137.5)%360} 85% ${dk?65:55}%)`;c.beginPath();c.arc(x+rr*Math.cos(ang),y+rr*Math.sin(ang),2.3,0,7);c.fill()});
-    c.fillStyle=dk?'#e7ecf2':'#1d2530';c.font='bold 13px system-ui';c.textAlign=x>700?'right':'left';c.fillText(`${s.name}: ${sp.length} spp. (${s.d} m)`,x>700?x-R-6:x+R+6,y+4)});
-  c.fillStyle=dk?'#e7ecf2':'#1d2530';c.textAlign='right';c.font='bold 14px system-ui';c.fillText(label,W-10,18);
-}
-function draw(){
-  drawIslands(cv,ctx,ISL,state,pool,`Day ${day}`);$('#tDay').textContent=day;
-  cv.setAttribute('aria-label',`Map of a mangrove source on the left and four islands placed by distance. Day ${day}. `+ISL.map((s,k)=>`${s.name}, ${s.d} meters away: ${state[k].has.reduce((a,b)=>a+b,0)} species`).join('; ')+'.');
-  const T=Math.max(300,day),pred=ISL.map(s=>{const r=rates(s);return pool*r.i/(r.i+r.e)});
-  const ser=[];ISL.forEach((s,k)=>{ser.push({pts:[[0,s.before],[T,s.before]],color:ICOL[k],dash:'6 4',width:1.4});ser.push({pts:hist.map(h=>[h[0],h[k+1]]),color:ICOL[k],width:2.2})});
-  chart($('#cS'),{xmin:Math.max(0,hist[0][0]),xmax:T,ymin:0,ymax:Math.max(45,...pred.map(v=>v*1.2),...hist.map(h=>Math.max(...h.slice(1))+3)),w:760,h:320,xlab:'Days after fumigation',ylab:'Species',series:ser,
-    points:day>0?[]:[]});
-  legend($('#legS'),[...ISL.map((s,k)=>[ICOL[k],s.name]),['var(--muted)','Count before fumigation (paper)',1]]);
-  $('#cS').setAttribute('aria-label','Species count over time on each island, with dashed lines at the counts before fumigation: '+ISL.map(s=>`${s.name} ${s.before}`).join(', ')+'.');
-  $('#cmpTbl').innerHTML='<thead><tr><th>Island</th><th class="num">Distance</th><th class="num">Before fumigation (paper)</th><th class="num">Model equilibrium</th><th class="num">Model now</th><th class="num">Turnover now (spp./day)</th></tr></thead><tbody>'+
-    ISL.map((s,k)=>{const st=state[k],n=st.col.length||1,to=(st.col.reduce((a,b)=>a+b,0)+st.ext.reduce((a,b)=>a+b,0))/2/n;
-      return `<tr><td><b>${s.name}</b></td><td class="num">${s.d} m</td><td class="num">${s.before}</td><td class="num">${f(pred[k],0)}</td><td class="num">${st.has.reduce((a,b)=>a+b,0)}</td><td class="num">${st.col.length?f(to,2):'—'}</td></tr>`}).join('')+'</tbody>';
-}
-legend($('#legS'),ISL.map((s,k)=>[ICOL[k],s.name]));
-let lastT=0;
-function loop(t){if(t-lastT>90){lastT=t;
-  if(playing&&$('#exp').classList.contains('on')){for(let i=0;i<val('speed');i++)stepDay();draw()}
-  if(cPlaying&&$('#cut').classList.contains('on')){for(let i=0;i<5;i++)cStep();drawCut()}}
-  requestAnimationFrame(loop)}
-$('#play').onclick=()=>{playing=!playing;$('#play').textContent=playing?'Pause':'Play'};
-$('#step').onclick=()=>{for(let i=0;i<10;i++)stepDay();draw()};
-$('#reset').onclick=()=>{resetAll();draw()};
-$('#pool').addEventListener('input',()=>{showVals();resetAll();draw();cReset()});
-['iS','eS'].forEach(id=>$('#'+id).addEventListener('input',()=>{showVals();draw()}));$('#rescue').onchange=draw;$('#speed').addEventListener('input',showVals);
+const tabs={};
 
-/* ---------- equilibrium graph ---------- */
-function eqS(P,d,w){const i=I0(d),e=E0(w);return{i,e,S:P*i/(i+e),T:i*e/(i+e)}}
-function renderEq(){showVals();
-  const P=val('qpool'),A=eqS(P,val('dA'),val('wA')),B=eqS(P,val('dB'),val('wB'));
-  const ymax=Math.max(A.i,B.i,Math.min(Math.max(A.e,B.e),Math.max(A.i,B.i)*3))*1.08;
-  chart($('#cE'),{xmin:0,xmax:P,ymin:0,ymax:ymax,w:760,h:380,xlab:'Number of species on the island (S)',ylab:'Rate (species per day)',
-    series:[{pts:[[0,A.i],[P,0]],color:'var(--s1)',width:3},{pts:[[0,0],[P,A.e]],color:'var(--s1)',width:3,dash:'7 5'},{pts:[[0,B.i],[P,0]],color:'var(--s2)',width:3},{pts:[[0,0],[P,B.e]],color:'var(--s2)',width:3,dash:'7 5'},
-      {pts:[[A.S,0],[A.S,A.i*(1-A.S/P)]],color:'var(--s1)',width:1.4,dash:'2 3'},{pts:[[B.S,0],[B.S,B.i*(1-B.S/P)]],color:'var(--s2)',width:1.4,dash:'2 3'}],
-    points:[{x:A.S,y:A.i*(1-A.S/P),color:'var(--s1)',r:6},{x:B.S,y:B.i*(1-B.S/P),color:'var(--s2)',r:6}]});
-  legend($('#legE'),[['var(--s1)','A immigration'],['var(--s1)','A extinction',1],['var(--s2)','B immigration'],['var(--s2)','B extinction',1]]);
-  $('#sA').textContent=f(A.S,0);$('#sB').textContent=f(B.S,0);$('#tA').textContent=f(A.T,3);$('#tB').textContent=f(B.T,3);
-  $('#cE').setAttribute('aria-label',`Immigration lines fall and extinction lines rise. Island A lines cross at ${f(A.S,0)} species; island B at ${f(B.S,0)}.`);
-  const sameW=Math.abs(val('wA')-val('wB'))<0.6,sameD=Math.abs(val('dA')-val('dB'))<1;
-  let m=sameW&&!sameD?`<b>Distance effect</b>, as in Simberloff &amp; Wilson's islands (all about the same size). The nearer island gets more immigrants, so its immigration line is higher and it holds more species.`:
-    sameD&&!sameW?`<b>Area effect.</b> At the same distance, the larger island has a lower extinction line (bigger populations are less likely to blink out), so it holds more species. Simberloff tested this directly by cutting islands down (tab 3).`:
-    'Area moves the extinction line; distance moves the immigration line.';
-  m+=' <span class="small">At equilibrium, species keep arriving and disappearing at equal rates: that turnover is in the tiles.</span>';
-  $('#eqMsg').innerHTML=m;
-}
-const PRE={dist:{dA:2,wA:12,dB:533,wB:11},size:{dA:100,wA:6,dB:100,wB:24}};
-$$('#eq [data-p]').forEach(b=>b.onclick=()=>{setSliders(PRE[b.dataset.p]);renderEq()});
-$$('#eq input').forEach(i=>i.addEventListener('input',renderEq));
+/* =================== 1. MACARTHUR & WILSON =================== */
+tabs.t1=paperTab($('#t1'),{id:'m',title:'An equilibrium theory of insular zoogeography',
+  why:'Proposed that the number of species on an island is a balance between immigration and extinction. The idea reshaped biogeography and conservation planning.',
+  cite:'MacArthur, R. H., &amp; E. O. Wilson (1963). An equilibrium theory of insular zoogeography. <i>Evolution</i> 17: 373–387.',doi:'10.1111/j.1558-5646.1963.tb03295.x',
+  question:'Larger islands have more species, and islands far from the mainland have fewer. <b>Why?</b> And is the number of species on an island fixed by history, or does it settle at a level set by present-day processes?',
+  hyps:[['History','Islands simply have whatever species happened to arrive; numbers keep slowly rising.'],['Equilibrium','New species keep arriving and resident species keep dying out. The number settles where the two rates balance, and the balance depends on island size and distance.']],
+  design:`<p>This was mainly a <b>theory paper</b>. MacArthur and Wilson drew immigration and extinction curves and showed that their crossing point predicts the equilibrium number of species. They tested the idea against existing data:</p>
+    <ul class="small"><li><b>Species–area curves</b> for birds, ants, beetles, reptiles, and amphibians on islands in Indonesia, Melanesia, and the West Indies, written as S = bA<sup>k</sup>.</li><li><b>Distance</b>: bird species on Pacific islands compared with the number expected for their size, plotted against distance from New Guinea.</li><li><b>Krakatau</b>: an island whose life was wiped out by a volcanic eruption in 1883. Bird species were counted on Krakatau and neighboring Verlaten in 1908, 1919–21, and 1932–34.</li></ul>`,
+  predict:{q:'After Krakatau\'s eruption, birds recolonized. What do you expect the bird counts to show between the 1920s and 1930s?',opts:['Steady, continued increase','A level number of species, with some species lost and others gained','A steady decline','No birds at all']},
+  results:`<div class="grid2"><div class="chart"><h3>Resident (non-migrant) bird species</h3><svg id="mR"></svg><div class="legend" id="mLeg"></div></div>
+    <div><h3>Faunal coefficient k in S = bA<sup>k</sup></h3><table class="cmp"><tr><th>Group</th><th class="num">k</th></tr><tr><td>Ponerine ants, Melanesia and Moluccas</td><td class="num">≈ 0.5</td></tr><tr><td>Carabid beetles and herptiles, West Indies</td><td class="num">0.3</td></tr><tr><td>Land and freshwater birds, Indonesia</td><td class="num">0.4</td></tr><tr><td>Islands of the Sahul Shelf (New Guinea area)</td><td class="num">0.5</td></tr></table>
+    <p class="small">Krakatau and Verlaten each lost several species between counts (Krakatau: 2, then 5), even as totals leveled off.</p></div></div>`,
+  found:'Resident bird species rose quickly after the eruption and then leveled off at about 27–29 species on each island by the 1920s–1930s, even though some species disappeared and others arrived. MacArthur and Wilson read this as an approach to equilibrium within about 25–36 years. Bird faunas were also progressively poorer with distance from New Guinea. They concluded that island species numbers reflect a dynamic balance between immigration (lower on far islands) and extinction (higher on small islands).',
+  afterResults:()=>{bars($('#mR'),{cats:['1908','1919–21','1932–34'],series:[{color:'var(--s1)',vals:[13,27,27]},{color:'var(--s3)',vals:[1,27,29]}],ymax:34,ylab:'Species',w:460,h:300});
+    legend($('#mLeg'),[['var(--s1)','Krakatau'],['var(--s3)','Verlaten']]);
+    $('#mR').setAttribute('aria-label','Resident bird species: Krakatau 13 in 1908, 27 in 1919 to 1921, 27 in 1932 to 1934; Verlaten 1, 27, and 29.')},
+  interpret:[
+    {q:'If the species number stays level while species are lost and gained, what does that suggest?',opts:['The island is not changing at all','A dynamic equilibrium: extinctions are balanced by new arrivals (turnover)','Counting errors','The birds stopped breeding'],a:1,why:'Equilibrium in this theory is dynamic. The count is steady while the list of species keeps turning over.'},
+    {q:'In the theory, what mainly changes the extinction curve?',opts:['Distance from the mainland','Island area','The number of species on the mainland','The age of the island'],a:1,why:'Larger islands hold larger populations that are less likely to blink out, so extinction rates are lower.'},
+    {q:'A k (or z) of 0.4 means that a 10-fold increase in island area multiplies species number by about…',opts:['1.1','2.5','4','10'],a:1,why:'10^0.4 ≈ 2.5.'}],
+  modelTitle:'Draw the immigration and extinction curves',
+  model:`<div class="layout"><div class="ctrl">
+      <label for="mP">Species in the mainland pool <span class="val" id="mPV"></span></label><input type="range" id="mP" min="20" max="300" step="5" value="100">
+      <label for="mI">Island A: immigration rate when empty <span class="val" id="mIV"></span></label><input type="range" id="mI" min="0.1" max="10" step="0.1" value="5" data-d="1">
+      <label for="mE">Island A: extinction rate when full <span class="val" id="mEV"></span></label><input type="range" id="mE" min="0.1" max="10" step="0.1" value="2" data-d="1">
+      <label for="mI2">Island B: immigration rate when empty <span class="val" id="mI2V"></span></label><input type="range" id="mI2" min="0.1" max="10" step="0.1" value="2" data-d="1">
+      <label for="mE2">Island B: extinction rate when full <span class="val" id="mE2V"></span></label><input type="range" id="mE2" min="0.1" max="10" step="0.1" value="5" data-d="1">
+      <p class="hint">Far islands have lower immigration; small islands have higher extinction.</p>
+    </div><div><div class="chart"><svg id="mM"></svg></div><div class="legend" id="mMLeg"></div><div class="msg small" id="mMsg"></div></div></div>`,
+  afterModel:()=>{if(!$('#mPBox'))addBoxes($('#t1'));const go=()=>{showVals();const P=val('mP'),A=[val('mI'),val('mE')],B=[val('mI2'),val('mE2')];
+      const S=x=>P*x[0]/(x[0]+x[1]);
+      chart($('#mM'),{xmin:0,xmax:P,ymin:0,ymax:Math.max(A[0],A[1],B[0],B[1])*1.08,w:620,h:330,xlab:'Species on the island (S)',ylab:'Rate (species per year)',
+        series:[{pts:[[0,A[0]],[P,0]],color:'var(--s1)',width:2.8},{pts:[[0,0],[P,A[1]]],color:'var(--s1)',width:2.8,dash:'7 5'},{pts:[[0,B[0]],[P,0]],color:'var(--s2)',width:2.8},{pts:[[0,0],[P,B[1]]],color:'var(--s2)',width:2.8,dash:'7 5'}],
+        points:[{x:S(A),y:A[0]*(1-S(A)/P),color:'var(--s1)',r:6},{x:S(B),y:B[0]*(1-S(B)/P),color:'var(--s2)',r:6}]});
+      legend($('#mMLeg'),[['var(--s1)','A immigration'],['var(--s1)','A extinction',1],['var(--s2)','B immigration'],['var(--s2)','B extinction',1]]);
+      $('#mM').setAttribute('aria-label',`Immigration and extinction lines. Island A equilibrium ${f(S(A),0)} species; island B ${f(S(B),0)}.`);
+      $('#mMsg').innerHTML=`Equilibrium: island A ≈ <b>${f(S(A),0)}</b> species, island B ≈ <b>${f(S(B),0)}</b>. Turnover at equilibrium: A ${f(A[0]*A[1]/(A[0]+A[1]),2)}, B ${f(B[0]*B[1]/(B[0]+B[1]),2)} species per year.`};
+    $$('#t1 .ctrl input').forEach(i=>i.oninput=go);go()},
+  discuss:['Krakatau was counted only three times. What are the risks of judging "equilibrium" from so few counts?','Why might some species never be able to reach an island no matter how long you wait?','How could you test this theory with an experiment instead of existing data? (See the next tab.)']});
 
-/* ---------- shrinking islands ---------- */
-let cIsl=[],cState=[],cHist=[],cDay=0,cPlaying=false,cutDay=null;
-function cReset(){const w=val('cDiam'),d=val('cDist');cIsl=[{name:'Cut island',d,w},{name:'Control',d,w}];cDay=0;cutDay=null;
-  cState=cIsl.map(s=>{const r=rates(s),Sh=Math.round(pool*r.i/(r.i+r.e)),has=new Uint8Array(pool);const idx=[...Array(pool).keys()].sort(()=>Math.random()-.5).slice(0,Sh);idx.forEach(i=>has[i]=1);return{has}});
-  cHist=[[0,...cState.map(st=>st.has.reduce((a,b)=>a+b,0))]];drawCut()}
-function cStep(){cDay++;cState.forEach((st,k)=>{const r=rates(cIsl[k]),pc=r.i/pool,pe=r.e/pool;for(let s=0;s<pool;s++){if(st.has[s]){if(Math.random()<pe)st.has[s]=0}else if(Math.random()<pc)st.has[s]=1}});
-  cHist.push([cDay,...cState.map(st=>st.has.reduce((a,b)=>a+b,0))]);if(cHist.length>3000)cHist.shift()}
-function drawCut(){showVals();
-  const pr=cIsl.map(s=>{const r=rates(s);return pool*r.i/(r.i+r.e)});
-  const T=Math.max(200,cDay);
-  chart($('#cC'),{xmin:cHist[0][0],xmax:T,ymin:0,ymax:Math.max(...pr,...cHist.map(h=>Math.max(h[1],h[2])))*1.2+2,w:460,h:330,xlab:'Days',ylab:'Species',
-    series:[{pts:cHist.map(h=>[h[0],h[2]]),color:'var(--s1)',width:2.2},{pts:cHist.map(h=>[h[0],h[1]]),color:'var(--s5)',width:2.4},{pts:[[cutDay??0,pr[0]],[T,pr[0]]],color:'var(--s5)',dash:'6 4',width:1.4},...(cutDay!==null?[{pts:[[cutDay,0],[cutDay,500]],color:'var(--muted)',dash:'2 4',width:1.2}]:[])]});
-  legend($('#legC'),[['var(--s5)','Cut island'],['var(--s1)','Control island'],['var(--s5)','Predicted equilibrium, cut island',1]]);
-  const now=cHist[cHist.length-1];$('#cNow').textContent=now[1];$('#cCtl').textContent=now[2];$('#cPred').textContent=f(pr[0],0);
-  // model z from two areas
-  const s1=eqS(pool,val('cDist'),val('cDiam')).S,s2=eqS(pool,val('cDist'),val('cDiam')*Math.sqrt(0.25)).S,z=Math.log(s1/s2)/Math.log(4);$('#cZ').textContent=f(z,2);
-  $('#cC').setAttribute('aria-label',`Species over time for a cut island and an uncut control. ${cutDay!==null?`The island was cut on day ${cutDay} to ${val('cKeep')} percent of its area.`:'Not cut yet.'} Cut island now has ${now[1]} species, predicted equilibrium ${f(pr[0],0)}; control has ${now[2]}.`);
-  const keep=val('keep')/100,zz=val('z'),frac=keep**zz;
-  $('#persist').textContent=f(frac*100,0)+'%';$('#lost').textContent=f((1-frac)*100,0)+'%';
-  const xs=[];for(let i=0;i<=100;i++)xs.push(i);
-  chart($('#cL'),{xmin:0,xmax:100,ymin:0,ymax:100,w:460,h:300,xlab:'Habitat remaining (%)',ylab:'Species remaining (%)',
-    series:[{pts:xs.map(x=>[x,x]),color:'var(--muted)',dash:'4 4',width:1.2},{pts:xs.map(x=>[x,100*(x/100)**zz]),color:'var(--s5)',width:2.8}],points:[{x:keep*100,y:frac*100,color:'var(--s5)',r:6}]});
-  $('#cL').setAttribute('aria-label',`With ${val('keep')} percent of habitat left and z = ${zz}, about ${f(frac*100,0)} percent of species persist.`);
-  let m=cutDay===null?'Press Play, then cut the island.':`The cut island lost habitat on day ${cutDay}. Its new equilibrium is about ${f(pr[0],0)} species. `+(now[1]-pr[0]>2?'It still has more species than it can hold: those extra species are an <b>extinction debt</b> that will be paid off as they die out.':'It has now <b>relaxed</b> to its new, lower equilibrium.');
-  $('#cutMsg').innerHTML=m;
-}
-$('#cPlay').onclick=()=>{cPlaying=!cPlaying;$('#cPlay').textContent=cPlaying?'Pause':'Play'};
-$('#cCut').onclick=()=>{cIsl[0].w=val('cDiam')*Math.sqrt(val('cKeep')/100);cutDay=cDay;drawCut()};
-$('#cReset').onclick=cReset;
-['cDiam','cDist'].forEach(id=>$('#'+id).addEventListener('input',()=>{showVals();cReset()}));
-$$('#keep,#z,#cKeep').forEach(i=>i.addEventListener('input',drawCut));
+/* =================== 2. SIMBERLOFF & WILSON =================== */
+const ISL=[['E2','2 m',35,0.35],['ST2','intermediate',25,0.15],['E3','intermediate',22,0.12],['E1','533 m',20,0.1]];
+tabs.t2=paperTab($('#t2'),{id:'s',title:'Experimental zoogeography of islands: the colonization of empty islands',
+  why:'The first experimental test of island biogeography theory. Simberloff and Wilson removed every arthropod from whole islands and watched them come back.',
+  cite:'Simberloff, D. S., &amp; E. O. Wilson (1969). Experimental zoogeography of islands: the colonization of empty islands. <i>Ecology</i> 50: 278–296.',doi:'10.2307/1934856',
+  question:'MacArthur and Wilson\'s theory predicted that islands hold an equilibrium number of species. <b>If you empty an island completely, does it return to the same number of species? Does distance from the source of colonists change how fast?</b>',
+  hyps:[['Equilibrium','Species numbers will return to about their original level, faster on near islands.'],['History','Islands will end up with a different number of species, depending on which ones happen to arrive first.']],
+  design:`<p>Simberloff and Wilson chose six tiny islands in the Florida Keys made only of red mangrove trees, roughly 11–18 m across, at different distances from larger mangrove "source" areas. They counted every arthropod species on each island. Then each island was covered with a tent and fumigated with methyl bromide, which killed the insects and spiders but not the trees. They recounted the islands regularly for the next year, and four of them again after two years.</p>`,
+  predict:{q:'About a year after fumigation, how do you expect species numbers to compare with the numbers before fumigation?',opts:['Still near zero','Back near the original numbers, except on the most distant island','Much higher than before on every island','Exactly the same species as before on every island']},
+  results:`<div class="grid2"><div class="chart"><h3>Species before fumigation</h3><svg id="sR"></svg></div><div><h3>Key findings</h3><ul class="small"><li>By about 250 days, all islands except the most distant one (E1) were back to species numbers similar to untreated islands.</li><li>On most islands, species numbers rose slightly <i>above</i> the original count and then fell back.</li><li>The species <i>composition</i> was different from before; species kept arriving and disappearing.</li><li>Observed turnover was roughly 0.05–0.5 species per day, and the authors argued the true rates were higher.</li><li>Ants, the dominant animals on these islands, were among the last to colonize, but they did so most predictably.</li></ul></div></div>
+    <p class="small muted">Counts before fumigation for the four lower-Keys islands: Simberloff (1976), <i>Science</i> 194: 572–578, Table 1. Islands are ordered from nearest to farthest.</p>`,
+  found:'The islands returned to about their original <b>number</b> of species, but not the same species, and the most distant island recovered most slowly. This matched the equilibrium theory: species number is set by a balance of immigration and extinction, while the identities of species keep turning over. The overshoot suggested that species numbers first rise to a "noninteractive" level and then settle as species begin to interact.',
+  afterResults:()=>{bars($('#sR'),{cats:ISL.map(r=>`${r[0]}\n(${r[1]})`),series:[{color:'var(--s1)',vals:ISL.map(r=>r[2])}],ymax:40,ylab:'Arthropod species',w:460,h:300,mb:58});
+    $('#sR').setAttribute('aria-label','Species before fumigation: E2 (2 m from source) 35, ST2 25, E3 22, E1 (533 m) 20.')},
+  interpret:[
+    {q:'Why did the nearest island (E2) have the most species before fumigation?',opts:['It was the biggest','It received the most immigrants because it was closest to the source','It had no predators','It was fumigated last'],a:1,why:'All islands were similar in size, so the main difference was distance, which affects immigration rate.'},
+    {q:'The islands returned to similar NUMBERS but different SPECIES. Why does that support the equilibrium theory?',opts:['It doesn\'t','The theory predicts the number of species, set by rates, not which particular species are present','It shows the fumigation failed','It shows species never go extinct'],a:1,why:'The equilibrium is in species number. Which species fill those slots depends on chance arrivals and extinctions.'},
+    {q:'What was a major strength of this study compared with MacArthur and Wilson (1963)?',opts:['It used larger islands','It was a manipulative experiment with a known starting point (zero species)','It studied birds','It lasted 50 years'],a:1,why:'Removing all species let the authors watch colonization directly instead of inferring it from existing patterns.'}],
+  modelTitle:'Recolonization curves from the theory',
+  model:`<p class="small">MacArthur–Wilson recolonization: S(t) = Ŝ(1 − e<sup>−(I+E)t/P</sup>). Rates below are tuned so equilibria match the counts above, using an effective pool of 50 species that can live on these islands.</p>
+    <div class="layout"><div class="ctrl"><label for="sT">Days after fumigation <span class="val" id="sTV"></span></label><input type="range" id="sT" min="50" max="730" step="10" value="365">
+      <label for="sE">Extinction rate (species/day when full) <span class="val" id="sEV"></span></label><input type="range" id="sE" min="0.02" max="0.6" step="0.01" value="0.15" data-d="2"></div>
+    <div><div class="chart"><svg id="sM"></svg></div><div class="legend" id="sMLeg"></div></div></div>`,
+  afterModel:()=>{if(!$('#sTBox'))addBoxes($('#t2'));const cols=['var(--s1)','var(--s3)','var(--s4)','var(--s5)'];
+    const go=()=>{showVals();const T=val('sT'),E=val('sE'),P=50,xs=[];for(let i=0;i<=120;i++)xs.push(T*i/120);
+      const ser=[];ISL.forEach((r,k)=>{const I=r[3],S=P*I/(I+E);ser.push({pts:xs.map(t=>[t,S*(1-Math.exp(-(I+E)*t/P))]),color:cols[k],width:2.4});ser.push({pts:[[0,r[2]],[T,r[2]]],color:cols[k],dash:'5 4',width:1.2})});
+      chart($('#sM'),{xmin:0,xmax:T,ymin:0,ymax:45,w:620,h:320,xlab:'Days after fumigation',ylab:'Species',series:ser});
+      legend($('#sMLeg'),[...ISL.map((r,k)=>[cols[k],r[0]]),['var(--muted)','Count before fumigation',1]]);
+      $('#sM').setAttribute('aria-label','Predicted recolonization curves for E2, ST2, E3, and E1 approaching their pre-fumigation counts, with E1 slowest.')};
+    $$('#t2 .ctrl input').forEach(i=>i.oninput=go);go()},
+  discuss:['The authors could only census each island at intervals. How might missing short-lived visitors affect the turnover estimates?','Methyl bromide is now banned in many uses because it damages the ozone layer. What ethical questions do whole-island removal experiments raise?','The smooth model curve cannot overshoot. What biological process would you need to add to get the overshoot they observed?']});
 
-quiz($('#quizBox'),[
- {q:'Why did Simberloff and Wilson fumigate whole islands instead of just counting species on many islands?',opts:['To kill the mangroves','To watch colonization from zero and test whether islands return to an equilibrium number','To find new species','To measure island area'],a:1,why:'Removing the fauna let them watch immigration and extinction directly and see whether species number returned to its original level.'},
- {q:'Which island recovered most slowly, and why?',opts:['E2, because it was smallest','E1, because it was farthest from the source of colonists','E3, because it had the most ants','All recovered at the same rate'],a:1,why:'E1 was 533 m from the source, so immigration was slowest.'},
- {q:'After about a year, most islands had about the same NUMBER of species as before. Did they have the same SPECIES?',opts:['Yes, exactly the same list','No; the number returned but the species list was different and kept changing (turnover)','They had no species','Only ants returned'],a:1,why:'Equilibrium is dynamic: the count is steady while species keep arriving and dying out.'},
- {q:'Simberloff (1976) cut mangrove islands smaller without changing the habitat. Species number dropped. This shows that…',opts:['habitat diversity is the only reason big islands have more species','area alone affects species number','cutting islands increases immigration','species number does not depend on area'],a:1,why:'The habitat stayed the same (red mangrove), so the drop was due to area itself, through higher extinction rates in smaller populations.'},
- {q:'In the MacArthur–Wilson model, island distance mainly changes the…',opts:['extinction curve','immigration curve','species pool','island area'],a:1,why:'Far islands receive fewer arriving species, lowering the immigration curve.'},
- {q:'If 90% of a forest is cleared and z = 0.25, about what share of species is eventually expected to persist?',opts:['10%','25%','56%','90%'],a:2,why:'0.10^0.25 ≈ 0.56, so roughly 56% persist and 44% are eventually lost.'}
-]);
+/* =================== 3. NEWMARK =================== */
+const PARKS=[['Bryce Canyon',144,36,4],['Lassen Volcanic',426,43,6],['Zion',588,36,5],['Crater Lake',641,31,5],['Manning',712,26,3],['Mount Rainier',976,32,7],['Rocky Mountain',1049,31,2],['Yosemite',2083,25,3],['Sequoia–Kings Canyon',3389,23,3],['Olympic',3628,6,0],['Glacier–Waterton',4627,7,2],['Grand Canyon',4931,18,1],['Grand Teton–Yellowstone',10328,4,1],['Kootenay–Banff–Jasper–Yoho',20736,0,0]];
+tabs.t3=paperTab($('#t3'),{id:'n',title:'A land-bridge island perspective on mammalian extinctions in western North American parks',
+  why:'Applied island biogeography to national parks and found that most were too small to keep all their original mammal species. It changed how people think about reserve size.',
+  cite:'Newmark, W. D. (1987). A land-bridge island perspective on mammalian extinctions in western North American parks. <i>Nature</i> 325: 430–432.',doi:'10.1038/325430a0',
+  question:'As land around national parks is developed, the parks become "islands" of habitat. Land-bridge islands, which were cut off from the mainland by rising seas, slowly lose species until they reach the lower number that their area can support. <b>Are national parks losing mammal species the same way, and are small parks losing more?</b>',
+  hyps:[['Parks are safe','Protected parks keep their original species.'],['Parks are islands','Parks lose species over time, with more extinctions in smaller parks, and extinctions outnumber new arrivals.']],
+  design:`<p>Newmark compiled historical records of mammals (rabbits and hares, carnivores, and hoofed mammals) in 14 western North American national parks and park groups, from Bryce Canyon (144 km²) to the Kootenay–Banff–Jasper–Yoho group (20,736 km²). For each park he counted species that had disappeared (<b>extinctions</b>) and species that had newly arrived (<b>colonizations</b>), separating natural losses from ones caused directly by people (such as predator control). He then tested whether extinctions were related to park area and age.</p>`,
+  predict:{q:'How do you expect the number of natural extinctions since each park was established to relate to park size?',opts:['More extinctions in larger parks','More extinctions in smaller parks','No relationship to size','No extinctions in any park']},
+  results:`<div class="row"><b class="small">Show:</b><button class="primary" id="nA">Natural extinctions since establishment</button><button id="nB">% of original species lost</button></div>
+    <div class="chart"><svg id="nR"></svg></div>
+    <div class="grid2"><div class="chart"><h3>All 14 parks combined</h3><svg id="nT"></svg></div><div class="small"><p>Natural post-establishment extinctions vs. log(park area): r² = 0.56, P &lt; 0.01. Park area mattered more than park age.</p><p class="muted">Values as read from Newmark's Table 1. "% lost" includes extinctions before and after each park was established.</p></div></div>`,
+  found:'Natural extinctions (42 in total) far outnumbered natural colonizations (3), and smaller parks lost more species. Up to 43% of the original species in these groups were lost from a single park (Lassen Volcanic). Only the largest park group, Kootenay–Banff–Jasper–Yoho, kept its full historical fauna. Newmark concluded that all but the largest western parks are too small to keep an intact mammal fauna, as the land-bridge island hypothesis predicts.',
+  afterResults:()=>{let mode='a';const go=()=>{const j=mode==='a'?3:2;
+      const X=PARKS.map(p=>Math.log10(p[1])),Y=PARKS.map(p=>p[j]),n=X.length,mx=X.reduce((a,b)=>a+b)/n,my=Y.reduce((a,b)=>a+b)/n;let sxy=0,sxx=0;X.forEach((x,i)=>{sxy+=(x-mx)*(Y[i]-my);sxx+=(x-mx)**2});const b=sxy/sxx,a=my-b*mx;
+      chart($('#nR'),{xmin:100,xmax:30000,logx:1,ymin:0,ymax:mode==='a'?8:50,w:720,h:340,xlab:'Park area (km², log scale)',ylab:mode==='a'?'Natural extinctions since establishment':'% of original species lost',
+        series:[{pts:[[100,a+b*2],[30000,a+b*Math.log10(30000)]],color:'var(--muted)',dash:'6 4',width:1.6}],points:PARKS.map(p=>({x:p[1],y:p[j],color:'var(--s5)',r:6}))});
+      $('#nR').setAttribute('aria-label',(mode==='a'?'Natural extinctions':'Percent of species lost')+' against park area: '+PARKS.map(p=>`${p[0]} ${p[1]} square kilometers, ${p[j]}`).join('; ')+'. Values fall as area increases.');
+      $('#nA').classList.toggle('primary',mode==='a');$('#nB').classList.toggle('primary',mode==='b')};
+    $('#nA').onclick=()=>{mode='a';go()};$('#nB').onclick=()=>{mode='b';go()};go();
+    bars($('#nT'),{cats:['Natural\nextinctions','Natural\ncolonizations'],series:[{color:'var(--s2)',vals:[42,3]}],ymax:48,ylab:'Species',w:400,h:280,mb:56});
+    $('#nT').setAttribute('aria-label','Across 14 parks: 42 natural extinctions and 3 natural colonizations.')},
+  interpret:[
+    {q:'Why does Newmark call parks "land-bridge islands"?',opts:['They are on real islands','They were once connected to surrounding habitat and are becoming isolated, so they may hold more species than their area can support long-term','They have bridges','They are near the coast'],a:1,why:'Like islands cut off by rising seas, newly isolated parks start "supersaturated" and lose species until they reach a new, lower equilibrium.'},
+    {q:'Why did Newmark separate natural extinctions from human-caused ones (like predator control)?',opts:['To make the numbers bigger','To test whether parks lose species even without direct killing, as island theory predicts','Human-caused extinctions are not real','To compare with birds'],a:1,why:'The island hypothesis is about area and isolation. Separating out direct human removals tests whether size alone leads to loss.'},
+    {q:'What does this suggest for designing reserves?',opts:['Many small reserves are always best','Larger reserves, or connected networks of reserves, are needed to keep large mammals','Reserves don\'t matter','Only age matters'],a:1,why:'Only the largest park group kept all its mammals, which supports larger or connected protected areas.'}],
+  discuss:['Historical records of which mammals once lived in a park can be incomplete. How might that bias the results?','Larger mammals need more space. Would you expect the same pattern for small mammals like mice, or for plants?','What could managers do to make a small park act more like a large one?']});
 
-initTabs({exp:draw,eq:renderEq,cut:drawCut});
-setSliders({});buildEdit();resetAll();draw();renderEq();cReset();requestAnimationFrame(loop);
+/* =================== 4. HADDAD =================== */
+tabs.t4=paperTab($('#t4'),{id:'f',title:'Habitat fragmentation and its lasting impact on Earth\'s ecosystems',
+  why:'A global synthesis showing how fragmented the world\'s forests are, and what decades of fragmentation experiments reveal about the consequences.',
+  cite:'Haddad, N. M., et al. (2015). Habitat fragmentation and its lasting impact on Earth\'s ecosystems. <i>Science Advances</i> 1: e1500052.',doi:'10.1126/sciadv.1500052',
+  question:'Ecologists agree that destroying habitat reduces biodiversity, but they disagree, often strongly, about whether <b>breaking the remaining habitat into small, isolated pieces</b> causes harm on top of that. <b>How fragmented are the world\'s forests, and what does fragmentation do?</b>',
+  hyps:[['Only total area matters','A forest broken into pieces holds as many species as an unbroken forest of the same total area.'],['Fragmentation matters too','Smaller, more isolated pieces with more edge lose species and ecosystem functions over time.']],
+  design:`<p>The team did two things. First, they analyzed the first high-resolution map of global tree cover to measure how close the world\'s forest is to an edge. Second, they synthesized results from <b>seven long-term fragmentation experiments on five continents</b>, some running more than 30 years, in forests, savannas, and grasslands. In these experiments, researchers created habitat fragments of different sizes and isolation and tracked what happened.</p>`,
+  predict:{q:'About what share of the world\'s remaining forest do you think is within 1 km of a forest edge?',opts:['About 5%','About 25%','About 70%','About 99%']},
+  results:`<div class="grid2"><div class="chart"><h3>World forest near an edge</h3><svg id="fR"></svg></div><div class="chart"><h3>Biodiversity lost to fragmentation in the experiments</h3><svg id="fR2"></svg></div></div>`,
+  found:'Nearly 20% of the world\'s remaining forest is within 100 m of an edge, and about 70% is within 1 km, close enough to be affected by nearby farms, cities, and roads. Across the experiments, fragmentation reduced biodiversity by 13 to 75%, with the largest effects in the smallest and most isolated fragments. It also impaired ecosystem functions, decreasing biomass and altering nutrient cycles. Many effects <b>grew stronger over time</b>, so short studies underestimate them. The authors called for conservation and restoration that improves connectivity between fragments.',
+  afterResults:()=>{bars($('#fR'),{cats:['Within 100 m\nof an edge','Within 1 km\nof an edge'],series:[{color:'var(--s4)',vals:[20,70]}],ymax:100,ylab:'% of world forest',w:420,h:300,mb:56,fmt:v=>'~'+v+'%'});
+    const svg=$('#fR2');const W=460,H=300;let s='';const X=v=>40+v/100*380;
+    s+=`<line class="ax" x1="40" x2="420" y1="200" y2="200"/>`;[0,25,50,75,100].forEach(v=>{s+=`<text x="${X(v)}" y="218" text-anchor="middle">${v}%</text>`});
+    s+=`<rect x="${X(13)}" y="140" width="${X(75)-X(13)}" height="40" fill="var(--s2)" fill-opacity=".35" stroke="var(--s2)"/><text x="${X(13)}" y="130" text-anchor="middle" style="fill:var(--text);font-weight:600">13%</text><text x="${X(75)}" y="130" text-anchor="middle" style="fill:var(--text);font-weight:600">75%</text>`;
+    s+=`<text x="230" y="250" text-anchor="middle" class="lab">Reduction in biodiversity across experiments</text>`;
+    svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label','Range bar from 13 to 75 percent reduction in biodiversity.');
+    $('#fR').setAttribute('aria-label','About 20 percent of world forest is within 100 meters of an edge and about 70 percent within 1 kilometer.')},
+  interpret:[
+    {q:'Why does being near an edge matter for a forest?',opts:['Edges have more trees','Edges are exposed to drier, hotter, windier conditions and to species and disturbances from the surrounding land','Edges are always protected','It doesn\'t matter'],a:1,why:'Edge effects change microclimate and let in non-forest species, fire, and human activity, degrading the forest near its boundary.'},
+    {q:'Why are long-term experiments especially important for this question?',opts:['They are cheaper','Many effects of fragmentation get stronger over time and would be missed by short studies','They need less land','They avoid edges'],a:1,why:'The synthesis found that effects grew over time, so short studies underestimate them (an "extinction debt").'},
+    {q:'Which action does this paper support?',opts:['Removing corridors','Improving connectivity between fragments and conserving large blocks','Making more small fragments','Ignoring edges'],a:1,why:'The authors call for conservation and restoration measures that improve landscape connectivity.'}],
+  modelTitle:'How much of a fragment is edge?',
+  model:`<p class="small">Treat each fragment as a square and suppose edge effects reach a set distance into the forest. Split the same total forest into more pieces and see how much "core" forest is left.</p>
+    <div class="layout"><div class="ctrl">
+      <label for="fA">Total forest area (hectares) <span class="val" id="fAV"></span></label><input type="range" id="fA" min="10" max="10000" step="10" value="1000">
+      <label for="fN">Number of equal fragments <span class="val" id="fNV"></span></label><input type="range" id="fN" min="1" max="200" step="1" value="1">
+      <label for="fD">How far edge effects reach (m) <span class="val" id="fDV"></span></label><input type="range" id="fD" min="10" max="500" step="10" value="100">
+    </div><div><div class="tiles"><div class="tile"><div class="k">Size of each fragment</div><div class="v" id="fSz"></div></div><div class="tile"><div class="k">Core forest left (not edge)</div><div class="v" id="fCore"></div></div></div>
+      <div class="chart"><svg id="fM"></svg></div><div class="msg small" id="fMsg"></div></div></div>`,
+  afterModel:()=>{if(!$('#fABox'))addBoxes($('#t4'));const core=(A,n,d)=>{const side=Math.sqrt(A*1e4/n),c=Math.max(0,side-2*d);return c*c*n/(A*1e4)};
+    const go=()=>{showVals();const A=val('fA'),n=Math.round(val('fN')),d=val('fD');const c=core(A,n,d);
+      $('#fSz').textContent=f(A/n,A/n<10?1:0)+' ha';$('#fCore').textContent=f(c*100,0)+'%';
+      const ns=[];for(let k=1;k<=200;k++)ns.push(k);
+      chart($('#fM'),{xmin:1,xmax:200,ymin:0,ymax:100,logx:1,w:620,h:300,xlab:'Number of fragments (same total area, log scale)',ylab:'Core forest left (%)',series:[{pts:ns.map(k=>[k,core(A,k,d)*100]),color:'var(--s3)',width:2.6}],points:[{x:n,y:c*100,color:'var(--text)',r:6,ring:1}]});
+      $('#fM').setAttribute('aria-label',`Core forest percentage falls as the same ${A} hectares is split into more fragments. With ${n} fragments and ${d} meter edge effects, ${f(c*100,0)} percent is core.`);
+      $('#fMsg').innerHTML=`The same ${A} ha of forest is ${f(c*100,0)}% core when split into ${n} piece${n>1?'s':''}. ${c<0.01?'Every part of every fragment is within reach of an edge.':''}`};
+    $$('#t4 .ctrl input').forEach(i=>i.oninput=go);go()},
+  discuss:['Some ecologists argue that habitat <i>amount</i> matters much more than how it is arranged. What kind of study could separate the two?','Corridors connecting fragments were one recommended solution. What could go wrong with corridors?','Look at a satellite map of the Central Valley or Sierra foothills. Where would you put a corridor, and why?']});
+
+initTabs({t1:()=>tabs.t1.redraw(),t2:()=>tabs.t2.redraw(),t3:()=>tabs.t3.redraw(),t4:()=>tabs.t4.redraw()});
 })();
 </script>
 <script>
 window.A11Y = {
-  tabsLabel: 'Simulation sections',
+  tabsLabel: 'Papers',
   css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
-  live: ['#eqMsg', '#cutMsg', '#score']
+  live: ['#mMsg', '#fMsg', '.score']
 };
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
