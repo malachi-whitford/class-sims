@@ -102,7 +102,7 @@ const ITEMS = [
     topic: "community",
     type: "sim",
     url: "sims/trophic-cascade/",
-    desc: "Three identical cages of grass and grasshoppers: no spiders, hunting spiders, and spiders with glued mouthparts that can only scare. Separate the cascade into eating (consumptive) and fear (non-consumptive) effects.",
+    desc: "Three identical cages of grass, goldenrod, and grasshoppers: no spiders, hunting spiders, and glued spiders that can only scare. Watch grasshoppers switch to goldenrod for cover, and separate eating (consumptive) from fear (non-consumptive) effects.",
     tags: ["trophic cascade", "non-consumptive effects", "predation risk", "Schmitz", "indirect effects"]
   },
 
