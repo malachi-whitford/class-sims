@@ -129,6 +129,9 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 .eq b{color:var(--accent)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
 @media (max-width:820px){.layout>.ctrl{order:2}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) nav.tabs button.on{color:#0d1b2a}}
+:root{--amber-text:#8a5a00;--rust-text:#a0461f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--amber-text:#f2c14e;--rust-text:#f0a070}}
 
 #pond{aspect-ratio:760/420;cursor:crosshair;touch-action:manipulation}
 .steps2{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
@@ -140,6 +143,7 @@ table.res{width:100%;border-collapse:collapse;font-size:.85rem}
 table.res th,table.res td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:right}
 table.res th:first-child,table.res td:first-child{text-align:left}
 </style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
 </head>
 <body>
 <div class="wrap">
@@ -162,7 +166,7 @@ table.res th:first-child,table.res td:first-child{text-align:left}
       <div class="steps2" id="steps"><span data-s="0">1. First catch</span><span data-s="1">2. Mark &amp; release</span><span data-s="2">3. Wait for mixing</span><span data-s="3">4. Second catch</span><span data-s="4">5. Estimate</span></div>
       <div class="row" style="align-items:center"><button class="primary" id="act"></button><span id="hint" class="small"></span></div>
     </div>
-    <div class="tiles"><div class="tile"><div class="k">Marked (M)</div><div class="v" id="tM" style="color:#e0a812"></div></div><div class="tile"><div class="k">Second catch (C)</div><div class="v" id="tC"></div></div><div class="tile"><div class="k">Recaptured marked (R)</div><div class="v" id="tR" style="color:#e0a812"></div></div><div class="tile"><div class="k">Estimate (N̂)</div><div class="v" id="tN" style="color:var(--accent)"></div></div></div>
+    <div class="tiles"><div class="tile"><div class="k">Marked (M)</div><div class="v" id="tM" style="color:var(--amber-text)"></div></div><div class="tile"><div class="k">Second catch (C)</div><div class="v" id="tC"></div></div><div class="tile"><div class="k">Recaptured marked (R)</div><div class="v" id="tR" style="color:var(--amber-text)"></div></div><div class="tile"><div class="k">Estimate (N̂)</div><div class="v" id="tN" style="color:var(--accent)"></div></div></div>
     <div class="card"><div class="stage"><canvas id="pond" role="img"></canvas></div><div class="legend" id="leg" style="margin-top:6px"></div></div>
     <div class="card"><div class="eq" id="eq"></div><p class="small muted" style="margin:0">Why it works: if 1 in 5 of your second catch is marked, then the M fish you marked are about 1 in 5 of the whole pond, so N ≈ 5 × M. The Chapman version, (M+1)(C+1)/(R+1) − 1, is less biased with small samples.</p></div>
     <div class="grid2">
@@ -280,7 +284,7 @@ function paperTab(el,P){
 }
 /* canvas helper: size for DPR, return ctx in logical units W x H */
 function ctx2d(cv,W,H){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round((r.width||W)*dpr)),h=Math.max(1,Math.round((r.width||W)*H/W*dpr));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(w/W,0,0,h/H,0,0);return x}
-function seg(el,cb){$$('button',el).forEach(b=>b.onclick=()=>{$$('button',el).forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v,b)})}
+function seg(el,cb){const bs=$$('button',el),sync=()=>bs.forEach(x=>x.setAttribute('aria-pressed',x.classList.contains('on')?'true':'false'));if(!el.getAttribute('role')){el.setAttribute('role','group');const lab=el.previousElementSibling;if(lab&&lab.textContent.trim()&&lab.textContent.length<60)el.setAttribute('aria-label',lab.textContent.trim())}bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle('on',x===b));sync();cb(b.dataset.v,b)});sync()}
 function isDark(){return document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)}
 
 (function(){
@@ -356,6 +360,32 @@ $$('.ctrl input').forEach(i=>i.addEventListener('input',()=>ui(true)));window.ad
 newPond();requestAnimationFrame(ts=>{lf=ts;frame(ts)});
 })();
 </script>
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
 <script>window.A11Y={tabsLabel:'Views',css:'',live:['#msg']};</script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
 <style id="a11y-css">
