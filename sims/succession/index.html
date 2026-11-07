@@ -310,43 +310,116 @@ function isDark(){return document.documentElement.dataset.theme==='dark'||(docum
 (function(){
 const NS=14,W=760,H=300,GROUND=262;
 const STG=[{n:'Bare ground',ic:'⬛',c:'#9a9a9a'},
- {n:'Lichens & mosses',ex:'map lichen, granite moss',ic:'🟢',c:'#b8c45a',need:0,lmin:0,arr:0.05,soil:0.08,h:6,grow:3,req:'Bare granite is fine'},
- {n:'Wildflowers',ex:'lupine, fireweed',ic:'🌸',c:'#9b6bd1',need:2,lmin:0.55,arr:0.15,soil:0.12,h:36,grow:1,req:'2 cm soil, full sun'},
- {n:'Grasses & sedges',ex:'squirreltail, sedges',ic:'🌾',c:'#c9b45a',need:4,lmin:0.45,arr:0.25,soil:0.12,h:40,grow:2,req:'4 cm soil, sun'},
- {n:'Shrubs',ex:'greenleaf manzanita, deerbrush',ic:'🌿',c:'#8a5a3a',need:8,lmin:0.3,arr:0.06,life:35,soil:0.14,h:58,grow:6,req:'8 cm soil'},
- {n:'Sun-loving pines',ex:'ponderosa & Jeffrey pine',ic:'🌲',c:'#d08a3a',need:14,lmin:0.55,arr:0.03,life:90,soil:0.15,h:160,grow:25,req:'14 cm soil; seedlings need sun'},
- {n:'Shade-tolerant conifers',ex:'white fir, incense cedar',ic:'🌲',c:'#1f4a3a',need:22,lmin:0,arr:0.006,life:300,soil:0.15,h:150,grow:45,tol:1,req:'22 cm soil; seedlings grow in shade'}];
+ {n:'Lichens & mosses',ex:'map lichen, orange lichen, granite moss',ic:'🟢',c:'#b8c45a',need:0,lmin:0,arr:0.05,soil:0.08,h:6,grow:3,req:'Bare granite is fine'},
+ {n:'Wildflowers',ex:"lupine, fireweed, mule's ears",ic:'🌸',c:'#9b6bd1',need:2,lmin:0.55,arr:0.15,soil:0.12,h:36,grow:1,req:'2 cm soil, full sun'},
+ {n:'Grasses & sedges',ex:'squirreltail, sedge, needlegrass',ic:'🌾',c:'#c9b45a',need:4,lmin:0.45,arr:0.25,soil:0.12,h:40,grow:2,req:'4 cm soil, sun'},
+ {n:'Shrubs',ex:'greenleaf manzanita, deerbrush, whitethorn',ic:'🌿',c:'#8a5a3a',need:8,lmin:0.3,arr:0.06,life:35,soil:0.14,h:58,grow:6,req:'8 cm soil'},
+ {n:'Sun-loving trees',ex:'ponderosa pine, sugar pine, black oak',ic:'🌲',c:'#d08a3a',need:14,lmin:0.55,arr:0.03,life:90,soil:0.15,h:160,grow:25,req:'14 cm soil; seedlings need sun'},
+ {n:'Shade-tolerant conifers',ex:'white fir, incense cedar, Douglas-fir',ic:'🌲',c:'#1f4a3a',need:22,lmin:0,arr:0.006,life:300,soil:0.15,h:150,grow:45,tol:1,req:'22 cm soil; seedlings grow in shade'}];
 const WHY={1:'Lichens settle on bare granite and slowly break it into soil',2:'Soil is deep enough for lupine (it adds nitrogen to the soil)',3:'Squirreltail and sedges crowd out the wildflowers',4:'Manzanita shades out the grasses',5:'A ponderosa pine grows up above the manzanita',6:'A white fir seedling grew up in the shade and replaced it'};
+function why(t,v,os,ov){const n=SPP[t][v],o=os>0?SPP[os][ov||0]:'';const cap=w=>w[0].toUpperCase()+w.slice(1);return({1:`${cap(n)} settles on bare granite and slowly breaks it into soil`,2:v===0?'Soil is deep enough for lupine, which adds nitrogen to the soil':`Soil is deep enough for ${n}`,3:`${cap(n)} crowds out the ${o||'wildflowers'}`,4:`${cap(n)} shades out the ${o||'grasses'}`,5:`A ${n} grows up above the ${o||'shrubs'}`,6:`A ${n} seedling grew up in the shade and replaced the ${o||'pine'}`})[t]}
 const light=P=>{let tr=0,sh=0;P.slots.forEach(c=>{if(c.s>=5)tr++;else if(c.s===4)sh++});return Math.max(0.05,1-0.85*tr/NS-0.25*sh/NS)};
-function plot(kind,cv){return{kind,cv,yr:0,acc:0,playing:false,soil:kind==='p'?0:30,slots:Array.from({length:NS},()=>({s:kind==='p'?0:2,g:kind==='p'?0:0.6})),first:kind==='p'?{}:{2:0},hist:[],notes:[],L:1}}
+function plot(kind,cv){return{kind,cv,yr:0,acc:0,playing:false,soil:kind==='p'?0:30,slots:Array.from({length:NS},()=>({s:kind==='p'?0:2,g:kind==='p'?0:0.6,v:(Math.random()*3)|0})),first:kind==='p'?{}:{2:0},hist:[],notes:[],L:1}}
 function rec(P){const c=new Array(7).fill(0);P.slots.forEach(s=>c[s.s]++);P.hist.push([P.yr,P.soil,light(P)*100,...c.map(v=>v/NS*100)])}
 let A,B;
 function resetP(k){const P=plot(k);rec(P);if(k==='p')A=P;else B=P;setPlayP(P,false);drawSucc(true)}
-function disturb(P,how){if(how==='fire'){P.soil*=0.9;P.slots.forEach(c=>{c.s=P.soil>=2?2:(P.soil>0?1:0);c.g=0.15});note(P,7,'Fire burned the plants, but the soil and seeds remain');}rec(P);drawSucc(true)}
+function disturb(P,how){if(how==='fire'){if(P.fire)return;P.fire={t:0};P.wasPlaying=P.playing;setPlayP(P,false)}}
+function burnP(P){P.soil*=0.9;P.slots.forEach(c=>{c.s=P.soil>=2?2:(P.soil>0?1:0);c.g=0.15;c.v=(Math.random()*3)|0});P.fire=null;P.char=8;note(P,7,'Fire burned the plants, but the soil and seeds survived');rec(P);if(P.wasPlaying)setPlayP(P,true);drawSucc(true)}
 function note(P,i,txt){if(P.notes.some(n=>n.txt===txt&&n.t<2))return;if(P.notes.length>=2)return;P.notes.push({i,txt,t:0})}
 function year(P){P.yr++;const cnt=new Array(7).fill(0);P.slots.forEach(c=>cnt[c.s]++);
   let ds=0.002;P.slots.forEach(c=>{if(c.s)ds+=STG[c.s].soil/NS});P.soil+=ds*Math.max(0,1-P.soil/45);
   const L=light(P);P.L=L;
-  P.slots.forEach((c,i)=>{const st=STG[c.s];if(st.life&&Math.random()<1/st.life){const was=c.s;c.s=P.soil>=4?3:1;c.g=0.2;note(P,i,was===5?'An old ponderosa pine died; pine seedlings cannot grow in this shade':was===6?'An old white fir died, opening a sunny gap':'A manzanita died, leaving an opening');return}
-    for(let t=6;t>c.s;t--){const T=STG[t];if(P.soil<T.need||L<T.lmin)continue;let p=T.arr*(0.3+3*cnt[t]/NS);if(T.tol)p*=L<0.75?1:0.15;if(Math.random()<p){c.s=t;c.g=0.05;note(P,i,WHY[t]);break}}});
+  P.slots.forEach((c,i)=>{const st=STG[c.s];if(st.life&&Math.random()<1/st.life){const was=c.s;c.s=P.soil>=4?3:1;c.g=0.2;note(P,i,was===5?`An old ${SPP[5][c.v||0]} died; its seedlings cannot grow in this shade`:was===6?`An old ${SPP[6][c.v||0]} died, opening a sunny gap`:`A ${SPP[4][c.v||0]} died, leaving an opening`);return}
+    for(let t=6;t>c.s;t--){const T=STG[t];if(P.soil<T.need||L<T.lmin)continue;let p=T.arr*(0.3+3*cnt[t]/NS);if(T.tol)p*=L<0.75?1:0.15;if(Math.random()<p){const old=c;const ov=c.v,os=c.s;c.s=t;c.g=0.05;c.v=(Math.random()*3)|0;note(P,i,why(t,c.v,os,ov));break}}});
   const c2=new Array(7).fill(0);P.slots.forEach(c=>c2[c.s]++);for(let t=1;t<7;t++)if(P.first[t]===undefined&&c2[t]>=3)P.first[t]=P.yr;rec(P)}
 function grow(P,dy){P.slots.forEach(c=>{if(c.s)c.g=Math.min(1,c.g+dy/STG[c.s].grow)});P.notes.forEach(n=>n.t+=dy/Math.max(1,P.speed||1));P.notes=P.notes.filter(n=>n.t<3)}
 const rr=s=>()=>(s=(s*16807)%2147483647)/2147483647;
 /* ---- Sierra plant drawings (shared with the fire plot) ---- */
-function ponderosa(x,px,base,h,sw){x.fillStyle='#b5652e';x.beginPath();x.moveTo(px-5,base);x.lineTo(px-2.5,base-h*0.92);x.lineTo(px+2.5,base-h*0.92);x.lineTo(px+5,base);x.fill();
-  x.strokeStyle='rgba(60,30,10,.5)';x.lineWidth=0.8;for(let y=base-6;y>base-h*0.5;y-=7){x.beginPath();x.moveTo(px-4,y);x.lineTo(px+4,y-2);x.stroke()}
-  const cr=[[0,0.86,0.2],[-0.12,0.74,0.17],[0.12,0.7,0.17],[-0.06,0.58,0.14],[0.08,0.52,0.13]];cr.forEach(([dx,dy,r],k)=>{x.fillStyle=k%2?'#2f5d3a':'#3a6b44';x.beginPath();x.ellipse(px+dx*h+sw*0.3,base-dy*h,r*h*0.95,r*h*0.55,0,0,7);x.fill()})}
-function fir(x,px,base,h,sw,cedar){x.fillStyle='#5a3a24';x.fillRect(px-2,base-h*0.15,4,h*0.15);const n=6;for(let k=0;k<n;k++){const y=base-h*(0.1+k*0.15),w=h*(0.24-k*0.035);x.fillStyle=cedar?(k%2?'#4a6b38':'#557a40'):(k%2?'#1f4a3a':'#2a5a46');x.beginPath();x.moveTo(px+sw*0.3*(k/n),y-h*0.24);x.lineTo(px-w,y);x.lineTo(px+w,y);x.fill()}}
-function manzanita(x,px,base,h){x.strokeStyle='#8a2a1a';x.lineWidth=2.4;for(let k=-2;k<=2;k++){x.beginPath();x.moveTo(px+k*2,base);x.quadraticCurveTo(px+k*7,base-h*0.4,px+k*10,base-h*0.7);x.stroke()}x.fillStyle='#8aa080';x.beginPath();x.arc(px,base-h*0.6,h*0.42,0,7);x.fill();x.fillStyle='#9fb595';x.beginPath();x.arc(px-h*0.2,base-h*0.7,h*0.26,0,7);x.arc(px+h*0.22,base-h*0.65,h*0.25,0,7);x.fill()}
-function grasses(x,px,base,h,sw,dry){x.strokeStyle=dry?'#c9b06a':'#a9a84a';x.lineWidth=1.8;for(let k=-5;k<=5;k++){x.beginPath();x.moveTo(px+k*2,base);x.quadraticCurveTo(px+k*3,base-h*0.6,px+k*4+sw,base-h*(0.75+0.25*Math.cos(k)));x.stroke()}}
-function drawPlant(x,c,px,base,i,tt){const s=c.s,g=0.25+0.75*c.g,h=STG[s].h*g,sw=Math.sin(tt*1.1+i)*1.5;
-  if(s===1){for(let k=0;k<4;k++){x.fillStyle=['#c9a23a','#b8c45a','#e0a84a','#7aa84a'][(i+k)%4];x.beginPath();x.ellipse(px-18+k*12,base-2,7*g,3.5*g,0,0,7);x.fill()}}
-  else if(s===2){for(let k=-1;k<=1;k++){const fx=px+k*14,fh=h*(0.8+0.2*((i+k)%2)),lup=(i+k)%2===0;x.strokeStyle='#4f8a35';x.lineWidth=2;x.beginPath();x.moveTo(fx,base);x.lineTo(fx+sw,base-fh*0.55);x.stroke();
-    x.fillStyle=lup?'#6b5bd1':'#d9479b';for(let p=0;p<7;p++){x.beginPath();x.ellipse(fx+sw,base-fh*0.55-p*fh*0.065,3.4-p*0.3,2.4,0,0,7);x.fill()}}}
-  else if(s===3)grasses(x,px,base,h,sw,false);
-  else if(s===4)manzanita(x,px,base,h);
-  else if(s===5)ponderosa(x,px,base,h,sw);
-  else if(s===6)fir(x,px,base,h,sw,i%3===0)}
+/* ---- Sierra Nevada plant drawings: three species per group ---- */
+const SPP={1:['map lichen','orange lichen','granite moss'],2:['lupine','fireweed',"mule's ears"],3:['squirreltail','sedge','needlegrass'],4:['greenleaf manzanita','deerbrush','mountain whitethorn'],5:['ponderosa pine','sugar pine','California black oak'],6:['white fir','incense cedar','Douglas-fir']};
+function ell(x,cx,cy,rx,ry,rot,c){x.fillStyle=c;x.beginPath();x.ellipse(cx,cy,Math.max(0.1,rx),Math.max(0.1,ry),rot||0,0,7);x.fill()}
+function sp_lichen(x,px,base,v,g,seed){const r=rr(seed);for(let k=0;k<5;k++){const cx=px-20+k*10+r()*4,s=(4+r()*4)*g;
+  if(v===0){ell(x,cx,base-1.5,s*1.4,s*0.6,0,'#c9cf5a');x.strokeStyle='#26261f';x.lineWidth=0.8;x.beginPath();x.ellipse(cx,base-1.5,s*1.4,s*0.6,0,0,7);x.stroke()}
+  else if(v===1){for(let l=0;l<6;l++)ell(x,cx+Math.cos(l)*s*0.8,base-2+Math.sin(l)*s*0.3,s*0.55,s*0.3,l,'#e2892a');ell(x,cx,base-2,s*0.4,s*0.25,0,'#f2b04a')}
+  else{ell(x,cx,base-s*0.6,s*1.3,s*0.9,0,'#4a7328');ell(x,cx-s*0.3,base-s*0.9,s*0.6,s*0.4,0,'#6f9a3a');x.strokeStyle='#8a6a2a';x.lineWidth=0.7;for(let l=-1;l<=1;l++){x.beginPath();x.moveTo(cx+l*3,base-s*1.3);x.lineTo(cx+l*3.5,base-s*2.2);x.stroke()}}}}
+function sp_flower(x,px,base,h,sw,v,seed){const r=rr(seed);
+  if(v===0){ // lupine: palmate leaves + blue-violet spikes
+    for(let k=-1;k<=1;k++){const lx=px+k*9;for(let l=0;l<7;l++){const a=-Math.PI/2+(l-3)*0.38;x.strokeStyle='#4f8a3a';x.lineWidth=2.2;x.beginPath();x.moveTo(lx,base-5);x.lineTo(lx+Math.cos(a)*7,base-5+Math.sin(a)*7);x.stroke()}}
+    for(let k=-1;k<=1;k+=2){const fx=px+k*6,fh=h*(0.85+0.15*r());x.strokeStyle='#4f8a3a';x.lineWidth=1.8;x.beginPath();x.moveTo(fx,base-4);x.lineTo(fx+sw,base-fh);x.stroke();
+      for(let p=0;p<11;p++){const y=base-fh*0.45-p*fh*0.05,w=4.2-p*0.3;ell(x,fx+sw*(0.5+p/22)-w*0.6,y,w*0.6,2,0,p%2?'#6a5ad6':'#4b3fb8');ell(x,fx+sw*(0.5+p/22)+w*0.6,y,w*0.6,2,0,p%2?'#4b3fb8':'#6a5ad6')}}}
+  else if(v===1){ // fireweed: tall stems, narrow leaves, magenta spike
+    for(let k=-1;k<=1;k++){const fx=px+k*8,fh=h*1.15*(0.8+0.2*r());x.strokeStyle='#7a3a4a';x.lineWidth=1.8;x.beginPath();x.moveTo(fx,base);x.lineTo(fx+sw,base-fh);x.stroke();
+      x.strokeStyle='#4f8a3a';x.lineWidth=2;for(let l=1;l<6;l++){const y=base-fh*l*0.11,d=l%2?1:-1;x.beginPath();x.moveTo(fx+sw*l*0.1,y);x.lineTo(fx+sw*l*0.1+d*9,y-4);x.stroke()}
+      for(let p=0;p<9;p++){const y=base-fh*0.62-p*fh*0.045;ell(x,fx+sw*(0.6+p/25)+(p%2?3:-3),y,3,2.2,0,p>6?'#f2a3c8':'#d63a8a')}}}
+  else{ // mule's ears: big upright gray-green leaves + yellow sunflowers
+    for(let k=-2;k<=2;k++){x.save();x.translate(px+k*4,base);x.rotate(k*0.18);ell(x,0,-h*0.32,4.5,h*0.32,0,k%2?'#8fa66a':'#9fb67a');x.restore()}
+    for(let k=-1;k<=1;k+=2){const fx=px+k*8+sw,fy=base-h*0.85;x.strokeStyle='#6f8a4a';x.lineWidth=1.5;x.beginPath();x.moveTo(px+k*4,base-h*0.4);x.lineTo(fx,fy);x.stroke();
+      for(let p=0;p<12;p++){const a=p/12*6.28;ell(x,fx+Math.cos(a)*5,fy+Math.sin(a)*5,3.4,1.4,a,'#f2c41e')}ell(x,fx,fy,3,3,0,'#a8761e')}}}
+function sp_grass(x,px,base,h,sw,v,seed){const r=rr(seed);
+  if(v===0){ // squirreltail: blades + bristly bottlebrush heads
+    x.strokeStyle='#a9b05a';x.lineWidth=1.4;for(let k=-5;k<=5;k++){x.beginPath();x.moveTo(px+k*1.5,base);x.quadraticCurveTo(px+k*3,base-h*0.4,px+k*4+sw,base-h*0.6);x.stroke()}
+    for(let k=-2;k<=2;k++){const tx=px+k*5+sw,ty=base-h*(0.85+0.15*r());x.strokeStyle='#c8b06a';x.lineWidth=1.2;x.beginPath();x.moveTo(px+k*2,base);x.lineTo(tx,ty);x.stroke();
+      x.strokeStyle='#e0cc8a';x.lineWidth=0.7;for(let b=0;b<8;b++){const by=ty+b*2.2;x.beginPath();x.moveTo(tx,by);x.lineTo(tx-6,by-4);x.moveTo(tx,by);x.lineTo(tx+6,by-4);x.stroke()}}}
+  else if(v===1){ // sedge: arching dark blades
+    x.strokeStyle='#3f6b35';x.lineWidth=2;for(let k=-6;k<=6;k++){x.beginPath();x.moveTo(px,base);x.quadraticCurveTo(px+k*2.5,base-h*0.9,px+k*5+sw,base-h*(0.45+0.2*Math.cos(k)));x.stroke()}
+    for(let k=-1;k<=1;k++){const tx=px+k*3+sw,ty=base-h*0.95;x.strokeStyle='#557a40';x.lineWidth=1;x.beginPath();x.moveTo(px+k,base);x.lineTo(tx,ty);x.stroke();ell(x,tx,ty,1.8,4,0,'#7a5a2a')}}
+  else{ // needlegrass: fine tall blades with long wavy awns
+    x.strokeStyle='#b8b07a';x.lineWidth=1;for(let k=-6;k<=6;k++){x.beginPath();x.moveTo(px+k,base);x.quadraticCurveTo(px+k*2,base-h*0.6,px+k*3+sw,base-h*(0.8+0.2*Math.cos(k*2)));x.stroke()}
+    x.strokeStyle='#e6dcb0';x.lineWidth=0.7;for(let k=-3;k<=3;k++){const tx=px+k*3+sw,ty=base-h*0.95;x.beginPath();x.moveTo(tx,ty);x.bezierCurveTo(tx+6,ty-6,tx+2,ty-12,tx+9,ty-16);x.stroke()}}}
+function sp_shrub(x,px,base,h,v,seed){const r=rr(seed);
+  if(v===0){ // greenleaf manzanita: twisting red-mahogany branches, round leathery leaves
+    x.strokeStyle='#8a2a1a';x.lineWidth=3;x.lineCap='round';for(let k=-2;k<=2;k++){x.beginPath();x.moveTo(px+k*2,base);x.bezierCurveTo(px+k*8,base-h*0.25,px+k*3,base-h*0.45,px+k*11,base-h*0.6);x.stroke()}
+    for(let l=0;l<60;l++){const a=r()*6.28,rad=Math.sqrt(r())*h*0.5;ell(x,px+Math.cos(a)*rad*1.25,base-h*0.62+Math.sin(a)*rad*0.6,2.6,2.2,0,l%3?'#8fa58a':'#a8bca0')}}
+  else if(v===1){ // deerbrush: arching green branches with white-blue flower clusters
+    x.strokeStyle='#6a8a3a';x.lineWidth=1.6;for(let k=-3;k<=3;k++){x.beginPath();x.moveTo(px,base);x.quadraticCurveTo(px+k*6,base-h*1.05,px+k*13,base-h*(0.45+0.1*r()));x.stroke()}
+    ell(x,px,base-h*0.55,h*0.6,h*0.42,0,'rgba(110,150,70,.85)');for(let l=0;l<14;l++){const a=r()*6.28,rad=Math.sqrt(r())*h*0.5;const cx=px+Math.cos(a)*rad*1.1,cy=base-h*0.65+Math.sin(a)*rad*0.6;for(let d=0;d<5;d++)ell(x,cx+(r()-0.5)*5,cy+(r()-0.5)*4,1.5,1.5,0,d%2?'#eef2ff':'#c8d4f4')}}
+  else{ // mountain whitethorn: low dense blue-gray mound, spiny twigs
+    ell(x,px,base-h*0.32,h*0.75,h*0.36,0,'#8fa3a8');ell(x,px-h*0.25,base-h*0.42,h*0.35,h*0.22,0,'#a8bbbf');
+    x.strokeStyle='#d8e0e2';x.lineWidth=0.8;for(let l=0;l<18;l++){const a=-Math.PI*r(),sx=px+Math.cos(a)*h*0.7,sy=base-h*0.32+Math.sin(a)*h*0.34;x.beginPath();x.moveTo(sx,sy);x.lineTo(sx+Math.cos(a)*5,sy+Math.sin(a)*5);x.stroke()}}}
+function tuft(x,cx,cy,s,c1,c2){x.strokeStyle=c1;x.lineWidth=1;for(let k=0;k<9;k++){const a=-Math.PI/2+(k-4)*0.32;x.beginPath();x.moveTo(cx,cy);x.lineTo(cx+Math.cos(a)*s,cy+Math.sin(a)*s*0.8);x.stroke()}ell(x,cx,cy-s*0.2,s*0.7,s*0.45,0,c2)}
+function sp_pine(x,px,base,h,sw,v,seed){const r=rr(seed);
+  if(v===0){ // ponderosa: orange jigsaw-plated trunk, open crown of long-needle tufts in upper part
+    const tw=Math.max(2,h*0.045);x.fillStyle='#c46a2c';x.beginPath();x.moveTo(px-tw,base);x.lineTo(px-tw*0.5,base-h*0.95);x.lineTo(px+tw*0.5,base-h*0.95);x.lineTo(px+tw,base);x.fill();
+    x.strokeStyle='rgba(60,25,8,.6)';x.lineWidth=0.7;for(let y=base-4;y>base-h*0.6;y-=6){x.beginPath();x.moveTo(px-tw*0.8,y);x.lineTo(px,y-2);x.lineTo(px+tw*0.8,y);x.stroke()}
+    for(let b=0;b<7;b++){const y=base-h*(0.55+b*0.06),d=b%2?1:-1,L=h*(0.16-b*0.012);x.strokeStyle='#5a3a24';x.lineWidth=1.6;x.beginPath();x.moveTo(px,y);x.lineTo(px+d*L+sw*0.3,y-L*0.35);x.stroke();
+      tuft(x,px+d*L+sw*0.3,y-L*0.35,h*0.07,'#2f5a32',b%2?'#2f5d36':'#3a6b40');tuft(x,px+d*L*0.55,y-L*0.15,h*0.055,'#2f5a32','#356640')}
+    tuft(x,px+sw*0.3,base-h*0.97,h*0.07,'#2f5a32','#3a6b40')}
+  else if(v===1){ // sugar pine: tall gray-brown trunk, long horizontal limbs near the top, hanging long cones
+    const tw=Math.max(2,h*0.04);x.fillStyle='#7a5a44';x.beginPath();x.moveTo(px-tw,base);x.lineTo(px-tw*0.4,base-h);x.lineTo(px+tw*0.4,base-h);x.lineTo(px+tw,base);x.fill();
+    const limbs=[[0.95,0.12,1],[0.86,0.3,-1],[0.78,0.36,1],[0.7,0.22,-1],[0.62,0.3,1]];limbs.forEach(([yy,L,d],k)=>{const y=base-h*yy,ex=px+d*h*L;x.strokeStyle='#5a4030';x.lineWidth=2;x.beginPath();x.moveTo(px,y);x.quadraticCurveTo(px+d*h*L*0.5,y+3,ex+sw*0.3,y-2);x.stroke();
+      for(let t=0.35;t<=1;t+=0.3)tuft(x,px+d*h*L*t+sw*0.3*t,y-1,h*0.05,'#2a4a30','#335a3a');if(k%2===0){x.fillStyle='#8a5a2a';x.fillRect(ex-2,y+2,3,h*0.07)}})}
+  else{ // California black oak: dark trunk forking into limbs, broad rounded crown of lobed leaf clumps
+    h*=0.7;const tw=Math.max(1.5,h*0.035);x.strokeStyle='#4a4038';x.lineCap='round';x.lineWidth=tw*2;x.beginPath();x.moveTo(px,base);x.lineTo(px,base-h*0.45);x.stroke();x.lineWidth=tw;[-1,0,1].forEach(d=>{x.beginPath();x.moveTo(px,base-h*0.42);x.lineTo(px+d*h*0.22,base-h*0.7);x.stroke()});
+    for(let l=0;l<18;l++){const a=r()*6.28,rad=Math.sqrt(r())*h*0.3;ell(x,px+Math.cos(a)*rad*1.3+sw*0.3,base-h*0.72+Math.sin(a)*rad*0.8,h*0.1,h*0.07,0,l%3?'#6a8a3a':'#7f9f48')}}}
+function sp_conifer(x,px,base,h,sw,v,seed){const r=rr(seed);
+  if(v===0){ // white fir: dense, symmetric, silvery blue-green spire
+    x.fillStyle='#5a4a3a';x.fillRect(px-1.5,base-h*0.08,3,h*0.08);const n=9;for(let k=0;k<n;k++){const y=base-h*(0.06+k*0.1),w=h*(0.22-k*0.022);x.fillStyle=k%2?'#4a6b6a':'#55787a';x.beginPath();x.moveTo(px+sw*0.3*(k/n),y-h*0.16);x.lineTo(px-w,y);x.quadraticCurveTo(px,y-h*0.03,px+w,y);x.fill();x.strokeStyle='rgba(200,220,220,.35)';x.lineWidth=1;x.beginPath();x.moveTo(px-w,y);x.quadraticCurveTo(px,y-h*0.03,px+w,y);x.stroke()}}
+  else if(v===1){ // incense cedar: cinnamon fibrous trunk, dense irregular cone of yellow-green sprays
+    const tw=Math.max(2,h*0.05);x.fillStyle='#a0522d';x.beginPath();x.moveTo(px-tw,base);x.lineTo(px-1,base-h*0.5);x.lineTo(px+1,base-h*0.5);x.lineTo(px+tw,base);x.fill();x.strokeStyle='rgba(70,30,10,.5)';x.lineWidth=0.7;for(let k=-1;k<=1;k++){x.beginPath();x.moveTo(px+k*tw*0.5,base);x.lineTo(px+k*0.5,base-h*0.3);x.stroke()}
+    for(let k=0;k<10;k++){const y=base-h*(0.16+k*0.08),w=h*(0.19-k*0.016)*(0.85+0.3*r()),c=k%2?'#6f8f3c':'#7e9c46',sx=sw*0.3*(k/10);ell(x,px+sx-w*0.45,y,w*0.6,h*0.055,-0.25,c);ell(x,px+sx+w*0.45,y-h*0.01,w*0.6,h*0.055,0.25,k%2?'#7e9c46':'#6f8f3c');ell(x,px+sx,y-h*0.03,w*0.55,h*0.05,0,'#88a650')}
+    ell(x,px+sw*0.3,base-h*0.97,h*0.03,h*0.06,0,'#7e9c46')}
+  else{ // Douglas-fir: dark green, irregular, slightly drooping branches with hanging cones
+    x.fillStyle='#4a3626';x.fillRect(px-2,base-h*0.15,4,h*0.15);for(let k=0;k<8;k++){const y=base-h*(0.12+k*0.105),w=h*(0.21-k*0.022)*(0.85+0.3*r());x.fillStyle=k%2?'#2a4a2e':'#335a36';x.beginPath();x.moveTo(px+sw*0.3*(k/8),y-h*0.15);x.lineTo(px-w,y+h*0.02);x.lineTo(px-w*0.6,y-h*0.01);x.lineTo(px+w*0.6,y-h*0.01);x.lineTo(px+w,y+h*0.02);x.fill();if(k%3===1){x.fillStyle='#8a6a3a';x.fillRect(px+w*0.5,y,2,4)}}}}
+/* flames */
+function flame(x,cx,base,fh,fw,t,a,soft){if(fh<2)return;const fl=Math.sin(t*14+cx*0.3)*0.25+Math.sin(t*23+cx)*0.15;const g=x.createLinearGradient(0,base,0,base-fh);g.addColorStop(0,`rgba(255,240,150,${soft?0:a})`);if(soft)g.addColorStop(0.15,`rgba(255,220,110,${a})`);g.addColorStop(0.35,`rgba(255,170,40,${a})`);g.addColorStop(0.75,`rgba(230,70,20,${a*0.85})`);g.addColorStop(1,'rgba(180,30,10,0)');
+  x.fillStyle=g;x.beginPath();x.moveTo(cx-fw,base);x.bezierCurveTo(cx-fw*1.1,base-fh*0.4,cx+fl*fw*2-fw*0.3,base-fh*0.7,cx+fl*fw*3,base-fh);x.bezierCurveTo(cx+fl*fw*2+fw*0.3,base-fh*0.7,cx+fw*1.1,base-fh*0.4,cx+fw,base);x.fill()}
+function fireFront(x,W,ground,front,t,kind,trees){// kind: 'low' | 'mod' | 'high'; trees: [{x,top,w}]
+  const hi=kind==='high',mod=kind==='mod';
+  if(hi&&front>200){const g=x.createLinearGradient(front-260,0,front-120,0);g.addColorStop(0,'rgba(25,18,12,.5)');g.addColorStop(1,'rgba(25,18,12,0)');x.fillStyle=g;x.fillRect(0,0,front-120,ground)}
+  // glow and char behind front
+  {const gr=hi?240:110,gx=front-60,gy=ground-(hi?100:20);const glow=x.createRadialGradient(gx,gy,10,gx,gy,gr);glow.addColorStop(0,`rgba(255,130,40,${hi?0.4:0.28})`);glow.addColorStop(1,'rgba(255,90,20,0)');x.fillStyle=glow;x.beginPath();x.arc(gx,gy,gr,0,7);x.fill()}
+  x.fillStyle='rgba(20,15,10,.55)';x.fillRect(0,ground-3,Math.max(0,front-30),6);
+  for(let ex=0;ex<front-30;ex+=11){const a=0.5+0.5*Math.sin(t*9+ex);x.fillStyle=`rgba(255,${120+Math.round(80*a)},40,${0.4+0.4*a})`;x.beginPath();x.arc(ex+((ex*7)%9),ground-1,1.6,0,7);x.fill()}
+  // surface flames near the front
+  for(let fx=Math.max(0,front-(hi?160:110));fx<Math.min(W,front+8);fx+=7){const d=(front-fx)/(hi?160:110),a=Math.max(0,1-d*0.7);flame(x,fx,ground+2,(hi?55:mod?38:22)*(0.7+0.5*Math.sin(fx*0.7+t*17))*(1-d*0.5),5,t,a)}
+  // crown flames
+  if(hi||mod)trees.forEach(tr=>{const d=front-tr.x;if(d<-10||d>(hi?260:120))return;const a=Math.max(0,1-d/(hi?260:120));if(mod&&!tr.small)return;
+    const n=hi?7:3;for(let k=0;k<n;k++){const fx=tr.x+(k-(n-1)/2)*tr.w/n*1.6;flame(x,fx,ground-(hi?tr.base*0.85:0),(hi?tr.top*1.05:tr.top*0.8)*(0.7+0.4*Math.sin(k*2+t*11)),hi?9:6,t,a,hi&&tr.base>0)}});
+  // smoke
+  for(let k=0;k<12;k++){const cx=front-40-k*50,cy=ground-(hi?230:120)-k*12+Math.sin(t+k)*10,rad=40+k*6;if(cx<-rad)continue;const g=x.createRadialGradient(cx,cy,0,cx,cy,rad);g.addColorStop(0,`rgba(90,80,75,${hi?0.45:0.25})`);g.addColorStop(1,'rgba(90,80,75,0)');x.fillStyle=g;x.beginPath();x.arc(cx,cy,rad,0,7);x.fill()}}
+
+function drawPlant(x,c,px,base,i,tt){const s=c.s,g=0.25+0.75*c.g,h=STG[s].h*g,sw=Math.sin(tt*1.1+i)*1.5,v=c.v||0,seed=i*131+v*17+7;
+  if(s===1)sp_lichen(x,px,base,v,g,seed);else if(s===2)sp_flower(x,px,base,h,sw,v,seed);else if(s===3)sp_grass(x,px,base,h,sw,v,seed);else if(s===4)sp_shrub(x,px,base,h,v,seed);else if(s===5)sp_pine(x,px,base,h,sw,v,seed);else if(s===6)sp_conifer(x,px,base,h,sw,v,seed)}
 function drawScene(P){const cv=P===A?$('#cA'):$('#cB'),x=ctx2d(cv,W,H),D=isDark(),tt=performance.now()/1000;
   const sky=x.createLinearGradient(0,0,0,GROUND);sky.addColorStop(0,D?'#1c2c44':'#a9d2f0');sky.addColorStop(1,D?'#34485e':'#e9f4fb');x.fillStyle=sky;x.fillRect(0,0,W,H);
   // distant Sierra ridge
@@ -357,6 +430,8 @@ function drawScene(P){const cv=P===A?$('#cA'):$('#cB'),x=ctx2d(cv,W,H),D=isDark(
   if(sd>0.5){const sg=x.createLinearGradient(0,top,0,GROUND);sg.addColorStop(0,'#5a3d22');sg.addColorStop(1,'#3e2a16');x.fillStyle=sg;x.fillRect(0,top,W,sd)}
   x.fillStyle='rgba(255,255,255,.9)';x.font='bold 17px system-ui';x.fillText(P.kind==='p'?'Granite':'Subsoil',12,H-12);
   const sp=W/NS;P.slots.forEach((c,i)=>{if(c.s&&c.s<5)drawPlant(x,c,(i+0.5)*sp,top,i,tt)});P.slots.forEach((c,i)=>{if(c.s>=5)drawPlant(x,c,(i+0.5)*sp,top,i,tt)});
+  if(P.char>0){x.fillStyle=`rgba(25,18,12,${Math.min(0.6,P.char/12)})`;x.fillRect(0,top-3,W,6)}
+  if(P.fire){const front=P.fire.t/2.8*(W+260)-40;const trees=P.slots.map((c,i)=>({x:(i+0.5)*sp,top:c.s?STG[c.s].h*(0.25+0.75*c.g):0,w:24,base:0,small:true})).filter(t=>t.top>12);fireFront(x,W,top,front,tt,trees.some(t=>t.top>80)?'high':'mod',trees)}
   P.notes.forEach((n,k)=>{const px=(n.i+0.5)*sp,a=Math.min(1,(3-n.t)*1.5);x.globalAlpha=Math.max(0,a);x.font='bold 17px system-ui';const tw=x.measureText(n.txt).width+18,bx=Math.max(6,Math.min(W-tw-6,px-tw/2)),by=12+k*38;
     x.fillStyle='rgba(16,32,46,.9)';x.beginPath();x.roundRect?x.roundRect(bx,by,tw,30,8):x.rect(bx,by,tw,30);x.fill();x.strokeStyle='rgba(16,32,46,.9)';x.lineWidth=2;x.beginPath();x.moveTo(px,by+30);x.lineTo(px,top-Math.max(10,STG[P.slots[n.i].s].h*0.9));x.stroke();
     x.fillStyle='#fff';x.fillText(n.txt,bx+9,by+21);x.globalAlpha=1});
@@ -389,34 +464,34 @@ $('#spA').addEventListener('input',()=>drawSucc(true));$('#spB').addEventListene
 const FN=22,FH=330,FG=290;
 let F,fPlaying=false,fAcc=0,fire=null,pol='natural';
 function fReset(){const r=rr(11);F={yr:1850,fuel:0.2,slots:[],hist:[],fires:[],last:null,post:0,msg:null};
-  for(let i=0;i<FN;i++){let k='grass',size=0;const u=r(),u2=r();if(i%3!==1&&u<0.8){k='pine';size=0.55+r()*0.45}else if(u2<0.12){k='fir';size=0.1+r()*0.15}else if(u2<0.2){k='shrub';size=0.6}F.slots.push({k,size,snag:0,u:0,ph:r()*6})}
+  for(let i=0;i<FN;i++){let k='grass',size=0;const u=r(),u2=r();if(i%3!==1&&u<0.8){k='pine';size=0.55+r()*0.45}else if(u2<0.12){k='fir';size=0.1+r()*0.15}else if(u2<0.2){k='shrub';size=0.6}F.slots.push({k,size,snag:0,u:0,ph:r()*6,v:k==='pine'?(r()<0.3?1:0):(r()*3)|0,uv:(r()*3)|0})}
   frec();fSet(false);fDraw(true)}
 const big=()=>F.slots.filter(s=>s.k==='pine'&&s.size>0.6).length;
-function ladderF(){let l=0;F.slots.forEach(s=>{if(s.u>0)l+=s.u<0.15?0.4:1;if(s.k==='fir'&&s.size<0.7)l+=1;if(s.k==='pine'&&s.size<0.4)l+=0.6;if(s.k==='shrub')l+=0.5});return Math.min(1,l/FN*1.3)}
+function ladderF(){let l=0;F.slots.forEach(s=>{if(s.u>0)l+=Math.min(1,s.u*2.2);if(s.k==='fir'&&s.size<0.7)l+=1;if(s.k==='pine'&&s.size<0.4)l+=0.6;if(s.k==='shrub')l+=0.5});return Math.min(1,l/FN*1.3)}
 function lightF(){let c=0;F.slots.forEach(s=>{if((s.k==='pine'||s.k==='fir')&&s.size>0.3)c+=s.k==='fir'?1:0.6});return Math.max(0.05,1-c/FN*1.3)}
 function frec(){F.hist.push([F.yr,F.fuel*100,ladderF()*100,big(),F.slots.filter(s=>s.k==='fir').length+F.slots.filter(s=>s.u>0).length,F.slots.filter(s=>s.k==='shrub').length])}
-function fYear(){F.yr++;F.post=Math.max(0,F.post-1);const L=lightF(),pines=F.slots.filter(s=>s.k==='pine'&&s.size>0.4).length,firs=F.slots.filter(s=>s.k==='fir'&&s.size>0.4).length;
+function fYear(){F.yr++;F.post=Math.max(0,F.post-1);F.char=Math.max(0,(F.char||0)-1);const L=lightF(),pines=F.slots.filter(s=>s.k==='pine'&&s.size>0.4).length,firs=F.slots.filter(s=>s.k==='fir'&&s.size>0.4).length;
   F.fuel=Math.min(1,F.fuel+0.014+0.005*F.slots.filter(s=>s.k==='pine'||s.k==='fir').length/FN*3);
   F.slots.forEach(s=>{
-    if(s.u>0)s.u=Math.min(0.75,s.u+0.012);else if((s.k==='pine'||s.k==='fir')&&s.size>0.4&&Math.random()<0.035)s.u=0.02;
+    if(s.u>0)s.u=Math.min(0.75,s.u+0.012);else if((s.k==='pine'||s.k==='fir')&&s.size>0.4&&Math.random()<0.03){s.u=0.02;s.uv=(Math.random()*3)|0}
     if(s.k==='pine')s.size=Math.min(1,s.size+0.013*(0.4+L));else if(s.k==='fir')s.size=Math.min(1,s.size+0.014);else if(s.k==='shrub')s.size=Math.min(1,s.size+0.2);
     if(s.k==='snag'){s.snag--;if(s.snag<=0){s.k='bare';F.fuel=Math.min(1,F.fuel+0.04)}return}
     if(s.k==='pine'&&Math.random()<0.004){s.k='snag';s.snag=15}else if(s.k==='fir'&&Math.random()<0.006){s.k='snag';s.snag=12}
     else if(s.k==='shrub'&&L<0.35&&Math.random()<0.08){s.k='grass';s.size=0}
-    if(s.k==='shrub'&&Math.random()<0.02){s.k='fir';s.size=0.05}
-    if(s.k==='grass'||s.k==='bare'){const seedP=pines>0?1:0.04;if(L>0.5&&Math.random()<0.035*seedP){s.k='pine';s.size=0.02}else if(Math.random()<0.03*(F.post?0.4:1)*(L<0.85?1:0.5)){s.k='fir';s.size=0.02}else if(L>0.45&&Math.random()<(F.post?0.35:0.03)){s.k='shrub';s.size=0.2}else if(s.k==='bare'&&Math.random()<0.3)s.k='grass'}});
+    if(s.k==='shrub'&&Math.random()<0.025){if(L>0.5&&Math.random()<0.5){s.k='pine';s.v=Math.random()<0.2?2:Math.random()<0.3?1:0}else{s.k='fir';s.v=(Math.random()*3)|0}s.size=0.05}
+    if(s.k==='grass'||s.k==='bare'){const seedP=pines>0?1:0.3;if(L>0.5&&Math.random()<0.035*seedP){s.k='pine';s.size=0.02;s.v=Math.random()<0.15?2:Math.random()<0.3?1:0}else if(Math.random()<0.03*(F.post?0.4:1)*(L<0.85?1:0.5)){s.k='fir';s.size=0.02;s.v=(Math.random()*3)|0}else if(L>0.45&&Math.random()<(F.post?0.35:0.03)){s.k='shrub';s.size=0.2;s.v=(Math.random()*3)|0}else if(s.k==='bare'&&Math.random()<0.3)s.k='grass'}});
   // natural ignitions
-  if(Math.random()<1/10){if(pol==='natural')startFire(false,'Lightning');else if(pol==='suppress'){F.msg={t:F.yr,txt:'Lightning fire put out by firefighters'}}else startFire(false,'Lightning')}
+  if(Math.random()<1/10){if(pol==='natural')startFire(false,'Lightning');else F.msg={t:F.yr,txt:'Lightning fire put out by firefighters'}}
   if(pol==='rx'&&F.yr%8===0&&!fire)startFire(false,'Prescribed burn',0.55);
   frec()}
-function startFire(drought,cause,mult=1){if(fire)return;const S=Math.min(1,(0.3*F.fuel+0.45*ladderF()+(drought?0.35:0))*mult);fire={t:0,S,drought,cause}}
-function applyFire(){const S=fire.S,sev=S<0.4?'Low':S<0.65?'Moderate':'High';let killedBig=0;
+function startFire(drought,cause,mult=1){if(fire)return;const S=Math.min(1,(0.3*F.fuel+0.45*ladderF()+(drought?0.3:0))*mult);fire={t:0,S,drought,cause}}
+function applyFire(){const S=fire.S,sev=S<0.4?'Low':S<0.68?'Moderate':'High';let killedBig=0;
   F.slots.forEach(s=>{if(s.u>0&&(sev==='High'||(sev==='Moderate'&&s.u<0.6)||s.u<0.3))s.u=0;if(s.k==='snag'||s.k==='bare')return;
     if(s.k==='shrub'){s.size=0.1;return}
     if(s.k==='pine'||s.k==='fir'){const sz=s.size;let p;if(sev==='Low')p=sz<0.25?1:(s.k==='fir'&&sz<0.5?0.5:0);else if(sev==='Moderate')p=sz<0.5?1:(s.k==='fir'?0.35:0.1);else p=0.92;
       if(Math.random()<p){if(sz>0.6&&s.k==='pine')killedBig++;if(sz>0.3){s.k='snag';s.snag=15;s.u=0}else{s.k='bare';s.size=0}}}});
   F.fuel=sev==='High'?0.05:F.fuel*(sev==='Low'?0.3:0.2);if(sev==='High')F.post=6;else F.post=Math.max(F.post,1);
-  F.last={yr:F.yr,sev,cause:fire.cause,killedBig};F.fires.push([F.yr,sev]);fire=null;frec()}
+  F.char=sev==='High'?10:sev==='Moderate'?6:3;F.last={yr:F.yr,sev,cause:fire.cause,killedBig};F.fires.push([F.yr,sev]);fire=null;frec()}
 function fSet(v){fPlaying=v;$('#playF').textContent=v?'Pause':'Play'}
 function fDraw(force){const cv=$('#cF'),x=ctx2d(cv,W,FH),D=isDark(),tt=performance.now()/1000,burning=!!fire;
   const smoky=burning||(F.last&&F.yr-F.last.yr<2&&F.last.sev==='High');
@@ -426,18 +501,18 @@ function fDraw(force){const cv=$('#cF'),x=ctx2d(cv,W,FH),D=isDark(),tt=performan
   // surface fuel litter
   const r=rr(21);const nl=Math.round(F.fuel*160);x.fillStyle='#8a6a3a';for(let i=0;i<nl;i++){x.fillRect(r()*W,FG-2+r()*8,4+r()*6,1.6)}
   for(let i=0;i<Math.round(F.fuel*8);i++){x.fillStyle='#5a3d22';x.save();x.translate(r()*W,FG+3);x.rotate((r()-0.5)*0.3);x.fillRect(-18,-3,36,6);x.restore()}
-  const sp=W/FN,front=burning?fire.t/2.6*(W+80)-40:-1;
-  F.slots.forEach((s,i)=>{const px=(i+0.5)*sp+(i%2?4:-4),sw=Math.sin(tt*1.1+s.ph)*1.2;if(s.u>0)fir(x,px+(i%2?-12:12),FG,14+105*s.u,sw,i%4===0);
-    if(s.k==='grass')grasses(x,px,FG,22,sw,true);
-    else if(s.k==='shrub')manzanita(x,px,FG,18+30*s.size);
-    else if(s.k==='pine')ponderosa(x,px,FG,22+165*s.size,sw);
-    else if(s.k==='fir')fir(x,px,FG,16+125*s.size,sw,i%3===0);
+  const sp=W/FN,FDUR=4.5,front=burning?fire.t/FDUR*(W+320)-40:-1;
+  if(F.char>0){x.fillStyle=`rgba(25,18,12,${Math.min(0.65,F.char/10)})`;x.fillRect(0,FG-3,W,8)}
+  const trees=[];
+  F.slots.forEach((s,i)=>{const px=(i+0.5)*sp+(i%2?4:-4),sw=Math.sin(tt*1.1+s.ph)*1.2,seed=i*97+11,v=s.v||0;
+    if(s.u>0){const h=14+105*s.u;sp_conifer(x,px+(i%2?-12:12),FG,h,sw,s.uv||0,seed+3);trees.push({x:px+(i%2?-12:12),top:h,w:h*0.4,base:0,small:true})}
+    if(s.k==='grass')sp_grass(x,px,FG,24,sw,v===1?2:0,seed);
+    else if(s.k==='shrub'){const h=18+30*s.size;sp_shrub(x,px,FG,h,v,seed);trees.push({x:px,top:h,w:h,base:0,small:true})}
+    else if(s.k==='pine'){const h=22+165*s.size;sp_pine(x,px,FG,h,sw,v,seed);trees.push({x:px,top:h*0.55,w:h*0.35,base:h*0.45,small:s.size<0.5})}
+    else if(s.k==='fir'){const h=16+125*s.size;sp_conifer(x,px,FG,h,sw,v,seed);trees.push({x:px,top:h,w:h*0.4,base:0,small:s.size<0.6})}
     else if(s.k==='snag'){x.strokeStyle='#1a1410';x.lineWidth=5;x.beginPath();x.moveTo(px,FG);x.lineTo(px,FG-120);x.stroke();x.lineWidth=2;x.beginPath();x.moveTo(px,FG-80);x.lineTo(px+14,FG-96);x.moveTo(px,FG-60);x.lineTo(px-12,FG-70);x.stroke()}});
-  if(burning){const hi=fire.S>=0.65,mod=fire.S>=0.4;for(let fx=-20;fx<Math.min(W,front);fx+=9){const behind=front-fx;if(behind>220&&!hi)continue;const a=Math.max(0,1-behind/(hi?600:260));
-      const fh=(hi?150+Math.sin(fx+tt*20)*40:mod?40:16)*(0.6+0.4*Math.sin(fx*0.3+tt*18))*Math.max(0.2,a);const g=x.createLinearGradient(0,FG,0,FG-fh);g.addColorStop(0,`rgba(255,200,60,${a})`);g.addColorStop(0.5,`rgba(240,100,30,${a*0.9})`);g.addColorStop(1,'rgba(200,40,20,0)');
-      x.fillStyle=g;x.beginPath();x.moveTo(fx-7,FG);x.quadraticCurveTo(fx,FG-fh*1.1,fx+7,FG);x.fill()}
-    for(let k=0;k<10;k++){const cx=front-60-k*45,cy=FG-150-k*10+Math.sin(tt+k)*10,rad=45+k*4;if(cx<-rad)continue;const g=x.createRadialGradient(cx,cy,0,cx,cy,rad);g.addColorStop(0,`rgba(80,70,65,${hi?0.32:0.14})`);g.addColorStop(1,'rgba(80,70,65,0)');x.fillStyle=g;x.beginPath();x.arc(cx,cy,rad,0,7);x.fill()}
-    x.fillStyle='rgba(0,0,0,.65)';x.fillRect(W/2-170,12,340,32);x.fillStyle='#fff';x.font='bold 17px system-ui';x.textAlign='center';x.fillText(`${fire.cause}: ${hi?'HIGH-severity crown fire':mod?'Moderate-severity fire':'Low-severity surface fire'}`,W/2,34);x.textAlign='left'}
+  if(burning){const hi=fire.S>=0.68,mod=fire.S>=0.4;fireFront(x,W,FG,front,tt,hi?'high':mod?'mod':'low',trees);
+    x.fillStyle='rgba(0,0,0,.7)';x.fillRect(W/2-190,12,380,34);x.fillStyle='#fff';x.font='bold 18px system-ui';x.textAlign='center';x.fillText(`🔥 ${fire.cause}: ${hi?'HIGH-severity crown fire':mod?'Moderate-severity fire':'Low-severity surface fire'}`,W/2,35);x.textAlign='left'}
   else if(F.msg&&F.yr-F.msg.t<3){x.fillStyle='rgba(0,0,0,.6)';x.fillRect(W/2-170,12,340,32);x.fillStyle='#fff';x.font='bold 16px system-ui';x.textAlign='center';x.fillText(F.msg.txt,W/2,34);x.textAlign='left'}
   x.fillStyle='rgba(255,255,255,.9)';x.font='bold 17px system-ui';x.fillText(`${F.yr}`,12,FH-12);
   cv.setAttribute('aria-label',`Mixed-conifer forest in ${F.yr}: ${big()} big pines, surface fuel ${f(F.fuel*100,0)}%, ladder fuel ${f(ladderF()*100,0)}%.`);
@@ -446,7 +521,7 @@ let fLast=0;
 function fUI(force){const now=performance.now();if(!force&&now-fLast<300)return;fLast=now;showVals();
   $('#fYr').textContent=F.yr;$('#fFuel').textContent=f(F.fuel*100,0)+'%';$('#fLad').textContent=f(ladderF()*100,0)+'%';$('#fBig').textContent=big();
   $('#fLast').textContent=F.last?`${F.last.yr}: ${F.last.sev}`:'none yet';$('#fLast').style.color=F.last?(F.last.sev==='High'?'var(--bad)':F.last.sev==='Moderate'?'#d9822b':'var(--good)'):'';
-  legend($('#legF'),[['#b5652e','Ponderosa / Jeffrey pine (thick bark, survives low fire)'],['#1f4a3a','White fir / incense cedar (thin bark when young)'],['#8aa080','Manzanita, deerbrush'],['#8a6a3a','Dead needles & logs'],['#1a1410','Dead trees (snags)']]);
+  legend($('#legF'),[['#c46a2c','Ponderosa & sugar pine, black oak (thick bark, survive low fire)'],['#4a6b6a','White fir, incense cedar, Douglas-fir (thin bark when young)'],['#8fa58a','Manzanita, deerbrush, whitethorn'],['#8a6a3a','Dead needles & logs'],['#1a1410','Dead trees (snags)']]);
   const T0=1850,T1=Math.max(1950,F.yr);const col={Low:'#f2c14e',Moderate:'#d9822b',High:'#c0392b'};
   chart($('#cF1'),{xmin:T0,xmax:T1,ymin:0,ymax:110,w:460,h:280,xlab:'Year',ylab:'Fuel (% of maximum)',series:[{pts:F.hist.map(h=>[h[0],h[1]]),color:'#8a6a3a',width:2.6},{pts:F.hist.map(h=>[h[0],h[2]]),color:'#1f4a3a',width:2.6}],points:F.fires.map(([y,s])=>({x:y,y:104,color:col[s],r:5}))});
   legend($('#legF1'),[['#8a6a3a','Surface fuel'],['#1f4a3a','Ladder fuel'],['#f2c14e','Low fire'],['#d9822b','Moderate'],['#c0392b','High-severity fire']]);
@@ -466,8 +541,8 @@ $('#spF').addEventListener('input',()=>fUI(true));
 /* ================= LOOP ================= */
 let lf=0;
 function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;
-  [A,B].forEach(P=>{const sp=val(P===A?'spA':'spB');P.speed=sp;if(P.playing){const dy=dt*sp;P.acc+=dy;grow(P,dy);while(P.acc>=1){P.acc-=1;year(P)}if(P.yr>=600)setPlayP(P,false)}else grow(P,dt)});
-  if(fire){fire.t+=dt;if(fire.t>=2.6)applyFire()}else if(fPlaying){fAcc+=dt*val('spF');while(fAcc>=1&&!fire){fAcc-=1;fYear()}if(F.yr>=2100)fSet(false)}
+  [A,B].forEach(P=>{if(P.fire){P.fire.t+=dt;if(P.fire.t>=2.8)burnP(P);return}if(P.char>0&&P.playing)P.char=Math.max(0,P.char-dt*val(P===A?'spA':'spB'));const sp=val(P===A?'spA':'spB');P.speed=sp;if(P.playing){const dy=dt*sp;P.acc+=dy;grow(P,dy);while(P.acc>=1){P.acc-=1;year(P)}if(P.yr>=600)setPlayP(P,false)}else grow(P,dt)});
+  if(fire){fire.t+=dt;if(fire.t>=4.5)applyFire()}else if(fPlaying){fAcc+=dt*val('spF');while(fAcc>=1&&!fire){fAcc-=1;fYear()}if(F.yr>=2100)fSet(false)}
   drawSucc();fDraw();requestAnimationFrame(frame)}
 window.addEventListener('resize',()=>{drawSucc(true);fDraw(true)});
 resetP('p');resetP('s');fReset();requestAnimationFrame(ts=>{lf=ts;frame(ts)});
