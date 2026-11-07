@@ -119,6 +119,16 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 .paperstrip{font-size:.88rem;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--s4);border-radius:10px;padding:10px 14px;margin-bottom:12px}
 .paperstrip .cite{color:var(--muted);font-size:.8rem;margin-top:4px}
 .ctrl label.hasbox{display:block}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.seg button{flex:1 1 auto;font-size:.85rem;padding:6px 10px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stage{position:relative}
+.stage canvas{width:100%;display:block;border-radius:12px}
+.ovl{position:absolute;right:10px;bottom:10px;border-radius:999px;padding:6px 14px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;border:1px solid rgba(255,255,255,.4)}
+.eq{font-family:Georgia,'Times New Roman',serif;font-size:1.15rem;text-align:center;padding:8px;border-radius:10px;background:var(--soft);margin:6px 0}
+.eq b{color:var(--accent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
+@media (max-width:820px){.layout>.ctrl{order:2}}
 
 .cagewrap{position:relative}
 .cagewrap canvas{width:100%;aspect-ratio:760/480;display:block;border-radius:12px}
@@ -276,6 +286,10 @@ function paperTab(el,P){
   if(P.afterModel)P.afterModel();
   return{redraw:()=>{if(shown&&P.afterResults)P.afterResults();if(P.afterModel)P.afterModel()}};
 }
+/* canvas helper: size for DPR, return ctx in logical units W x H */
+function ctx2d(cv,W,H){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round((r.width||W)*dpr)),h=Math.max(1,Math.round((r.width||W)*H/W*dpr));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(w/W,0,0,h/H,0,0);return x}
+function seg(el,cb){$$('button',el).forEach(b=>b.onclick=()=>{$$('button',el).forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v,b)})}
+function isDark(){return document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)}
 
 (function(){
 addBoxes();

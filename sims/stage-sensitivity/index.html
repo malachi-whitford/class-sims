@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Which Life Stage Matters Most? Sea Turtle Sensitivity Analysis</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+--s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;
+--s1:#5a9cf0;--s2:#f07a45;--s3:#2fc08b;--s4:#e0a82a;--s5:#e67aa6;--s6:#9a8cf0;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:12px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px;align-items:start}
+.layout>.card{margin-bottom:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:12px}
+.grid2>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+select{font:inherit;font-size:.85rem;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl .hint{font-size:.75rem;color:var(--muted);margin:0 0 2px}
+.ctrl h3:first-child{margin-top:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent)}
+.check{display:flex;gap:6px;align-items:center;font-size:.86rem;margin:8px 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:0 0 10px}
+.tile{background:var(--soft);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:.76rem;color:var(--muted)}
+.tile .v{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums}
+.chart svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart .ax{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
+.chart .lab{fill:var(--text);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);margin:2px 0 6px}
+.legend span{display:flex;align-items:center;gap:5px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none}
+.msg{font-size:.9rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:8px 12px;margin-top:8px}
+.msg.good{border-left-color:var(--good)} .msg.bad{border-left-color:var(--bad)}
+.formula{font-family:ui-monospace,Consolas,monospace;font-size:.85rem;background:var(--soft);border-radius:8px;padding:8px 10px;margin:6px 0;line-height:1.7;overflow-x:auto}
+details{margin-top:8px} details summary{cursor:pointer;font-weight:600;font-size:.9rem}
+.presets button{font-size:.8rem;padding:5px 10px}
+/* quiz */
+.q{border-top:1px solid var(--line);padding:10px 0}
+.q:first-of-type{border-top:none}
+.q p{margin:0 0 6px;font-weight:600}
+.q .opts{display:flex;flex-direction:column;gap:5px}
+.q .opts button{text-align:left}
+.q .opts button.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--card))}
+.q .opts button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
+.q .fb{font-size:.88rem;margin-top:6px;min-height:1em}
+canvas{display:block;width:100%;height:auto;border-radius:8px;background:var(--soft);touch-action:manipulation}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){.grid2{grid-template-columns:1fr} body{padding:10px}}
+.ctrl label.check{justify-content:flex-start;font-size:.86rem}
+.ctrl .island h3{display:flex;align-items:center;gap:6px}
+.rng{display:flex;gap:8px;align-items:center}
+.rng input[type=range]{flex:1;min-width:0}
+.box{width:78px;flex:none;font:inherit;font-size:.82rem;padding:3px 5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font-variant-numeric:tabular-nums}
+.paper{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--s4);border-radius:12px;padding:12px 16px;margin:0 0 12px}
+.paper .cite{font-size:.84rem;color:var(--muted);margin:6px 0 0}
+.paper p{margin:6px 0}
+.steps{counter-reset:st;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:st;position:relative;padding:6px 0 6px 34px;border-top:1px solid var(--line);font-size:.9rem}
+.steps li:first-child{border-top:none}
+.steps li::before{content:counter(st);position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.steps li button{margin-top:5px;font-size:.8rem;padding:4px 10px}
+table.cmp{border-collapse:collapse;width:100%;font-size:.86rem}
+table.cmp th,table.cmp td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.cmp th{background:var(--soft)}
+table.cmp td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.traits input[type=number]{width:70px;font:inherit;font-size:.8rem;padding:2px 4px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--text)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .steps li::before{color:#0d1b2a}}
+label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.layout>*{min-width:0}
+/* paper tabs */
+.pp-sec{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.pp-sec>h2{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.pp-sec>h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:.85rem;flex:none}
+.pp-sec p,.pp-sec li{font-size:.93rem}
+.pp-head{border-left:5px solid var(--s4)}
+.pp-head h2{font-size:1.15rem;margin-bottom:4px}
+.pp-head .cite{font-size:.85rem;color:var(--muted);margin:4px 0 0}
+.hyp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:6px}
+.hyp div{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:.88rem}
+.pred-opts{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.pred-opts button{text-align:left}
+.pred-opts button.picked{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card));font-weight:600}
+.locked{position:relative}
+.locked>.lockmsg{display:block;padding:16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.locked>.lockbody{display:none}
+.locked.unlocked>.lockmsg{display:none}
+.locked.unlocked>.lockbody{display:block}
+.discuss li{margin:6px 0}
+.datatbl{margin-top:8px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-sec>h2 .num{color:#0d1b2a}}
+.pp-sec .chart svg{max-width:760px;margin:0 auto}
+.paperstrip{font-size:.88rem;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--s4);border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.paperstrip .cite{color:var(--muted);font-size:.8rem;margin-top:4px}
+.ctrl label.hasbox{display:block}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.seg button{flex:1 1 auto;font-size:.85rem;padding:6px 10px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.stage{position:relative}
+.stage canvas{width:100%;display:block;border-radius:12px}
+.ovl{position:absolute;right:10px;bottom:10px;border-radius:999px;padding:6px 14px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;border:1px solid rgba(255,255,255,.4)}
+.eq{font-family:Georgia,'Times New Roman',serif;font-size:1.15rem;text-align:center;padding:8px;border-radius:10px;background:var(--soft);margin:6px 0}
+.eq b{color:var(--accent)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
+@media (max-width:820px){.layout>.ctrl{order:2}}
+
+#sea{aspect-ratio:760/300}
+.stages{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.st{border:2px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center;background:var(--card);cursor:pointer;transition:transform .1s}
+.st:hover{transform:translateY(-2px)}
+.st.on{border-color:#2e9d55;background:color-mix(in srgb,#2e9d55 12%,var(--card))}
+.st .nm{font-weight:700;font-size:.82rem;line-height:1.15;min-height:2.3em}
+.st .sv{font-size:1.05rem;font-weight:800;margin:4px 0}
+.st .sm{font-size:.72rem;color:var(--muted)}
+.st .pb{display:inline-block;margin-top:5px;font-size:.72rem;padding:2px 8px;border-radius:999px;background:var(--soft)}
+.st.on .pb{background:#2e9d55;color:#fff}
+@media(max-width:820px){.stages{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:480px){.stages{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.big{font-size:2rem;font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>Which Life Stage Matters Most?</h1>
+<p class="sub">Loggerhead sea turtles were declining. Conservation had focused on protecting eggs on nesting beaches. A stage-based population model asks: if you could improve survival in just one life stage, which one would do the most good? Tap stages to protect them.</p>
+<div class="paperstrip">Stage survival rates, stage lengths, and egg numbers are from the loggerhead model of Crouse, Crowder, and Caswell for turtles nesting on Little Cumberland Island, Georgia. The result helped make turtle excluder devices (TEDs) on shrimp trawls required in U.S. waters.
+  <div class="cite">Crouse, D. T., L. B. Crowder, &amp; H. Caswell (1987). A stage-based population model for loggerhead sea turtles and implications for conservation. <i>Ecology</i> 68: 1412–1423.</div></div>
+
+<div class="card"><h2>The life cycle: tap a stage to protect it</h2><div class="stages" id="stages"></div>
+  <div class="row" style="margin-top:10px;align-items:center"><label for="boost" style="flex:1 1 220px">Protection raises a stage's yearly survival by <span class="val" id="boostV"></span></label><input style="flex:2 1 200px" type="range" id="boost" min="0.02" max="0.3" step="0.01" value="0.1" data-d="2" data-nobox><button id="clear">Remove all protection</button></div></div>
+
+<div class="grid2" style="margin-top:12px">
+  <div class="card" style="text-align:center"><div class="k small muted">Population growth rate (λ)</div><div class="big" id="lam"></div><div id="lamTxt" class="small"></div></div>
+  <div class="card" style="text-align:center"><div class="k small muted">After 50 years, a population of 100,000 becomes</div><div class="big" id="n50"></div><div id="n50Txt" class="small"></div></div>
+</div>
+<div class="card" style="margin-top:12px"><div class="stage"><canvas id="sea" role="img"></canvas><button class="ovl" id="play">▶ Play 100 years</button></div><div class="legend" id="leg" style="margin-top:6px"></div></div>
+<div class="grid2">
+  <div class="card chart"><h2>What if you protect just one stage?</h2><p class="small muted" id="whatifNote"></p><svg id="whatif"></svg></div>
+  <div class="card chart"><h2>Population over 100 years</h2><div class="legend" id="legP"></div><svg id="proj"></svg></div>
+</div>
+<div class="card chart"><h2>Elasticity: share of λ that depends on each stage</h2><p class="small muted">How much λ changes, proportionally, for a small proportional change in that stage's survival or reproduction. Bigger bar = bigger lever.</p><svg id="elas"></svg></div>
+<div class="msg" id="msg"></div>
+</div>
+
+<script>
+/* ---------- shared helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const f=(v,d=2)=>Number.isFinite(v)?v.toFixed(d):'—';
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS='http://www.w3.org/2000/svg';
+function niceTicks(lo,hi,n=5){const span=hi-lo||1;let step=Math.pow(10,Math.floor(Math.log10(span/n)));const err=span/n/step;if(err>=7.5)step*=10;else if(err>=3.5)step*=5;else if(err>=1.5)step*=2;const out=[];for(let v=Math.ceil(lo/step-1e-9)*step;v<=hi+1e-9;v+=step)out.push(+v.toFixed(10));return out}
+let _clip=0;
+/* chart(svg,{xmin,xmax,ymin,ymax,xlab,ylab,series:[{pts,color,width,dash,fill}],points:[{x,y,color,r,ring}],texts:[{x,y,t,color,anchor}],logx,logy}) */
+function chart(svg,o){
+  const W=o.w||560,H=o.h||330,m={l:o.ml||56,r:14,t:12,b:44};
+  const pw=W-m.l-m.r,ph=H-m.t-m.b;
+  const tx=v=>o.logx?Math.log10(v):v, ty=v=>o.logy?Math.log10(v):v;
+  const x0=tx(o.xmin),x1=tx(o.xmax),y0=ty(o.ymin),y1=ty(o.ymax);
+  const X=v=>m.l+(tx(v)-x0)/(x1-x0)*pw, Y=v=>m.t+ph-(ty(v)-y0)/(y1-y0)*ph;
+  const id='c'+(++_clip);
+  let s=`<defs><clipPath id="${id}"><rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"/></clipPath></defs>`;
+  const xt=o.logx?logTicks(o.xmin,o.xmax):niceTicks(o.xmin,o.xmax,o.xticks||6), yt=o.logy?logTicks(o.ymin,o.ymax):niceTicks(o.ymin,o.ymax,5);
+  xt.forEach(v=>{const x=X(v);if(x<m.l-1||x>m.l+pw+1)return;s+=`<line class="grid" x1="${x}" x2="${x}" y1="${m.t}" y2="${m.t+ph}"/><text x="${x}" y="${m.t+ph+16}" text-anchor="middle">${fmtTick(v)}</text>`});
+  yt.forEach(v=>{const y=Y(v);if(y<m.t-1||y>m.t+ph+1)return;s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${y}" y2="${y}"/><text x="${m.l-6}" y="${y+4}" text-anchor="end">${fmtTick(v)}</text>`});
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab||''}</text>`;
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
+  s+=`<g clip-path="url(#${id})">`;
+  (o.series||[]).forEach(se=>{if(!se.pts||!se.pts.length)return;
+    const d=se.pts.filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1])).map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(Math.max(o.logy?1e-9:-1e9,Math.min(p[1],o.ymax*50+1e6))).toFixed(1)).join('');
+    if(se.fill)s+=`<path d="${d}" fill="${se.color}" fill-opacity="${se.fill}" stroke="none"/>`;
+    else s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="${se.width||2.2}" ${se.dash?`stroke-dasharray="${se.dash}"`:''} stroke-linejoin="round" stroke-linecap="round" ${se.opacity?`opacity="${se.opacity}"`:''}/>`});
+  (o.points||[]).forEach(p=>{if(!Number.isFinite(p.x)||!Number.isFinite(p.y))return;s+=`<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="${p.r||5}" fill="${p.ring?'var(--card)':p.color}" stroke="${p.color}" stroke-width="${p.ring?2.5:1.5}"/>`});
+  s+='</g>';
+  (o.texts||[]).forEach(t=>{s+=`<text x="${X(t.x)+(t.dx||0)}" y="${Y(t.y)+(t.dy||0)}" text-anchor="${t.anchor||'start'}" style="fill:${t.color||'var(--text)'};font-weight:600">${t.t}</text>`});
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;
+  const inv=(cx,cy)=>{const r=svg.getBoundingClientRect(),sx=(cx-r.left)/r.width*W,sy=(cy-r.top)/r.height*H;
+    let vx=x0+(sx-m.l)/pw*(x1-x0),vy=y0+(m.t+ph-sy)/ph*(y1-y0);if(o.logx)vx=10**vx;if(o.logy)vy=10**vy;return[vx,vy,sx>=m.l&&sx<=m.l+pw&&sy>=m.t&&sy<=m.t+ph]};
+  return{X,Y,inv};
+}
+function logTicks(lo,hi){const out=[];for(let e=Math.floor(Math.log10(lo));e<=Math.ceil(Math.log10(hi));e++)out.push(10**e);return out}
+function fmtTick(v){const a=Math.abs(v);if(a>=10000)return(v/1000)+'k';if(a>=1||a===0)return+v.toFixed(2)+'';return+v.toPrecision(2)+''}
+function legend(el,items){el.innerHTML=items.map(([c,t,dash])=>`<span><i class="sw" style="background:${dash?'transparent':c};${dash?`border:2px dashed ${c}`:''}"></i>${t}</span>`).join('')}
+/* sliders: <input type=range id=x data-d=decimals> with <span id=xV> */
+function val(id){const b=document.getElementById(id+'Box');return b&&b.value!==''?+b.value:+document.getElementById(id).value}
+function showVals(){$$('input[type=range]').forEach(r=>{const b=document.getElementById(r.id+'Box'),v=val(r.id);if(b&&document.activeElement!==b&&+b.value!==v)b.value=v;const o=$('#'+r.id+'V');if(o)o.textContent=(r.dataset.pre||'')+v.toFixed(+(r.dataset.d||0))+(r.dataset.suf||'')})}
+/* typed-value boxes beside every slider (skip with data-nobox) */
+function addBoxes(root=document){$$('input[type=range]:not([data-nobox])',root).forEach(r=>{if(document.getElementById(r.id+'Box'))return;
+  const w=document.createElement('div');w.className='rng';r.parentNode.insertBefore(w,r);w.appendChild(r);
+  const b=document.createElement('input');b.type='number';b.className='box';b.id=r.id+'Box';b.step='any';b.value=r.value;
+  const lab=r.labels&&r.labels[0];if(lab)lab.classList.add('hasbox');let nm=lab?lab.cloneNode(true):null;if(nm)$$('.val',nm).forEach(x=>x.remove());
+  b.setAttribute('aria-label',(nm?nm.textContent.replace(/\s+/g,' ').trim():r.id)+', type an exact value');b.title='Type an exact value';w.appendChild(b);
+  b.addEventListener('change',()=>{let v=+b.value;if(!Number.isFinite(v)){b.value=r.value;return}
+    const lo=b.dataset.min!==undefined?+b.dataset.min:+r.min,hi=b.dataset.max!==undefined?+b.dataset.max:+r.max;v=Math.min(hi,Math.max(lo,v));b.value=v;
+    r._fromBox=true;r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));r._fromBox=false})})}
+document.addEventListener('input',e=>{const r=e.target;if(r.type!=='range'||r._fromBox)return;const b=document.getElementById(r.id+'Box');if(b)b.value=r.value},true);
+function setSliders(obj){Object.entries(obj).forEach(([k,v])=>{const e=$('#'+k);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else{e.value=v;const b=document.getElementById(k+'Box');if(b)b.value=v}});showVals()}
+/* tabs */
+function initTabs(RENDER){let cur=$('nav.tabs button.on').dataset.tab;
+  $$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));cur=b.dataset.tab;if(RENDER[cur])RENDER[cur]();try{history.replaceState(null,'','#'+cur)}catch(e){}});
+  const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();
+  return()=>cur}
+/* quiz */
+function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted score"></p>';
+  const got={};
+  $$('.q',el).forEach(d=>{const q=QS[+d.dataset.i];$$('.opts button',d).forEach(b=>b.onclick=()=>{const j=+b.dataset.j,ok=j===q.a;
+    $$('.opts button',d).forEach(x=>x.classList.remove('right','wrong'));b.classList.add(ok?'right':'wrong');
+    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the results.'));
+    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('.score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+/* bar chart: bars(svg,{cats:[...],series:[{name,color,vals:[...]}],ymax,ylab,xlab,w,h,fmt}) */
+function bars(svg,o){
+  const W=o.w||560,H=o.h||330,m={l:o.ml||56,r:14,t:16,b:o.mb||52},pw=W-m.l-m.r,ph=H-m.t-m.b,n=o.cats.length,k=o.series.length;
+  const ymax=o.ymax||Math.max(...o.series.flatMap(s=>s.vals))*1.15||1,Y=v=>m.t+ph-v/ymax*ph,gw=pw/n,bw=Math.min(60,gw*0.8/k);
+  let s='';niceTicks(0,ymax,5).forEach(v=>{const y=Y(v);s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${y}" y2="${y}"/><text x="${m.l-6}" y="${y+4}" text-anchor="end">${fmtTick(v)}</text>`});
+  s+=`<line class="ax" x1="${m.l}" x2="${m.l+pw}" y1="${m.t+ph}" y2="${m.t+ph}"/>`;
+  o.cats.forEach((c,i)=>{const cx=m.l+gw*(i+0.5);
+    o.series.forEach((se,j)=>{const v=se.vals[i];if(v==null||!Number.isFinite(v))return;const x=cx-k*bw/2+j*bw,y=Y(v);
+      s+=`<rect x="${x+1}" y="${y}" width="${bw-2}" height="${m.t+ph-y}" fill="${se.color}" rx="2" ${se.hatch?'fill-opacity=".45" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 2"':''}/>`;
+      s+=`<text x="${x+bw/2}" y="${y-4}" text-anchor="middle" style="fill:var(--text);font-size:11px">${o.fmt?o.fmt(v):fmtTick(+v.toFixed(2))}</text>`});
+    String(c).split('\n').forEach((line,li)=>{s+=`<text x="${cx}" y="${m.t+ph+16+li*13}" text-anchor="middle">${line}</text>`})});
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
+  if(o.xlab)s+=`<text class="lab" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab}</text>`;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s}
+
+/* ---------- paper-tab engine ----------
+ P = {id, cite, doi, why, question, hyps:[[title,text]], design(html), predict:{q,opts:[text],note?:[fb per option]},
+      results(html), afterResults(fn), found(html), interpret:[quiz items], model(html)?, afterModel(fn)?, discuss:[...] } */
+function paperTab(el,P){
+  const sec=(n,t,body,cls='')=>`<div class="pp-sec ${cls}"><h2>${n?`<span class="num">${n}</span>`:''}${t}</h2>${body}</div>`;
+  let n=1,h='';
+  h+=`<div class="pp-sec pp-head"><h2>${P.title}</h2><p style="margin:0">${P.why}</p><p class="cite">${P.cite}${P.doi?` <a href="https://doi.org/${P.doi}" target="_blank" rel="noopener">doi:${P.doi}</a>`:''}${P.url?` <a href="${P.url}" target="_blank" rel="noopener">Read it</a>`:''}</p></div>`;
+  h+=sec(n++,'The question',`<p>${P.question}</p>${P.hyps?`<div class="hyp">${P.hyps.map(x=>`<div><b>${x[0]}</b><br>${x[1]}</div>`).join('')}</div>`:''}`);
+  h+=sec(n++,'What they did',P.design);
+  h+=sec(n++,'Your prediction',`<p>${P.predict.q}</p><div class="pred-opts" id="${P.id}-pred">${P.predict.opts.map((o,i)=>`<button data-i="${i}" aria-pressed="false">${o}</button>`).join('')}</div><div class="msg small" id="${P.id}-predfb" style="display:none" aria-live="polite"></div>`);
+  h+=sec(n++,'What they found',`<div class="locked" id="${P.id}-lock"><div class="lockmsg">Make a prediction above to unlock the results.</div><div class="lockbody">${P.results}<div class="msg" style="margin-top:10px">${P.found}</div></div></div>`);
+  h+=sec(n++,'Interpret the results',`<div id="${P.id}-quiz"></div>`);
+  if(P.model)h+=sec(n++,P.modelTitle||'Try the model',P.model);
+  h+=sec(n++,'Discuss',`<ol class="discuss">${P.discuss.map(d=>`<li>${d}</li>`).join('')}</ol>`);
+  el.innerHTML=h;
+  quiz($(`#${P.id}-quiz`),P.interpret);
+  let shown=false;
+  $$(`#${P.id}-pred button`).forEach(b=>b.onclick=()=>{
+    $$(`#${P.id}-pred button`).forEach(x=>{x.classList.toggle('picked',x===b);x.setAttribute('aria-pressed',x===b?'true':'false')});
+    const fb=$(`#${P.id}-predfb`);fb.style.display='block';fb.innerHTML=`<b>Prediction saved.</b> ${P.predict.note?P.predict.note[+b.dataset.i]:''} Scroll down to compare with what the authors found.`;
+    const L=$(`#${P.id}-lock`);L.classList.add('unlocked');if(!shown){shown=true;if(P.afterResults)P.afterResults()}});
+  if(P.afterModel)P.afterModel();
+  return{redraw:()=>{if(shown&&P.afterResults)P.afterResults();if(P.afterModel)P.afterModel()}};
+}
+/* canvas helper: size for DPR, return ctx in logical units W x H */
+function ctx2d(cv,W,H){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round((r.width||W)*dpr)),h=Math.max(1,Math.round((r.width||W)*H/W*dpr));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(w/W,0,0,h/H,0,0);return x}
+function seg(el,cb){$$('button',el).forEach(b=>b.onclick=()=>{$$('button',el).forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v,b)})}
+function isDark(){return document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)}
+
+(function(){
+const ST=[
+ {n:'Eggs & hatchlings',s:0.6747,d:1,F:0,where:'Nesting beach',c:'#d9a441'},
+ {n:'Small juveniles',s:0.7857,d:7,F:0,where:'Open ocean',c:'#7fbf8a'},
+ {n:'Large juveniles',s:0.6758,d:8,F:0,where:'Coastal waters',c:'#3f9a6a'},
+ {n:'Subadults',s:0.7425,d:6,F:0,where:'Coastal waters',c:'#2f7d8a'},
+ {n:'Novice breeders',s:0.8091,d:1,F:127,where:'First nesting year',c:'#1f6fbf'},
+ {n:'1st-year remigrants',s:0.8091,d:1,F:4,where:'Between nestings',c:'#5a5fc4'},
+ {n:'Mature breeders',s:0.8091,d:32,F:80,where:'Adults',c:'#7a3fa8'}];
+const prot=new Set();let playing=false,yr=0,popv=null,projHist=[];
+function surv(i,extra){const p=prot.has(i)||extra===i;return Math.min(0.99,ST[i].s+(p?val('boost'):0))}
+function matrix(extra){const A=Array.from({length:7},()=>new Array(7).fill(0));
+  for(let i=0;i<7;i++){const s=surv(i,extra),d=ST[i].d;let P,G;if(d===1){P=0;G=s}else{const sd=Math.pow(s,d);P=s*(1-Math.pow(s,d-1))/(1-sd);G=sd*(1-s)/(1-sd)}
+    if(i<6){A[i][i]=P;A[i+1][i]=G}else A[i][i]=s}
+  // fecundity: eggs produced by stage 5,6,7 (Crouse used F as a reproduction term into stage 1)
+  A[0][4]=ST[4].F;A[0][5]=ST[5].F;A[0][6]=ST[6].F;
+  // Crouse et al. matrix row 1 entries are fecundities; stage 5 and 6 transitions handled by G; stage 7 stays
+  return A}
+const mv=(A,v)=>A.map(r=>r.reduce((s,a,j)=>s+a*v[j],0)),vm=(v,A)=>A[0].map((_,j)=>A.reduce((s,r,i)=>s+v[i]*r[j],0));
+function eig(A){let w=new Array(7).fill(1),lam=1;for(let k=0;k<500;k++){const n=mv(A,w),s=n.reduce((a,b)=>a+b,0);lam=s/w.reduce((a,b)=>a+b,0);w=n.map(x=>x/s)}
+  let v=new Array(7).fill(1);for(let k=0;k<500;k++){const n=vm(v,A),s=n.reduce((a,b)=>a+b,0);v=n.map(x=>x/s)}return{lam,w,v}}
+function elasticities(A){const{lam,w,v}=eig(A),vw=v.reduce((s,x,i)=>s+x*w[i],0);const E=A.map((r,i)=>r.map((a,j)=>a*v[i]*w[j]/(lam*vw)));
+  // group: per stage, survival-related (stasis + growth out of that stage) and fecundity
+  const surv=ST.map((_,j)=>E[j][j]+(j<6?E[j+1][j]:0)),fec=ST.map((_,j)=>E[0][j]);return{surv,fec}}
+function renderStages(){$('#stages').innerHTML=ST.map((s,i)=>`<div class="st ${prot.has(i)?'on':''}" data-i="${i}" role="button" tabindex="0" aria-pressed="${prot.has(i)}"><div class="nm" style="color:${s.c}">${s.n}</div><div class="sv">${f(surv(i)*100,0)}%</div><div class="sm">survive per year</div><div class="sm">${s.d} yr${s.d>1?'s':''}${s.F?` · ${s.F} eggs/yr`:''}</div><div class="pb">${prot.has(i)?'✓ Protected':'Protect'}</div></div>`).join('');
+  $$('.st').forEach(el=>{const tg=()=>{const i=+el.dataset.i;prot.has(i)?prot.delete(i):prot.add(i);update()};el.onclick=tg;el.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tg()}}})}
+function stableStart(){const{w}=eig(matrix());return w.map(x=>x*100000)}
+function update(){showVals();renderStages();const A=matrix(),{lam,w}=eig(A);
+  $('#lam').textContent=f(lam,3);$('#lam').style.color=lam>=1?'var(--good)':'var(--bad)';$('#lamTxt').textContent=lam>=1?`Growing about ${f((lam-1)*100,1)}% per year`:`Shrinking about ${f((1-lam)*100,1)}% per year`;
+  const n50=100000*Math.pow(lam,50);$('#n50').textContent=n50>=1e6?f(n50/1e6,1)+' million':f(n50,0).replace(/\B(?=(\d{3})+(?!\d))/g,',');$('#n50').style.color=lam>=1?'var(--good)':'var(--bad)';$('#n50Txt').textContent=lam>=1?'turtles':`turtles (${f(100-n50/1000,0)}% fewer)`;
+  // what-if: protect only stage i (on top of current protections)
+  const base=lam,wi=ST.map((_,i)=>prot.has(i)?null:eig(matrix(i)).lam);
+  $('#whatifNote').textContent=`λ if you add protection (+${f(val('boost')*100,0)} points of yearly survival) to just one more stage. Line = λ now (${f(base,3)}); dashed = 1 (stable).`;
+  const vals=wi.map(v=>v??base),lo=Math.min(0.9,...vals)-0.01,hi=Math.max(1.05,...vals)+0.01;
+  const svg=$('#whatif'),D=isDark(),txt=D?'#e7ecf2':'#10202e',mut=D?'#aab4c0':'#5b6672',Wd=460,rowH=38,X0=150,BW=280,sx=v=>X0+(v-lo)/(hi-lo)*BW;let s='';
+  ST.forEach((st,i)=>{const y=10+i*rowH,v=vals[i],c=prot.has(i)?mut:(v>=1?'#2e9d55':st.c);s+=`<text x="${X0-8}" y="${y+18}" font-size="13" text-anchor="end" fill="${txt}">${st.n}</text><rect x="${sx(lo)}" y="${y+4}" width="${Math.max(2,sx(v)-sx(lo))}" height="22" rx="4" fill="${c}" opacity="${prot.has(i)?0.35:1}"/><text x="${sx(v)+6}" y="${y+20}" font-size="12" font-weight="700" fill="${txt}">${prot.has(i)?'protected':f(v,3)}</text>`});
+  s+=`<line x1="${sx(1)}" x2="${sx(1)}" y1="4" y2="${10+7*rowH}" stroke="${mut}" stroke-dasharray="5 4"/><line x1="${sx(base)}" x2="${sx(base)}" y1="4" y2="${10+7*rowH}" stroke="var(--s2)" stroke-width="2"/><text x="${sx(1)}" y="${24+7*rowH}" font-size="11" text-anchor="middle" fill="${mut}">λ = 1</text>`;
+  svg.setAttribute('viewBox',`0 0 ${Wd} ${30+7*rowH}`);svg.innerHTML=s;svg.setAttribute('aria-label','λ if each stage alone were protected: '+ST.map((st,i)=>`${st.n} ${prot.has(i)?'already protected':f(vals[i],3)}`).join('; '));
+  // elasticity
+  const el=elasticities(A);bars($('#elas'),{cats:ST.map(s=>s.n.replace('1st-year ','1st-yr ')),series:[{color:'var(--s1)',vals:el.surv.map(v=>v*100)},{color:'var(--s4)',vals:el.fec.map(v=>v*100)}],ymax:Math.max(...el.surv,...el.fec)*110,ylab:'Elasticity (% of λ)',w:760,h:280,mb:62,fmt:v=>v>0.05?f(v,1):''});
+  $('#elas').insertAdjacentHTML('beforebegin','');legendOnce();
+  $('#elas').setAttribute('aria-label','Elasticity of λ: survival '+ST.map((s,i)=>`${s.n} ${f(el.surv[i]*100,1)}%`).join(', ')+'; reproduction '+ST.map((s,i)=>el.fec[i]>0.0005?`${s.n} ${f(el.fec[i]*100,1)}%`:'').filter(Boolean).join(', '));
+  projChart(lam);msg(lam,vals,el);if(!playing){popv=stableStart();yr=0;projHist=[[0,100000]]}drawSea()}
+function legendOnce(){if(!$('#elasLeg')){$('#elas').insertAdjacentHTML('beforebegin','<div class="legend" id="elasLeg"></div>');legend($('#elasLeg'),[['var(--s1)','Survival in that stage'],['var(--s4)','Reproduction (eggs)']])}}
+function projChart(lam){const none=(()=>{const s=new Set(prot);prot.clear();const l=eig(matrix()).lam;s.forEach(x=>prot.add(x));return l})();
+  const pts=[],p0=[];for(let t=0;t<=100;t+=2){pts.push([t,100000*Math.pow(lam,t)]);p0.push([t,100000*Math.pow(none,t)])}
+  chart($('#proj'),{xmin:0,xmax:100,ymin:Math.max(10,Math.min(...pts.map(p=>p[1]),...p0.map(p=>p[1]))*0.8),ymax:Math.max(...pts.map(p=>p[1]),...p0.map(p=>p[1]))*1.3,logy:1,w:460,h:330,xlab:'Years',ylab:'Turtles (log scale)',series:[{pts:p0,color:'var(--muted)',dash:'6 5',width:2},{pts,color:'var(--s1)',width:3},...(projHist.length>1?[{pts:projHist,color:'var(--s2)',width:4}]:[])]});
+  legend($('#legP'),[['var(--muted)','No protection',1],['var(--s1)','With your protection'],...(projHist.length>1?[['var(--s2)','Animated run']]:[])]);$('#proj').setAttribute('aria-label',`Projected population over 100 years, λ = ${f(lam,3)} with protection and ${f(none,3)} without.`)}
+function msg(lam,vals,el){const best=vals.map((v,i)=>[v,i]).filter(([v,i])=>!prot.has(i)).sort((a,b)=>b[0]-a[0])[0];let m='';
+  if(!prot.size)m=`With no protection, λ = ${f(lam,3)}: the population shrinks about ${f((1-lam)*100,1)}% each year. Look at the what-if chart: raising egg and hatchling survival barely helps, because eggs are cheap (each female lays hundreds) and most hatchlings would die later anyway. Raising survival of <b>large juveniles</b> helps most, followed by small juveniles and subadults: these turtles have already survived the riskiest early years, spend many years in these stages, and will soon breed for decades. Many were drowning in shrimp trawls, which is why <b>turtle excluder devices</b> made such a difference.`;
+  else m=`${lam>=1?'<b>The population is now growing.</b> ':'Still declining. '}You are protecting ${[...prot].map(i=>ST[i].n.toLowerCase()).join(', ')}. ${best?`The next best stage to protect would be <b>${ST[best[1]].n.toLowerCase()}</b> (λ → ${f(best[0],3)}).`:''} Elasticity shows why: λ depends most on stages where turtles spend many years and that lead to breeding.`;
+  $('#msg').innerHTML=m}
+const rr=s=>()=>(s=(s*16807)%2147483647)/2147483647;
+function turtle(x,X,Y,sz,c,a){x.save();x.translate(X,Y);x.rotate(a);x.fillStyle=c;for(const[fx,fy,r]of[[sz*0.5,-sz*0.55,0.6],[sz*0.5,sz*0.55,-0.6],[-sz*0.55,-sz*0.4,-0.4],[-sz*0.55,sz*0.4,0.4]]){x.save();x.translate(fx,fy);x.rotate(r);x.beginPath();x.ellipse(0,0,sz*0.35,sz*0.15,0,0,7);x.fill();x.restore()}
+  x.beginPath();x.arc(sz*0.85,0,sz*0.22,0,7);x.fill();const g=x.createRadialGradient(-sz*0.1,-sz*0.15,1,0,0,sz*0.7);g.addColorStop(0,'#c8873e');g.addColorStop(1,'#7a4a1f');x.fillStyle=g;x.beginPath();x.ellipse(0,0,sz*0.7,sz*0.55,0,0,7);x.fill();x.strokeStyle='rgba(60,30,10,.5)';x.lineWidth=0.8;x.beginPath();x.ellipse(0,0,sz*0.4,sz*0.3,0,0,7);x.stroke();x.restore()}
+function drawSea(){const x=ctx2d($('#sea'),760,300),D=isDark(),tt=performance.now()/1000;
+  const sea=x.createLinearGradient(160,0,760,0);sea.addColorStop(0,D?'#1d5a6e':'#7fd0e0');sea.addColorStop(0.45,D?'#164a66':'#3fa6cf');sea.addColorStop(1,D?'#0b2a48':'#1d5f9e');x.fillStyle=sea;x.fillRect(0,0,760,300);
+  x.fillStyle=D?'#a8916a':'#f0dca8';x.beginPath();x.moveTo(0,0);x.lineTo(150,0);for(let y=0;y<=300;y+=10)x.lineTo(150+Math.sin(y/22+tt)*8,y);x.lineTo(0,300);x.fill();
+  x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=2;for(let k=0;k<3;k++){x.beginPath();for(let y=0;y<=300;y+=10)x.lineTo(165+k*16+Math.sin(y/22+tt+k)*8,y);x.stroke()}
+  x.fillStyle='rgba(255,255,255,.85)';x.font='bold 12px system-ui';x.fillText('Nesting beach',12,18);x.fillText('Coastal waters',190,18);x.fillText('Open ocean',600,18);
+  const n=popv||stableStart(),tot=n.reduce((a,b)=>a+b,0);const zone=[[10,140,30,290],[560,750,40,290],[200,420,40,170],[200,420,170,290],[430,550,40,120],[430,550,120,200],[430,550,200,290]];
+  const sizes=[3,5,8,10,12,12,12];
+  ST.forEach((st,i)=>{const share=n[i]/100000,cnt=Math.min(70,Math.round(Math.sqrt(share)*120));const r=rr(i*131+7),[x0,x1,y0,y1]=zone[i];
+    for(let k=0;k<cnt;k++){const px=x0+r()*(x1-x0),py=y0+r()*(y1-y0),a=r()*6.28+Math.sin(tt*0.6+k)*0.3;
+      if(i===0){x.fillStyle=D?'#8a7450':'#d8c08a';x.beginPath();x.ellipse(px,py,7,4,0,0,7);x.fill();x.fillStyle='#f8f4ea';x.beginPath();x.arc(px-2,py,1.8,0,7);x.arc(px+2,py,1.8,0,7);x.fill()}
+      else turtle(x,px+Math.sin(tt*0.8+k)*2,py+Math.cos(tt*0.7+k)*2,sizes[i],st.c,a)}});
+  x.fillStyle='rgba(0,0,0,.55)';x.fillRect(560,262,190,30);x.fillStyle='#fff';x.font='bold 14px system-ui';x.fillText(`Year ${yr} · ${tot>=1e6?f(tot/1e6,2)+' M':f(tot,0).replace(/\B(?=(\d{3})+(?!\d))/g,',')} turtles`,570,282);
+  legend($('#leg'),ST.map(s=>[s.c,s.n]));$('#sea').setAttribute('aria-label',`Year ${yr}: ${f(tot,0)} turtles across all life stages.`)}
+let lf=0,acc=0;
+function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;if(playing){acc+=dt*8;while(acc>=1&&yr<100){acc-=1;popv=mv(matrix(),popv);yr++;projHist.push([yr,popv.reduce((a,b)=>a+b,0)])}if(yr>=100){playing=false;$('#play').textContent='▶ Play 100 years'}projChart(eig(matrix()).lam)}drawSea();requestAnimationFrame(frame)}
+$('#play').onclick=()=>{if(playing){playing=false;$('#play').textContent='▶ Play 100 years';return}popv=stableStart();yr=0;projHist=[[0,100000]];playing=true;$('#play').textContent='❚❚ Pause'};
+$('#clear').onclick=()=>{prot.clear();update()};$('#boost').addEventListener('input',update);
+window.addEventListener('resize',update);
+update();requestAnimationFrame(ts=>{lf=ts;frame(ts)});
+})();
+</script>
+<script>window.A11Y={tabsLabel:'Views',css:'',live:['#msg']};</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
+
