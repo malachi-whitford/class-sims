@@ -159,7 +159,7 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
     <div class="you"><button id="minus" aria-label="Remove a cow">−</button><span class="n" id="mine"></span><button id="plus" aria-label="Add a cow">+</button><span class="small">cows</span></div>
     <div class="ext"><div><span class="small">If you add 1 cow, over the next 5 seasons your profit changes by</span><b id="gainMe"></b></div><div><span class="small">and the other four herders' profit changes by</span><b id="gainThem"></b></div></div>
     <div class="row" style="margin-top:12px"><button class="primary" id="play">Play seasons</button><button id="step">Next season</button><button id="reset">Start over</button></div>
-    <label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="5" step="1" value="2" data-suf="×" data-nobox>
+    <label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="5" step="1" value="1" data-suf="×" data-nobox>
     <label class="check"><input type="checkbox" id="greedy" checked> <span>Other herders are greedy</span></label>
   </div>
   <div>
@@ -352,7 +352,7 @@ function ui(force){const now=performance.now();if(!force&&now-lastUI<250)return;
   else m='When herders are not greedy and agree to keep the total near what the grass can regrow, everyone keeps earning season after season.';
   $('#msg').innerHTML=m}
 let lf=0;
-function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;if(playing){acc+=dt*val('speed')*1.2;while(acc>=1){acc-=1;nextSeason()}}draw();requestAnimationFrame(frame)}
+function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;if(playing){acc+=dt*val('speed')*0.7;while(acc>=1){acc-=1;nextSeason()}}draw();requestAnimationFrame(frame)}
 $('#plus').onclick=()=>{if(rule==='quota'&&cows[0]>=val('quota'))return;cows[0]++;draw(true)};$('#minus').onclick=()=>{cows[0]=Math.max(0,cows[0]-1);draw(true)};
 $('#play').onclick=()=>setPlay(!playing);$('#step').onclick=nextSeason;$('#reset').onclick=()=>{setPlay(false);reset()};
 seg($('#rule'),v=>{rule=v;setPlay(false);reset()});$('#quota').addEventListener('input',()=>{for(let i=0;i<NH;i++)cows[i]=Math.min(cows[i],val('quota'));draw(true)});
