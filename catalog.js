@@ -9,7 +9,8 @@
 
    ITEMS are the cards. Each item needs:
      title  : card title
-     topic  : one of the topic ids below
+     topic  : one of the topic ids below, or a list to show the card
+              under more than one tab, e.g. ["community", "field"]
      type   : "sim"  = an HTML simulation stored in this repo (sims/<folder>/index.html)
               "app"  = a web app hosted somewhere else (Google Apps Script, etc.)
               "link" = any other outside resource (a Google Doc, video, website)
@@ -28,6 +29,7 @@ const TOPICS = [
   { id: "cells",  label: "Cells & Membranes",       blurb: "Diffusion, osmosis, and how cells respond to their surroundings." },
   { id: "plants", label: "Plant Science",           blurb: "How plants capture carbon and move water." },
   { id: "soils",  label: "Soil Science",            blurb: "Soil water, soil chemistry, and the exchange of nutrients." },
+  { id: "community", label: "Community Ecology",    blurb: "How species interact, coexist, and assemble into communities." },
   { id: "field",  label: "Field Methods & Conservation", blurb: "Tools and background for working as a field biologist." }
 ];
 
@@ -94,6 +96,40 @@ const ITEMS = [
     tags: ["pH", "buffering", "lime", "CEC"]
   },
 
+  // ---------- Community Ecology ----------
+  {
+    title: "Competition & Coexistence",
+    topic: "community",
+    type: "sim",
+    url: "sims/competition/",
+    desc: "Run the Lotka–Volterra competition model on a time graph and a phase plane, then turn overlapping seed-size niches into competition coefficients to see when two species can coexist.",
+    tags: ["competition", "Lotka–Volterra", "niche overlap", "competitive exclusion", "quiz"]
+  },
+  {
+    title: "Predator–Prey Dynamics",
+    topic: "community",
+    type: "sim",
+    url: "sims/predator-prey/",
+    desc: "Watch predator and prey populations cycle, then add prey food limits, refuges, and fear of predators. Compare type I, II, and III functional responses.",
+    tags: ["predation", "Lotka–Volterra", "functional response", "landscape of fear", "quiz"]
+  },
+  {
+    title: "Island Biogeography",
+    topic: "community",
+    type: "sim",
+    url: "sims/island-biogeography/",
+    desc: "Balance immigration and extinction on islands of different sizes and distances, watch four islands fill with species, and use the species–area relationship to predict losses from habitat fragmentation.",
+    tags: ["MacArthur–Wilson", "species–area", "fragmentation", "turnover", "quiz"]
+  },
+  {
+    title: "Disturbance & Succession",
+    topic: "community",
+    type: "sim",
+    url: "sims/disturbance-succession/",
+    desc: "Watch an abandoned field go from weeds to oak forest, set fires and other disturbances, and run an experiment testing the intermediate disturbance hypothesis.",
+    tags: ["succession", "intermediate disturbance", "competition–colonization", "quiz"]
+  },
+
   // ---------- Field Methods & Conservation ----------
   {
     title: "Environmental Laws in the Field",
@@ -113,7 +149,7 @@ const ITEMS = [
   },
   {
     title: "Species Diversity Calculator",
-    topic: "field",
+    topic: ["community", "field"],
     type: "sim",
     url: "sims/species-diversity/",
     desc: "Enter species counts from several sites (or use an example data set) to calculate richness, Simpson's and Shannon's indices, and alpha, beta, and gamma diversity, with charts, step-by-step math, and a check-your-work tool.",
