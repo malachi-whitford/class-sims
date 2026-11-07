@@ -347,7 +347,7 @@ function drawSea(){const x=ctx2d($('#sea'),760,300),D=isDark(),tt=performance.no
   x.fillStyle='rgba(0,0,0,.55)';x.fillRect(560,262,190,30);x.fillStyle='#fff';x.font='bold 14px system-ui';x.fillText(`Year ${yr} · ${tot>=1e6?f(tot/1e6,2)+' M':f(tot,0).replace(/\B(?=(\d{3})+(?!\d))/g,',')} turtles`,570,282);
   legend($('#leg'),ST.map(s=>[s.c,s.n]));$('#sea').setAttribute('aria-label',`Year ${yr}: ${f(tot,0)} turtles across all life stages.`)}
 let lf=0,acc=0;
-function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;if(playing){acc+=dt*8;while(acc>=1&&yr<100){acc-=1;popv=mv(matrix(),popv);yr++;projHist.push([yr,popv.reduce((a,b)=>a+b,0)])}if(yr>=100){playing=false;$('#play').textContent='▶ Play 100 years'}projChart(eig(matrix()).lam)}drawSea();requestAnimationFrame(frame)}
+function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;if(playing){acc+=dt*4;while(acc>=1&&yr<100){acc-=1;popv=mv(matrix(),popv);yr++;projHist.push([yr,popv.reduce((a,b)=>a+b,0)])}if(yr>=100){playing=false;$('#play').textContent='▶ Play 100 years'}projChart(eig(matrix()).lam)}drawSea();requestAnimationFrame(frame)}
 $('#play').onclick=()=>{if(playing){playing=false;$('#play').textContent='▶ Play 100 years';return}popv=stableStart();yr=0;projHist=[[0,100000]];playing=true;$('#play').textContent='❚❚ Pause'};
 $('#clear').onclick=()=>{prot.clear();update()};$('#boost').addEventListener('input',update);
 window.addEventListener('resize',update);

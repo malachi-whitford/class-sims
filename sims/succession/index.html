@@ -146,7 +146,7 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 <p class="sub">Two landscapes start over at the same moment. On the left, a lava flow has left <b>bare rock with no soil</b>. On the right, a farm field has been abandoned: the plants are gone but the <b>soil and its seeds remain</b>. Watch how communities rebuild, and why one takes so much longer.</p>
 <div class="card ctrl" style="display:flex;flex-wrap:wrap;gap:10px 20px;align-items:flex-end">
   <div class="row" style="margin:0"><button class="primary" id="play">Play</button><button id="reset">Start both over</button></div>
-  <div style="flex:1 1 220px"><label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="10" step="1" value="3" data-suf=" yr/frame" data-nobox></div>
+  <div style="flex:1 1 220px"><label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="10" step="1" value="1" data-suf=" yr/frame" data-nobox></div>
   <div class="tile" style="min-width:120px"><div class="k">Years since disturbance</div><div class="v" id="yr"></div></div>
 </div>
 
@@ -341,7 +341,7 @@ function draw(force){const D=isDark(),a=drawPlot($('#cA'),A,D),b=drawPlot($('#cB
   $('#msg').innerHTML=m}
 const setPlay=v=>{playing=v;$('#play').textContent=v?'Pause':'Play';$('#play2').textContent=v?'❚❚ Pause':'▶ Play'};
 let lf=0;
-function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;if(playing){acc+=dt*12;while(acc>=1){acc-=1;for(let k=0;k<val('speed');k++){yr++;yearStep(A);yearStep(B)}}if(yr>=600)setPlay(false)}draw();requestAnimationFrame(frame)}
+function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;if(playing){acc+=dt*8;while(acc>=1){acc-=1;for(let k=0;k<val('speed');k++){yr++;yearStep(A);yearStep(B)}}if(yr>=600)setPlay(false)}draw();requestAnimationFrame(frame)}
 $('#play').onclick=()=>setPlay(!playing);$('#play2').onclick=()=>setPlay(!playing);$('#reset').onclick=reset;
 $('#lavaA').onclick=()=>disturb(A,'lava');$('#fireA').onclick=()=>disturb(A,'fire');$('#plowB').onclick=()=>disturb(B,'plow');$('#fireB').onclick=()=>disturb(B,'fire');
 $('#speed').addEventListener('input',()=>draw(true));window.addEventListener('resize',()=>draw(true));

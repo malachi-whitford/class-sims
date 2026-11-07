@@ -154,7 +154,7 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
     <div id="grpC"><label for="rd">Growth per generation (r) <span class="val" id="rdV"></span></label><input type="range" id="rd" min="0.1" max="3" step="0.01" value="1.8" data-d="2">
       <div class="row presets"><button data-rd="1.8">Settles</button><button data-rd="2.2">2-cycle</button><button data-rd="2.5">4-cycle</button><button data-rd="2.8">Chaos</button></div>
       <label class="check"><input type="checkbox" id="twin"> <span>Add a twin island that starts with 1 extra rabbit</span></label></div>
-    <label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="5" step="1" value="2" data-suf="×" data-nobox>
+    <label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="5" step="1" value="1" data-suf="×" data-nobox>
     <label class="check"><input type="checkbox" id="logy"> <span>Log scale on the population graph</span></label>
   </div>
   <div>
@@ -360,7 +360,7 @@ function draw(force){drawIsland();const now=performance.now();if(!force&&now-las
   $('#eq').innerHTML=eqText();charts();tiles();msg()}
 let lastF=0;
 function frame(ts){const dt=Math.min(0.1,(ts-lastF)/1000);lastF=ts;
-  if(playing){const sp=val('speed');if(discrete()){acc+=dt*sp*2.2;while(acc>=1){acc-=1;stepDisc()}}else{const yrs=dt*sp*1.2,n=Math.ceil(yrs/0.02);const before=N;for(let i=0;i<n;i++)stepCont(yrs/n);hist.push([t,N]);const add=N-before;for(let i=0;i<Math.min(15,Math.round(add));i++)pops.push({i:(Math.random()*Math.min(N,MAXDRAW))|0,a:1})}
+  if(playing){const sp=val('speed');if(discrete()){acc+=dt*sp*1.2;while(acc>=1){acc-=1;stepDisc()}}else{const yrs=dt*sp*0.8,n=Math.ceil(yrs/0.02);const before=N;for(let i=0;i<n;i++)stepCont(yrs/n);hist.push([t,N]);const add=N-before;for(let i=0;i<Math.min(15,Math.round(add));i++)pops.push({i:(Math.random()*Math.min(N,MAXDRAW))|0,a:1})}
     if(N>=cap()||t>(discrete()?200:200)){setPlay(false)}if(N<0.5&&t>0){N=0;setPlay(false)}}
   draw();requestAnimationFrame(frame)}
 $('#play').onclick=()=>setPlay(!playing);$('#play2').onclick=()=>setPlay(!playing);$('#reset').onclick=reset;
