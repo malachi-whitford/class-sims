@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Succession &amp; Disturbance: Four Classic Papers</title>
+<title>Disturbance &amp; Succession Simulations: Connell &amp; Slatyer, Connell, Sousa, Tilman</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -116,26 +116,126 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 .datatbl{margin-top:8px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-sec>h2 .num{color:#0d1b2a}}
 .pp-sec .chart svg{max-width:760px;margin:0 auto}
+.paperstrip{font-size:.88rem;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--s4);border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.paperstrip .cite{color:var(--muted);font-size:.8rem;margin-top:4px}
+.ctrl label.hasbox{display:block}
 
-.modelsel button{font-size:.85rem}
-.modelsel button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+#sGrid,#iGrid{aspect-ratio:500/300;image-rendering:pixelated}
+#bField{aspect-ratio:540/170}
+#tGrid{aspect-ratio:1/1;max-width:360px;margin:0 auto;display:block;image-rendering:pixelated}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Succession &amp; Disturbance: Four Classic Papers</h1>
-<p class="sub">Each tab walks through one landmark paper on how communities change after disturbance and how disturbance shapes diversity. Read the question, see the design, make a prediction, then look at what the authors found.</p>
+<h1>Disturbance &amp; Succession</h1>
+<p class="sub">Four simulations of how communities change after disturbance, each built on a classic study.</p>
 <nav class="tabs">
-  <button class="on" data-tab="t1">Connell &amp; Slatyer 1977</button>
-  <button data-tab="t2">Connell 1978</button>
-  <button data-tab="t3">Sousa 1979: boulders</button>
-  <button data-tab="t4">Tilman 1994</button>
+  <button class="on" data-tab="t1">Old field: 3 models of succession</button>
+  <button data-tab="t2">Coral reef: intermediate disturbance</button>
+  <button data-tab="t3">Boulders: disturbance in the field</button>
+  <button data-tab="t4">Grassland: colonize or compete</button>
 </nav>
-<section class="panel on" id="t1"></section>
-<section class="panel" id="t2"></section>
-<section class="panel" id="t3"></section>
-<section class="panel" id="t4"></section>
+
+<!-- ================= CONNELL & SLATYER ================= -->
+<section class="panel on" id="t1">
+<div class="paperstrip">Connell and Slatyer asked why early species are replaced by later ones and proposed three models. <b>Facilitation</b>: early species make the site suitable for later ones. <b>Tolerance</b>: later species can establish anyway and simply outlast or outcompete early ones. <b>Inhibition</b>: whoever arrives first holds the site, and later species take over only when early ones die. Their test: remove the early species and see whether later ones come in slower, the same, or faster. Rates here are illustrative.
+  <div class="cite">Connell, J. H., &amp; R. O. Slatyer (1977). Mechanisms of succession in natural communities and their role in community stability and organization. <i>The American Naturalist</i> 111: 1119–1144.</div></div>
+<div class="layout">
+  <div class="card ctrl">
+    <div class="row presets"><button data-cs="fac">Facilitation</button><button data-cs="tol">Tolerance</button><button data-cs="inh">Inhibition</button></div>
+    <div class="row"><button class="primary" id="sPlay">Play</button><button id="sReset">Clear the field</button></div>
+    <label for="sSpeed">Speed <span class="val" id="sSpeedV"></span></label><input type="range" id="sSpeed" min="1" max="5" step="1" value="1" data-suf=" yr/frame">
+    <label class="check"><input type="checkbox" id="sRem"> Weed out early species every year</label>
+    <h3>Seeds arriving per open spot per year</h3>
+    <label for="sA0">Annual weeds <span class="val" id="sA0V"></span></label><input type="range" id="sA0" min="0" max="0.6" step="0.01" value="0.3" data-d="2">
+    <label for="sA1">Shrubs <span class="val" id="sA1V"></span></label><input type="range" id="sA1" min="0" max="0.3" step="0.005" value="0.06" data-d="3">
+    <label for="sA2">Trees <span class="val" id="sA2V"></span></label><input type="range" id="sA2" min="0" max="0.3" step="0.005" value="0.03" data-d="3">
+    <h3>Death rate per year</h3>
+    <label for="sM0">Annual weeds <span class="val" id="sM0V"></span></label><input type="range" id="sM0" min="0" max="1" step="0.01" value="0.4" data-d="2">
+    <label for="sM1">Shrubs <span class="val" id="sM1V"></span></label><input type="range" id="sM1" min="0" max="0.5" step="0.005" value="0.1" data-d="3">
+    <label for="sM2">Trees <span class="val" id="sM2V"></span></label><input type="range" id="sM2" min="0" max="0.2" step="0.005" value="0.02" data-d="3">
+  </div>
+  <div>
+    <div class="tiles"><div class="tile"><div class="k">Model</div><div class="v" id="sMode" style="font-size:1.05rem"></div></div><div class="tile"><div class="k">Year</div><div class="v" id="sYr"></div></div><div class="tile"><div class="k">Tree cover</div><div class="v" id="sTree"></div></div></div>
+    <div class="grid2"><div class="card"><h2>The field</h2><canvas id="sGrid" width="500" height="300"></canvas><div class="legend" id="sLeg0" style="margin-top:6px"></div></div>
+      <div class="card chart"><h2>Cover over time</h2><svg id="sC"></svg></div></div>
+    <div class="card chart"><h2>Removal test: tree cover with and without early species (average of 8 runs)</h2><div class="row"><button id="sTest">Run the removal test for this model</button></div><div class="legend" id="sLeg2"></div><svg id="sC2"></svg></div>
+    <div class="msg" id="sMsg"></div>
+  </div>
+</div>
+</section>
+
+<!-- ================= CONNELL 1978 ================= -->
+<section class="panel" id="t2">
+<div class="paperstrip">Connell photographed permanent coral plots on the reef at Heron Island, Great Barrier Reef, starting in 1962. He argued that high diversity on reefs and in rain forests is not a stable equilibrium: without disturbance, the best competitors would take over, and with constant disturbance, only quick colonizers survive. Diversity peaks when disturbance is intermediate in frequency or size. Coral species and rates here are illustrative.
+  <div class="cite">Connell, J. H. (1978). Diversity in tropical rain forests and coral reefs. <i>Science</i> 199: 1302–1310.</div></div>
+<div class="layout">
+  <div class="card ctrl">
+    <div class="row"><button class="primary" id="iPlay">Play</button><button id="iReset">Bare reef</button></div>
+    <label for="iSpeed">Speed <span class="val" id="iSpeedV"></span></label><input type="range" id="iSpeed" min="1" max="5" step="1" value="1" data-suf=" yr/frame">
+    <label for="iF">Storms per year <span class="val" id="iFV"></span></label><input type="range" id="iF" min="0" max="40" step="0.5" value="2" data-d="1">
+    <label for="iR">Storm damage radius (m) <span class="val" id="iRV"></span></label><input type="range" id="iR" min="1" max="12" step="1" value="5">
+    <label for="iG">How fast better competitors overgrow neighbors <span class="val" id="iGV"></span></label><input type="range" id="iG" min="0" max="0.5" step="0.01" value="0.15" data-d="2">
+    <label for="iM">Background coral death rate per year <span class="val" id="iMV"></span></label><input type="range" id="iM" min="0" max="0.2" step="0.005" value="0.02" data-d="3">
+    <div class="row"><button id="iSweep">Sweep storm frequency</button></div>
+  </div>
+  <div>
+    <div class="tiles"><div class="tile"><div class="k">Year</div><div class="v" id="iYr"></div></div><div class="tile"><div class="k">Coral species (≥3% cover)</div><div class="v" id="iS"></div></div><div class="tile"><div class="k">Bare space</div><div class="v" id="iB"></div></div></div>
+    <div class="grid2"><div class="card"><h2>The reef plot (50 × 30 m)</h2><canvas id="iGrid" width="500" height="300"></canvas><div class="legend" id="iLeg0" style="margin-top:6px"></div></div>
+      <div class="card chart"><h2>Cover over time</h2><svg id="iC"></svg></div></div>
+    <div class="card chart"><h2>Diversity vs. storm frequency</h2><p class="small muted" id="iSweepNote">Press "Sweep storm frequency" to run the reef for 60 years at each storm frequency.</p><svg id="iC2"></svg></div>
+    <div class="msg" id="iMsg"></div>
+  </div>
+</div>
+</section>
+
+<!-- ================= SOUSA ================= -->
+<section class="panel" id="t3">
+<div class="paperstrip">In a boulder field near Santa Barbara, California, waves roll boulders over and scrape them clean. Sousa measured how often boulders flipped: small ones 42% of months, intermediate ones 9%, large ones 0.1%. Small boulders held mostly the green alga <i>Ulva</i>; large ones were taken over by the red alga <i>Gigartina canaliculata</i>; intermediate boulders had the most species. Flip rates are Sousa's; growth rates were tuned to his censuses.
+  <div class="cite">Sousa, W. P. (1979). Disturbance in marine intertidal boulder fields: the nonequilibrium maintenance of species diversity. <i>Ecology</i> 60: 1225–1239.</div></div>
+<div class="layout">
+  <div class="card ctrl">
+    <div class="row"><button class="primary" id="bPlay">Play</button><button id="bReset">Scrape all boulders</button></div>
+    <label for="bSpeed">Speed <span class="val" id="bSpeedV"></span></label><input type="range" id="bSpeed" min="1" max="6" step="1" value="1" data-suf=" months/frame">
+    <h3>Chance a boulder flips each month</h3>
+    <label for="bF0">Small boulders <span class="val" id="bF0V"></span></label><input type="range" id="bF0" min="0" max="0.6" step="0.001" value="0.42" data-d="3">
+    <label for="bF1">Intermediate boulders <span class="val" id="bF1V"></span></label><input type="range" id="bF1" min="0" max="0.6" step="0.001" value="0.09" data-d="3">
+    <label for="bF2">Large boulders <span class="val" id="bF2V"></span></label><input type="range" id="bF2" min="0" max="0.6" step="0.001" value="0.001" data-d="3">
+    <label class="check"><input type="checkbox" id="bWin" checked> <span>Winter storms damage <i>Gigartina canaliculata</i></span></label>
+    <div class="row"><button id="bSweep">Sweep flip rates</button></div>
+  </div>
+  <div>
+    <div class="tiles"><div class="tile"><div class="k">Month</div><div class="v" id="bMo"></div></div><div class="tile"><div class="k">Species per boulder: small / int. / large</div><div class="v" id="bRich" style="font-size:1.1rem"></div></div></div>
+    <div class="card"><h2>The boulder field (tops of 8 boulders of each size)</h2><canvas id="bField" width="540" height="170"></canvas><div class="legend" id="bLeg0" style="margin-top:6px"></div></div>
+    <div class="grid2"><div class="card chart"><h2>Species per boulder over time</h2><div class="legend" id="bLeg"></div><svg id="bC"></svg></div>
+      <div class="card chart"><h2>Species per boulder vs. flip rate</h2><p class="small muted" id="bSweepNote">Press "Sweep flip rates".</p><svg id="bC2"></svg></div></div>
+    <div class="msg" id="bMsg"></div>
+  </div>
+</div>
+</section>
+
+<!-- ================= TILMAN ================= -->
+<section class="panel" id="t4">
+<div class="paperstrip">Tilman showed that many species can share one resource if they trade off competitive ability against colonizing ability. Each patch holds one plant. The best competitor wins any patch it reaches, but it reaches few; weaker competitors persist by getting to empty patches first. Tilman's equations predict how much of the landscape each species holds; the dashed lines show those predictions.
+  <div class="cite">Tilman, D. (1994). Competition and biodiversity in spatially structured habitats. <i>Ecology</i> 75: 2–16.</div></div>
+<div class="layout">
+  <div class="card ctrl">
+    <div class="row"><button class="primary" id="tPlay">Play</button><button id="tReset">Restart</button></div>
+    <label for="tN">Number of species <span class="val" id="tNV"></span></label><input type="range" id="tN" min="2" max="5" step="1" value="4">
+    <label for="tM">Death rate (m) <span class="val" id="tMV"></span></label><input type="range" id="tM" min="0.02" max="0.5" step="0.01" value="0.1" data-d="2">
+    <label for="tC">Best competitor's colonization rate (c₁) <span class="val" id="tCV"></span></label><input type="range" id="tC" min="0.05" max="1" step="0.01" value="0.2" data-d="2">
+    <label for="tX">Each weaker species colonizes this many times faster <span class="val" id="tXV"></span></label><input type="range" id="tX" min="1" max="6" step="0.1" value="4" data-d="1">
+    <label for="tD">Habitat destroyed <span class="val" id="tDV"></span></label><input type="range" id="tD" min="0" max="90" step="1" value="0" data-suf="%">
+  </div>
+  <div>
+    <div class="tiles"><div class="tile"><div class="k">Time</div><div class="v" id="tT"></div></div><div class="tile"><div class="k">Species predicted to persist</div><div class="v" id="tPers"></div></div></div>
+    <div class="grid2"><div class="card"><h2>The landscape (60 × 60 patches)</h2><canvas id="tGrid" width="360" height="360"></canvas><div class="legend" id="tLeg0" style="margin-top:6px"></div></div>
+      <div class="card chart"><h2>Share of patches held</h2><svg id="tChart"></svg></div></div>
+    <div class="msg" id="tMsg"></div>
+  </div>
+</div>
+</section>
 </div>
 
 <script>
@@ -244,130 +344,162 @@ function paperTab(el,P){
 }
 
 (function(){
-const tabs={};
+addBoxes();
+let lastT=0;const loops={};
+function loop(t){if(t-lastT>80){lastT=t;Object.keys(loops).forEach(k=>{if($('#'+k).classList.contains('on'))loops[k]()})}requestAnimationFrame(loop)}
+const dk=()=>matchMedia('(prefers-color-scheme: dark)').matches;
+function playBtn(id,get,set){$('#'+id).onclick=()=>{set(!get());$('#'+id).textContent=get()?'Pause':'Play'}}
+function nbrs(W,H){const N=[];for(let k=0;k<W*H;k++){const x=k%W,y=(k/W)|0,n=[];if(x>0)n.push(k-1);if(x<W-1)n.push(k+1);if(y>0)n.push(k-W);if(y<H-1)n.push(k+W);N.push(n)}return N}
 
-/* =================== 1. CONNELL & SLATYER =================== */
-const CSM={fac:'Facilitation',tol:'Tolerance',inh:'Inhibition'};
-tabs.t1=paperTab($('#t1'),{id:'cs',title:'Mechanisms of succession in natural communities',
-  why:'Replaced the old idea of succession as one fixed path to a "climax" with three testable models of how early species affect later ones.',
-  cite:'Connell, J. H., &amp; R. O. Slatyer (1977). Mechanisms of succession in natural communities and their role in community stability and organization. <i>The American Naturalist</i> 111: 1119–1144.',doi:'10.1086/283241',
-  question:'After a disturbance opens up space, a sequence of species moves in, each replaced by the next. The classic view held that early species prepare the site for later ones. <b>Is that the only way succession works? How do early species actually affect the species that replace them?</b>',
-  hyps:[['Facilitation','Early species change the site (adding soil, nitrogen, or shade) so that later species can only establish after them.'],['Tolerance','Early species neither help nor hinder later ones; later species can grow at lower resource levels and eventually take over anyway.'],['Inhibition','Early species hold the space and keep later species out; later species take over only when early ones die or are damaged.']],
-  design:`<p>This was a <b>synthesis paper</b>. Connell and Slatyer reviewed studies of succession in forests, old fields, grasslands, and marine communities, and organized the possible mechanisms into the three models above (their Figure 1). The key point was that the models make <b>different predictions for experiments</b>: if you remove the early species, what happens to the later ones?</p>`,
-  predict:{q:'Suppose early colonists are removed from a cleared site. Under the INHIBITION model, what happens to later species?',opts:['They fail to establish','They establish at the same rate as usual','They establish faster than usual','They disappear from the region']},
-  results:`<p>Choose a model to see its prediction for a removal experiment (conceptual curves, not data).</p><div class="row modelsel" id="csSel"><button data-m="fac">Facilitation</button><button data-m="tol">Tolerance</button><button data-m="inh" class="on">Inhibition</button></div>
-    <div class="chart"><svg id="csR"></svg></div><div class="legend" id="csLeg"></div>
-    <table class="cmp" style="margin-top:8px"><tr><th>Model</th><th>Remove early species → later species…</th></tr><tr><td>Facilitation</td><td>fail or establish more slowly</td></tr><tr><td>Tolerance</td><td>establish about the same</td></tr><tr><td>Inhibition</td><td>establish <b>faster</b></td></tr></table>`,
-  found:'Connell and Slatyer argued that the classic facilitation model fits some cases, especially some primary successions on bare ground, but that much of the evidence fit the tolerance and inhibition models better. Under inhibition, the sequence of species reflects their <b>life histories</b> (who arrives first, who lives longest) rather than one species preparing the way for the next. They urged ecologists to test the models with removal experiments, and many later studies did, including Sousa\'s boulder experiments (tab 3), which supported inhibition.',
-  afterResults:()=>{let m='inh';const go=()=>{const xs=[];for(let i=0;i<=100;i++)xs.push(i*0.2);
-      const L=(t,on)=>100/(1+Math.exp(-(t-on)*1.2));
-      const pres={fac:t=>L(t,8),tol:t=>L(t,8),inh:t=>L(t,12)}[m],rem={fac:t=>Math.min(8,L(t,30)),tol:t=>L(t,8),inh:t=>L(t,4)}[m];
-      chart($('#csR'),{xmin:0,xmax:20,ymin:0,ymax:105,w:620,h:300,xlab:'Time since disturbance →',ylab:'Cover of later species (%)',xticks:2,series:[{pts:xs.map(t=>[t,pres(t)]),color:'var(--s1)',width:2.6},{pts:xs.map(t=>[t,rem(t)]),color:'var(--s2)',width:2.6,dash:'6 4'}]});
-      legend($('#csLeg'),[['var(--s1)','Early species left in place'],['var(--s2)','Early species removed',1]]);
-      $('#csR').setAttribute('aria-label',`Conceptual curves for the ${CSM[m]} model: ${m==='fac'?'later species barely establish when early species are removed':m==='tol'?'later species establish at the same time either way':'later species establish sooner when early species are removed'}.`);
-      $$('#csSel button').forEach(b=>b.classList.toggle('on',b.dataset.m===m))};
-    $$('#csSel button').forEach(b=>b.onclick=()=>{m=b.dataset.m;go()});go()},
-  interpret:[
-    {q:'Sousa removed the green alga Ulva from cleared boulders, and red algae then established faster. Which model does this support?',opts:['Facilitation','Tolerance','Inhibition','None'],a:2,why:'Removing the early species sped up the later ones, so the early species were inhibiting them.'},
-    {q:'Why can\'t you tell the three models apart just by watching the order in which species appear?',opts:['Because all three can produce the same sequence of species; only experiments reveal the mechanism','Because species appear randomly','Because succession never happens','Because observation is illegal'],a:0,why:'Early species are replaced by later ones under every model. The mechanism only shows up when you manipulate the early species.'},
-    {q:'Under which model does succession depend most on which species happen to arrive first?',opts:['Facilitation','Tolerance','Inhibition','All equally'],a:2,why:'Under inhibition, whoever holds the space first resists invasion, so arrival order matters a lot.'}],
-  discuss:['Give an example from California (for example, after a wildfire or on a new sandbar) where you think one model fits best. What experiment would test it?','Could different mechanisms operate at different stages of the same succession?','Why did this paper matter for restoration ecology?']});
+/* ================= CONNELL & SLATYER ================= */
+const SW=50,SH=30,SN=SW*SH,SNB=nbrs(SW,SH),SNAME=['Annual weeds','Shrubs','Trees'],SCOL=[['#e0b43c','#e8c45a'],['#7fae3a','#9cc95a'],['#1f6a3a','#3f9a5f']],SCV=['var(--s4)','var(--s3)','var(--s1)'];
+const CSD={fac:'Facilitation',tol:'Tolerance',inh:'Inhibition'};
+let sMode='fac',sg,sCond,sYr,sHist,sPlaying=false;
+function sPar(){return{a:[0,1,2].map(i=>val('sA'+i)),m:[0,1,2].map(i=>val('sM'+i)),rem:$('#sRem').checked}}
+function sYear(g,mode,P,cond){const old=g.slice();
+  for(let k=0;k<SN;k++){const s=old[k];
+    if(s>0&&Math.random()<P.m[s-1]){g[k]=0;continue}
+    if(P.rem&&g[k]===1){g[k]=0}
+    // local seed boost from neighbors of the same type
+    const tryArr=t=>{let a=P.a[t-1];let nb=0;for(const j of SNB[k])if(old[j]===t)nb++;a=Math.min(1,a*(1+nb));return Math.random()<a};
+    if(g[k]===0){
+      if(mode==='fac'){for(const t of [3,2,1]){if(t>cond[k]+1||(t===1&&P.rem))continue;if(tryArr(t)){g[k]=t;break}}}
+      else{for(const t of [3,2,1]){if(t===1&&P.rem)continue;if(tryArr(t)){g[k]=t;break}}}
+    }else if(mode==='fac'||mode==='tol'){const s2=g[k];
+      // later species invade earlier-occupied sites (facilitation: only the next stage)
+      const cands=mode==='fac'?[s2+1]:[3,2].filter(t=>t>s2);
+      for(const t of cands){if(t<=3&&tryArr(t)){g[k]=t;break}}}
+    if(g[k]>cond[k])cond[k]=g[k];
+  }}
+function sCover(g){const c=[0,0,0,0];for(const v of g)c[v]++;return c.map(v=>v/SN*100)}
+function sReset(){sg=new Int8Array(SN);sCond=new Int8Array(SN);sYr=0;sHist=[[0,0,0,0]];sDraw()}
+const sCv=$('#sGrid'),sX=sCv.getContext('2d');
+let sTestRes=null;
+function sDraw(){showVals();const D=dk()?1:0,cw=500/SW,ch=300/SH;
+  for(let k=0;k<SN;k++){sX.fillStyle=sg[k]?SCOL[sg[k]-1][D]:(D?'#4d4134':'#c8b48e');sX.fillRect((k%SW)*cw,((k/SW)|0)*ch,cw+0.5,ch+0.5)}
+  legend($('#sLeg0'),[[D?'#4d4134':'#c8b48e','Bare soil'],...SNAME.map((n,i)=>[SCOL[i][D],n])]);
+  const c=sCover(sg);$('#sMode').textContent=CSD[sMode];$('#sYr').textContent=sYr;$('#sTree').textContent=f(c[3],0)+'%';
+  $$('[data-cs]').forEach(b=>b.classList.toggle('on',b.dataset.cs===sMode));
+  chart($('#sC'),{xmin:0,xmax:Math.max(100,sYr),ymin:0,ymax:100,w:460,h:320,xlab:'Years after the field was cleared',ylab:'Cover (%)',series:[0,1,2].map(i=>({pts:sHist.map(h=>[h[0],h[i+1]]),color:SCV[i],width:2.4}))});
+  if(sTestRes&&sTestRes.mode===sMode){chart($('#sC2'),{xmin:0,xmax:150,ymin:0,ymax:100,w:760,h:260,xlab:'Years',ylab:'Tree cover (%)',series:[{pts:sTestRes.ctl,color:'var(--s1)',width:2.4},{pts:sTestRes.rem,color:'var(--s2)',width:2.4,dash:'6 4'}]});
+    legend($('#sLeg2'),[['var(--s1)','Early species left alone'],['var(--s2)','Early species removed',1]])}
+  else{$('#sC2').innerHTML='';$('#sC2').removeAttribute('viewBox');$('#sLeg2').innerHTML=''}
+  sCv.setAttribute('aria-label',`Old field in year ${sYr}: weeds ${f(c[1],0)}%, shrubs ${f(c[2],0)}%, trees ${f(c[3],0)}%.`);
+  $('#sC').setAttribute('aria-label','Cover of weeds, shrubs, and trees over time.');
+  const W={fac:'Bare soil can only be colonized by annual weeds. Shrubs establish only where weeds have built up the soil, and trees only where shrubs have grown.',tol:'Any species can settle on bare soil. Shrubs and trees grow up through the weeds and replace them because they tolerate shade and low resources better.',inh:'Any species can settle on bare soil, but a plant holds its spot until it dies. Trees take over only as short-lived weeds and shrubs die and free up space.'}[sMode];
+  let T='';if(sTestRes&&sTestRes.mode===sMode){const t50=a=>{const p=a.find(q=>q[1]>=50);return p?p[0]:null};const a=t50(sTestRes.ctl),b=t50(sTestRes.rem);
+    T=` <b>Removal test:</b> trees reached 50% cover in ${a??'more than 150'} years with early species and ${b??'more than 150'} years without them. ${b===null&&a!==null?'Removing early species stopped succession: they were needed (facilitation).':b!==null&&a!==null&&b<a*0.75?'Removing early species sped succession up: they were in the way (inhibition).':'Removing early species made little difference (tolerance).'}`}
+  $('#sMsg').innerHTML=`<b>${CSD[sMode]}.</b> ${W}${T}${!T?' Run the removal test to see how this model responds when early species are weeded out.':''}`}
+function sBatch(mode,rem){const P={...sPar(),rem},acc=new Float64Array(151);for(let r=0;r<8;r++){const g=new Int8Array(SN),cd=new Int8Array(SN);for(let t=1;t<=150;t++){sYear(g,mode,P,cd);acc[t]+=sCover(g)[3]/8}}return[...acc].map((v,i)=>[i,v])}
+loops.t1=()=>{if(!sPlaying)return;const P=sPar();for(let i=0;i<val('sSpeed');i++){sYear(sg,sMode,P,sCond);sYr++;sHist.push([sYr,...sCover(sg).slice(1)])}sDraw()};
+playBtn('sPlay',()=>sPlaying,v=>sPlaying=v);$('#sReset').onclick=sReset;
+$$('[data-cs]').forEach(b=>b.onclick=()=>{sMode=b.dataset.cs;sReset();if(!sPlaying)$('#sPlay').click()});
+$('#sTest').onclick=()=>{sTestRes={mode:sMode,ctl:sBatch(sMode,false),rem:sBatch(sMode,true)};sDraw()};
+$$('#t1 input').forEach(i=>i.addEventListener('input',()=>{sTestRes=null;sDraw()}));
 
-/* =================== 2. CONNELL 1978 =================== */
-tabs.t2=paperTab($('#t2'),{id:'id',title:'Diversity in tropical rain forests and coral reefs',
-  why:'Introduced the intermediate disturbance hypothesis, one of the most cited ideas in ecology.',
-  cite:'Connell, J. H. (1978). Diversity in tropical rain forests and coral reefs. <i>Science</i> 199: 1302–1310.',doi:'10.1126/science.199.4335.1302',
-  question:'Tropical rain forests and coral reefs hold enormous numbers of species living side by side. If competition leads to exclusion, <b>how do so many species coexist?</b> Is the high diversity a stable equilibrium, or something that persists only because the system never settles down?',
-  hyps:[['Equilibrium','Species are finely specialized (niche differences), so many can coexist stably once the community settles.'],['Nonequilibrium','Disturbances (storms, treefalls, predators) keep knocking the community back before the best competitors can exclude the rest.']],
-  design:`<p>Connell compared six hypotheses for high diversity, grouped into equilibrium and nonequilibrium explanations, and weighed them against evidence. Much of it came from his own long-term studies: permanent plots of rain forest trees in Queensland, Australia, and coral reef plots at Heron Island on the Great Barrier Reef, which he began photographing in 1962.</p>
-    <p>He defined disturbance by its <b>frequency</b>, its <b>intensity</b>, and the <b>time since</b> the last one.</p>`,
-  predict:{q:'According to the intermediate disturbance hypothesis, where should diversity be highest?',opts:['Where disturbance never happens','Where disturbance is very frequent or very intense','Where disturbance is intermediate in frequency or intensity, or some time after a disturbance','Diversity does not depend on disturbance']},
-  results:`<div class="chart"><svg id="idR"></svg></div><p class="small muted">The shape of Connell's conceptual figure (not data).</p>`,
-  found:'Connell concluded that the high diversity of trees in rain forests and of corals on reefs is usually a <b>nonequilibrium</b> state. Left undisturbed, these communities would drift toward fewer species as the best competitors took over. Disturbances often enough, but not too often, keep that from happening. With too little disturbance, a few dominants win; with too much, only fast colonizers survive. Diversity is highest in between.',
-  afterResults:()=>{const xs=[];for(let i=0;i<=100;i++)xs.push(i);
-    chart($('#idR'),{xmin:0,xmax:100,ymin:0,ymax:100,w:620,h:320,xlab:'Disturbance: frequency or intensity (low → high), or time since disturbance (long → short)',ylab:'Species diversity',xticks:2,
-      series:[{pts:xs.map(x=>[x,90*Math.exp(-(((x-50)/26)**2))+5]),color:'var(--s3)',width:3}],texts:[{x:6,y:20,t:'competitive exclusion',color:'var(--muted)'},{x:94,y:20,t:'only colonizers survive',color:'var(--muted)',anchor:'end'},{x:50,y:97,t:'mix of early and late species',color:'var(--muted)',anchor:'middle'}]});
-    $('#idR').setAttribute('aria-label','Conceptual hump-shaped curve: diversity is low at low disturbance, highest at intermediate disturbance, and low at high disturbance.')},
-  interpret:[
-    {q:'Why is diversity low when disturbance is very rare?',opts:['Nothing can colonize','The best competitors have time to exclude other species','Disturbance kills everything','Predators eat all the species'],a:1,why:'Without disturbance, the community approaches equilibrium, where the strongest competitors dominate.'},
-    {q:'Why is diversity low when disturbance is very frequent or intense?',opts:['Only species that colonize quickly and grow fast can persist','Competition is too strong','There are too many species','Disturbance creates new species'],a:0,why:'Frequent disturbance resets the community before slower-growing, competitively superior species can establish.'},
-    {q:'What kind of evidence would best test this idea?',opts:['A single photo of a reef','Comparing sites or treatments that differ in disturbance and measuring diversity, ideally over long periods','Counting species in one place once','Asking divers'],a:1,why:'You need variation in disturbance and repeated measurements, like Sousa\'s boulders (tab 3) or Connell\'s long-term reef plots.'}],
-  discuss:['Connell\'s reef plots at Heron Island were followed for decades. Why are long-term plots so valuable for testing ideas about disturbance?','Later studies found the hump shape in some systems but not others. What might cause the pattern to fail?','How could managers use this idea, for example with prescribed fire in Sierra foothill grasslands and woodlands?']});
+/* ================= CONNELL 1978 ================= */
+const IW=50,IH=30,IN=IW*IH,INB=nbrs(IW,IH),NC6=6;
+const ICOL=['#1f4e8c','#7a3fa8','#c2477a','#d9822b','#b8a12a','#2fa36b'],ICV=ICOL;
+const INAME=['Coral 1 (best competitor)','Coral 2','Coral 3','Coral 4','Coral 5','Coral 6 (best colonizer)'],IREC=[0.002,0.004,0.008,0.016,0.032,0.064];
+let ig,iYr,iHist,iPlaying=false;
+function iYear(g,P){// storms
+  let n=0;const L=P.F;let p=Math.exp(-L),u=Math.random(),cum=p;while(u>cum&&n<50){n++;p*=L/n;cum+=p}
+  for(let s=0;s<n;s++){const cx=Math.random()*IW,cy=Math.random()*IH;for(let k=0;k<IN;k++){const dx=(k%IW)-cx,dy=((k/IW)|0)-cy;if(dx*dx+dy*dy<=P.R*P.R)g[k]=-1}}
+  const old=g.slice();
+  for(let k=0;k<IN;k++){const s=old[k];
+    if(s>=0&&Math.random()<P.m){g[k]=-1;continue}
+    // overgrowth by a better competitor next door
+    for(const j of INB[k]){const t=old[j];if(t>=0&&(s<0||t<s)&&Math.random()<P.g*(s<0?2:1)){if(g[k]<0||t<g[k])g[k]=t}}
+    if(g[k]<0){for(let i=NC6-1;i>=0;i--)if(Math.random()<IREC[i]){g[k]=i;break}}}}
+function iCover(g){const c=new Array(NC6+1).fill(0);for(const v of g)c[v+1]++;return c.map(v=>v/IN*100)}
+const iRich=c=>c.slice(1).filter(v=>v>=3).length;
+function iP(){return{F:val('iF'),R:val('iR'),g:val('iG'),m:val('iM')}}
+function iReset(){ig=new Int8Array(IN).fill(-1);iYr=0;iHist=[[0,...iCover(ig).slice(1)]];iDraw()}
+const iCv=$('#iGrid'),iX=iCv.getContext('2d');let iSw=null;
+function iDraw(){showVals();const D=dk(),cw=500/IW,ch=300/IH;for(let k=0;k<IN;k++){iX.fillStyle=ig[k]>=0?ICOL[ig[k]]:(D?'#3b4048':'#d7cfbf');iX.fillRect((k%IW)*cw,((k/IW)|0)*ch,cw+0.5,ch+0.5)}
+  legend($('#iLeg0'),[[D?'#3b4048':'#d7cfbf','Bare rock'],...INAME.map((n,i)=>[ICOL[i],n])]);
+  const c=iCover(ig);$('#iYr').textContent=iYr;$('#iS').textContent=iRich(c);$('#iB').textContent=f(c[0],0)+'%';
+  chart($('#iC'),{xmin:0,xmax:Math.max(40,iYr),ymin:0,ymax:100,w:460,h:320,xlab:'Years',ylab:'Cover (%)',series:INAME.map((n,i)=>({pts:iHist.map(h=>[h[0],h[i+1]]),color:ICV[i],width:2}))});
+  if(iSw){$('#iSweepNote').textContent='Average number of coral species (≥3% cover) after 60 years. The red dot is your current setting.';
+    chart($('#iC2'),{xmin:0,xmax:40,ymin:0,ymax:6.5,w:760,h:280,xlab:'Storms per year',ylab:'Coral species',series:[{pts:iSw,color:'var(--s1)',width:2.6}],points:[...iSw.map(([x,y])=>({x,y,color:'var(--s1)',r:4})),{x:val('iF'),y:iRich(c),color:'var(--s2)',r:6}]})}
+  iCv.setAttribute('aria-label',`Reef plot in year ${iYr}: ${iRich(c)} coral species, ${f(c[0],0)}% bare.`);
+  $('#iC').setAttribute('aria-label','Cover of six coral species over time.');if(iSw)$('#iC2').setAttribute('aria-label','Coral species against storm frequency: '+iSw.map(([x,y])=>`${f(x,1)} storms, ${f(y,1)} species`).join('; '));
+  const F=val('iF');$('#iMsg').innerHTML=iYr<10?'Press Play and watch corals settle on the bare reef.':F<0.3?`With almost no storms, coral 1, the best competitor, keeps overgrowing its neighbors and is taking over the reef. Diversity falls as the reef approaches <b>competitive exclusion</b>.`:F>10?`With storms this frequent, the reef is wiped clean before slow-recruiting competitors can grow, so only the fast colonizers (corals 5 and 6) persist.`:`Storms open patches often enough that the best competitors never take over, but not so often that only fast colonizers survive. Patches at different stages of recovery sit side by side, so many species coexist. This is the <b>intermediate disturbance hypothesis</b>.${iSw?'':' Run the sweep to see the hump.'}`}
+function iSweep(){const P=iP(),out=[];for(const F of [0,0.5,1,2,4,8,15,25,40]){let s=0;for(let r=0;r<3;r++){const g=new Int8Array(IN).fill(-1);for(let t=0;t<60;t++)iYear(g,{...P,F});s+=iRich(iCover(g))}out.push([F,s/3])}return out}
+loops.t2=()=>{if(!iPlaying)return;const P=iP();for(let i=0;i<val('iSpeed');i++){iYear(ig,P);iYr++;iHist.push([iYr,...iCover(ig).slice(1)])}if(iHist.length>800)iHist.shift();iDraw()};
+playBtn('iPlay',()=>iPlaying,v=>iPlaying=v);$('#iReset').onclick=iReset;
+$('#iSweep').onclick=()=>{$('#iSweepNote').textContent='Running…';setTimeout(()=>{iSw=iSweep();iDraw()},30)};
+$$('#t2 input').forEach(i=>i.addEventListener('input',()=>{if(i.id!=='iF'&&i.id!=='iSpeed')iSw=null;iDraw()}));
 
-/* =================== 3. SOUSA =================== */
-const CENS=['Nov 1975','May 1976','Oct 1976','May 1977'],SP=[[1.7,1.9,1.9,1.4],[3.7,4.3,3.4,3.6],[2.5,3.5,2.3,3.2]],BARE=[[78.0,66.5,67.7,49.9],[26.5,35.9,32.2,34.2],[11.4,4.7,14.5,6.1]];
-const STAB=[[2,1.13],[4,1.8],[7,3.75],[11,4.08],[13,5.08],[16,5.29],[19,4.9]];
-tabs.t3=paperTab($('#t3'),{id:'so',title:'Disturbance in marine intertidal boulder fields: the nonequilibrium maintenance of species diversity',
-  why:'One of the first field tests of the intermediate disturbance hypothesis, using a natural gradient of disturbance and a clever experiment.',
-  cite:'Sousa, W. P. (1979). Disturbance in marine intertidal boulder fields: the nonequilibrium maintenance of species diversity. <i>Ecology</i> 60: 1225–1239.',doi:'10.2307/1936969',
-  question:'In a boulder field at Ellwood Beach, California, winter waves roll boulders over and scrape their tops clean. Small boulders roll often and large ones rarely. <b>Does the frequency of disturbance control how many species live on a boulder?</b>',
-  hyps:[['Diversity rises with stability','The least-disturbed (large) boulders have the most species.'],['Intermediate disturbance','Boulders disturbed at an intermediate rate have the most species.']],
-  design:`<p>Sousa measured the force needed to move each boulder and grouped boulders into three classes: easily moved (under 49 newtons), intermediate (50–294 N), and hard to move (over 294 N). He marked boulders and recorded how often each class rolled over, and censused the algae and barnacles on boulder tops four times between November 1975 and May 1977.</p>
-    <p>To show that disturbance, not boulder size itself, caused the differences, he <b>bolted small rocks to the bottom</b> so they could not roll, and followed them for over a year.</p>`,
-  predict:{q:'Which boulder class do you expect to have the most species?',opts:['Small (rolled most often)','Intermediate','Large (rarely rolled)','All the same']},
-  results:`<div class="tiles"><div class="tile"><div class="k">Small: chance of rolling per month</div><div class="v">0.42</div></div><div class="tile"><div class="k">Intermediate</div><div class="v">0.09</div></div><div class="tile"><div class="k">Large</div><div class="v">0.001</div></div></div>
-    <div class="row"><b class="small">Show:</b><button class="primary" id="soA">Species per boulder</button><button id="soB">% bare space</button></div>
-    <div class="chart"><svg id="soR"></svg></div><div class="legend" id="soLeg"></div>
-    <h3>Bolted-down small rocks</h3><div class="chart"><svg id="soS"></svg></div>
-    <p class="small muted">Monthly rolling chances: Table 1. Species per boulder: Table 5. Bare space: Table 2. Bolted-rock means calculated from the percentages in Table 8.</p>`,
-  found:'In every census, <b>intermediate boulders had the most species</b>. Small boulders, rolled over almost every other month, held mostly bare rock with the early colonists <i>Ulva</i> and barnacles. Large boulders, almost never rolled, were dominated by the late-successional red alga <i>Gigartina canaliculata</i>, which crowded out other species. Bolted small rocks gained species until they matched intermediate boulders, showing that the frequency of disturbance, not boulder size, controlled diversity. Diversity was maintained by disturbance in a <b>nonequilibrium</b> patchwork.',
-  afterResults:()=>{let mode='a';const cols=['var(--s4)','var(--s1)','var(--s5)'];const go=()=>{const d=mode==='a'?SP:BARE;
-      bars($('#soR'),{cats:CENS,series:['Small','Intermediate','Large'].map((n,i)=>({name:n,color:cols[i],vals:d[i]})),ymax:mode==='a'?5:90,ylab:mode==='a'?'Mean species per boulder':'Mean % bare space',w:720,h:320,fmt:v=>mode==='a'?v.toFixed(1):v.toFixed(0)+'%'});
-      legend($('#soLeg'),[['var(--s4)','Small (rolls often)'],['var(--s1)','Intermediate'],['var(--s5)','Large (rarely rolls)']]);
-      $('#soR').setAttribute('aria-label',(mode==='a'?'Mean species per boulder':'Mean percent bare space')+' by census. '+['Small','Intermediate','Large'].map((n,i)=>`${n}: ${d[i].join(', ')}`).join('; ')+'.');
-      $('#soA').classList.toggle('primary',mode==='a');$('#soB').classList.toggle('primary',mode==='b')};
-    $('#soA').onclick=()=>{mode='a';go()};$('#soB').onclick=()=>{mode='b';go()};go();
-    chart($('#soS'),{xmin:0,xmax:20,ymin:0,ymax:6,w:620,h:280,xlab:'Months after the rocks were cleared',ylab:'Mean species per rock',series:[{pts:STAB,color:'var(--s3)',width:2.4},{pts:[[0,3.75],[20,3.75]],color:'var(--s1)',dash:'5 4',width:1.4}],points:STAB.map(([t,v])=>({x:t,y:v,color:'var(--s3)',r:5})),texts:[{x:19.5,y:3.75,t:'intermediate boulders (avg)',color:'var(--s1)',anchor:'end',dy:-6}]});
-    $('#soS').setAttribute('aria-label','Mean species per bolted rock rises from about 1 at 2 months to about 5 at 13 to 19 months, above the average for intermediate boulders of 3.75.')},
-  interpret:[
-    {q:'Why did large boulders have fewer species than intermediate ones?',opts:['They were too cold','Without disturbance, Gigartina canaliculata took over and excluded other species','Waves scraped them every month','They had no algae'],a:1,why:'Large boulders rarely rolled, so succession ran to the late-successional dominant.'},
-    {q:'What was the purpose of bolting small rocks down?',opts:['To stop them from washing away','To separate the effect of disturbance from the effect of rock size','To kill the algae','To measure wave force'],a:1,why:'Small and large boulders differ in more than disturbance (surface area, for example). Removing disturbance while keeping size the same isolates its effect.'},
-    {q:'Why is this called a "nonequilibrium" explanation of diversity?',opts:['Because the boulders are not level','Because diversity is maintained by repeated disturbance that keeps the community from reaching competitive equilibrium','Because there are no species','Because the data were uneven'],a:1,why:'At equilibrium one species would dominate; disturbance keeps boulders at a mix of successional stages.'}],
-  discuss:['Sousa used boulder size as a stand-in for disturbance frequency. What else differs between small and large boulders that could matter?','Large boulders had more species in spring than in fall. Using what you know about winter storms, why?','How would you design a similar study in a California grassland or chaparral using fire instead of waves?']});
+/* ================= SOUSA ================= */
+const G8=8,BC=G8*G8,BNB=nbrs(G8,G8);
+const BSP=[{n:'Ulva (green alga)',c:'#7fd14a',rain:.29,mort:.21,veg:.09,over:0},{n:'Chthamalus fissus (barnacle)',c:'#d9c79a',rain:.034,mort:.175,veg:0,over:0},{n:'Gigartina leptorhynchos',c:'#c2477a',rain:.003,mort:.068,veg:.14,over:0},{n:'Gelidium coulteri',c:'#d9822b',rain:.0075,mort:.02,veg:.083,over:0},{n:'Rhodoglossum affine',c:'#9a5bd1',rain:.007,mort:.073,veg:.227,over:0},{n:'Gigartina canaliculata',c:'#7a1f2b',rain:.0023,mort:.0204,veg:.6,over:1,wloss:0}];
+const BREAL=[[1.7,1.9,1.9,1.4],[3.7,4.3,3.4,3.6],[2.5,3.5,2.3,3.2]],BCLS=['Small','Intermediate','Large'],BCV=['var(--s4)','var(--s1)','var(--s2)'];
+function bMonth(b,pflip,winter,wdmg){if(Math.random()<pflip){b.fill(-1);return}const old=b.slice();
+  for(let k=0;k<BC;k++){const s=old[k];if(s>=0){const extra=winter&&wdmg&&s===5?0.05:0;if(Math.random()<BSP[s].mort+extra){b[k]=-1;continue}
+      for(const j of BNB[k]){const t=old[j];if(t>s&&BSP[t].over>0&&Math.random()<BSP[t].veg*BSP[t].over/4){b[k]=t;break}}continue}
+    let got=-1;for(const j of BNB[k]){const t=old[j];if(t>=0&&BSP[t].veg>0&&Math.random()<BSP[t].veg/4){if(t>got)got=t}}
+    if(got<0){const order=[0,1,2,3,4,5].sort(()=>Math.random()-.5);for(const i of order)if(Math.random()<BSP[i].rain){got=i;break}}b[k]=got}}
+const bRichOf=b=>new Set([...b].filter(v=>v>=0)).size;
+let bBs,bMoN,bHist,bPlaying=false,bSw=null;
+function bReset(){bBs=[0,1,2].map(()=>Array.from({length:8},()=>new Int8Array(BC).fill(-1)));bMoN=0;bHist=[[0,0,0,0]];bDraw()}
+const bCv=$('#bField'),bX=bCv.getContext('2d');
+function bMean(){return bBs.map(cls=>cls.reduce((a,b)=>a+bRichOf(b),0)/cls.length)}
+function bDraw(){showVals();const D=dk();bX.clearRect(0,0,540,170);bX.fillStyle=D?'#2a3038':'#cfd8de';bX.fillRect(0,0,540,170);
+  const sz=[20,34,48];let y=8;
+  bBs.forEach((cls,ci)=>{const s=sz[ci],cs=s/G8,gap=(540-8*s-96)/9;bX.fillStyle=D?'#e7ecf2':'#10202e';bX.font='bold 11px system-ui';bX.fillText(BCLS[ci],6,y+s/2+4);
+    cls.forEach((b,bi)=>{const x0=96+gap+bi*(s+gap);bX.fillStyle=D?'#6b6258':'#a69a8a';bX.fillRect(x0-1,y-1,s+2,s+2);for(let k=0;k<BC;k++){if(b[k]<0)continue;bX.fillStyle=BSP[b[k]].c;bX.fillRect(x0+(k%G8)*cs,y+((k/G8)|0)*cs,cs+0.3,cs+0.3)}});y+=s+16});
+  legend($('#bLeg0'),[[D?'#6b6258':'#a69a8a','Bare rock'],...BSP.map(s=>[s.c,s.n])]);
+  const m=bMean();$('#bMo').textContent=bMoN;$('#bRich').textContent=m.map(v=>f(v,1)).join(' / ');
+  const T=Math.max(36,bMoN);
+  chart($('#bC'),{xmin:0,xmax:T,ymin:0,ymax:6,w:460,h:320,xlab:'Months',ylab:'Species per boulder',series:[...[0,1,2].map(i=>({pts:bHist.map(h=>[h[0],h[i+1]]),color:BCV[i],width:2.2})),...[0,1,2].map(i=>({pts:[[0,BREAL[i].reduce((a,b)=>a+b)/4],[T,BREAL[i].reduce((a,b)=>a+b)/4]],color:BCV[i],width:1.2,dash:'5 4'}))]});
+  legend($('#bLeg'),[...BCLS.map((n,i)=>[BCV[i],n]),['var(--muted)','Sousa\'s average (4 censuses)',1]]);
+  if(bSw){$('#bSweepNote').textContent='Average species per boulder after 10 years at each flip rate (log scale). Sousa\'s three classes are marked.';
+    chart($('#bC2'),{xmin:0.001,xmax:0.6,logx:1,ymin:0,ymax:6,w:460,h:300,xlab:'Chance of flipping per month',ylab:'Species per boulder',series:[{pts:bSw,color:'var(--s1)',width:2.4}],points:[[0.42,0],[0.09,1],[0.001,2]].map(([x,i])=>({x,y:BREAL[i].reduce((a,b)=>a+b)/4,color:BCV[i],r:6,ring:1}))})}
+  bCv.setAttribute('aria-label',`Boulder field at month ${bMoN}. Mean species per boulder: small ${f(m[0],1)}, intermediate ${f(m[1],1)}, large ${f(m[2],1)}.`);
+  $('#bC').setAttribute('aria-label','Mean species per boulder over time for each size class, with Sousa\'s averages as dashed lines.');
+  $('#bMsg').innerHTML=bMoN<6?'Press Play. Every boulder starts scraped bare.':`Small boulders flip so often that only <i>Ulva</i> and barnacles, which settle fast, get established. Large boulders almost never flip, so the slow-growing red alga <i>Gigartina canaliculata</i> spreads and crowds out the others. Intermediate boulders are disturbed often enough to stop that takeover but rarely enough for slow species to arrive, so they hold the most species${m[1]>m[0]&&m[1]>m[2]?' — as they do now in the simulation':''}. Sousa saw the same thing with real boulders.`}
+function bSweep(){const out=[];const fr=[0.001,0.002,0.005,0.01,0.02,0.05,0.09,0.15,0.25,0.42,0.6];const w=$('#bWin').checked;for(const p of fr){let s=0;for(let r=0;r<30;r++){const b=new Int8Array(BC).fill(-1);for(let t=0;t<120;t++){const mo=t%12;bMonth(b,p,mo>=10||mo<=2,w)}s+=bRichOf(b)}out.push([p,s/30])}return out}
+loops.t3=()=>{if(!bPlaying)return;const w=$('#bWin').checked;for(let i=0;i<val('bSpeed');i++){const mo=(bMoN+10)%12,win=mo>=10||mo<=2;bBs.forEach((cls,ci)=>cls.forEach(b=>bMonth(b,val('bF'+ci),win,w)));bMoN++;bHist.push([bMoN,...bMean()])}bDraw()};
+playBtn('bPlay',()=>bPlaying,v=>bPlaying=v);$('#bReset').onclick=bReset;
+$('#bSweep').onclick=()=>{$('#bSweepNote').textContent='Running…';setTimeout(()=>{bSw=bSweep();bDraw()},30)};
+$$('#t3 input').forEach(i=>i.addEventListener('input',()=>{if(i.id==='bWin')bSw=null;bDraw()}));
 
-/* =================== 4. TILMAN 1994 =================== */
-tabs.t4=paperTab($('#t4'),{id:'ti',title:'Competition and biodiversity in spatially structured habitats',
-  why:'Showed mathematically that a trade-off between competing and colonizing can let many species coexist on a single limiting resource.',
-  cite:'Tilman, D. (1994). Competition and biodiversity in spatially structured habitats. <i>Ecology</i> 75: 2–16.',
-  question:'Plants in a prairie compete for the same few resources, yet dozens of species coexist. <b>Can many species coexist on one limiting resource if habitat is made of separate sites that are colonized and vacated?</b>',
-  hyps:[['No','The best competitor should take every site.'],['Yes, with a trade-off','If better competitors are worse at colonizing new sites, poorer competitors can persist by reaching open sites first.']],
-  design:`<p>Tilman built a mathematical model of a landscape made of many small sites, each holding one individual. Species colonize empty sites at rate c and die at rate m. A better competitor can take over a site held by a weaker one. He solved for the share of sites each species occupies at equilibrium:</p>
-    <div class="formula">p₁* = 1 − m/c₁ &nbsp;&nbsp;(best competitor)<br>pᵢ* = 1 − m/cᵢ − Σ<sub>j&lt;i</sub> pⱼ*(1 + cⱼ/cᵢ) &nbsp;&nbsp;(species i, ranked by competitive ability)</div>
-    `,
-  predict:{q:'In this model, how many species can coexist on a single resource?',opts:['Only one, the best competitor','At most two','Many, as long as each weaker competitor colonizes sufficiently better','None']},
-  results:`<p class="small">Use the model below to see the result: with a strong enough competition–colonization trade-off, many species coexist.</p>`,
-  found:'In Tilman\'s model, an unlimited number of species could in principle coexist on a single resource, as long as each weaker competitor was a sufficiently better colonizer than the species above it. There is a <b>limiting similarity</b>: species too similar in colonization rate are excluded. The model shows why spatial structure and dispersal matter for biodiversity.',
-  interpret:[
-    {q:'In this model, why can a weak competitor persist?',opts:['It wins every contest','It colonizes empty sites faster than better competitors can take them','It never dies','It eats the better competitor'],a:1,why:'Fugitive species persist by reaching open sites first, before superior competitors arrive.'},
-    {q:'Why does the best competitor not fill every site?',opts:['It dies (m > 0) and colonizes slowly, so some sites are always empty for a while','It is excluded by weaker species','Sites are too large','It has no seeds'],a:0,why:'p₁* = 1 − m/c₁: with mortality and limited colonization, the best competitor cannot occupy everything.'},
-    {q:'How does this connect to Sousa\'s boulders and Connell\'s intermediate disturbance idea?',opts:['It doesn\'t','Disturbance creates open sites; species that colonize well but compete poorly depend on those openings','It shows disturbance is unnecessary','It only applies to animals'],a:1,why:'Both involve a trade-off between colonizing new space and holding space against competitors.'}],
-  modelTitle:'Tilman\'s competition–colonization model',
-  model:`<div class="layout"><div class="ctrl">
-      <label for="tn">Number of species <span class="val" id="tnV"></span></label><input type="range" id="tn" min="2" max="12" step="1" value="6">
-      <label for="tm">Mortality m <span class="val" id="tmV"></span></label><input type="range" id="tm" min="0.01" max="0.5" step="0.01" value="0.1" data-d="2">
-      <label for="tc">Colonization rate of best competitor c₁ <span class="val" id="tcV"></span></label><input type="range" id="tc" min="0.05" max="2" step="0.01" value="0.2" data-d="2">
-      <label for="tr">Each weaker species colonizes ×<span class="val" id="trV"></span> more</label><input type="range" id="tr" min="1" max="4" step="0.05" value="1.8" data-d="2">
-    </div><div><div class="tiles"><div class="tile"><div class="k">Species that persist</div><div class="v" id="tS"></div></div><div class="tile"><div class="k">Sites left empty</div><div class="v" id="tE"></div></div></div>
-      <div class="chart"><svg id="tM"></svg></div><div class="msg small" id="tMsg"></div></div></div>`,
-  afterModel:()=>{if(!$('#tnBox'))addBoxes($('#t4'));const go=()=>{showVals();const n=Math.round(val('tn')),m=val('tm'),c1=val('tc'),r=val('tr');
-      const c=[];for(let i=0;i<n;i++)c.push(c1*r**i);
-      const q=[];for(let i=0;i<n;i++){let v=1-m/c[i];for(let j=0;j<i;j++)v-=q[j]*(1+c[j]/c[i]);q.push(Math.max(0,v))}
-      bars($('#tM'),{cats:q.map((v,i)=>`Sp ${i+1}\nc=${c[i]<10?c[i].toFixed(2):c[i].toFixed(0)}`),series:[{color:'var(--s3)',vals:q.map(v=>v*100)}],ymax:100,ylab:'% of sites occupied',w:640,h:300,mb:58,fmt:v=>v.toFixed(0)});
-      const S=q.filter(v=>v>1e-4).length,E=Math.max(0,1-q.reduce((a,b)=>a+b,0));
-      $('#tS').textContent=`${S} of ${n}`;$('#tE').textContent=f(E*100,0)+'%';
-      $('#tM').setAttribute('aria-label','Share of sites occupied by each species, ranked from best competitor: '+q.map((v,i)=>`species ${i+1} ${f(v*100,0)}%`).join(', ')+'.');
-      $('#tMsg').innerHTML=S===n?'All species persist: each weaker competitor colonizes enough faster to escape the ones above it.':`${n-S} species ${n-S===1?'is':'are'} excluded. Try a larger colonization advantage (×) or lower mortality. Species 1 is the best competitor.`};
-    $$('#t4 .ctrl input').forEach(i=>i.oninput=go);go()},
-  discuss:['Real plants trade off seed number against seed size or root investment. Name a pair of California plants that might fit this trade-off.','In this model, which species would you expect to disappear first if half the sites were destroyed? Why might that be surprising?','How could you test the competition–colonization trade-off in a field experiment?']});
+/* ================= TILMAN ================= */
+const TG=60,TN=TG*TG,TCOL=['#1f4e8c','#c2477a','#d9822b','#2fa36b','#9a5bd1'],TCV=['var(--s1)','var(--s5)','var(--s4)','var(--s3)','#9a5bd1'];
+let tg,tDead,tT,tHist,tPlaying=false;
+function tPar(){const n=val('tN'),c1=val('tC'),x=val('tX');return{n,m:val('tM'),c:Array.from({length:n},(_,i)=>c1*Math.pow(x,i)),D:val('tD')/100}}
+function tEq(P){const p=[];for(let i=0;i<P.n;i++){let v=1-P.D-P.m/P.c[i];for(let j=0;j<i;j++)v-=p[j]*(1+P.c[j]/P.c[i]);p.push(Math.max(0,v))}return p}
+function tReset(){const P=tPar();tg=new Int8Array(TN).fill(-1);tDead=new Uint8Array(TN);for(let k=0;k<TN;k++)if(Math.random()<P.D)tDead[k]=1;for(let k=0;k<TN;k++)if(!tDead[k]&&Math.random()<0.1)tg[k]=(Math.random()*P.n)|0;tT=0;tHist=[[0,...tShare(P)]];tDraw()}
+function tShare(P){const c=new Array(P.n).fill(0);for(const v of tg)if(v>=0)c[v]++;return c.map(v=>v/TN)}
+function tStep(P,dt){const birth=[];for(let k=0;k<TN;k++){const s=tg[k];if(s<0)continue;
+    let lam=P.c[s]*dt,n=0,p=Math.exp(-lam),u=Math.random(),cum=p;while(u>cum&&n<20){n++;p*=lam/n;cum+=p}for(let q=0;q<n;q++)birth.push([s,(Math.random()*TN)|0]);
+    if(Math.random()<P.m*dt)tg[k]=-1}
+  for(let s=0;s<P.n;s++)if(Math.random()<2*dt)birth.push([s,(Math.random()*TN)|0]);// a trickle of seeds from outside
+  for(const [s,j] of birth){if(tDead[j])continue;if(tg[j]<0||s<tg[j])tg[j]=s}}
+const tCv=$('#tGrid'),tX=tCv.getContext('2d');
+function tDraw(){showVals();const P=tPar(),D=dk(),cs=360/TG;if(tHist[0].length-1!==P.n)return tReset();
+  for(let k=0;k<TN;k++){tX.fillStyle=tDead[k]?(D?'#111':'#555'):tg[k]>=0?TCOL[tg[k]]:(D?'#2a3038':'#e9e4d8');tX.fillRect((k%TG)*cs,((k/TG)|0)*cs,cs+0.3,cs+0.3)}
+  legend($('#tLeg0'),[[D?'#2a3038':'#e9e4d8','Empty patch'],[D?'#111':'#555','Destroyed'],...Array.from({length:P.n},(_,i)=>[TCOL[i],`Species ${i+1} (c = ${f(P.c[i],2)})`])]);
+  const eq=tEq(P),T=Math.max(100,tT);$('#tT').textContent=f(tT,0);const pers=eq.filter(v=>v>0).length;$('#tPers').textContent=`${pers} of ${P.n}`;
+  chart($('#tChart'),{xmin:0,xmax:T,ymin:0,ymax:Math.max(0.6,...eq)*1.1,w:460,h:340,xlab:'Time',ylab:'Share of all patches',series:[...eq.map((v,i)=>({pts:tHist.map(h=>[h[0],h[i+1]]),color:TCV[i],width:2.2})),...eq.map((v,i)=>({pts:[[0,v],[T,v]],color:TCV[i],width:1.2,dash:'5 4'}))]});
+  tCv.setAttribute('aria-label',`Landscape at time ${f(tT,0)}: `+tShare(P).map((v,i)=>`species ${i+1} ${f(v*100,0)}%`).join(', ')+'.');
+  $('#tChart').setAttribute('aria-label','Share of patches held by each species over time, with dashed predicted equilibria: '+eq.map((v,i)=>`species ${i+1} ${f(v*100,0)}%`).join(', ')+'.');
+  const lost=eq.map((v,i)=>v>0?null:i+1).filter(Boolean);
+  $('#tMsg').innerHTML=`Species 1 wins every patch it reaches, yet it holds only ${f(eq[0]*100,0)}% of the landscape because it colonizes slowly and some of its patches die each year. The empty patches it never reaches are the niche for the faster colonizers. ${lost.length?`Species ${lost.join(', ')} ${lost.length>1?'are':'is'} predicted to die out: ${P.D>0?'with habitat destroyed, the slow-colonizing best competitors are the first to go, even though they were the most common':'they do not colonize fast enough to escape the better competitors'}.`:'All species are predicted to persist.'}${P.D>0?' Tilman and colleagues later called this delayed loss after habitat destruction an <b>extinction debt</b>.':' Try destroying habitat.'}`}
+loops.t4=()=>{if(!tPlaying)return;const P=tPar();for(let i=0;i<10;i++){tStep(P,0.1);tT+=0.1}tHist.push([tT,...tShare(P)]);if(tHist.length>1500)tHist.shift();tDraw()};
+playBtn('tPlay',()=>tPlaying,v=>tPlaying=v);$('#tReset').onclick=tReset;
+$$('#t4 input').forEach(i=>i.addEventListener('input',()=>{if(i.id==='tN'||i.id==='tD')tReset();else tDraw()}));
 
-initTabs({t1:()=>tabs.t1.redraw(),t2:()=>tabs.t2.redraw(),t3:()=>tabs.t3.redraw(),t4:()=>tabs.t4.redraw()});
+initTabs({t1:sDraw,t2:iDraw,t3:bDraw,t4:tDraw});
+sReset();iReset();bReset();tReset();requestAnimationFrame(loop);
 })();
 </script>
 <script>
 window.A11Y = {
-  tabsLabel: 'Papers',
-  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary, :root:not([data-theme="light"]) .modelsel button.on{color:#0d1b2a}}',
-  live: ['#tMsg', '.score']
+  tabsLabel: 'Simulations',
+  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
+  live: []
 };
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->

@@ -98,36 +98,36 @@ const ITEMS = [
 
   // ---------- Community Ecology ----------
   {
-    title: "Competition: Four Classic Papers",
+    title: "Competition Simulations",
     topic: "community",
     type: "sim",
     url: "sims/competition/",
-    desc: "Work through Gause (1932) yeasts, Connell (1961) barnacles, MacArthur (1958) warblers, and Tilman (1977) diatoms: the question, the design, your prediction, the real results, and interpretation.",
-    tags: ["Gause", "Connell", "MacArthur", "Tilman", "competition", "real data", "quiz"]
+    desc: "Simulate competitive exclusion with Gause’s yeasts, niches on Connell’s barnacle shore, resource partitioning in MacArthur’s warblers, and resource ratios in Tilman’s diatom chemostats.",
+    tags: ["Gause", "Connell", "MacArthur", "Tilman", "competition", "niche", "real data"]
   },
   {
-    title: "Predation: Four Classic Papers",
+    title: "Predation Simulations",
     topic: "community",
     type: "sim",
     url: "sims/predator-prey/",
-    desc: "Work through Paine (1966) keystone sea stars, Huffaker (1958) mites, Krebs et al. (1995) snowshoe hares, and Holling (1959) functional responses, including running Holling’s disc experiment yourself.",
-    tags: ["Paine", "keystone", "Huffaker", "Krebs", "Holling", "predation", "quiz"]
+    desc: "Remove Paine’s keystone sea star, build Huffaker’s orange-and-mite universes, cycle Krebs’s snowshoe hares with food and fences, and run Holling’s disc-search functional response.",
+    tags: ["Paine", "keystone", "Huffaker", "Krebs", "Holling", "predation", "functional response"]
   },
   {
-    title: "Island Biogeography & Fragmentation: Four Classic Papers",
+    title: "Island Biogeography & Fragmentation Simulations",
     topic: "community",
     type: "sim",
     url: "sims/island-biogeography/",
-    desc: "Work through MacArthur & Wilson (1963), Simberloff & Wilson’s (1969) defaunated mangrove islands, Newmark’s (1987) national park extinctions, and Haddad et al. (2015) on global forest fragmentation.",
-    tags: ["MacArthur & Wilson", "Simberloff", "Newmark", "Haddad", "fragmentation", "real data", "quiz"]
+    desc: "Recolonize Krakatau, fumigate Simberloff & Wilson’s mangrove islands, watch Newmark’s national parks lose mammals, and fragment a forest to see edge effects and extinction debt (Haddad et al. 2015).",
+    tags: ["MacArthur & Wilson", "Simberloff", "Newmark", "Haddad", "fragmentation", "turnover", "real data"]
   },
   {
-    title: "Succession & Disturbance: Four Classic Papers",
+    title: "Succession & Disturbance Simulations",
     topic: "community",
     type: "sim",
     url: "sims/disturbance-succession/",
-    desc: "Work through Connell & Slatyer (1977) succession models, Connell (1978) intermediate disturbance, Sousa’s (1979) boulder field data, and Tilman’s (1994) competition–colonization model.",
-    tags: ["Connell", "Sousa", "Tilman", "succession", "intermediate disturbance", "real data", "quiz"]
+    desc: "Test Connell & Slatyer’s three succession models with removals, storm a coral reef to find the diversity peak, roll Sousa’s boulders, and explore Tilman’s competition–colonization trade-off.",
+    tags: ["Connell", "Sousa", "Tilman", "succession", "intermediate disturbance", "real data"]
   },
 
   // ---------- Field Methods & Conservation ----------
