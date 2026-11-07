@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Predator–Prey Dynamics: Cycles, Refuges, and the Landscape of Fear</title>
+<title>Predator–Prey: The Snowshoe Hare Cycle</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -25,7 +25,7 @@ nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#ff
 section.panel{display:none}
 section.panel.on{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-.layout{display:grid;grid-template-columns:300px 1fr;gap:12px;align-items:start}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px;align-items:start}
 .layout>.card{margin-bottom:0}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:12px}
 .grid2>.card{margin-bottom:0}
@@ -70,23 +70,45 @@ details{margin-top:8px} details summary{cursor:pointer;font-weight:600;font-size
 .q .opts button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
 .q .fb{font-size:.88rem;margin-top:6px;min-height:1em}
 canvas{display:block;width:100%;height:auto;border-radius:8px;background:var(--soft);touch-action:manipulation}
-@media(max-width:820px){.layout{grid-template-columns:1fr}}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:520px){.grid2{grid-template-columns:1fr} body{padding:10px}}
 .ctrl label.check{justify-content:flex-start;font-size:.86rem}
 .ctrl .island h3{display:flex;align-items:center;gap:6px}
+.rng{display:flex;gap:8px;align-items:center}
+.rng input[type=range]{flex:1;min-width:0}
+.box{width:78px;flex:none;font:inherit;font-size:.82rem;padding:3px 5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font-variant-numeric:tabular-nums}
+.paper{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--s4);border-radius:12px;padding:12px 16px;margin:0 0 12px}
+.paper .cite{font-size:.84rem;color:var(--muted);margin:6px 0 0}
+.paper p{margin:6px 0}
+.steps{counter-reset:st;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:st;position:relative;padding:6px 0 6px 34px;border-top:1px solid var(--line);font-size:.9rem}
+.steps li:first-child{border-top:none}
+.steps li::before{content:counter(st);position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.steps li button{margin-top:5px;font-size:.8rem;padding:4px 10px}
+table.cmp{border-collapse:collapse;width:100%;font-size:.86rem}
+table.cmp th,table.cmp td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.cmp th{background:var(--soft)}
+table.cmp td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.traits input[type=number]{width:70px;font:inherit;font-size:.8rem;padding:2px 4px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--text)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .steps li::before{color:#0d1b2a}}
+label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.layout>*{min-width:0}
 
 </style>
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Predator–Prey Dynamics</h1>
-<p class="sub">Predators and prey push each other's populations up and down. Explore why populations cycle, what makes cycles calm down or blow up, and how refuges and fear of predators change the outcome.</p>
+<h1>Predator–Prey: The Snowshoe Hare Cycle</h1>
+<p class="sub">Snowshoe hares in the boreal forest of Canada and Alaska rise and crash about every 10 years, and lynx, coyotes, and owls follow them up and down. Is the cycle driven by food, by predators, or both? Explore a predator–prey model, then run the famous Kluane experiment and a test of whether fear alone can shrink a prey population.</p>
 
 <nav class="tabs">
-  <button class="on" data-tab="pp">1. Population dynamics</button>
-  <button data-tab="fr">2. Functional responses</button>
-  <button data-tab="quiz">3. Check your understanding</button>
+  <button class="on" data-tab="pp">1. The hare cycle</button>
+  <button data-tab="kl">2. The Kluane experiment</button>
+  <button data-tab="fear">3. Fear of predators</button>
+  <button data-tab="fr">4. Functional responses</button>
+  <button data-tab="quiz">5. Check your understanding</button>
 </nav>
 
 <!-- ============ TAB 1 ============ -->
@@ -95,104 +117,166 @@ canvas{display:block;width:100%;height:auto;border-radius:8px;background:var(--s
   <div class="card ctrl">
     <h3>Try a scenario</h3>
     <div class="row presets">
-      <button data-p="classic">Classic Lotka–Volterra</button>
-      <button data-p="stable">Limited prey food</button>
+      <button data-p="kluane">Hare cycle (Kluane-like)</button>
+      <button data-p="classic">Original Lotka–Volterra</button>
       <button data-p="enrich">Paradox of enrichment</button>
-      <button data-p="refuge">Prey refuge</button>
-      <button data-p="fear">Landscape of fear</button>
+      <button data-p="refuge">Dense cover (refuge)</button>
+      <button data-p="type3">Predators switch prey</button>
     </div>
-    <h3><i class="sw" style="background:var(--s3)"></i> Prey</h3>
-    <label for="b">Birth rate b <span class="val" id="bV"></span></label>
-    <input type="range" id="b" min="0.5" max="2" step="0.05" value="1.2" data-d="2">
-    <label for="d">Natural death rate d <span class="val" id="dV"></span></label>
-    <input type="range" id="d" min="0" max="0.6" step="0.05" value="0.4" data-d="2">
-    <label for="K">Carrying capacity K <span class="val" id="KV"></span></label>
-    <input type="range" id="K" min="50" max="500" step="10" value="150">
-    <label class="check"><input type="checkbox" id="Kinf"> No limit on prey food (K = ∞)</label>
-    <label for="ref">Prey in a refuge <span class="val" id="refV"></span></label>
-    <input type="range" id="ref" min="0" max="0.8" step="0.05" value="0" data-d="2">
-    <p class="hint">Fraction of prey hidden where predators cannot catch them (burrows, dense cover).</p>
+    <h3><i class="sw" style="background:var(--s3)"></i>Snowshoe hares (prey)</h3>
+    <label for="b">Birth rate b (per year) <span class="val" id="bV"></span></label>
+    <input type="range" id="b" min="0.2" max="4" step="0.01" value="2.07" data-d="2">
+    <label for="d">Death rate without predators d <span class="val" id="dV"></span></label>
+    <input type="range" id="d" min="0" max="1.5" step="0.01" value="0.2" data-d="2">
+    <label for="K">Carrying capacity K (food supply) <span class="val" id="KV"></span></label>
+    <input type="range" id="K" min="10" max="1000" step="1" value="100">
+    <label class="check"><input type="checkbox" id="Kinf"> Unlimited food (K = ∞)</label>
+    <label for="ref">Hares safe in dense cover <span class="val" id="refV"></span></label>
+    <input type="range" id="ref" min="0" max="0.9" step="0.01" value="0" data-d="2">
     <label for="phi">Fear of predators <span class="val" id="phiV"></span></label>
-    <input type="range" id="phi" min="0" max="0.1" step="0.005" value="0" data-d="3">
-    <p class="hint">Prey that sense predators spend time hiding instead of feeding, so they have fewer young, even if they are never caught.</p>
-    <h3><i class="sw" style="background:var(--s2)"></i> Predator</h3>
+    <input type="range" id="phi" min="0" max="0.5" step="0.001" value="0" data-d="3">
+    <p class="hint">Fearful hares feed less and have fewer young (see tab 3).</p>
+    <h3><i class="sw" style="background:var(--s2)"></i>Predators (lynx, coyotes, owls)</h3>
     <label for="a">Attack rate a <span class="val" id="aV"></span></label>
-    <input type="range" id="a" min="0.005" max="0.05" step="0.001" value="0.02" data-d="3">
-    <label for="h">Handling time h <span class="val" id="hV"></span></label>
-    <input type="range" id="h" min="0" max="1.5" step="0.05" value="0.5" data-d="2">
+    <input type="range" id="a" min="0.005" max="1" step="0.001" value="0.163" data-d="3">
+    <label for="h">Handling time h (years per hare) <span class="val" id="hV"></span></label>
+    <input type="range" id="h" min="0" max="2" step="0.001" value="0.246" data-d="3">
     <label for="e">Conversion efficiency e <span class="val" id="eV"></span></label>
-    <input type="range" id="e" min="0.1" max="1" step="0.05" value="0.4" data-d="2">
+    <input type="range" id="e" min="0.02" max="1" step="0.001" value="0.334" data-d="3">
     <label for="m">Predator death rate m <span class="val" id="mV"></span></label>
-    <input type="range" id="m" min="0.05" max="0.8" step="0.05" value="0.3" data-d="2">
+    <input type="range" id="m" min="0.02" max="2" step="0.001" value="0.777" data-d="3">
+    <label for="ftype">Functional response</label>
+    <select id="ftype" style="width:100%"><option value="2">Type II (saturating)</option><option value="3">Type III (predators switch prey when hares are rare)</option></select>
+    <label for="N3">Switching density (type III only) <span class="val" id="N3V"></span></label>
+    <input type="range" id="N3" min="1" max="100" step="1" value="20">
+    <h3>Start and run</h3>
+    <label for="N0">Starting hares <span class="val" id="N0V"></span></label>
+    <input type="range" id="N0" min="1" max="500" step="1" value="30">
+    <label for="P0">Starting predators <span class="val" id="P0V"></span></label>
+    <input type="range" id="P0" min="0.1" max="100" step="0.1" value="3" data-d="1">
+    <label for="Tmax">Years to run <span class="val" id="TmaxV"></span></label>
+    <input type="range" id="Tmax" min="10" max="300" step="1" value="60">
     <details><summary>The equations</summary>
-      <div class="formula">Prey eaten per predator: f = aN′ / (1 + a h N′), where N′ = (1 − refuge) N<br>dN/dt = N [ b / (1 + fear·P) − d − (b − d) N / K ] − f P<br>dP/dt = e f P − m P</div>
-      <p class="small">With K = ∞, h = 0, no refuge, and no fear, this is the original Lotka–Volterra model (1925–1926). Adding a carrying capacity and handling time gives the Rosenzweig–MacArthur model (1963). The fear term follows Wang, Zanette &amp; Zou (2016).</p>
+      <div class="formula">Hares eaten per predator per year: f = a N′ / (1 + a h N′), N′ = (1 − cover) N<br>Type III: a is multiplied by N′ / (N′ + switching density)<br>dN/dt = N [ b / (1 + fear·P) − d − (b − d) N / K ] − f P<br>dP/dt = e f P − m P</div>
+      <p class="small">This is the Rosenzweig–MacArthur model (1963) with a refuge and a fear term (Wang, Zanette &amp; Zou 2016). The default values were chosen to give a cycle of about 10 years; hare and predator numbers are relative, not real densities.</p>
     </details>
   </div>
   <div>
     <div class="tiles">
       <div class="tile"><div class="k">Long-run outcome</div><div class="v" id="tOut" style="font-size:1.05rem"></div></div>
-      <div class="tile"><div class="k">Prey range (long run)</div><div class="v" id="tN" style="color:var(--s3);font-size:1.15rem"></div></div>
-      <div class="tile"><div class="k">Predator range (long run)</div><div class="v" id="tP" style="color:var(--s2);font-size:1.15rem"></div></div>
+      <div class="tile"><div class="k">Cycle length</div><div class="v" id="tPer"></div></div>
+      <div class="tile"><div class="k">Hares (low–high)</div><div class="v" id="tN" style="color:var(--s3);font-size:1.15rem"></div></div>
+      <div class="tile"><div class="k">Predators (low–high)</div><div class="v" id="tP" style="color:var(--s2);font-size:1.15rem"></div></div>
     </div>
     <div class="grid2">
-      <div class="card chart">
-        <h2>Populations over time</h2>
-        <div class="legend" id="legT"></div>
-        <svg id="cT"></svg>
-        <div class="row small"><label for="Tmax">Run for</label>
-          <select id="Tmax"><option value="50">50 time units</option><option value="100" selected>100 time units</option><option value="200">200 time units</option><option value="400">400 time units</option></select>
-          <label for="N0">Start prey</label><select id="N0"><option>20</option><option selected>60</option><option>120</option></select>
-          <label for="P0">Start predators</label><select id="P0"><option>5</option><option selected>20</option><option>60</option></select></div>
-      </div>
-      <div class="card chart">
-        <h2>Phase plane</h2>
-        <div class="legend" id="legP"></div>
-        <svg id="cP"></svg>
-      </div>
+      <div class="card chart"><h2>Populations over time</h2><div class="legend" id="legT"></div><svg id="cT"></svg></div>
+      <div class="card chart"><h2>Phase plane</h2><div class="legend" id="legP"></div><svg id="cP"></svg></div>
     </div>
     <div class="msg" id="ppMsg"></div>
   </div>
 </div>
 </section>
 
-<!-- ============ TAB 2 ============ -->
-<section class="panel" id="fr">
+<!-- ============ TAB 2: KLUANE ============ -->
+<section class="panel" id="kl">
+<div class="paper">
+  <b>The paper.</b> Near Kluane Lake in the Yukon, Charles Krebs and colleagues ran one of the largest field experiments in ecology. On 1-km² blocks of forest they added food (commercial rabbit chow), built electric fences that kept out lynx and coyotes (but not owls and hawks, which could fly in), or did both, and compared hare numbers with unmanipulated control blocks for 8 years. During the peak and decline of the cycle, <b>predator exclusion doubled</b> hare density, <b>food addition tripled</b> it, and <b>both together raised it 11-fold</b>, more than the two effects added together. Fertilizing plants increased plant growth but not hares.
+  <p class="cite">Krebs, C. J., S. Boutin, R. Boonstra, A. R. E. Sinclair, J. N. M. Smith, M. R. T. Dale, K. Martin, &amp; R. Turkington (1995). Impact of food and predation on the snowshoe hare cycle. <i>Science</i> 269: 1112–1115. <a href="https://doi.org/10.1126/science.269.5227.1112" target="_blank" rel="noopener">doi:10.1126/science.269.5227.1112</a></p>
+</div>
 <div class="layout">
   <div class="card ctrl">
-    <h3>How much does one predator eat?</h3>
-    <p class="small muted" style="margin-top:0">A <b>functional response</b> is how a predator's feeding rate changes with prey density. C. S. Holling (1959) measured it by having blindfolded students "hunt" sandpaper discs on a table.</p>
-    <label for="fa">Attack rate a <span class="val" id="faV"></span></label>
-    <input type="range" id="fa" min="0.005" max="0.1" step="0.005" value="0.03" data-d="3">
-    <p class="hint">How quickly a predator finds prey: search area covered per unit time.</p>
-    <label for="fh">Handling time h <span class="val" id="fhV"></span></label>
-    <input type="range" id="fh" min="0.05" max="1.5" step="0.05" value="0.4" data-d="2">
-    <p class="hint">Time to chase, kill, eat, and digest each prey. A predator can never eat more than 1/h prey per unit time.</p>
-    <div class="check-group">
-      <label class="check"><input type="checkbox" id="sh1" checked> Type I (linear, then full)</label>
-      <label class="check"><input type="checkbox" id="sh2" checked> Type II (saturating)</label>
-      <label class="check"><input type="checkbox" id="sh3" checked> Type III (sigmoid)</label>
-    </div>
+    <h3>Treatments</h3>
+    <label for="food">Food addition: K multiplied by <span class="val" id="foodV"></span></label>
+    <input type="range" id="food" min="1" max="10" step="0.1" value="3" data-d="1">
+    <label for="fence">Fence: share of predation removed <span class="val" id="fenceV"></span></label>
+    <input type="range" id="fence" min="0" max="100" step="1" value="50" data-suf="%">
+    <p class="hint">The fence stopped mammals but not birds of prey, so it removed only part of the predation.</p>
+    <label for="kT">Years to show <span class="val" id="kTV"></span></label>
+    <input type="range" id="kT" min="10" max="150" step="1" value="40">
+    <label class="check"><input type="checkbox" id="klog" checked> Log scale for hares</label>
+    <p class="hint">All four plots use the hare and predator values from tab 1. Change them there and come back.</p>
   </div>
   <div>
-    <div class="tiles">
-      <div class="tile"><div class="k">Maximum feeding rate (1/h)</div><div class="v" id="fMax"></div></div>
-      <div class="tile"><div class="k">Prey density for half of max (1/ah)</div><div class="v" id="fHalf"></div></div>
-    </div>
-    <div class="grid2">
-      <div class="card chart"><h2>Prey eaten per predator</h2><div class="legend" id="legF"></div><svg id="cF"></svg></div>
-      <div class="card chart"><h2>Risk to each prey individual</h2><div class="legend" id="legR"></div><svg id="cR"></svg></div>
-    </div>
-    <div class="msg" id="frMsg">
-      <b>Type I:</b> feeding rises in a straight line until the predator is full (filter feeders like <i>Daphnia</i>).
-      <b>Type II:</b> feeding slows as handling time takes up more of the predator's day (most predators, including snakes waiting at cave entrances for bats). Each prey's risk <i>drops</i> as prey get more common: safety in numbers, which can destabilize populations.
-      <b>Type III:</b> predators ignore a rare prey and switch to it once it is common (learning or prey switching). Risk to each prey <i>rises</i> at low density, which helps keep rare prey from being wiped out and steadies populations.
-    </div>
+    <div class="card"><h2>Follow along</h2><ol class="steps">
+      <li><b>Run the experiment as designed.</b> Food ×3 and a fence that removes half the predation. Compare the model's fold-changes with Krebs's in the table.</li>
+      <li><b>Find the fence strength that doubles hares,</b> and the food level that triples them, one at a time.</li>
+      <li><b>Now look at the combined plot.</b> Is the model's combined effect bigger than food + fence added together? Does it reach 11-fold?</li>
+      <li><b>Explain the gap.</b> The model has only two levels: hares and predators. The hares' food is just a number (K). Krebs and colleagues concluded that the cycle comes from a <b>three-level interaction</b> of plants, hares, and predators. What would you need to add to the model?</li>
+    </ol></div>
+    <div class="card chart"><h2>Hares in the four kinds of plots</h2><div class="legend" id="legK"></div><svg id="cK"></svg></div>
+    <div class="card"><h2>Paper vs. model</h2><div class="tablewrap"><table class="cmp" id="kTbl"></table></div>
+      <p class="small muted" style="margin:6px 0 0">Model values are the long-run average hare density relative to the control plot. Krebs et al. compared densities during the peak and decline of the cycle.</p></div>
+    <div class="msg" id="kMsg"></div>
   </div>
 </div>
 </section>
 
-<!-- ============ TAB 3 ============ -->
+<!-- ============ TAB 3: FEAR ============ -->
+<section class="panel" id="fear">
+<div class="paper">
+  <b>The paper.</b> Can predators reduce prey numbers just by scaring them? Liana Zanette and colleagues protected every song sparrow nest on small islands in British Columbia with electric fences and netting so that no predator could reach them. Then, for a whole breeding season, they played recordings of predator calls to some birds and harmless animal sounds to others. Birds that heard predators laid fewer eggs, fed their chicks less, and produced <b>40% fewer offspring</b> per year, even though no predator ever touched them.
+  <p class="cite">Zanette, L. Y., A. F. White, M. C. Allen, &amp; M. Clinchy (2011). Perceived predation risk reduces the number of offspring songbirds produce per year. <i>Science</i> 334: 1398–1401. <a href="https://doi.org/10.1126/science.1210908" target="_blank" rel="noopener">doi:10.1126/science.1210908</a></p>
+</div>
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Add fear to the hare model</h3>
+    <label for="fphi">Fear strength <span class="val" id="fphiV"></span></label>
+    <input type="range" id="fphi" min="0" max="0.5" step="0.001" value="0" data-d="3">
+    <div class="tiles" style="margin-top:10px">
+      <div class="tile"><div class="k">Birth rate lost to fear at the usual number of predators</div><div class="v" id="fLoss"></div></div>
+    </div>
+    <p class="hint">Uses the average number of predators in the no-fear run. All other values come from tab 1.</p>
+    <label for="fT">Years to show <span class="val" id="fTV"></span></label>
+    <input type="range" id="fT" min="10" max="150" step="1" value="60">
+  </div>
+  <div>
+    <div class="card"><h2>Follow along</h2><ol class="steps">
+      <li><b>Match the sparrows.</b> Raise fear strength until hares lose about 40% of their births at the usual predator level, like Zanette's sparrows.<br><button id="match40">Set it to 40% for me</button></li>
+      <li><b>Compare the two runs.</b> Did fear make hares rarer on average? What happened to the predators, which now kill fewer hares?</li>
+      <li><b>Look at the cycle.</b> Did fear make the boom-and-bust cycle bigger or smaller?</li>
+      <li><b>Think about the Kluane fences.</b> Fences removed predators' killing <i>and</i> their scariness. How could that help explain why fenced plots did better than a model with killing alone predicts?</li>
+    </ol></div>
+    <div class="card chart"><h2>Hares and predators, with and without fear</h2><div class="legend" id="legF"></div><svg id="cFear"></svg></div>
+    <div class="card"><div class="tablewrap"><table class="cmp" id="fTbl"></table></div></div>
+    <div class="msg" id="fMsg"></div>
+  </div>
+</div>
+</section>
+
+<!-- ============ TAB 4: FUNCTIONAL RESPONSES ============ -->
+<section class="panel" id="fr">
+<div class="paper">
+  <b>The paper.</b> How many prey can one predator eat? C. S. Holling answered with a famous tabletop experiment: a blindfolded assistant tapped a table to find sandpaper discs ("prey") and set each one aside before searching again. As discs got more common, the number found per minute leveled off because time spent handling each disc left less time to search. In the Kluane study, predators also showed a type III response: they ate few hares when hares were scarce and switched to other prey such as red squirrels.
+  <p class="cite">Holling, C. S. (1959). Some characteristics of simple types of predation and parasitism. <i>The Canadian Entomologist</i> 91: 385–398.<br>Krebs, C. J., R. Boonstra, S. Boutin, &amp; A. R. E. Sinclair, eds. (2001). <i>Ecosystem Dynamics of the Boreal Forest: The Kluane Project</i>. Oxford University Press.</p>
+</div>
+<div class="layout">
+  <div class="card ctrl">
+    <h3>One predator's feeding rate</h3>
+    <label for="fa">Attack rate a <span class="val" id="faV"></span></label>
+    <input type="range" id="fa" min="0.005" max="0.2" step="0.001" value="0.03" data-d="3">
+    <label for="fh">Handling time h <span class="val" id="fhV"></span></label>
+    <input type="range" id="fh" min="0.02" max="2" step="0.01" value="0.4" data-d="2">
+    <label for="fN3">Switching density (type III) <span class="val" id="fN3V"></span></label>
+    <input type="range" id="fN3" min="1" max="200" step="1" value="40">
+    <label class="check"><input type="checkbox" id="sh1" checked> Type I</label>
+    <label class="check"><input type="checkbox" id="sh2" checked> Type II</label>
+    <label class="check"><input type="checkbox" id="sh3" checked> Type III</label>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Maximum feeding rate (1/h)</div><div class="v" id="fMax"></div></div>
+      <div class="tile"><div class="k">Prey density for half of max, type II (1/ah)</div><div class="v" id="fHalf"></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card chart"><h2>Prey eaten per predator</h2><div class="legend" id="legFR"></div><svg id="cF"></svg></div>
+      <div class="card chart"><h2>Risk to each prey individual</h2><div class="legend" id="legR"></div><svg id="cR"></svg></div>
+    </div>
+    <div class="msg"><b>Type I:</b> feeding rises in a straight line until the predator is full. <b>Type II:</b> handling time limits feeding (Holling's discs); each prey's risk <i>falls</i> as prey get common, which can destabilize populations. <b>Type III:</b> predators ignore rare prey and switch to them once common, so each prey's risk <i>rises</i> at low density. That protects rare prey. Try type III in tab 1 to see how it changes the hare cycle.</div>
+  </div>
+</div>
+</section>
+
+<!-- ============ TAB 5 ============ -->
 <section class="panel" id="quiz">
   <div class="card"><h2>Check your understanding</h2><div id="quizBox"></div></div>
 </section>
@@ -238,9 +322,19 @@ function logTicks(lo,hi){const out=[];for(let e=Math.floor(Math.log10(lo));e<=Ma
 function fmtTick(v){const a=Math.abs(v);if(a>=10000)return(v/1000)+'k';if(a>=1||a===0)return+v.toFixed(2)+'';return+v.toPrecision(2)+''}
 function legend(el,items){el.innerHTML=items.map(([c,t,dash])=>`<span><i class="sw" style="background:${dash?'transparent':c};${dash?`border:2px dashed ${c}`:''}"></i>${t}</span>`).join('')}
 /* sliders: <input type=range id=x data-d=decimals> with <span id=xV> */
-function val(id){return+$('#'+id).value}
-function showVals(){$$('input[type=range]').forEach(r=>{const o=$('#'+r.id+'V');if(o)o.textContent=(r.dataset.pre||'')+(+r.value).toFixed(+(r.dataset.d||0))+(r.dataset.suf||'')})}
-function setSliders(obj){Object.entries(obj).forEach(([k,v])=>{const e=$('#'+k);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else e.value=v});showVals()}
+function val(id){const b=document.getElementById(id+'Box');return b&&b.value!==''?+b.value:+document.getElementById(id).value}
+function showVals(){$$('input[type=range]').forEach(r=>{const b=document.getElementById(r.id+'Box'),v=val(r.id);if(b&&document.activeElement!==b&&+b.value!==v)b.value=v;const o=$('#'+r.id+'V');if(o)o.textContent=(r.dataset.pre||'')+v.toFixed(+(r.dataset.d||0))+(r.dataset.suf||'')})}
+/* typed-value boxes beside every slider (skip with data-nobox) */
+function addBoxes(root=document){$$('input[type=range]:not([data-nobox])',root).forEach(r=>{if(document.getElementById(r.id+'Box'))return;
+  const w=document.createElement('div');w.className='rng';r.parentNode.insertBefore(w,r);w.appendChild(r);
+  const b=document.createElement('input');b.type='number';b.className='box';b.id=r.id+'Box';b.step='any';b.value=r.value;
+  const lab=r.labels&&r.labels[0];if(lab)lab.classList.add('hasbox');let nm=lab?lab.cloneNode(true):null;if(nm)$$('.val',nm).forEach(x=>x.remove());
+  b.setAttribute('aria-label',(nm?nm.textContent.replace(/\s+/g,' ').trim():r.id)+', type an exact value');b.title='Type an exact value';w.appendChild(b);
+  b.addEventListener('change',()=>{let v=+b.value;if(!Number.isFinite(v)){b.value=r.value;return}
+    const lo=b.dataset.min!==undefined?+b.dataset.min:+r.min,hi=b.dataset.max!==undefined?+b.dataset.max:+r.max;v=Math.min(hi,Math.max(lo,v));b.value=v;
+    r._fromBox=true;r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));r._fromBox=false})})}
+document.addEventListener('input',e=>{const r=e.target;if(r.type!=='range'||r._fromBox)return;const b=document.getElementById(r.id+'Box');if(b)b.value=r.value},true);
+function setSliders(obj){Object.entries(obj).forEach(([k,v])=>{const e=$('#'+k);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else{e.value=v;const b=document.getElementById(k+'Box');if(b)b.value=v}});showVals()}
 /* tabs */
 function initTabs(RENDER){let cur=$('nav.tabs button.on').dataset.tab;
   $$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));cur=b.dataset.tab;if(RENDER[cur])RENDER[cur]();try{history.replaceState(null,'','#'+cur)}catch(e){}});
@@ -256,99 +350,133 @@ function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p
 
 (function(){
 const CN='var(--s3)',CP='var(--s2)';
-function P(){return{b:val('b'),d:val('d'),K:val('K'),Kinf:$('#Kinf').checked,ref:val('ref'),phi:val('phi'),a:val('a'),h:val('h'),e:val('e'),m:val('m')}}
-function deriv(p,N,Pp){const Na=(1-p.ref)*N,fr=p.a*Na/(1+p.a*p.h*Na),r=p.b-p.d;
-  const g=p.b/(1+p.phi*Pp)-p.d-(p.Kinf?0:r*N/p.K);return[g*N-fr*Pp,p.e*fr*Pp-p.m*Pp]}
-function run(p,N,Pp,T,keep=500){const dt=0.02,steps=Math.round(T/dt),every=Math.max(1,Math.round(steps/keep)),out=[[0,N,Pp]];
-  for(let i=1;i<=steps;i++){const k1=deriv(p,N,Pp),k2=deriv(p,N+dt/2*k1[0],Pp+dt/2*k1[1]),k3=deriv(p,N+dt/2*k2[0],Pp+dt/2*k2[1]),k4=deriv(p,N+dt*k3[0],Pp+dt*k3[1]);
-    N=Math.max(0,N+dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]));Pp=Math.max(0,Pp+dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]));
-    if(N>1e5)N=1e5; if(i%every===0)out.push([i*dt,N,Pp])}
+addBoxes();
+function P(){return{b:val('b'),d:val('d'),K:val('K'),Kinf:$('#Kinf').checked,ref:val('ref'),phi:val('phi'),a:val('a'),h:val('h'),e:val('e'),m:val('m'),t3:$('#ftype').value==='3',N3:val('N3')}}
+function feed(p,N){const Na=(1-p.ref)*N;const ae=p.t3?p.a*Na/(Na+p.N3):p.a;return ae*Na/(1+ae*p.h*Na)}
+function deriv(p,N,Q){const fr=feed(p,N),r=p.b-p.d;const g=p.b/(1+p.phi*Q)-p.d-(p.Kinf?0:r*N/p.K);return[g*N-fr*Q,p.e*fr*Q-p.m*Q]}
+function run(p,N,Q,T,keep=600){const dt=0.01,steps=Math.round(T/dt),every=Math.max(1,Math.round(steps/keep)),out=[[0,N,Q]];
+  for(let i=1;i<=steps;i++){const k1=deriv(p,N,Q),k2=deriv(p,N+dt/2*k1[0],Q+dt/2*k1[1]),k3=deriv(p,N+dt/2*k2[0],Q+dt/2*k2[1]),k4=deriv(p,N+dt*k3[0],Q+dt*k3[1]);
+    N=Math.max(0,N+dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]));Q=Math.max(0,Q+dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]));if(N>1e6)N=1e6;if(i%every===0)out.push([i*dt,N,Q])}
   return out}
-function classify(p,N0,P0){
-  const lv=p.Kinf&&p.h===0&&p.ref===0&&p.phi===0;
-  const o=run(p,N0,P0,800,2000),tail=o.slice(Math.floor(o.length*0.7));
-  const Ns=tail.map(r=>r[1]),Ps=tail.map(r=>r[2]);
-  const r={nmin:Math.min(...Ns),nmax:Math.max(...Ns),pmin:Math.min(...Ps),pmax:Math.max(...Ps)};
-  if(p.b<=p.d)r.kind='prey';
-  else if(r.pmax<0.05)r.kind='predext';
-  else if(p.Kinf&&!lv&&r.nmax>5e4)r.kind='boom';
-  else if(lv)r.kind='neutral';
-  else{const mean=Ns.reduce((s,v)=>s+v,0)/Ns.length;r.kind=(r.nmax-r.nmin)/mean<0.04?'stable':'cycles';if(r.kind==='cycles'&&r.nmin<1)r.kind='crash'}
-  return r}
-const LABEL={neutral:'Neutral cycles',stable:'Stable equilibrium',cycles:'Steady cycles',crash:'Boom-and-bust cycles',predext:'Predator dies out',prey:'Prey dies out',boom:'Prey explode'};
+function longrun(p,N0,P0){const o=run(p,N0,P0,250,5000),tail=o.filter(r=>r[0]>=120);
+  const Ns=tail.map(r=>r[1]),Ps=tail.map(r=>r[2]),mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
+  const r={nmin:Math.min(...Ns),nmax:Math.max(...Ns),pmin:Math.min(...Ps),pmax:Math.max(...Ps),nmean:mean(Ns),pmean:mean(Ps)};
+  const pk=[];for(let i=1;i<tail.length-1;i++)if(tail[i][1]>tail[i-1][1]&&tail[i][1]>=tail[i+1][1]&&tail[i][1]>r.nmean)pk.push(tail[i][0]);
+  r.per=pk.length>1?(pk[pk.length-1]-pk[0])/(pk.length-1):NaN;return r}
+function classify(p,c){const lv=p.Kinf&&p.h===0&&p.ref===0&&p.phi===0&&!p.t3;
+  if(p.b<=p.d)return'prey';if(c.pmax<0.01)return'predext';if(p.Kinf&&c.nmax>5e5)return'boom';if(lv)return'neutral';
+  return(c.nmax-c.nmin)/c.nmean<0.04?'stable':(c.nmin<1?'crash':'cycles')}
+const LABEL={neutral:'Neutral cycles',stable:'Steady numbers',cycles:'Regular cycles',crash:'Boom and bust',predext:'Predators die out',prey:'Hares die out',boom:'Hares explode'};
 function render(){
-  showVals();$('#K').disabled=$('#Kinf').checked;$('#KV').textContent=$('#Kinf').checked?'∞':val('K');
-  const p=P(),T=+$('#Tmax').value,N0=+$('#N0').value,P0=+$('#P0').value;
-  const tr=run(p,N0,P0,T),c=classify(p,N0,P0);
-  const nmax=Math.max(...tr.map(r=>r[1]))*1.08||1,pmax=Math.max(...tr.map(r=>r[2]))*1.08||1,ymax=Math.max(nmax,pmax);
-  chart($('#cT'),{xmin:0,xmax:T,ymin:0,ymax:Math.min(ymax,2000),w:460,h:400,xlab:'Time',ylab:'Number of animals',
-    series:[{pts:tr.map(r=>[r[0],r[1]]),color:CN,width:2.6},{pts:tr.map(r=>[r[0],r[2]]),color:CP,width:2.6}]});
-  legend($('#legT'),[[CN,'Prey (N)'],[CP,'Predators (P)']]);
-  // isoclines
-  const r=p.b-p.d,NX=Math.min(2000,Math.max(nmax,p.Kinf?0:p.K*1.05)),PX=Math.min(2000,pmax*1.15);
-  const prey=[];for(let i=0;i<=200;i++){const N=NX*i/200,D=p.d+(p.Kinf?0:r*N/p.K),H=p.a*(1-p.ref)/(1+p.a*p.h*(1-p.ref)*N);
-    let Pv;if(p.phi>0){const B=H+D*p.phi,disc=B*B-4*H*p.phi*(D-p.b);Pv=(-B+Math.sqrt(Math.max(0,disc)))/(2*H*p.phi)}else Pv=(p.b-D)/H;
-    if(Pv>=0)prey.push([N,Pv])}
-  const series=[{pts:prey,color:CN,width:3,opacity:.85}];
-  const den=p.a*(1-p.ref)*(p.e-p.m*p.h);let Nstar=null;
-  if(den>0){Nstar=p.m/den;series.push({pts:[[Nstar,0],[Nstar,PX*2]],color:CP,width:3,opacity:.85})}
-  series.push({pts:tr.map(r=>[r[1],r[2]]),color:'var(--text)',width:2.2});
-  chart($('#cP'),{xmin:0,xmax:NX,ymin:0,ymax:PX,w:460,h:400,xlab:'Prey (N)',ylab:'Predators (P)',series,
-    points:[{x:N0,y:P0,color:'var(--text)',r:5,ring:1},{x:tr[tr.length-1][1],y:tr[tr.length-1][2],color:'var(--text)',r:5}]});
-  legend($('#legP'),[[CN,'Prey zero-growth line'],[CP,'Predator zero-growth line'],['var(--text)','Path (open dot = start)']]);
-  $('#tOut').textContent=LABEL[c.kind];
-  $('#tN').textContent=c.kind==='stable'?f((c.nmin+c.nmax)/2,0):`${f(c.nmin,0)}–${c.nmax>5e4?'∞':f(c.nmax,0)}`;
-  $('#tP').textContent=c.kind==='stable'?f((c.pmin+c.pmax)/2,1):`${f(c.pmin,c.pmin<10?1:0)}–${f(c.pmax,0)}`;
-  $('#cT').setAttribute('aria-label',`Line graph of prey and predators over ${T} time units. Long-run outcome: ${LABEL[c.kind]}. Prey range ${$('#tN').textContent}, predator range ${$('#tP').textContent}.`);
-  $('#cP').setAttribute('aria-label',`Phase plane with prey on the x-axis and predators on the y-axis. The predator zero-growth line is a vertical line at about ${Nstar?f(Nstar,0):'none'} prey. The path ${c.kind==='stable'?'spirals in to where the lines cross':c.kind==='neutral'?'makes a closed loop':'loops around the crossing point'}.`);
-  const peak=Nstar&&!p.Kinf&&p.h>0?(p.K-1/(p.a*p.h*(1-p.ref)))/2:null;
-  const M={
-    neutral:`<b>Neutral cycles.</b> Prey increase, then predators increase because there is more food, then prey crash, then predators starve, and the loop repeats. Predator peaks <b>lag behind</b> prey peaks. In this original model the size of the cycle depends only on where you start (try other starting numbers): nothing pulls it back to a set size, which is why ecologists call it "neutrally stable".`,
-    stable:`<b>Stable equilibrium.</b> The populations spiral in and settle where the two zero-growth lines cross. Here the predator line crosses the prey line on the <b>right</b> side of its hump (prey limited by their own food), which damps the cycles. ${p.ref>0?'The refuge also protects part of the prey population, so predators can never drive prey very low.':''}${p.phi>0?' Fear lowers prey births when predators are common, which takes the place of some of the killing and calms the cycles.':''}`,
-    cycles:`<b>Steady cycles (a limit cycle).</b> No matter where you start, the populations settle into the same repeating cycle. The predator line crosses the prey line on the <b>left</b> side of the hump${peak?` (predators hold prey at ${f(Nstar,0)}, below the hump at ${f(peak,0)})`:''}, so the equilibrium is unstable.`,
-    crash:`<b>Boom-and-bust cycles.</b> The populations swing so widely that prey drop to almost zero each cycle. In a real, small population that could mean local extinction.${!p.Kinf&&p.K>=300?' Lower K and watch the cycles shrink: this is the <b>paradox of enrichment</b> (Rosenzweig 1971). Giving prey more food made the system less stable.':''}`,
-    predext:`<b>The predator dies out.</b> Even at the most prey it can get, the predator cannot eat enough to replace its losses: e × (prey eaten) is less than m. ${den<=0?'With this handling time, predators cannot eat fast enough to break even at any prey density.':`Predators need about ${f(Nstar,0)} prey to break even, but there are never that many available.`}`,
-    prey:`<b>The prey cannot grow.</b> Prey birth rate is not higher than their death rate, so prey decline even without predators.`,
-    boom:`<b>Prey explode.</b> With no limit on prey food and predators that saturate (handling time), predators cannot keep up once prey get ahead.`};
-  $('#ppMsg').innerHTML=M[c.kind];
+  showVals();$('#K').disabled=$('#Kinf').checked;
+  const p=P(),T=val('Tmax'),N0=val('N0'),P0=val('P0');
+  const tr=run(p,N0,P0,T),c=longrun(p,N0,P0),kind=classify(p,c);
+  const ymax=Math.min(Math.max(...tr.map(r=>Math.max(r[1],r[2])))*1.08,5000)||1;
+  chart($('#cT'),{xmin:0,xmax:T,ymin:0,ymax:ymax,w:460,h:400,xlab:'Years',ylab:'Number (relative)',series:[{pts:tr.map(r=>[r[0],r[1]]),color:CN,width:2.4},{pts:tr.map(r=>[r[0],r[2]]),color:CP,width:2.4}]});
+  legend($('#legT'),[[CN,'Hares'],[CP,'Predators']]);
+  const r=p.b-p.d,NX=Math.min(5000,Math.max(...tr.map(q=>q[1]),p.Kinf?1:p.K)*1.05),PX=Math.min(5000,Math.max(...tr.map(q=>q[2]))*1.15)||1;
+  const prey=[];for(let i=1;i<=240;i++){const N=NX*i/240,D=p.d+(p.Kinf?0:r*N/p.K),H=feed(p,N)/N;let Pv;
+    if(p.phi>0){const B=H+D*p.phi,disc=B*B-4*H*p.phi*(D-p.b);Pv=(-B+Math.sqrt(Math.max(0,disc)))/(2*H*p.phi)}else Pv=(p.b-D)/H;if(Pv>=0&&Number.isFinite(Pv))prey.push([N,Pv])}
+  let Nstar=null;for(let i=1;i<=4000;i++){const N=NX*2*i/4000;if(p.e*feed(p,N)>=p.m){Nstar=N;break}}
+  const series=[{pts:prey,color:CN,width:3,opacity:.85}];if(Nstar)series.push({pts:[[Nstar,0],[Nstar,PX*2]],color:CP,width:3,opacity:.85});
+  series.push({pts:tr.map(q=>[q[1],q[2]]),color:'var(--text)',width:2});
+  chart($('#cP'),{xmin:0,xmax:NX,ymin:0,ymax:PX,w:460,h:400,xlab:'Hares',ylab:'Predators',series,points:[{x:N0,y:P0,color:'var(--text)',r:5,ring:1}]});
+  legend($('#legP'),[[CN,'Hare zero-growth line'],[CP,'Predator zero-growth line'],['var(--text)','Path (open dot = start)']]);
+  $('#tOut').textContent=LABEL[kind];$('#tPer').textContent=(kind==='cycles'||kind==='crash'||kind==='neutral')&&Number.isFinite(c.per)?f(c.per,1)+' yr':'—';
+  $('#tN').textContent=kind==='stable'?f(c.nmean,0):`${f(c.nmin,c.nmin<10?1:0)}–${c.nmax>5e5?'∞':f(c.nmax,0)}`;
+  $('#tP').textContent=kind==='stable'?f(c.pmean,1):`${f(c.pmin,1)}–${f(c.pmax,1)}`;
+  $('#cT').setAttribute('aria-label',`Hares and predators over ${T} years. Long-run outcome: ${LABEL[kind]}. Hares range ${$('#tN').textContent}; predators ${$('#tP').textContent}; cycle length ${$('#tPer').textContent}.`);
+  $('#cP').setAttribute('aria-label',`Phase plane of predators against hares. The predator zero-growth line is at about ${Nstar?f(Nstar,0):'no'} hares.`);
+  const M={neutral:'<b>Neutral cycles.</b> The original Lotka–Volterra model: hares rise, predators follow, hares crash, predators starve. The size of the loop depends only on where you start.',
+    stable:`<b>Steady numbers.</b> The populations spiral in to where the two zero-growth lines cross.${p.ref>0?' Dense cover keeps some hares safe, which damps the cycle.':''}${p.phi>0?' Fear lowers hare births when predators are common, which also calms the cycle.':''}${p.t3?' Type III predators ease off when hares are rare, protecting them.':''}`,
+    cycles:`<b>Regular cycles</b> of about ${f(c.per,1)} years. Whatever the starting numbers, the populations settle into the same repeating cycle. Real snowshoe hares cycle every 8–11 years. Predator peaks lag behind hare peaks.`,
+    crash:`<b>Boom and bust</b>, about every ${f(c.per,1)} years. Hares fall to almost nothing each cycle.${!p.Kinf&&p.K>200?' Try lowering K: in this model, more food can make cycles <i>wilder</i> (the paradox of enrichment, Rosenzweig 1971).':''}`,
+    predext:'<b>Predators die out.</b> Even with the most hares available, predators cannot eat enough to replace their losses.',prey:'<b>Hares cannot grow:</b> births do not exceed deaths.',boom:'<b>Hares explode:</b> with unlimited food, saturated predators cannot keep up.'};
+  $('#ppMsg').innerHTML=M[kind];
 }
-const BASE={b:1.2,d:0.4,K:150,Kinf:0,ref:0,phi:0,a:0.02,h:0.5,e:0.4,m:0.3};
-const PRE={classic:{...BASE,Kinf:1,h:0},stable:{...BASE},enrich:{...BASE,K:400},refuge:{...BASE,K:400,ref:0.5},fear:{...BASE,K:400,phi:0.03}};
-$$('[data-p]').forEach(b=>b.onclick=()=>{const k=b.dataset.p;setSliders(PRE[k]);$('#Tmax').value=k==='classic'?'100':'200';render()});
+const BASE={b:2.07,d:0.2,K:100,Kinf:0,ref:0,phi:0,a:0.163,h:0.246,e:0.334,m:0.777,ftype:'2',N3:20,N0:30,P0:3,Tmax:60};
+const PRE={kluane:{...BASE},classic:{...BASE,Kinf:1,h:0,a:0.05,b:1,d:0,e:0.3,m:0.6,N0:30,P0:15,Tmax:60},enrich:{...BASE,K:400},refuge:{...BASE,ref:0.35},type3:{...BASE,ftype:'3',N3:20}};
+$$('[data-p]').forEach(b=>b.onclick=()=>{const s=PRE[b.dataset.p];setSliders(s);$('#ftype').value=s.ftype||'2';render()});
 $$('#pp input,#pp select').forEach(i=>i.addEventListener('input',render));
+
+/* ---------- Kluane ---------- */
+const KC=['var(--muted)','var(--s4)','var(--s1)','var(--s3)'];
+const KLAB=['Control','Food added','Predator fence','Food + fence'],PAPER=[1,3,2,11];
+function kluane(){showVals();
+  const p=P(),T=val('kT'),fx=val('food'),fe=val('fence')/100,N0=val('N0'),P0=val('P0');
+  const ps=[p,{...p,K:p.K*fx},{...p,a:p.a*(1-fe)},{...p,K:p.K*fx,a:p.a*(1-fe)}];
+  const runs=ps.map(q=>run(q,N0,P0,T)),lr=ps.map(q=>longrun(q,N0,P0));
+  const lg=$('#klog').checked,ymax=Math.max(...runs.flatMap(r=>r.map(q=>q[1])))*1.2;
+  chart($('#cK'),{xmin:0,xmax:T,ymin:lg?Math.max(0.1,Math.min(...runs.flatMap(r=>r.map(q=>q[1])))*0.8):0,ymax:ymax,logy:lg,w:760,h:340,xlab:'Years',ylab:'Hares'+(lg?' (log scale)':''),
+    series:runs.map((r,i)=>({pts:r.map(q=>[q[0],Math.max(q[1],1e-3)]),color:KC[i],width:i?2.4:2,dash:i?null:'5 4'}))});
+  legend($('#legK'),KLAB.map((l,i)=>[KC[i],l,i===0]));
+  const fold=lr.map(c=>c.nmean/lr[0].nmean);
+  const addv=1+(fold[1]-1)+(fold[2]-1),mult=fold[1]*fold[2];
+  $('#kTbl').innerHTML='<thead><tr><th>Plot</th><th class="num">Krebs et al. (1995)</th><th class="num">Model</th></tr></thead><tbody>'+
+    KLAB.map((l,i)=>`<tr><td><i class="sw" style="background:${KC[i]};display:inline-block;margin-right:6px"></i>${l}</td><td class="num">${PAPER[i]}×</td><td class="num">${f(fold[i],1)}×</td></tr>`).join('')+
+    `<tr><td>If food and fence simply added up</td><td class="num">4×</td><td class="num">${f(addv,1)}×</td></tr></tbody>`;
+  $('#cK').setAttribute('aria-label','Hare numbers over time in four kinds of plots. Model fold changes relative to control: '+KLAB.map((l,i)=>`${l} ${f(fold[i],1)} times`).join(', ')+'. Krebs et al. found 3, 2, and 11 times.');
+  let m;
+  if(fold[3]>addv*1.1)m=`In the model, food + fence gives ${f(fold[3],1)}×, <b>more than additive</b> (${f(addv,1)}×), like the real experiment.`;
+  else m=`In the model, food + fence gives ${f(fold[3],1)}×, which is <b>not more than additive</b> (${f(addv,1)}×). The real plots reached 11×.`;
+  m+=` ${fold[3]<8?'A two-level model (hares and predators, with food as a fixed K) has trouble producing the real 11-fold jump. Krebs and colleagues concluded that food and predators interact: well-fed hares in safe plots survive and breed far better than either change alone would suggest.':'You found settings that come close to the real 11-fold effect. Are they realistic?'}`;
+  if(lr[3].pmax<0.01||lr[2].pmax<0.01)m+=' Note: in at least one fenced plot the model\'s predators died out completely, which did not happen in the real plots because owls and hawks still hunted there.';
+  $('#kMsg').innerHTML=m;
+}
+$$('#kl input').forEach(i=>i.addEventListener('input',kluane));
+
+/* ---------- Fear ---------- */
+function fearTab(){showVals();
+  const p=P(),T=val('fT'),N0=val('N0'),P0=val('P0'),phi=val('fphi');
+  const p0={...p,phi:0},p1={...p,phi};
+  const r0=run(p0,N0,P0,T),r1=run(p1,N0,P0,T),c0=longrun(p0,N0,P0),c1=longrun(p1,N0,P0);
+  const loss=1-1/(1+phi*c0.pmean);$('#fLoss').textContent=f(loss*100,0)+'%';
+  const ymax=Math.max(...r0.flatMap(q=>[q[1],q[2]]),...r1.flatMap(q=>[q[1],q[2]]))*1.08;
+  chart($('#cFear'),{xmin:0,xmax:T,ymin:0,ymax:ymax,w:760,h:340,xlab:'Years',ylab:'Number (relative)',
+    series:[{pts:r0.map(q=>[q[0],q[1]]),color:CN,width:1.6,dash:'5 4'},{pts:r0.map(q=>[q[0],q[2]]),color:CP,width:1.6,dash:'5 4'},{pts:r1.map(q=>[q[0],q[1]]),color:CN,width:2.6},{pts:r1.map(q=>[q[0],q[2]]),color:CP,width:2.6}]});
+  legend($('#legF'),[[CN,'Hares, no fear',1],[CP,'Predators, no fear',1],[CN,'Hares, with fear'],[CP,'Predators, with fear']]);
+  const amp=c=>c.nmax-c.nmin;
+  $('#fTbl').innerHTML=`<thead><tr><th></th><th class="num">No fear</th><th class="num">With fear</th></tr></thead><tbody>
+    <tr><td>Average hares</td><td class="num">${f(c0.nmean,1)}</td><td class="num">${f(c1.nmean,1)}</td></tr>
+    <tr><td>Average predators</td><td class="num">${f(c0.pmean,2)}</td><td class="num">${f(c1.pmean,2)}</td></tr>
+    <tr><td>Hare swing (high − low)</td><td class="num">${f(amp(c0),1)}</td><td class="num">${f(amp(c1),1)}</td></tr></tbody>`;
+  $('#cFear').setAttribute('aria-label',`Hares and predators over ${T} years without fear (dashed) and with fear strength ${phi} (solid). Average hares ${f(c0.nmean,1)} versus ${f(c1.nmean,1)}; hare swing ${f(amp(c0),1)} versus ${f(amp(c1),1)}.`);
+  let m=phi===0?'Raise the fear strength to see what fear alone does.':`With fear costing hares about ${f(loss*100,0)}% of their births, average predators change from ${f(c0.pmean,2)} to ${f(c1.pmean,2)} and the hare swing from ${f(amp(c0),0)} to ${f(amp(c1),0)}. `;
+  if(phi>0&&amp(c1)<amp(c0)*0.7)m+='Fear <b>calms the cycle</b>: when predators are common, hares breed less instead of being eaten, so there is less boom to crash.';
+  if(phi>0&&c1.pmean<c0.pmean)m+=' Predators also become less common, because fearful hares are a smaller food supply.';
+  $('#fMsg').innerHTML=m;
+}
+$('#match40').onclick=()=>{const p=P(),c0=longrun({...p,phi:0},val('N0'),val('P0'));setSliders({fphi:Math.min(0.5,+(0.4/0.6/c0.pmean).toFixed(3))});fearTab()};
+$$('#fear input').forEach(i=>i.addEventListener('input',fearTab));
 
 /* ---------- functional responses ---------- */
 function fr(){showVals();
-  const a=val('fa'),h=val('fh'),X=Math.max(200,Math.min(400,4/(a*h)));
+  const a=val('fa'),h=val('fh'),N3=val('fN3'),X=Math.max(200,Math.min(1000,4/(a*h)));
   const xs=[];for(let i=0;i<=200;i++)xs.push(X*i/200);
-  const b3=a*a*h*4; // keeps type III's half-saturation near type II's
-  const t1=n=>Math.min(a*n,1/h),t2=n=>a*n/(1+a*h*n),t3=n=>b3*n*n/(1+b3*h*n*n);
-  const S=[],R=[];
-  if($('#sh1').checked){S.push({pts:xs.map(n=>[n,t1(n)]),color:'var(--s4)',width:2.6});R.push({pts:xs.slice(1).map(n=>[n,t1(n)/n]),color:'var(--s4)',width:2.6})}
-  if($('#sh2').checked){S.push({pts:xs.map(n=>[n,t2(n)]),color:'var(--s1)',width:2.6});R.push({pts:xs.slice(1).map(n=>[n,t2(n)/n]),color:'var(--s1)',width:2.6})}
-  if($('#sh3').checked){S.push({pts:xs.map(n=>[n,t3(n)]),color:'var(--s5)',width:2.6});R.push({pts:xs.slice(1).map(n=>[n,t3(n)/n]),color:'var(--s5)',width:2.6})}
+  const t1=n=>Math.min(a*n,1/h),t2=n=>a*n/(1+a*h*n),t3=n=>{const ae=a*n/(n+N3);return ae*n/(1+ae*h*n)};
+  const S=[],R=[],L=[];
+  [[1,t1,'var(--s4)','Type I'],[2,t2,'var(--s1)','Type II'],[3,t3,'var(--s5)','Type III']].forEach(([k,fn,c,l])=>{if(!$('#sh'+k).checked)return;S.push({pts:xs.map(n=>[n,fn(n)]),color:c,width:2.6});R.push({pts:xs.slice(1).map(n=>[n,fn(n)/n]),color:c,width:2.6});L.push([c,l])});
   S.unshift({pts:[[0,1/h],[X,1/h]],color:'var(--muted)',dash:'5 4',width:1.4});
-  chart($('#cF'),{xmin:0,xmax:X,ymin:0,ymax:1/h*1.15,w:460,h:360,xlab:'Prey density (N)',ylab:'Prey eaten per predator per time',series:S});
-  const rmax=Math.max(a*1.1,...R.flatMap(s=>s.pts.map(p=>p[1])));
-  chart($('#cR'),{xmin:0,xmax:X,ymin:0,ymax:rmax,w:460,h:360,ml:64,xlab:'Prey density (N)',ylab:'Chance each prey is eaten',series:R});
-  const L=[];if($('#sh1').checked)L.push(['var(--s4)','Type I']);if($('#sh2').checked)L.push(['var(--s1)','Type II']);if($('#sh3').checked)L.push(['var(--s5)','Type III']);
-  legend($('#legF'),[...L,['var(--muted)','Maximum (1/h)',1]]);legend($('#legR'),L);
+  chart($('#cF'),{xmin:0,xmax:X,ymin:0,ymax:1/h*1.15,w:460,h:360,xlab:'Prey density',ylab:'Prey eaten per predator',series:S});
+  const rmax=Math.max(a*1.1,...R.flatMap(s=>s.pts.map(q=>q[1])));
+  chart($('#cR'),{xmin:0,xmax:X,ymin:0,ymax:rmax,w:460,h:360,ml:64,xlab:'Prey density',ylab:'Chance each prey is eaten',series:R});
+  legend($('#legFR'),[...L,['var(--muted)','Maximum (1/h)',1]]);legend($('#legR'),L);
   $('#fMax').textContent=f(1/h,2);$('#fHalf').textContent=f(1/(a*h),0);
-  $('#cF').setAttribute('aria-label',`Feeding rate versus prey density. Type I rises in a straight line then levels off at ${f(1/h,2)}. Type II curves up and levels off toward ${f(1/h,2)}, reaching half that at ${f(1/(a*h),0)} prey. Type III is S-shaped: flat at low prey density, then steep, then level.`);
-  $('#cR').setAttribute('aria-label','Per-prey risk versus prey density. Type I risk is flat then falls. Type II risk falls steadily as prey get more common. Type III risk rises at low density, peaks, then falls.');
+  $('#cF').setAttribute('aria-label',`Feeding rate versus prey density for the selected types. All level off at ${f(1/h,2)}.`);
+  $('#cR').setAttribute('aria-label','Per-prey risk versus prey density. Type II risk falls as prey get common; type III risk rises at low density, peaks, then falls.');
 }
 $$('#fr input').forEach(i=>i.addEventListener('input',fr));
 
 quiz($('#quizBox'),[
- {q:'In predator–prey cycles, the predator peak usually comes…',opts:['before the prey peak','at the same time as the prey peak','after the prey peak','only when prey go extinct'],a:2,why:'Predators need time to convert eaten prey into new predators, so their peaks lag behind prey peaks.'},
- {q:'What happens in the "paradox of enrichment"?',opts:['Adding prey food makes predator–prey cycles calmer','Adding prey food makes cycles larger and can push populations toward extinction','Predators always go extinct when food increases','Prey stop reproducing'],a:1,why:'Raising K stretches the prey hump to the right, so the predator line ends up on the unstable left side. Cycles grow until prey (and then predators) nearly vanish.'},
- {q:'A prey refuge (burrows, dense cover) tends to…',opts:['destabilize the system','stabilize the system by protecting some prey from being eaten','have no effect on dynamics','always cause the predator to go extinct'],a:1,why:'Prey in a refuge cannot be eaten, so predators can never drive prey extremely low, and the cycles damp out.'},
- {q:'Kangaroo rats forage less on moonlit nights when owls and snakes can see them, even if no predator attacks. This is an example of…',opts:['a type I functional response','a nonconsumptive (fear) effect of predators','competitive exclusion','a numerical response'],a:1,why:'Predators affect prey just by being a threat: prey give up feeding time to stay safe, which can lower their birth rates. Ecologists call this the "landscape of fear".'},
- {q:'Which functional response can protect rare prey from being eaten to extinction?',opts:['Type I','Type II','Type III','None of them'],a:2,why:'With type III, predators ignore or rarely find prey at low density (or switch to other prey), so each prey\'s risk is low when the prey is rare.'},
- {q:'Handling time (h) sets…',opts:['how fast a predator finds prey','the maximum number of prey a predator can eat per unit time (1/h)','the predator death rate','the prey carrying capacity'],a:1,why:'Even with unlimited prey, a predator must spend h time units on each prey, so the most it can eat is 1/h per unit time.'}
+ {q:'In the Kluane experiment, food addition tripled hares and predator fences doubled them. Food + fences together increased hares…',opts:['5-fold (exactly additive)','6-fold (exactly multiplicative)','11-fold, more than either rule predicts','not at all'],a:2,why:'The combined effect was larger than adding or even multiplying the single effects, suggesting food and predation interact.'},
+ {q:'Why did the Kluane fences remove only part of the predation?',opts:['Hares dug under them','Owls and hawks could fly over them','Lynx could jump them','They were turned off in winter'],a:1,why:'Electric fences kept out mammals (lynx, coyotes) but not birds of prey.'},
+ {q:'In predator–prey cycles, the predator peak usually comes…',opts:['before the hare peak','at the same time','after the hare peak','only when hares go extinct'],a:2,why:'Predators need time to turn eaten hares into new predators, so their peaks lag behind.'},
+ {q:'Zanette\'s sparrows produced 40% fewer offspring when they heard predator calls. This shows that predators can…',opts:['only affect prey by killing them','reduce prey populations just by scaring them','make prey reproduce faster','be replaced by recordings in the wild'],a:1,why:'Nests were fully protected, so the drop came only from fear: a nonconsumptive effect of predators.'},
+ {q:'In the model, what happens to the hare cycle when you give hares much more food (raise K a lot)?',opts:['It becomes calmer','It gets wilder, with deeper crashes','Predators always die out','Nothing changes'],a:1,why:'This is the paradox of enrichment: more prey food can destabilize a predator–prey system.'},
+ {q:'Which functional response protects rare prey best?',opts:['Type I','Type II','Type III','All equally'],a:2,why:'With type III, predators ignore or rarely find prey at low density, so risk to each prey is low when that prey is rare.'}
 ]);
 
-initTabs({pp:render,fr:fr});
+initTabs({pp:render,kl:kluane,fear:fearTab,fr});
 setSliders({});render();fr();
 })();
 </script>
@@ -356,7 +484,7 @@ setSliders({});render();fr();
 window.A11Y = {
   tabsLabel: 'Simulation sections',
   css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
-  live: ['#ppMsg', '#tOut', '#score']
+  live: ['#ppMsg', '#tOut', '#kMsg', '#fMsg', '#score']
 };
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->

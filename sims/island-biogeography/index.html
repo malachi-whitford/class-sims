@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Island Biogeography: Colonization, Extinction, and the Species–Area Relationship</title>
+<title>Island Biogeography: Simberloff &amp; Wilson's Mangrove Islands</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -25,7 +25,7 @@ nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#ff
 section.panel{display:none}
 section.panel.on{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-.layout{display:grid;grid-template-columns:300px 1fr;gap:12px;align-items:start}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px;align-items:start}
 .layout>.card{margin-bottom:0}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:12px}
 .grid2>.card{margin-bottom:0}
@@ -70,119 +70,170 @@ details{margin-top:8px} details summary{cursor:pointer;font-weight:600;font-size
 .q .opts button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
 .q .fb{font-size:.88rem;margin-top:6px;min-height:1em}
 canvas{display:block;width:100%;height:auto;border-radius:8px;background:var(--soft);touch-action:manipulation}
-@media(max-width:820px){.layout{grid-template-columns:1fr}}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:520px){.grid2{grid-template-columns:1fr} body{padding:10px}}
 .ctrl label.check{justify-content:flex-start;font-size:.86rem}
 .ctrl .island h3{display:flex;align-items:center;gap:6px}
+.rng{display:flex;gap:8px;align-items:center}
+.rng input[type=range]{flex:1;min-width:0}
+.box{width:78px;flex:none;font:inherit;font-size:.82rem;padding:3px 5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font-variant-numeric:tabular-nums}
+.paper{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--s4);border-radius:12px;padding:12px 16px;margin:0 0 12px}
+.paper .cite{font-size:.84rem;color:var(--muted);margin:6px 0 0}
+.paper p{margin:6px 0}
+.steps{counter-reset:st;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:st;position:relative;padding:6px 0 6px 34px;border-top:1px solid var(--line);font-size:.9rem}
+.steps li:first-child{border-top:none}
+.steps li::before{content:counter(st);position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.steps li button{margin-top:5px;font-size:.8rem;padding:4px 10px}
+table.cmp{border-collapse:collapse;width:100%;font-size:.86rem}
+table.cmp th,table.cmp td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.cmp th{background:var(--soft)}
+table.cmp td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.traits input[type=number]{width:70px;font:inherit;font-size:.8rem;padding:2px 4px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--text)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .steps li::before{color:#0d1b2a}}
+label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.layout>*{min-width:0}
 
+#sim{aspect-ratio:900/400}
+#islEdit{font-size:.8rem}#islEdit th,#islEdit td{padding:4px 4px}#islEdit input[type=number]{width:52px}#islEdit button{font-size:.72rem;padding:3px 5px}
 .isl{border-top:1px solid var(--line);padding-top:6px;margin-top:10px}
-.isl h3{display:flex;align-items:center;gap:6px}
-#sim{aspect-ratio:900/380}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Island Biogeography</h1>
-<p class="sub">Why do big islands near the mainland have more species than small, remote ones? MacArthur and Wilson (1967) proposed that the number of species on an island is a balance between new species arriving and resident species going extinct. The same ideas apply to "habitat islands" like mountaintops, lakes, caves, and fragments of habitat surrounded by farms or cities.</p>
+<h1>Island Biogeography: The Mangrove Island Experiments</h1>
+<p class="sub">MacArthur and Wilson (1967) proposed that the number of species on an island is a balance between new species arriving and resident species dying out. Two years later, Daniel Simberloff and E. O. Wilson tested the idea by wiping out every insect and spider on tiny mangrove islands in the Florida Keys and watching them come back.</p>
 
 <nav class="tabs">
-  <button class="on" data-tab="eq">1. Equilibrium model</button>
-  <button data-tab="col">2. Colonize the islands</button>
-  <button data-tab="sar">3. Species–area &amp; habitat loss</button>
+  <button class="on" data-tab="exp">1. Defaunate the islands</button>
+  <button data-tab="eq">2. Immigration &amp; extinction</button>
+  <button data-tab="cut">3. Shrinking islands</button>
   <button data-tab="quiz">4. Check your understanding</button>
 </nav>
 
 <!-- ============ TAB 1 ============ -->
-<section class="panel on" id="eq">
+<section class="panel on" id="exp">
+<div class="paper">
+  <b>The paper.</b> In 1966–67, Simberloff and Wilson chose small islands made only of red mangrove trees, about 11–12 m across, at different distances from larger mangrove "source" areas. They counted every arthropod species on each island, covered it with a tent, and fumigated it with methyl bromide, which killed the arthropods but not the trees. Then they recounted for two years. All but the most distant island (E1, 533 m away) were back to about their original number of species within about 250 days, and the nearest (E2, 2 m away) had the most. The species lists kept changing even after the numbers settled.
+  <p class="cite">Simberloff, D. S., &amp; E. O. Wilson (1969). Experimental zoogeography of islands: the colonization of empty islands. <i>Ecology</i> 50: 278–296. <a href="https://doi.org/10.2307/1934856" target="_blank" rel="noopener">doi:10.2307/1934856</a><br>
+  Simberloff, D. S., &amp; E. O. Wilson (1970). Experimental zoogeography of islands: a two-year record of colonization. <i>Ecology</i> 51: 934–937. <a href="https://doi.org/10.2307/1933995" target="_blank" rel="noopener">doi:10.2307/1933995</a><br>
+  Species counts before defaunation: Simberloff (1976), <i>Science</i> 194: 572–578, Table 1. Distances for E3 and ST2 are approximate.</p>
+</div>
 <div class="layout">
   <div class="card ctrl">
-    <h3>Try a comparison</h3>
-    <div class="row presets">
-      <button data-p="dist">Near vs. far</button>
-      <button data-p="area">Large vs. small</button>
-      <button data-p="mix">Large &amp; far vs. small &amp; near</button>
-    </div>
-    <label for="pool">Species on the mainland (pool, P) <span class="val" id="poolV"></span></label>
-    <input type="range" id="pool" min="20" max="200" step="10" value="100">
+    <div class="row"><button class="primary" id="play">Play</button><button id="step">+10 days</button><button id="reset">Fumigate all islands</button></div>
+    <label for="speed">Speed <span class="val" id="speedV"></span></label>
+    <input type="range" id="speed" min="1" max="30" step="1" value="5" data-suf=" days/frame">
+    <h3>The species pool</h3>
+    <label for="pool">Species able to live on these islands <span class="val" id="poolV"></span></label>
+    <input type="range" id="pool" min="10" max="300" step="1" value="50">
+    <p class="hint">The Keys hold hundreds of arthropod species, but most are passing visitors that cannot live on a tiny mangrove island. This is the pool of species that could.</p>
+    <label for="iS">Immigration multiplier <span class="val" id="iSV"></span></label>
+    <input type="range" id="iS" min="0.1" max="5" step="0.05" value="1" data-d="2" data-suf="×">
+    <label for="eS">Extinction multiplier <span class="val" id="eSV"></span></label>
+    <input type="range" id="eS" min="0.1" max="5" step="0.05" value="1" data-d="2" data-suf="×">
+    <label class="check"><input type="checkbox" id="rescue"> Rescue effect (near islands lose fewer species)</label>
+    <h3>Edit the islands</h3>
+    <div class="tablewrap"><table class="cmp traits" id="islEdit"></table></div>
+    <details><summary>How the model works</summary><p class="small">Each day, every pool species not on an island has a small chance to arrive (lower for far islands), and every species on an island has a small chance to die out there (higher for small islands). Immigration per day = 0.095 + 0.26·e<sup>−distance/86 m</sup> when the island is empty; extinction per day = 0.15 × (11.5 m ÷ diameter) when every pool species is present. These values were tuned so the model's equilibria match the paper's counts.</p></details>
+  </div>
+  <div>
+    <div class="card"><h2>Follow along</h2><ol class="steps">
+      <li><b>Press Play.</b> Day 0 is right after fumigation. Which island refills fastest? Which is slowest?</li>
+      <li><b>Stop at about day 250</b> and compare each island with the dashed line (its count before fumigation). Simberloff and Wilson found every island except E1 back near its original count by then.</li>
+      <li><b>Keep running to day 700.</b> Does E1 catch up? The real E1 still had not fully recovered after two years.</li>
+      <li><b>Check the turnover column.</b> The real islands gained and lost species at roughly 0.05–0.5 species per day even after the counts leveled off. Does the model?</li>
+      <li><b>Move E1 to 2 m</b> in the island table and fumigate it. Now how does it compare with E2? What does that tell you about why E1 was different?</li>
+      <li><b>Something the model misses:</b> on the real islands, species numbers often rose slightly <i>above</i> the original count and then fell back as populations grew and species interacted. Why can't this model do that?</li>
+    </ol></div>
+    <div class="tiles"><div class="tile"><div class="k">Days since fumigation</div><div class="v" id="tDay">0</div></div></div>
+    <div class="card"><canvas id="sim" width="900" height="400"></canvas></div>
+    <div class="card chart"><h2>Species on each island</h2><div class="legend" id="legS"></div><svg id="cS"></svg></div>
+    <div class="card"><h2>Paper vs. model</h2><div class="tablewrap"><table class="cmp" id="cmpTbl"></table></div></div>
+  </div>
+</div>
+</section>
+
+<!-- ============ TAB 2 ============ -->
+<section class="panel" id="eq">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Compare two islands</h3>
+    <div class="row presets"><button data-p="dist">E2 vs. E1 (near vs. far)</button><button data-p="size">Small vs. large, same distance</button></div>
+    <label for="qpool">Species pool <span class="val" id="qpoolV"></span></label>
+    <input type="range" id="qpool" min="10" max="300" step="1" value="50">
     <div class="isl"><h3><i class="sw" style="background:var(--s1)"></i> Island A</h3>
-      <label for="aA">Area <span class="val" id="aAV"></span></label>
-      <input type="range" id="aA" min="0" max="4" step="0.1" value="3">
-      <label for="dA">Distance from mainland <span class="val" id="dAV"></span></label>
-      <input type="range" id="dA" min="0" max="3" step="0.1" value="1"></div>
+      <label for="dA">Distance from source (m) <span class="val" id="dAV"></span></label>
+      <input type="range" id="dA" min="0" max="1000" step="1" value="2">
+      <label for="wA">Diameter (m) <span class="val" id="wAV"></span></label>
+      <input type="range" id="wA" min="2" max="100" step="0.5" value="12" data-d="1"></div>
     <div class="isl"><h3><i class="sw" style="background:var(--s2)"></i> Island B</h3>
-      <label for="aB">Area <span class="val" id="aBV"></span></label>
-      <input type="range" id="aB" min="0" max="4" step="0.1" value="3">
-      <label for="dB">Distance from mainland <span class="val" id="dBV"></span></label>
-      <input type="range" id="dB" min="0" max="3" step="0.1" value="2.6"></div>
+      <label for="dB">Distance from source (m) <span class="val" id="dBV"></span></label>
+      <input type="range" id="dB" min="0" max="1000" step="1" value="533">
+      <label for="wB">Diameter (m) <span class="val" id="wBV"></span></label>
+      <input type="range" id="wB" min="2" max="100" step="0.5" value="11" data-d="1"></div>
     <details><summary>The model</summary>
-      <div class="formula">Immigration I(S) = I₀ (1 − S/P)<br>Extinction E(S) = E₀ (S/P)<br>Equilibrium Ŝ = P · I₀ / (I₀ + E₀)</div>
-      <p class="small">I₀ (the rate when the island is empty) shrinks with distance: fewer seeds, spiders, and birds make it across. E₀ shrinks with area: big islands hold bigger populations and more habitats, so species are less likely to blink out.</p>
+      <div class="formula">Immigration I(S) = I₀ (1 − S/P)<br>Extinction E(S) = E₀ (S/P)<br>Equilibrium Ŝ = P · I₀ / (I₀ + E₀)<br>Turnover at equilibrium = I₀E₀ / (I₀ + E₀)</div>
     </details>
   </div>
   <div>
     <div class="tiles">
       <div class="tile"><div class="k">Island A: equilibrium species</div><div class="v" id="sA" style="color:var(--s1)"></div></div>
       <div class="tile"><div class="k">Island B: equilibrium species</div><div class="v" id="sB" style="color:var(--s2)"></div></div>
-      <div class="tile"><div class="k">Turnover A (species/yr)</div><div class="v" id="tA" style="color:var(--s1)"></div></div>
-      <div class="tile"><div class="k">Turnover B (species/yr)</div><div class="v" id="tB" style="color:var(--s2)"></div></div>
+      <div class="tile"><div class="k">Turnover A (species/day)</div><div class="v" id="tA" style="color:var(--s1)"></div></div>
+      <div class="tile"><div class="k">Turnover B (species/day)</div><div class="v" id="tB" style="color:var(--s2)"></div></div>
     </div>
-    <div class="card chart">
-      <h2>Immigration and extinction rates</h2>
-      <div class="legend" id="legE"></div>
-      <svg id="cE"></svg>
-    </div>
+    <div class="card chart"><h2>MacArthur–Wilson graph</h2><div class="legend" id="legE"></div><svg id="cE"></svg></div>
     <div class="msg" id="eqMsg"></div>
   </div>
 </div>
 </section>
 
-<!-- ============ TAB 2 ============ -->
-<section class="panel" id="col">
+<!-- ============ TAB 3 ============ -->
+<section class="panel" id="cut">
+<div class="paper">
+  <b>The paper.</b> Does island area matter by itself, or only because big islands have more kinds of habitat? Simberloff answered with chainsaws: he censused the arthropods on eight small mangrove islands, then had crews cut away parts of some islands, leaving the same kind of habitat on a smaller area. Species numbers fell on the islands he shrank and stayed about the same on untouched control islands. Area alone changed the number of species.
+  <p class="cite">Simberloff, D. (1976). Experimental zoogeography of islands: effects of island size. <i>Ecology</i> 57: 629–648. <a href="https://doi.org/10.2307/1936179" target="_blank" rel="noopener">doi:10.2307/1936179</a></p>
+</div>
 <div class="layout">
   <div class="card ctrl">
-    <h3>Run the archipelago</h3>
-    <p class="small muted" style="margin-top:0">Four empty islands sit off a mainland with <span id="poolTxt">100</span> species (set the pool size in tab 1). Each year, every mainland species has a small chance to reach each island, and every species on an island has a small chance to die out there.</p>
-    <div class="row"><button class="primary" id="play">Pause</button><button id="reset">Empty the islands</button><button id="wipe">Hurricane hits island 1</button></div>
-    <label for="speed">Speed <span class="val" id="speedV"></span></label>
-    <input type="range" id="speed" min="1" max="20" step="1" value="6" data-suf=" yrs/frame">
-    <label class="check"><input type="checkbox" id="rescue"> Rescue effect</label>
-    <p class="hint">Near islands keep getting new arrivals of species already there, which props up small populations and lowers extinction.</p>
-    <div class="msg small" id="colMsg" style="margin-top:12px"></div>
-  </div>
-  <div>
-    <div class="card"><canvas id="sim" width="900" height="380"></canvas><div class="legend" id="legI" style="margin-top:8px"></div></div>
-    <div class="card chart">
-      <h2>Species on each island over time</h2>
-      <svg id="cS"></svg>
-      <p class="small muted" style="margin:4px 0 0">Dashed lines show each island's predicted equilibrium (Ŝ).</p>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 3 ============ -->
-<section class="panel" id="sar">
-<div class="grid2">
-  <div class="card chart ctrl">
-    <h2>Species–area relationship: S = cA<sup>z</sup></h2>
-    <div class="row presets"><button data-arch="near" class="primary">Near archipelago</button><button data-arch="far">Remote archipelago</button><button id="resample">New sample</button></div>
-    <svg id="cA"></svg>
-    <div class="msg" id="sarMsg"></div>
-  </div>
-  <div class="card chart ctrl">
-    <h2>What happens when habitat is lost?</h2>
+    <h3>Shrink an island</h3>
+    <label for="cDiam">Starting diameter (m) <span class="val" id="cDiamV"></span></label>
+    <input type="range" id="cDiam" min="5" max="60" step="0.5" value="24" data-d="1">
+    <label for="cDist">Distance from source (m) <span class="val" id="cDistV"></span></label>
+    <input type="range" id="cDist" min="0" max="1000" step="1" value="50">
+    <label for="cKeep">Area left after cutting <span class="val" id="cKeepV"></span></label>
+    <input type="range" id="cKeep" min="5" max="100" step="1" value="25" data-suf="%">
+    <div class="row"><button class="primary" id="cPlay">Play</button><button id="cCut">Cut the island now</button><button id="cReset">Start over</button></div>
+    <p class="hint">The cut island and an uncut control start at equilibrium. Uses the species pool and multipliers from tab 1.</p>
+    <h3>Habitat loss calculator</h3>
     <label for="keep">Habitat remaining <span class="val" id="keepV"></span></label>
     <input type="range" id="keep" min="1" max="100" step="1" value="10" data-suf="%">
     <label for="z">z value <span class="val" id="zV"></span></label>
-    <input type="range" id="z" min="0.1" max="0.4" step="0.01" value="0.25" data-d="2">
-    <p class="hint">Typical z: 0.12–0.17 for areas within a continent; 0.25–0.35 for true islands and isolated fragments.</p>
-    <div class="tiles" style="margin-top:8px">
-      <div class="tile"><div class="k">Species expected to persist</div><div class="v" id="persist"></div></div>
-      <div class="tile"><div class="k">Species eventually lost</div><div class="v" id="lost" style="color:var(--bad)"></div></div>
+    <input type="range" id="z" min="0.05" max="0.6" step="0.01" value="0.25" data-d="2">
+    <p class="hint">S = cA<sup>z</sup>. Typical z: 0.12–0.17 within a continent; 0.25–0.35 for true islands and isolated fragments. The model's own z is shown at right.</p>
+  </div>
+  <div>
+    <div class="card"><h2>Follow along</h2><ol class="steps">
+      <li><b>Press Play</b> and let both islands run at equilibrium for a while.</li>
+      <li><b>Cut the island</b> to 25% of its area. Watch the cut island's species count. Does it drop right away, or slowly? (The slow loss is called <b>relaxation</b>, and the species that are doomed but not yet gone are an <b>extinction debt</b>.)</li>
+      <li><b>Compare with the control.</b> Simberloff's untouched islands stayed about the same. Does the control in the model?</li>
+      <li><b>Use the calculator.</b> If 90% of a habitat is cleared and z = 0.25, about what share of species is expected to be lost eventually?</li>
+    </ol></div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Cut island: species now</div><div class="v" id="cNow" style="color:var(--s5)"></div></div>
+      <div class="tile"><div class="k">Control island: species now</div><div class="v" id="cCtl" style="color:var(--s1)"></div></div>
+      <div class="tile"><div class="k">Predicted after cutting</div><div class="v" id="cPred"></div></div>
+      <div class="tile"><div class="k">Model's z value</div><div class="v" id="cZ"></div></div>
     </div>
-    <svg id="cL"></svg>
-    <div class="msg" id="lossMsg"></div>
+    <div class="grid2">
+      <div class="card chart"><h2>Species over time</h2><div class="legend" id="legC"></div><svg id="cC"></svg></div>
+      <div class="card chart"><h2>Species remaining after habitat loss</h2><svg id="cL"></svg>
+        <div class="tiles" style="margin-top:8px"><div class="tile"><div class="k">Expected to persist</div><div class="v" id="persist"></div></div><div class="tile"><div class="k">Eventually lost</div><div class="v" id="lost" style="color:var(--bad)"></div></div></div></div>
+    </div>
+    <div class="msg" id="cutMsg"></div>
   </div>
 </div>
 </section>
@@ -233,9 +284,19 @@ function logTicks(lo,hi){const out=[];for(let e=Math.floor(Math.log10(lo));e<=Ma
 function fmtTick(v){const a=Math.abs(v);if(a>=10000)return(v/1000)+'k';if(a>=1||a===0)return+v.toFixed(2)+'';return+v.toPrecision(2)+''}
 function legend(el,items){el.innerHTML=items.map(([c,t,dash])=>`<span><i class="sw" style="background:${dash?'transparent':c};${dash?`border:2px dashed ${c}`:''}"></i>${t}</span>`).join('')}
 /* sliders: <input type=range id=x data-d=decimals> with <span id=xV> */
-function val(id){return+$('#'+id).value}
-function showVals(){$$('input[type=range]').forEach(r=>{const o=$('#'+r.id+'V');if(o)o.textContent=(r.dataset.pre||'')+(+r.value).toFixed(+(r.dataset.d||0))+(r.dataset.suf||'')})}
-function setSliders(obj){Object.entries(obj).forEach(([k,v])=>{const e=$('#'+k);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else e.value=v});showVals()}
+function val(id){const b=document.getElementById(id+'Box');return b&&b.value!==''?+b.value:+document.getElementById(id).value}
+function showVals(){$$('input[type=range]').forEach(r=>{const b=document.getElementById(r.id+'Box'),v=val(r.id);if(b&&document.activeElement!==b&&+b.value!==v)b.value=v;const o=$('#'+r.id+'V');if(o)o.textContent=(r.dataset.pre||'')+v.toFixed(+(r.dataset.d||0))+(r.dataset.suf||'')})}
+/* typed-value boxes beside every slider (skip with data-nobox) */
+function addBoxes(root=document){$$('input[type=range]:not([data-nobox])',root).forEach(r=>{if(document.getElementById(r.id+'Box'))return;
+  const w=document.createElement('div');w.className='rng';r.parentNode.insertBefore(w,r);w.appendChild(r);
+  const b=document.createElement('input');b.type='number';b.className='box';b.id=r.id+'Box';b.step='any';b.value=r.value;
+  const lab=r.labels&&r.labels[0];if(lab)lab.classList.add('hasbox');let nm=lab?lab.cloneNode(true):null;if(nm)$$('.val',nm).forEach(x=>x.remove());
+  b.setAttribute('aria-label',(nm?nm.textContent.replace(/\s+/g,' ').trim():r.id)+', type an exact value');b.title='Type an exact value';w.appendChild(b);
+  b.addEventListener('change',()=>{let v=+b.value;if(!Number.isFinite(v)){b.value=r.value;return}
+    const lo=b.dataset.min!==undefined?+b.dataset.min:+r.min,hi=b.dataset.max!==undefined?+b.dataset.max:+r.max;v=Math.min(hi,Math.max(lo,v));b.value=v;
+    r._fromBox=true;r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));r._fromBox=false})})}
+document.addEventListener('input',e=>{const r=e.target;if(r.type!=='range'||r._fromBox)return;const b=document.getElementById(r.id+'Box');if(b)b.value=r.value},true);
+function setSliders(obj){Object.entries(obj).forEach(([k,v])=>{const e=$('#'+k);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else{e.value=v;const b=document.getElementById(k+'Box');if(b)b.value=v}});showVals()}
 /* tabs */
 function initTabs(RENDER){let cur=$('nav.tabs button.on').dataset.tab;
   $$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));cur=b.dataset.tab;if(RENDER[cur])RENDER[cur]();try{history.replaceState(null,'','#'+cur)}catch(e){}});
@@ -250,122 +311,137 @@ function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p
     if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('#score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
 
 (function(){
-const CA='var(--s1)',CB='var(--s2)';
-const I0=d=>5*Math.exp(-d/300), E0=a=>5*Math.pow(a/100,-0.5);
-const fmtA=v=>{const a=10**v;return(a<10?a.toFixed(1):Math.round(a).toLocaleString())+' km²'}, fmtD=v=>{const d=10**v;return(d<10?d.toFixed(1):Math.round(d).toLocaleString())+' km'};
-function labels(){showVals();['aA','aB'].forEach(k=>$('#'+k+'V').textContent=fmtA(val(k)));['dA','dB'].forEach(k=>$('#'+k+'V').textContent=fmtD(val(k)))}
-function eqS(P,a,d){const i=I0(d),e=E0(a);return{i,e,S:P*i/(i+e),T:i*e/(i+e)}}
-function renderEq(){labels();
-  const P=val('pool'),A=eqS(P,10**val('aA'),10**val('dA')),B=eqS(P,10**val('aB'),10**val('dB'));
-  const ymax=Math.min(Math.max(A.i,B.i,A.e,B.e)*1.05,Math.max(A.i,B.i)*3,60);
-  chart($('#cE'),{xmin:0,xmax:P,ymin:0,ymax:ymax,w:760,h:380,xlab:'Number of species on the island (S)',ylab:'Rate (species per year)',
-    series:[{pts:[[0,A.i],[P,0]],color:CA,width:3},{pts:[[0,0],[P,A.e]],color:CA,width:3,dash:'7 5'},{pts:[[0,B.i],[P,0]],color:CB,width:3},{pts:[[0,0],[P,B.e]],color:CB,width:3,dash:'7 5'},
-      {pts:[[A.S,0],[A.S,A.i*(1-A.S/P)]],color:CA,width:1.4,dash:'2 3'},{pts:[[B.S,0],[B.S,B.i*(1-B.S/P)]],color:CB,width:1.4,dash:'2 3'}],
-    points:[{x:A.S,y:A.i*(1-A.S/P),color:CA,r:6},{x:B.S,y:B.i*(1-B.S/P),color:CB,r:6}],
-    texts:[{x:A.S,y:0,t:'Ŝ A',color:CA,dy:-6,dx:4},{x:B.S,y:0,t:'Ŝ B',color:CB,dy:-6,dx:4}]});
-  legend($('#legE'),[[CA,'A immigration'],[CA,'A extinction',1],[CB,'B immigration'],[CB,'B extinction',1]]);
-  $('#sA').textContent=f(A.S,0);$('#sB').textContent=f(B.S,0);$('#tA').textContent=f(A.T,2);$('#tB').textContent=f(B.T,2);
-  $('#cE').setAttribute('aria-label',`Immigration lines fall and extinction lines rise as species accumulate. Island A's lines cross at ${f(A.S,0)} species; island B's cross at ${f(B.S,0)} species.`);
-  const sameA=Math.abs(val('aA')-val('aB'))<0.05,sameD=Math.abs(val('dA')-val('dB'))<0.05;
-  let m;
-  if(sameA&&sameD)m='The two islands are identical, so their lines sit on top of each other. Change one island\'s area or distance.';
-  else if(sameA)m=`<b>Distance effect.</b> Both islands are the same size, so their extinction lines match. The ${val('dA')<val('dB')?'nearer island (A)':'nearer island (B)'} gets more immigrants, so its immigration line is higher and it holds more species at equilibrium.`;
-  else if(sameD)m=`<b>Area effect.</b> Both islands are the same distance away, so their immigration lines match. The ${val('aA')>val('aB')?'larger island (A)':'larger island (B)'} has a lower extinction line (bigger populations, more habitat types), so it holds more species.`;
-  else m=`Island ${A.S>B.S?'A':'B'} holds more species. Compare which line moved more: area changes the extinction line, distance changes the immigration line.`;
-  m+=` <br><span class="small">Equilibrium does not mean the species list stops changing. At equilibrium, species keep arriving and going extinct at the same rate: this <b>turnover</b> is the value in the tiles.</span>`;
-  $('#eqMsg').innerHTML=m;
-  if(typeof syncPool==='function')syncPool();
+addBoxes();
+const I0=d=>(0.095+0.26*Math.exp(-d/86))*val('iS'), E0=w=>0.15*(11.5/w)*val('eS');
+const ICOL=['var(--s1)','var(--s3)','var(--s4)','var(--s5)'];
+const ISL=[{name:'E2',d:2,w:12,before:35},{name:'ST2',d:150,w:11,before:25},{name:'E3',d:170,w:12,before:22},{name:'E1',d:533,w:11,before:20}];
+function rates(s){let i=I0(s.d),e=E0(s.w);if($('#rescue').checked)e*=0.35+0.65*Math.min(1,s.d/533);return{i,e}}
+let pool=50,day=0,hist=[],playing=false,state=[];
+function blank(){return{has:new Uint8Array(pool),col:[],ext:[]}}
+function resetAll(){pool=Math.round(val('pool'));day=0;hist=[[0,0,0,0,0]];state=ISL.map(blank)}
+function fumigate(k){state[k]=blank()}
+function stepDay(){day++;state.forEach((st,k)=>{const r=rates(ISL[k]),pc=r.i/pool,pe=r.e/pool;let c=0,x=0;
+  for(let s=0;s<pool;s++){if(st.has[s]){if(Math.random()<pe){st.has[s]=0;x++}}else if(Math.random()<pc){st.has[s]=1;c++}}
+  st.col.push(c);st.ext.push(x);if(st.col.length>100){st.col.shift();st.ext.shift()}});
+  hist.push([day,...state.map(st=>st.has.reduce((a,b)=>a+b,0))]);if(hist.length>4000)hist.shift()}
+function buildEdit(){
+  $('#islEdit').innerHTML='<thead><tr><th>Island</th><th>Dist. (m)</th><th>Diam. (m)</th><th></th></tr></thead><tbody>'+ISL.map((s,k)=>
+    `<tr><td><i class="sw" style="background:${ICOL[k]};display:inline-block;margin-right:4px"></i><b>${s.name}</b></td><td><input type="number" min="0" max="2000" step="1" value="${s.d}" data-k="${k}" data-f="d" aria-label="${s.name} distance in meters"></td><td><input type="number" min="1" max="200" step="0.5" value="${s.w}" data-k="${k}" data-f="w" aria-label="${s.name} diameter in meters"></td><td><button data-fum="${k}" style="font-size:.75rem;padding:3px 7px">Fumigate</button></td></tr>`).join('')+'</tbody>';
+  $$('#islEdit input').forEach(i=>i.onchange=()=>{const v=+i.value;if(Number.isFinite(v)&&v>=+i.min){ISL[+i.dataset.k][i.dataset.f]=v;draw()}});
+  $$('[data-fum]').forEach(b=>b.onclick=()=>{fumigate(+b.dataset.fum);draw()});
 }
-const PRE={dist:{aA:3,aB:3,dA:1,dB:2.6},area:{aA:3.5,aB:1,dA:1.5,dB:1.5},mix:{aA:3.5,aB:1,dA:2.7,dB:0.7}};
+const cv=$('#sim'),ctx=cv.getContext('2d');
+function drawIslands(cvs,c,isl,st,poolN,label){
+  const W=cvs.width,H=cvs.height,dk=matchMedia('(prefers-color-scheme: dark)').matches;
+  c.clearRect(0,0,W,H);c.fillStyle=dk?'#16324a':'#cfe6f5';c.fillRect(0,0,W,H);
+  c.fillStyle=dk?'#2d5a35':'#5f9e5a';c.beginPath();c.moveTo(0,0);for(let y=0;y<=H;y+=20)c.lineTo(80+10*Math.sin(y/25),y);c.lineTo(0,H);c.fill();
+  c.fillStyle=dk?'#e7ecf2':'#fff';c.font='bold 13px system-ui';c.save();c.translate(36,H/2);c.rotate(-Math.PI/2);c.textAlign='center';c.fillText('Source: large mangrove keys',0,0);c.restore();
+  const n=isl.length;
+  isl.forEach((s,k)=>{const x=110+740*Math.log10(s.d+1)/Math.log10(1001),y=H*(k+0.5)/n,R=Math.max(10,Math.min(H/n/2-14,s.w*2.6));
+    c.fillStyle=dk?'#2f5b37':'#3f8f4a';c.beginPath();for(let a=0;a<6.3;a+=0.35){const rr=R*(0.85+0.15*Math.sin(a*5+k));c.lineTo(x+rr*Math.cos(a),y+rr*Math.sin(a))}c.fill();
+    const sp=[];st[k].has.forEach((h,i)=>{if(h)sp.push(i)});
+    sp.forEach((s2,j)=>{const ang=j*2.39996,rr=Math.sqrt((j+0.5)/Math.max(sp.length,poolN*0.8))*(R-4);c.fillStyle=`hsl(${(s2*137.5)%360} 85% ${dk?65:55}%)`;c.beginPath();c.arc(x+rr*Math.cos(ang),y+rr*Math.sin(ang),2.3,0,7);c.fill()});
+    c.fillStyle=dk?'#e7ecf2':'#1d2530';c.font='bold 13px system-ui';c.textAlign=x>700?'right':'left';c.fillText(`${s.name}: ${sp.length} spp. (${s.d} m)`,x>700?x-R-6:x+R+6,y+4)});
+  c.fillStyle=dk?'#e7ecf2':'#1d2530';c.textAlign='right';c.font='bold 14px system-ui';c.fillText(label,W-10,18);
+}
+function draw(){
+  drawIslands(cv,ctx,ISL,state,pool,`Day ${day}`);$('#tDay').textContent=day;
+  cv.setAttribute('aria-label',`Map of a mangrove source on the left and four islands placed by distance. Day ${day}. `+ISL.map((s,k)=>`${s.name}, ${s.d} meters away: ${state[k].has.reduce((a,b)=>a+b,0)} species`).join('; ')+'.');
+  const T=Math.max(300,day),pred=ISL.map(s=>{const r=rates(s);return pool*r.i/(r.i+r.e)});
+  const ser=[];ISL.forEach((s,k)=>{ser.push({pts:[[0,s.before],[T,s.before]],color:ICOL[k],dash:'6 4',width:1.4});ser.push({pts:hist.map(h=>[h[0],h[k+1]]),color:ICOL[k],width:2.2})});
+  chart($('#cS'),{xmin:Math.max(0,hist[0][0]),xmax:T,ymin:0,ymax:Math.max(45,...pred.map(v=>v*1.2),...hist.map(h=>Math.max(...h.slice(1))+3)),w:760,h:320,xlab:'Days after fumigation',ylab:'Species',series:ser,
+    points:day>0?[]:[]});
+  legend($('#legS'),[...ISL.map((s,k)=>[ICOL[k],s.name]),['var(--muted)','Count before fumigation (paper)',1]]);
+  $('#cS').setAttribute('aria-label','Species count over time on each island, with dashed lines at the counts before fumigation: '+ISL.map(s=>`${s.name} ${s.before}`).join(', ')+'.');
+  $('#cmpTbl').innerHTML='<thead><tr><th>Island</th><th class="num">Distance</th><th class="num">Before fumigation (paper)</th><th class="num">Model equilibrium</th><th class="num">Model now</th><th class="num">Turnover now (spp./day)</th></tr></thead><tbody>'+
+    ISL.map((s,k)=>{const st=state[k],n=st.col.length||1,to=(st.col.reduce((a,b)=>a+b,0)+st.ext.reduce((a,b)=>a+b,0))/2/n;
+      return `<tr><td><b>${s.name}</b></td><td class="num">${s.d} m</td><td class="num">${s.before}</td><td class="num">${f(pred[k],0)}</td><td class="num">${st.has.reduce((a,b)=>a+b,0)}</td><td class="num">${st.col.length?f(to,2):'—'}</td></tr>`}).join('')+'</tbody>';
+}
+legend($('#legS'),ISL.map((s,k)=>[ICOL[k],s.name]));
+let lastT=0;
+function loop(t){if(t-lastT>90){lastT=t;
+  if(playing&&$('#exp').classList.contains('on')){for(let i=0;i<val('speed');i++)stepDay();draw()}
+  if(cPlaying&&$('#cut').classList.contains('on')){for(let i=0;i<5;i++)cStep();drawCut()}}
+  requestAnimationFrame(loop)}
+$('#play').onclick=()=>{playing=!playing;$('#play').textContent=playing?'Pause':'Play'};
+$('#step').onclick=()=>{for(let i=0;i<10;i++)stepDay();draw()};
+$('#reset').onclick=()=>{resetAll();draw()};
+$('#pool').addEventListener('input',()=>{showVals();resetAll();draw();cReset()});
+['iS','eS'].forEach(id=>$('#'+id).addEventListener('input',()=>{showVals();draw()}));$('#rescue').onchange=draw;$('#speed').addEventListener('input',showVals);
+
+/* ---------- equilibrium graph ---------- */
+function eqS(P,d,w){const i=I0(d),e=E0(w);return{i,e,S:P*i/(i+e),T:i*e/(i+e)}}
+function renderEq(){showVals();
+  const P=val('qpool'),A=eqS(P,val('dA'),val('wA')),B=eqS(P,val('dB'),val('wB'));
+  const ymax=Math.max(A.i,B.i,Math.min(Math.max(A.e,B.e),Math.max(A.i,B.i)*3))*1.08;
+  chart($('#cE'),{xmin:0,xmax:P,ymin:0,ymax:ymax,w:760,h:380,xlab:'Number of species on the island (S)',ylab:'Rate (species per day)',
+    series:[{pts:[[0,A.i],[P,0]],color:'var(--s1)',width:3},{pts:[[0,0],[P,A.e]],color:'var(--s1)',width:3,dash:'7 5'},{pts:[[0,B.i],[P,0]],color:'var(--s2)',width:3},{pts:[[0,0],[P,B.e]],color:'var(--s2)',width:3,dash:'7 5'},
+      {pts:[[A.S,0],[A.S,A.i*(1-A.S/P)]],color:'var(--s1)',width:1.4,dash:'2 3'},{pts:[[B.S,0],[B.S,B.i*(1-B.S/P)]],color:'var(--s2)',width:1.4,dash:'2 3'}],
+    points:[{x:A.S,y:A.i*(1-A.S/P),color:'var(--s1)',r:6},{x:B.S,y:B.i*(1-B.S/P),color:'var(--s2)',r:6}]});
+  legend($('#legE'),[['var(--s1)','A immigration'],['var(--s1)','A extinction',1],['var(--s2)','B immigration'],['var(--s2)','B extinction',1]]);
+  $('#sA').textContent=f(A.S,0);$('#sB').textContent=f(B.S,0);$('#tA').textContent=f(A.T,3);$('#tB').textContent=f(B.T,3);
+  $('#cE').setAttribute('aria-label',`Immigration lines fall and extinction lines rise. Island A lines cross at ${f(A.S,0)} species; island B at ${f(B.S,0)}.`);
+  const sameW=Math.abs(val('wA')-val('wB'))<0.6,sameD=Math.abs(val('dA')-val('dB'))<1;
+  let m=sameW&&!sameD?`<b>Distance effect</b>, as in Simberloff &amp; Wilson's islands (all about the same size). The nearer island gets more immigrants, so its immigration line is higher and it holds more species.`:
+    sameD&&!sameW?`<b>Area effect.</b> At the same distance, the larger island has a lower extinction line (bigger populations are less likely to blink out), so it holds more species. Simberloff tested this directly by cutting islands down (tab 3).`:
+    'Area moves the extinction line; distance moves the immigration line.';
+  m+=' <span class="small">At equilibrium, species keep arriving and disappearing at equal rates: that turnover is in the tiles.</span>';
+  $('#eqMsg').innerHTML=m;
+}
+const PRE={dist:{dA:2,wA:12,dB:533,wB:11},size:{dA:100,wA:6,dB:100,wB:24}};
 $$('#eq [data-p]').forEach(b=>b.onclick=()=>{setSliders(PRE[b.dataset.p]);renderEq()});
 $$('#eq input').forEach(i=>i.addEventListener('input',renderEq));
 
-/* ---------- stochastic colonization ---------- */
-const ISL=[{name:'1. Near, large',a:3000,d:20},{name:'2. Near, small',a:10,d:20},{name:'3. Far, large',a:3000,d:600},{name:'4. Far, small',a:10,d:600}];
-const ICOL=['var(--s1)','var(--s3)','var(--s4)','var(--s5)'];
-const cv=$('#sim'),ctx=cv.getContext('2d');let pool=100,yr=0,hist=[],playing=true,state=[];
-function rates(k){const s=ISL[k];let i=I0(s.d),e=E0(s.a);if($('#rescue').checked)e*=0.35+0.65*Math.min(1,s.d/600);return{i,e}}
-function reset(){pool=val('pool');$('#poolTxt').textContent=pool;yr=0;hist=[[0,0,0,0,0]];state=ISL.map(()=>({has:new Uint8Array(pool),col:0,ext:0}))}
-function stepYear(){const dt=0.1;
-  for(let n=0;n<10;n++){state.forEach((st,k)=>{const r=rates(k),pc=r.i/pool*dt,pe=r.e/pool*dt;
-    for(let s=0;s<pool;s++){if(st.has[s]){if(Math.random()<pe){st.has[s]=0;st.ext++}}else if(Math.random()<pc){st.has[s]=1;st.col++}}})}
-  yr++;hist.push([yr,...state.map(st=>st.has.reduce((a,b)=>a+b,0))]);if(hist.length>3000)hist.shift()}
-function draw(){
-  const W=cv.width,H=cv.height,dk=matchMedia('(prefers-color-scheme: dark)').matches;
-  ctx.clearRect(0,0,W,H);ctx.fillStyle=dk?'#16324a':'#cfe6f5';ctx.fillRect(0,0,W,H);
-  ctx.fillStyle=dk?'#2d5a35':'#7dbb73';ctx.beginPath();ctx.moveTo(0,0);for(let y=0;y<=H;y+=20)ctx.lineTo(70+8*Math.sin(y/30),y);ctx.lineTo(0,H);ctx.fill();
-  ctx.fillStyle=dk?'#e7ecf2':'#1d2530';ctx.font='bold 15px system-ui';ctx.save();ctx.translate(30,H/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillText(`Mainland: ${pool} species`,0,0);ctx.restore();
-  const pos=[[250,95],[250,272],[700,95],[700,272]];
-  state.forEach((st,k)=>{const s=ISL[k],R=s.a>100?78:32,[x,y]=pos[k];
-    ctx.fillStyle=dk?'#6b5a3a':'#e8d7a6';ctx.beginPath();ctx.arc(x,y,R+5,0,7);ctx.fill();ctx.fillStyle=dk?'#2f5b37':'#8cc37f';ctx.beginPath();ctx.arc(x,y,R,0,7);ctx.fill();
-    const sp=[];st.has.forEach((h,i)=>{if(h)sp.push(i)});
-    const dot=R>40?4:2.4;sp.forEach((s2,j)=>{const ang=j*2.39996,rr=Math.sqrt((j+0.5)/Math.max(sp.length,pool*0.9))*(R-dot-2);ctx.fillStyle=`hsl(${(s2*137.5)%360} 75% ${dk?62:42}%)`;ctx.beginPath();ctx.arc(x+rr*Math.cos(ang),y+rr*Math.sin(ang),dot,0,7);ctx.fill()});
-    ctx.fillStyle=dk?'#e7ecf2':'#1d2530';ctx.textAlign='center';ctx.font='bold 14px system-ui';const ty=y+R+22>H-4?y-R-12:y+R+22;
-    ctx.fillText(`${s.name}: ${sp.length} spp.`,x,ty)});
-  ctx.fillStyle=dk?'#e7ecf2':'#1d2530';ctx.textAlign='right';ctx.font='bold 15px system-ui';ctx.fillText(`Year ${yr}`,W-12,H/2+5);
-  ctx.textAlign='center';ctx.font='italic 13px system-ui';ctx.fillStyle=dk?'#9aa6b4':'#3d4856';ctx.fillText('20 km from mainland',250,H-8);ctx.fillText('600 km from mainland',700,H-8);
-  cv.setAttribute('aria-label',`Map of a mainland on the left and four islands. Year ${yr}. `+state.map((st,k)=>`${ISL[k].name}: ${st.has.reduce((a,b)=>a+b,0)} species`).join('; ')+'. Each colored dot is one species.');
-  // chart
-  const T=Math.max(50,yr),pred=ISL.map((s,k)=>{const r=rates(k);return pool*r.i/(r.i+r.e)});
-  const ser=[];ISL.forEach((s,k)=>{ser.push({pts:[[0,pred[k]],[T,pred[k]]],color:ICOL[k],dash:'6 4',width:1.4});ser.push({pts:hist.map(h=>[h[0],h[k+1]]),color:ICOL[k],width:2.2})});
-  chart($('#cS'),{xmin:Math.max(0,hist[0][0]),xmax:T,ymin:0,ymax:pool,w:760,h:300,xlab:'Year',ylab:'Species',series:ser});
-  $('#cS').setAttribute('aria-label','Species count over time for four islands. '+ISL.map((s,k)=>`${s.name}: predicted ${f(pred[k],0)}`).join('; ')+'.');
-  const msg=state.map((st,k)=>`${ISL[k].name}: ${st.col} arrivals, ${st.ext} extinctions`).join('<br>');
-  $('#colMsg').innerHTML=yr<30?'Watch the near, large island fill fastest. Early on, almost every arrival is a new species.':`<b>Running totals</b><br>${msg}<br><span class="muted">Even after the counts level off, species keep turning over.</span>`;
-}
-legend($('#legI'),ISL.map((s,k)=>[ICOL[k],s.name]));
-let lastT=0;
-function loop(t){if(playing&&$('#col').classList.contains('on')&&t-lastT>90){lastT=t;for(let i=0;i<val('speed');i++)stepYear();draw()}requestAnimationFrame(loop)}
-$('#play').onclick=()=>{playing=!playing;$('#play').textContent=playing?'Pause':'Play'};
-$('#reset').onclick=()=>{reset();draw()};
-$('#wipe').onclick=()=>{const st=state[0];const lose=Math.round(st.has.reduce((a,b)=>a+b,0)*0.8);let n=0;for(let s=0;s<pool&&n<lose;s++)if(st.has[s]&&Math.random()<0.85){st.has[s]=0;st.ext++;n++}draw()};
-$('#rescue').onchange=draw;$('#speed').oninput=showVals;
-window.syncPool=()=>{if(val('pool')!==pool){reset();draw()}};
-
-/* ---------- species–area ---------- */
-let arch='near',sample=[];
-function pois(l){if(l>30)return Math.max(0,Math.round(l+Math.sqrt(l)*gn()));let L=Math.exp(-l),k=0,p=1;do{k++;p*=Math.random()}while(p>L);return k-1}
-function gn(){return Math.sqrt(-2*Math.log(Math.random()+1e-12))*Math.cos(2*Math.PI*Math.random())}
-function makeSample(){const d=arch==='near'?20:600;sample=[];for(let i=0;i<14;i++){const la=i/13*4+(Math.random()-.5)*0.25,a=10**Math.max(-.1,la);sample.push([a,Math.max(1,pois(eqS(100,a,d).S))])}}
-function renderSar(){showVals();
-  if(!sample.length)makeSample();
-  const X=sample.map(s=>Math.log10(s[0])),Y=sample.map(s=>Math.log10(s[1])),n=X.length,mx=X.reduce((a,b)=>a+b)/n,my=Y.reduce((a,b)=>a+b)/n;
-  let sxy=0,sxx=0,syy=0;X.forEach((x,i)=>{sxy+=(x-mx)*(Y[i]-my);sxx+=(x-mx)**2;syy+=(Y[i]-my)**2});const z=sxy/sxx,lc=my-z*mx,r2=sxy*sxy/(sxx*syy);
-  chart($('#cA'),{xmin:0.5,xmax:20000,ymin:0.8,ymax:200,logx:1,logy:1,w:520,h:360,xlab:'Island area (km², log scale)',ylab:'Number of species (log scale)',
-    series:[{pts:[[0.5,10**(lc+z*Math.log10(0.5))],[20000,10**(lc+z*4.3)]],color:'var(--s6)',width:2.4}],points:sample.map(s=>({x:s[0],y:s[1],color:arch==='near'?'var(--s1)':'var(--s4)',r:5}))});
-  $('#cA').setAttribute('aria-label',`Log-log scatter plot of species versus island area for ${n} ${arch} islands, with a straight fitted line of slope z = ${f(z,2)}.`);
-  $('#sarMsg').innerHTML=`Fitted line: <b>S = ${f(10**lc,1)} A<sup>${f(z,2)}</sup></b> (R² = ${f(r2,2)}). On log-log axes a power law is a straight line, and the slope is <b>z</b>. ${arch==='far'?'Remote islands get few immigrants, so small islands are especially poor and the slope is <b>steeper</b>.':'Near islands are "topped up" by immigrants, so even small islands have many species and the slope is <b>shallower</b>. Compare with the remote archipelago.'}`;
+/* ---------- shrinking islands ---------- */
+let cIsl=[],cState=[],cHist=[],cDay=0,cPlaying=false,cutDay=null;
+function cReset(){const w=val('cDiam'),d=val('cDist');cIsl=[{name:'Cut island',d,w},{name:'Control',d,w}];cDay=0;cutDay=null;
+  cState=cIsl.map(s=>{const r=rates(s),Sh=Math.round(pool*r.i/(r.i+r.e)),has=new Uint8Array(pool);const idx=[...Array(pool).keys()].sort(()=>Math.random()-.5).slice(0,Sh);idx.forEach(i=>has[i]=1);return{has}});
+  cHist=[[0,...cState.map(st=>st.has.reduce((a,b)=>a+b,0))]];drawCut()}
+function cStep(){cDay++;cState.forEach((st,k)=>{const r=rates(cIsl[k]),pc=r.i/pool,pe=r.e/pool;for(let s=0;s<pool;s++){if(st.has[s]){if(Math.random()<pe)st.has[s]=0}else if(Math.random()<pc)st.has[s]=1}});
+  cHist.push([cDay,...cState.map(st=>st.has.reduce((a,b)=>a+b,0))]);if(cHist.length>3000)cHist.shift()}
+function drawCut(){showVals();
+  const pr=cIsl.map(s=>{const r=rates(s);return pool*r.i/(r.i+r.e)});
+  const T=Math.max(200,cDay);
+  chart($('#cC'),{xmin:cHist[0][0],xmax:T,ymin:0,ymax:Math.max(...pr,...cHist.map(h=>Math.max(h[1],h[2])))*1.2+2,w:460,h:330,xlab:'Days',ylab:'Species',
+    series:[{pts:cHist.map(h=>[h[0],h[2]]),color:'var(--s1)',width:2.2},{pts:cHist.map(h=>[h[0],h[1]]),color:'var(--s5)',width:2.4},{pts:[[cutDay??0,pr[0]],[T,pr[0]]],color:'var(--s5)',dash:'6 4',width:1.4},...(cutDay!==null?[{pts:[[cutDay,0],[cutDay,500]],color:'var(--muted)',dash:'2 4',width:1.2}]:[])]});
+  legend($('#legC'),[['var(--s5)','Cut island'],['var(--s1)','Control island'],['var(--s5)','Predicted equilibrium, cut island',1]]);
+  const now=cHist[cHist.length-1];$('#cNow').textContent=now[1];$('#cCtl').textContent=now[2];$('#cPred').textContent=f(pr[0],0);
+  // model z from two areas
+  const s1=eqS(pool,val('cDist'),val('cDiam')).S,s2=eqS(pool,val('cDist'),val('cDiam')*Math.sqrt(0.25)).S,z=Math.log(s1/s2)/Math.log(4);$('#cZ').textContent=f(z,2);
+  $('#cC').setAttribute('aria-label',`Species over time for a cut island and an uncut control. ${cutDay!==null?`The island was cut on day ${cutDay} to ${val('cKeep')} percent of its area.`:'Not cut yet.'} Cut island now has ${now[1]} species, predicted equilibrium ${f(pr[0],0)}; control has ${now[2]}.`);
   const keep=val('keep')/100,zz=val('z'),frac=keep**zz;
   $('#persist').textContent=f(frac*100,0)+'%';$('#lost').textContent=f((1-frac)*100,0)+'%';
   const xs=[];for(let i=0;i<=100;i++)xs.push(i);
-  chart($('#cL'),{xmin:0,xmax:100,ymin:0,ymax:100,w:520,h:300,xlab:'Habitat remaining (%)',ylab:'Species remaining (%)',
+  chart($('#cL'),{xmin:0,xmax:100,ymin:0,ymax:100,w:460,h:300,xlab:'Habitat remaining (%)',ylab:'Species remaining (%)',
     series:[{pts:xs.map(x=>[x,x]),color:'var(--muted)',dash:'4 4',width:1.2},{pts:xs.map(x=>[x,100*(x/100)**zz]),color:'var(--s5)',width:2.8}],points:[{x:keep*100,y:frac*100,color:'var(--s5)',r:6}]});
-  $('#cL').setAttribute('aria-label',`Curve of species remaining versus habitat remaining for z = ${zz}. With ${val('keep')} percent of habitat left, about ${f(frac*100,0)} percent of species persist.`);
-  $('#lossMsg').innerHTML=`Losing ${100-val('keep')}% of the habitat is predicted to cost about <b>${f((1-frac)*100,0)}%</b> of the species, not ${100-val('keep')}%. The first losses cost few species, but the last bits of habitat are worth the most. Species do not vanish right away: the gap between what is still there and what the remaining area can hold is called an <b>extinction debt</b>.`;
+  $('#cL').setAttribute('aria-label',`With ${val('keep')} percent of habitat left and z = ${zz}, about ${f(frac*100,0)} percent of species persist.`);
+  let m=cutDay===null?'Press Play, then cut the island.':`The cut island lost habitat on day ${cutDay}. Its new equilibrium is about ${f(pr[0],0)} species. `+(now[1]-pr[0]>2?'It still has more species than it can hold: those extra species are an <b>extinction debt</b> that will be paid off as they die out.':'It has now <b>relaxed</b> to its new, lower equilibrium.');
+  $('#cutMsg').innerHTML=m;
 }
-$$('[data-arch]').forEach(b=>b.onclick=()=>{arch=b.dataset.arch;$$('[data-arch]').forEach(x=>x.classList.toggle('primary',x===b));makeSample();renderSar()});
-$('#resample').onclick=()=>{makeSample();renderSar()};
-$$('#sar input').forEach(i=>i.addEventListener('input',renderSar));
+$('#cPlay').onclick=()=>{cPlaying=!cPlaying;$('#cPlay').textContent=cPlaying?'Pause':'Play'};
+$('#cCut').onclick=()=>{cIsl[0].w=val('cDiam')*Math.sqrt(val('cKeep')/100);cutDay=cDay;drawCut()};
+$('#cReset').onclick=cReset;
+['cDiam','cDist'].forEach(id=>$('#'+id).addEventListener('input',()=>{showVals();cReset()}));
+$$('#keep,#z,#cKeep').forEach(i=>i.addEventListener('input',drawCut));
 
 quiz($('#quizBox'),[
- {q:'In the MacArthur–Wilson model, why does the immigration rate fall as species accumulate on an island?',opts:['Islands run out of space','Fewer of the arriving individuals belong to species that are new to the island','Predators eat the immigrants','Immigrants go extinct faster'],a:1,why:'Immigration counts only species new to the island. The more species already present, the fewer mainland species are left to be "new".'},
- {q:'Island size mainly affects which curve?',opts:['Immigration','Extinction','Both equally','Neither'],a:1,why:'Large islands support larger populations and more habitat types, so each species is less likely to die out. (Larger islands are also bigger targets for immigrants, a smaller "target effect".)'},
- {q:'At equilibrium, the number of species stays about the same. What about the species list?',opts:['It stays the same forever','It keeps changing because species arrive and go extinct at equal rates (turnover)','It slowly declines to zero','Only predators change'],a:1,why:'Equilibrium is dynamic: the count is steady but the identities of species turn over.'},
- {q:'Which island should have the most species?',opts:['Small and far','Small and near','Large and near','Large and far'],a:2,why:'Large islands have low extinction; near islands have high immigration. Both raise the equilibrium.'},
- {q:'A study finds z = 0.25. If 90% of a forest is cleared, roughly what share of its species is eventually expected to persist?',opts:['10%','25%','56%','90%'],a:2,why:'0.10^0.25 ≈ 0.56, so about 56% persist and about 44% are eventually lost, much less than 90% but still a large loss.'},
- {q:'Which of these is a good example of a "habitat island"?',opts:['A cave or isolated mountaintop surrounded by very different habitat','The open ocean','A continent','A river delta connected to the coast'],a:0,why:'Caves, mountaintops, lakes, and habitat fragments are surrounded by habitat their species cannot live in, so island biogeography applies.'}
+ {q:'Why did Simberloff and Wilson fumigate whole islands instead of just counting species on many islands?',opts:['To kill the mangroves','To watch colonization from zero and test whether islands return to an equilibrium number','To find new species','To measure island area'],a:1,why:'Removing the fauna let them watch immigration and extinction directly and see whether species number returned to its original level.'},
+ {q:'Which island recovered most slowly, and why?',opts:['E2, because it was smallest','E1, because it was farthest from the source of colonists','E3, because it had the most ants','All recovered at the same rate'],a:1,why:'E1 was 533 m from the source, so immigration was slowest.'},
+ {q:'After about a year, most islands had about the same NUMBER of species as before. Did they have the same SPECIES?',opts:['Yes, exactly the same list','No; the number returned but the species list was different and kept changing (turnover)','They had no species','Only ants returned'],a:1,why:'Equilibrium is dynamic: the count is steady while species keep arriving and dying out.'},
+ {q:'Simberloff (1976) cut mangrove islands smaller without changing the habitat. Species number dropped. This shows that…',opts:['habitat diversity is the only reason big islands have more species','area alone affects species number','cutting islands increases immigration','species number does not depend on area'],a:1,why:'The habitat stayed the same (red mangrove), so the drop was due to area itself, through higher extinction rates in smaller populations.'},
+ {q:'In the MacArthur–Wilson model, island distance mainly changes the…',opts:['extinction curve','immigration curve','species pool','island area'],a:1,why:'Far islands receive fewer arriving species, lowering the immigration curve.'},
+ {q:'If 90% of a forest is cleared and z = 0.25, about what share of species is eventually expected to persist?',opts:['10%','25%','56%','90%'],a:2,why:'0.10^0.25 ≈ 0.56, so roughly 56% persist and 44% are eventually lost.'}
 ]);
 
-initTabs({eq:renderEq,col:()=>{syncPool();draw()},sar:renderSar});
-setSliders({});reset();renderEq();draw();renderSar();requestAnimationFrame(loop);
+initTabs({exp:draw,eq:renderEq,cut:drawCut});
+setSliders({});buildEdit();resetAll();draw();renderEq();cReset();requestAnimationFrame(loop);
 })();
 </script>
 <script>
 window.A11Y = {
   tabsLabel: 'Simulation sections',
   css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
-  live: ['#eqMsg', '#sarMsg', '#lossMsg', '#score'],
-  names: { '#aA': 'Island A area, log scale', '#dA': 'Island A distance from mainland, log scale', '#aB': 'Island B area, log scale', '#dB': 'Island B distance from mainland, log scale' }
+  live: ['#eqMsg', '#cutMsg', '#score']
 };
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->

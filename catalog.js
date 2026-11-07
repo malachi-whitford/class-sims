@@ -98,36 +98,36 @@ const ITEMS = [
 
   // ---------- Community Ecology ----------
   {
-    title: "Competition & Coexistence",
+    title: "Competition: Gause's Yeasts & Paramecia",
     topic: "community",
     type: "sim",
     url: "sims/competition/",
-    desc: "Run the Lotka–Volterra competition model on a time graph and a phase plane, then turn overlapping seed-size niches into competition coefficients to see when two species can coexist.",
-    tags: ["competition", "Lotka–Volterra", "niche overlap", "competitive exclusion", "quiz"]
+    desc: "Fit the Lotka–Volterra model to Gause's real 1932 yeast data, predict who wins, then explore the phase plane and why Gause's Paramecium species could or could not share a tube.",
+    tags: ["Gause", "competition", "Lotka–Volterra", "niche overlap", "competitive exclusion", "real data", "quiz"]
   },
   {
-    title: "Predator–Prey Dynamics",
+    title: "Predator–Prey: The Snowshoe Hare Cycle",
     topic: "community",
     type: "sim",
     url: "sims/predator-prey/",
-    desc: "Watch predator and prey populations cycle, then add prey food limits, refuges, and fear of predators. Compare type I, II, and III functional responses.",
-    tags: ["predation", "Lotka–Volterra", "functional response", "landscape of fear", "quiz"]
+    desc: "Model the 10-year hare cycle, rerun Krebs's Kluane food-and-fence experiment and compare with the paper, add fear like Zanette's song sparrows, and explore Holling's functional responses.",
+    tags: ["Krebs", "Kluane", "snowshoe hare", "predation", "landscape of fear", "functional response", "quiz"]
   },
   {
-    title: "Island Biogeography",
+    title: "Island Biogeography: Mangrove Island Experiments",
     topic: "community",
     type: "sim",
     url: "sims/island-biogeography/",
-    desc: "Balance immigration and extinction on islands of different sizes and distances, watch four islands fill with species, and use the species–area relationship to predict losses from habitat fragmentation.",
-    tags: ["MacArthur–Wilson", "species–area", "fragmentation", "turnover", "quiz"]
+    desc: "Fumigate Simberloff & Wilson's Florida Keys mangrove islands and watch them recolonize against the paper's counts, then shrink islands like Simberloff did and estimate species lost to habitat loss.",
+    tags: ["Simberloff & Wilson", "MacArthur–Wilson", "species–area", "fragmentation", "turnover", "quiz"]
   },
   {
-    title: "Disturbance & Succession",
+    title: "Disturbance & Succession: Sousa's Boulder Field",
     topic: "community",
     type: "sim",
     url: "sims/disturbance-succession/",
-    desc: "Watch an abandoned field go from weeds to oak forest, set fires and other disturbances, and run an experiment testing the intermediate disturbance hypothesis.",
-    tags: ["succession", "intermediate disturbance", "competition–colonization", "quiz"]
+    desc: "Watch seaweeds take over intertidal boulders, roll boulders like winter waves, compare a whole boulder field with Sousa's 1979 census, and test the intermediate disturbance hypothesis.",
+    tags: ["Sousa", "intertidal", "succession", "intermediate disturbance", "real data", "quiz"]
   },
 
   // ---------- Field Methods & Conservation ----------
