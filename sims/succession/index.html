@@ -138,6 +138,10 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 .ladder div.done{opacity:1}
 .ladder div.now{opacity:1;border-color:var(--accent);font-weight:700}
 .ladder div i{display:block;font-style:normal;font-size:1.25rem}
+.meters{margin-top:8px;display:grid;gap:6px}.mt{display:grid;grid-template-columns:150px minmax(0,1fr) 54px;gap:8px;align-items:center;font-size:.8rem}.mt em{font-style:normal;font-weight:700;text-align:right}
+@media(max-width:560px){.mt{grid-template-columns:minmax(0,1fr) 54px}.mt>span{grid-column:1/-1}}
+.mbar{position:relative;height:16px;border-radius:8px;background:var(--soft);border:1px solid var(--line)}.mbar span{display:block;height:100%;border-radius:8px;transition:width .3s}.mbar i{position:absolute;top:-4px;transform:translateX(-50%);font-style:normal;font-size:.8rem}.mbar i::after{content:'';position:absolute;left:50%;top:18px;height:6px;border-left:1px solid var(--muted)}
+.ladder div span.req{color:#c0392b}.ladder div span.req.ok{color:#2e9d55}
 .ladder div span{display:block;color:var(--muted);font-size:.72rem;margin-top:2px}
 
 </style>
@@ -155,9 +159,9 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 </div>
 
 <div class="grid2" style="margin-top:12px"><div class="card scene"><div class="plothead"><h2>Primary succession: new lava rock</h2><span class="row" style="margin:0"><button id="lavaA">New lava flow</button><button id="fireA">Wildfire</button></span></div>
-  <div class="stage"><canvas id="cA" role="img"></canvas></div><div class="ladder" id="ladA"></div></div>
+  <div class="stage"><canvas id="cA" role="img"></canvas></div><div class="meters" id="metA"></div><div class="ladder" id="ladA"></div></div>
 <div class="card scene"><div class="plothead"><h2>Secondary succession: abandoned farm field</h2><span class="row" style="margin:0"><button id="plowB">Plow it again</button><button id="fireB">Wildfire</button></span></div>
-  <div class="stage"><canvas id="cB" role="img"></canvas></div><div class="ladder" id="ladB"></div></div></div>
+  <div class="stage"><canvas id="cB" role="img"></canvas></div><div class="meters" id="metB"></div><div class="ladder" id="ladB"></div></div></div>
 
 <div class="card chart"><h2>Soil depth</h2><div class="legend" id="leg1"></div><svg id="c1"></svg></div>
 <div class="msg" id="msg"></div>
@@ -275,24 +279,27 @@ function isDark(){return document.documentElement.dataset.theme==='dark'||(docum
 (function(){
 const NS=14,W=760,H=300,GROUND=262;
 const STG=[{n:'Bare ground',ic:'⬛'},
- {n:'Lichens & mosses',ic:'🟢',need:0,arr:0.05,soil:0.08,h:6,grow:3},
- {n:'Wildflowers',ic:'🌼',need:2,arr:0.15,soil:0.12,h:34,grow:1},
- {n:'Grasses',ic:'🌾',need:4,arr:0.25,soil:0.12,h:42,grow:2},
- {n:'Shrubs',ic:'🌿',need:8,arr:0.06,life:35,soil:0.14,h:62,grow:6},
- {n:'Pioneer trees',ic:'🌲',need:14,arr:0.025,life:90,soil:0.15,h:140,grow:25},
- {n:'Mature forest',ic:'🌳',need:22,arr:0.007,life:300,soil:0.15,h:175,grow:45,shade:1}];
+ {n:'Lichens & mosses',ic:'🟢',need:0,lmin:0,arr:0.05,soil:0.08,h:6,grow:3,req:'Bare rock is fine'},
+ {n:'Wildflowers',ic:'🌼',need:2,lmin:0.55,arr:0.15,soil:0.12,h:34,grow:1,req:'2 cm soil, full sun'},
+ {n:'Grasses',ic:'🌾',need:4,lmin:0.45,arr:0.25,soil:0.12,h:42,grow:2,req:'4 cm soil, sun'},
+ {n:'Shrubs',ic:'🌿',need:8,lmin:0.3,arr:0.06,life:35,soil:0.14,h:62,grow:6,req:'8 cm soil'},
+ {n:'Pioneer trees',ic:'🌲',need:14,lmin:0.55,arr:0.03,life:90,soil:0.15,h:140,grow:25,req:'14 cm soil, seedlings need sun'},
+ {n:'Mature forest',ic:'🌳',need:22,lmin:0,arr:0.006,life:300,soil:0.15,h:175,grow:45,tol:1,req:'22 cm soil, seedlings grow in shade'}];
+const light=P=>{let tr=0,sh=0;P.slots.forEach(c=>{if(c.s>=5)tr++;else if(c.s===4)sh++});return Math.max(0.05,1-0.85*tr/NS-0.25*sh/NS)};
+const WHY={1:'Lichens settle on bare rock and start breaking it into soil',2:'Soil is now deep enough for wildflowers',3:'Grasses crowd out the wildflowers',4:'Taller shrubs shade out the grasses',5:'A pine grows up above the shrubs',6:'A shade-tolerant maple seedling grew in the shade and replaced it'};
 let A,B,yr=0,playing=false,acc=0;
 function plot(kind){return{kind,soil:kind==='p'?0:30,t0:yr,slots:Array.from({length:NS},()=>({s:kind==='p'?0:2,g:kind==='p'?0:0.6})),first:kind==='p'?{}:{2:0},hist:[[yr,kind==='p'?0:30]]}}
 function reset(){yr=0;A=plot('p');B=plot('s');draw(true)}
 function disturb(P,how){P.t0=yr;if(how==='lava'){P.soil=0;P.slots.forEach(c=>{c.s=0;c.g=0});P.first={}}else{if(how==='fire')P.soil*=0.9;P.slots.forEach(c=>{c.s=P.soil>=2?2:(P.soil>0?1:0);c.g=0.15});P.first=P.soil>=2?{2:0}:{}}P.hist.push([yr,P.soil]);draw(true)}
 function year(P){const cnt=new Array(7).fill(0);P.slots.forEach(c=>cnt[c.s]++);
   let ds=0.002;P.slots.forEach(c=>{if(c.s)ds+=STG[c.s].soil/NS});P.soil+=ds*Math.max(0,1-P.soil/45);
-  const anyTree=cnt[5]+cnt[6]>=3;
-  P.slots.forEach(c=>{const st=STG[c.s];if(st.life&&Math.random()<1/st.life){c.s=P.soil>=4?3:1;c.g=0.2;return}
-    for(let t=6;t>c.s;t--){const T=STG[t];if(P.soil<T.need)continue;let p=T.arr*(0.3+3*cnt[t]/NS);if(T.shade&&!anyTree)p*=0.1;if(Math.random()<p){c.s=t;c.g=0.05;break}}});
+  const L=light(P);P.L=L;
+  P.slots.forEach((c,i)=>{const st=STG[c.s];if(st.life&&Math.random()<1/st.life){const was=c.s;c.s=P.soil>=4?3:1;c.g=0.2;note(P,i,was===5?'An old pine died; its own seedlings cannot grow in this shade':was===6?'An old maple died, opening a sunny gap':'A shrub died, leaving an opening');return}
+    for(let t=6;t>c.s;t--){const T=STG[t];if(P.soil<T.need||L<T.lmin)continue;let p=T.arr*(0.3+3*cnt[t]/NS);if(T.tol)p*=L<0.75?1:0.15;if(Math.random()<p){c.s=t;c.g=0.05;note(P,i,WHY[t]);break}}});
   const c2=new Array(7).fill(0);P.slots.forEach(c=>c2[c.s]++);for(let t=1;t<7;t++)if(P.first[t]===undefined&&c2[t]>=3)P.first[t]=yr-P.t0;
   P.hist.push([yr,P.soil])}
-function grow(P,dyr){P.slots.forEach(c=>{if(c.s)c.g=Math.min(1,c.g+dyr/STG[c.s].grow)})}
+function note(P,i,txt){if(!P.notes)P.notes=[];if(P.notes.some(n=>n.txt===txt&&n.t<2))return;if(P.notes.length>=2)return;P.notes.push({i,txt,t:0})}
+function grow(P,dyr){if(P.notes){P.notes.forEach(n=>n.t+=dyr/Math.max(1,val('speed'))*1);P.notes=P.notes.filter(n=>n.t<3)}P.slots.forEach(c=>{if(c.s)c.g=Math.min(1,c.g+dyr/STG[c.s].grow)})}
 const rr=s=>()=>(s=(s*16807)%2147483647)/2147483647;
 function drawPlant(x,c,px,base,i,tt){const s=c.s,g=0.25+0.75*c.g,h=STG[s].h*g,sw=Math.sin(tt*1.1+i)*1.5;
   if(s===1){for(let k=0;k<4;k++){x.fillStyle=['#b8c45a','#e0a84a','#7aa84a','#c9d27a'][(i+k)%4];x.beginPath();x.ellipse(px-18+k*12,base-2,7*g,3.5*g,0,0,7);x.fill()}}
@@ -309,20 +316,25 @@ function drawPlot(cv,P,D){const x=ctx2d(cv,W,H),tt=performance.now()/1000;
   const sd=Math.min(40,P.soil*1.2),top=GROUND-sd;
   if(sd>0.5){const sg=x.createLinearGradient(0,top,0,GROUND);sg.addColorStop(0,'#5a3d22');sg.addColorStop(1,'#3e2a16');x.fillStyle=sg;x.fillRect(0,top,W,sd)}
   x.fillStyle='rgba(255,255,255,.85)';x.font='bold 17px system-ui';x.fillText(P.kind==='p'?'Lava rock':'Subsoil',12,GROUND+26);
-  x.fillStyle=sd>14?'#f4ead8':(isDark()?'#e7ecf2':'#10202e');x.font='bold 17px system-ui';x.textAlign='right';x.fillText(sd>0.5?`Soil: ${f(P.soil,1)} cm`:'No soil yet',W-12,sd>14?top+19:top-8);x.textAlign='left';
+  
   const sp=W/NS;P.slots.forEach((c,i)=>{if(c.s&&c.s<5)drawPlant(x,c,(i+0.5)*sp,top,i,tt)});P.slots.forEach((c,i)=>{if(c.s>=5)drawPlant(x,c,(i+0.5)*sp,top,i,tt)});
+  if(P.notes)P.notes.forEach((n,k)=>{const px=(n.i+0.5)*sp,a=Math.min(1,(3-n.t)*1.5);x.globalAlpha=a;x.font='bold 17px system-ui';const tw=x.measureText(n.txt).width+18,bx=Math.max(6,Math.min(W-tw-6,px-tw/2)),by=12+k*38;
+    x.fillStyle='rgba(16,32,46,.88)';x.beginPath();x.roundRect?x.roundRect(bx,by,tw,30,8):x.rect(bx,by,tw,30);x.fill();x.strokeStyle='rgba(16,32,46,.88)';x.lineWidth=2;x.beginPath();x.moveTo(px,by+30);x.lineTo(px,top-STG[P.slots[n.i].s].h*0.9);x.stroke();
+    x.fillStyle='#fff';x.fillText(n.txt,bx+9,by+21);x.globalAlpha=1});
   cv.setAttribute('aria-label',`${P.kind==='p'?'Primary':'Secondary'} succession, ${yr-P.t0} years: soil ${f(P.soil,1)} cm deep.`)}
 function ladder(el,P){const cnt=new Array(7).fill(0);P.slots.forEach(c=>cnt[c.s]++);const dom=cnt.indexOf(Math.max(...cnt));
-  el.innerHTML=STG.slice(1).map((s,k)=>{const t=k+1,d=P.first[t]!==undefined;return `<div class="${t===dom?'now':d?'done':''}"><i>${s.ic}</i>${s.n}<span>${d?(P.first[t]===0?'from the start':'arrived year '+P.first[t]):'not yet'}</span></div>`}).join('');return dom}
+  el.innerHTML=STG.slice(1).map((s,k)=>{const t=k+1,d=P.first[t]!==undefined;const ok=P.soil>=s.need&&(P.L??1)>=s.lmin;return `<div class="${t===dom?'now':d?'done':''}"><i>${s.ic}</i>${s.n}<span class="req ${ok?'ok':''}">${ok?'✓ ':'✗ '}${s.req}</span><span>${d?(P.first[t]===0?'from the start':'arrived year '+P.first[t]):'not yet'}</span></div>`}).join('');return dom}
+function meters(el,P){const L=P.L??light(P),sd=P.soil;const ticks=STG.slice(2).map((s,k)=>`<i style="left:${s.need/45*100}%" title="${s.n}">${s.ic}</i>`).join('');
+  el.innerHTML=`<div class="mt"><span><b>Soil depth</b><small style="display:block;color:var(--muted)">icons = soil each plant needs</small></span><div class="mbar"><span style="width:${Math.min(100,sd/45*100)}%;background:#7a5230"></span>${ticks}</div><em>${f(sd,1)} cm</em></div><div class="mt"><span><b>Sunlight at ground level</b><small style="display:block;color:var(--muted)">☀️ = enough for sun-loving seedlings</small></span><div class="mbar"><span style="width:${L*100}%;background:#f2c14e"></span><i style="left:55%">☀️</i></div><em>${f(L*100,0)}%</em></div>`}
 let lastUI=0;
 function draw(force){const D=isDark();drawPlot($('#cA'),A,D);drawPlot($('#cB'),B,D);const now=performance.now();if(!force&&now-lastUI<250)return;lastUI=now;showVals();
-  $('#yr').textContent=yr;const da=ladder($('#ladA'),A),db=ladder($('#ladB'),B);
-  const T=Math.max(100,yr);chart($('#c1'),{xmin:0,xmax:T,ymin:0,ymax:46,w:760,h:240,xlab:'Years',ylab:'Soil depth (cm)',series:[{pts:A.hist,color:'#8a6a3a',width:3},{pts:B.hist,color:'#3f8a5a',width:3}]});
+  $('#yr').textContent=yr;const da=ladder($('#ladA'),A),db=ladder($('#ladB'),B);meters($('#metA'),A);meters($('#metB'),B);
+  const T=Math.max(100,yr);chart($('#c1'),{xmin:0,xmax:T,ymin:0,ymax:46,w:1100,h:260,xlab:'Years',ylab:'Soil depth (cm)',series:[{pts:A.hist,color:'#8a6a3a',width:3},{pts:B.hist,color:'#3f8a5a',width:3}]});
   legend($('#leg1'),[['#8a6a3a','Primary (lava rock)'],['#3f8a5a','Secondary (old field)']]);$('#c1').setAttribute('aria-label',`Soil depth: primary ${f(A.soil,1)} cm, secondary ${f(B.soil,1)} cm.`);
   let m;
   if(yr<3)m='Press <b>Play</b>. Nothing can root in bare lava, so the first arrivals are lichens and mosses that cling to rock and slowly break it down. In the old field, seeds already in the soil sprout right away.';
-  else if(A.first[6]===undefined&&B.first[6]===undefined)m=`Each stage changes the place for the next one: plants add dead matter and shade, and roots hold soil. ${A.first[5]===undefined?`On the lava, soil is still only ${f(A.soil,1)} cm deep, too thin for trees.`:''} The old field already has deep soil, so it moves through the stages much faster.`;
-  else if(A.first[6]===undefined)m=`The old field reached mature forest in ${B.first[6]} years. The lava rock is still building soil (${f(A.soil,1)} cm). Shade-tolerant forest trees can only grow up under pioneer trees, so they arrive last in both places.`;
+  else if(A.first[6]===undefined&&B.first[6]===undefined)m=`Watch the two meters under each scene. Each stage changes conditions for the next: plants add dead matter that builds <b>soil</b>, and taller plants cut the <b>sunlight</b> reaching the ground. A species moves in only when its needs are met (✓), and is replaced when something taller shades it out. ${A.first[5]===undefined?`On the lava, soil is still only ${f(A.soil,1)} cm deep, too thin for trees.`:''} The old field already has deep soil, so it moves through the stages much faster.`;
+  else if(A.first[6]===undefined)m=`The old field reached mature forest in ${B.first[6]} years. The lava rock is still building soil (${f(A.soil,1)} cm). Pioneer pines need full sun as seedlings, so once their own shade covers the ground they cannot replace themselves. Shade-tolerant maples and oaks can, so they slowly take over: that is why mature forest comes last.`;
   else m=`Both places became forest: the old field in ${B.first[6]} years and the lava rock in ${A.first[6]}. The difference is soil. <b>Primary succession</b> starts without soil and must build it; <b>secondary succession</b> starts with soil and seeds. Try a <b>wildfire</b> on the mature forest: it turns into secondary succession and recovers far faster than the bare lava did.`;
   $('#msg').innerHTML=m}
 const setPlay=v=>{playing=v;$('#play').textContent=v?'Pause':'Play'};
