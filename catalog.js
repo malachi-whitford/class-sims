@@ -102,8 +102,8 @@ const ITEMS = [
     topic: "community",
     type: "sim",
     url: "sims/trophic-cascade/",
-    desc: "Two identical field cages of grass and grasshoppers, one with spiders. Watch the spiders protect the grass without ever touching it, then remove them and watch the cascade reverse.",
-    tags: ["trophic cascade", "food chain", "predation", "Schmitz", "indirect effects"]
+    desc: "Three identical cages of grass and grasshoppers: no spiders, hunting spiders, and spiders with glued mouthparts that can only scare. Separate the cascade into eating (consumptive) and fear (non-consumptive) effects.",
+    tags: ["trophic cascade", "non-consumptive effects", "predation risk", "Schmitz", "indirect effects"]
   },
 
   // ---------- Field Methods & Conservation ----------
