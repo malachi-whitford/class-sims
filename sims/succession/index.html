@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Primary and Secondary Succession</title>
+<title>Succession and Fire in the Sierra Nevada</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -131,40 +131,71 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 @media (max-width:820px){.layout>.ctrl{order:2}}
 
 .scene canvas{aspect-ratio:760/300}
+#cF{aspect-ratio:760/330}
 .plothead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px 12px;margin-bottom:8px}
 .plothead h2{margin:0;font-size:1rem}
+.pctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px 12px;align-items:center;margin-bottom:8px}
+.pctl .yr{font-size:.82rem;color:var(--muted);text-align:right;min-width:72px}
+.pctl .yr b{display:block;font-size:1.3rem;color:var(--text)}
+.pctl label{font-size:.8rem}
 .ladder{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
 .ladder div{border-radius:10px;padding:6px 4px;text-align:center;font-size:.76rem;line-height:1.2;background:var(--soft);border:2px solid transparent;opacity:.45}
 .ladder div.done{opacity:1}
 .ladder div.now{opacity:1;border-color:var(--accent);font-weight:700}
-.ladder div i{display:block;font-style:normal;font-size:1.25rem}
-.meters{margin-top:8px;display:grid;gap:6px}.mt{display:grid;grid-template-columns:150px minmax(0,1fr) 54px;gap:8px;align-items:center;font-size:.8rem}.mt em{font-style:normal;font-weight:700;text-align:right}
-@media(max-width:560px){.mt{grid-template-columns:minmax(0,1fr) 54px}.mt>span{grid-column:1/-1}}
-.mbar{position:relative;height:16px;border-radius:8px;background:var(--soft);border:1px solid var(--line)}.mbar span{display:block;height:100%;border-radius:8px;transition:width .3s}.mbar i{position:absolute;top:-4px;transform:translateX(-50%);font-style:normal;font-size:.8rem}.mbar i::after{content:'';position:absolute;left:50%;top:18px;height:6px;border-left:1px solid var(--muted)}
-.ladder div span.req{color:#c0392b}.ladder div span.req.ok{color:#2e9d55}
+.ladder div i{display:block;font-style:normal;font-size:1.2rem}
+.ladder div small{display:block;color:var(--muted);font-weight:400;font-size:.7rem;font-style:italic}
 .ladder div span{display:block;color:var(--muted);font-size:.72rem;margin-top:2px}
-
+.ladder div span.req{color:#c0392b}.ladder div span.req.ok{color:#2e9d55}
+.meters{margin-top:8px;display:grid;gap:6px}
+.mt{display:grid;grid-template-columns:150px minmax(0,1fr) 54px;gap:8px;align-items:center;font-size:.8rem}
+.mt small{display:block;color:var(--muted)}
+.mt em{font-style:normal;font-weight:700;text-align:right}
+.mbar{position:relative;height:16px;border-radius:8px;background:var(--soft);border:1px solid var(--line)}
+.mbar span{display:block;height:100%;border-radius:8px;transition:width .3s}
+.mbar i{position:absolute;top:-4px;transform:translateX(-50%);font-style:normal;font-size:.8rem}
+@media(max-width:560px){.mt{grid-template-columns:minmax(0,1fr) 54px}.mt>span{grid-column:1/-1}}
+.sect{margin:26px 0 6px;font-size:1.35rem}
+.fctl{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-end}
+.fctl>div{flex:1 1 200px;min-width:0}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Primary and Secondary Succession</h1>
-<p class="sub">Two places start over at the same moment. On the left, a lava flow has left <b>bare rock with no soil</b>. On the right, a farm field has been abandoned: the crops are gone, but the <b>soil and its buried seeds remain</b>. Which one becomes a forest first?</p>
+<h1>Succession and Fire in the Sierra Nevada</h1>
+<p class="sub">How does a Sierra Nevada forest grow back? On the left, a retreating glacier has left <b>bare granite with no soil</b>. On the right, a mountain pasture has been abandoned: the grazing has stopped, but the <b>soil and its buried seeds remain</b>. Each plot has its own controls.</p>
 
-<div class="card ctrl" style="display:flex;flex-wrap:wrap;gap:10px 22px;align-items:flex-end">
-  <div class="row" style="margin:0"><button class="primary" id="play">Play</button><button id="reset">Start both over</button></div>
-  <div style="flex:1 1 240px"><label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="20" step="1" value="3" data-suf=" years per second" data-nobox></div>
-  <div class="tile" style="min-width:150px;margin:0"><div class="k">Years since disturbance</div><div class="v" id="yr"></div></div>
+<div class="grid2">
+  <div class="card scene"><div class="plothead"><h2>Primary succession: bare granite</h2><span class="row" style="margin:0"><button id="lavaA">Glacier retreats (start over)</button><button id="fireA">Wildfire</button></span></div>
+    <div class="pctl"><button class="primary" id="playA">Play</button><div><label for="spA">Speed <span class="val" id="spAV"></span></label><input type="range" id="spA" min="1" max="20" step="1" value="3" data-suf=" yr/s" data-nobox></div><div class="yr">Years<b id="yrA">0</b></div></div>
+    <div class="stage"><canvas id="cA" role="img"></canvas></div><div class="meters" id="metA"></div><div class="ladder" id="ladA"></div></div>
+  <div class="card scene"><div class="plothead"><h2>Secondary succession: abandoned pasture</h2><span class="row" style="margin:0"><button id="plowB">Graze it again (start over)</button><button id="fireB">Wildfire</button></span></div>
+    <div class="pctl"><button class="primary" id="playB">Play</button><div><label for="spB">Speed <span class="val" id="spBV"></span></label><input type="range" id="spB" min="1" max="20" step="1" value="3" data-suf=" yr/s" data-nobox></div><div class="yr">Years<b id="yrB">0</b></div></div>
+    <div class="stage"><canvas id="cB" role="img"></canvas></div><div class="meters" id="metB"></div><div class="ladder" id="ladB"></div></div>
 </div>
-
-<div class="grid2" style="margin-top:12px"><div class="card scene"><div class="plothead"><h2>Primary succession: new lava rock</h2><span class="row" style="margin:0"><button id="lavaA">New lava flow</button><button id="fireA">Wildfire</button></span></div>
-  <div class="stage"><canvas id="cA" role="img"></canvas></div><div class="meters" id="metA"></div><div class="ladder" id="ladA"></div></div>
-<div class="card scene"><div class="plothead"><h2>Secondary succession: abandoned farm field</h2><span class="row" style="margin:0"><button id="plowB">Plow it again</button><button id="fireB">Wildfire</button></span></div>
-  <div class="stage"><canvas id="cB" role="img"></canvas></div><div class="meters" id="metB"></div><div class="ladder" id="ladB"></div></div></div>
-
-<div class="card chart"><h2>Soil depth</h2><div class="legend" id="leg1"></div><svg id="c1"></svg></div>
+<div class="grid2">
+  <div class="card chart"><h2>Plant types: bare granite</h2><div class="legend" id="legPA"></div><svg id="cPA"></svg></div>
+  <div class="card chart"><h2>Plant types: abandoned pasture</h2><div class="legend" id="legPB"></div><svg id="cPB"></svg></div>
+  <div class="card chart"><h2>Sunlight reaching the ground</h2><div class="legend" id="legL"></div><svg id="cL"></svg></div>
+  <div class="card chart"><h2>Soil depth</h2><div class="legend" id="legS"></div><svg id="cS"></svg></div>
+</div>
 <div class="msg" id="msg"></div>
+
+<h2 class="sect">Fire suppression and megafires</h2>
+<p class="sub">A stand of Sierra Nevada mixed-conifer forest. Before 1900, lightning and Native American burning set low-intensity fires every 5 to 20 years. Since about 1910, nearly every fire has been put out. Watch what builds up, then see what a fire in a drought year does.</p>
+<div class="card ctrl fctl">
+  <div style="flex:0 0 auto" class="row"><button class="primary" id="playF">Play</button><button id="resetF">Start over (1850)</button></div>
+  <div><label for="spF">Speed <span class="val" id="spFV"></span></label><input type="range" id="spF" min="1" max="10" step="1" value="2" data-suf=" yr/s" data-nobox></div>
+  <div style="flex:2 1 360px"><span class="small" style="font-weight:600">Fire policy</span><div class="seg" id="pol" style="margin-bottom:0"><button data-v="natural" class="on">Frequent natural fire</button><button data-v="suppress">Put out every fire</button><button data-v="rx">Prescribed burns</button></div></div>
+  <div style="flex:0 0 auto" class="row"><button id="bolt">⚡ Lightning in a drought year</button></div>
+</div>
+<div class="tiles" style="margin-top:12px"><div class="tile"><div class="k">Year</div><div class="v" id="fYr"></div></div><div class="tile"><div class="k">Dead needles, logs (surface fuel)</div><div class="v" id="fFuel"></div></div><div class="tile"><div class="k">Small trees &amp; shrubs (ladder fuel)</div><div class="v" id="fLad"></div></div><div class="tile"><div class="k">Big old pines</div><div class="v" id="fBig"></div></div><div class="tile"><div class="k">Last fire</div><div class="v" id="fLast" style="font-size:1rem"></div></div></div>
+<div class="card"><div class="stage"><canvas id="cF" role="img"></canvas></div><div class="legend" id="legF" style="margin-top:6px"></div></div>
+<div class="grid2">
+  <div class="card chart"><h2>Fuel over time</h2><div class="legend" id="legF1"></div><svg id="cF1"></svg></div>
+  <div class="card chart"><h2>Trees and shrubs</h2><div class="legend" id="legF2"></div><svg id="cF2"></svg></div>
+</div>
+<div class="msg" id="fMsg"></div>
 </div>
 
 <script>
@@ -278,75 +309,171 @@ function isDark(){return document.documentElement.dataset.theme==='dark'||(docum
 
 (function(){
 const NS=14,W=760,H=300,GROUND=262;
-const STG=[{n:'Bare ground',ic:'⬛'},
- {n:'Lichens & mosses',ic:'🟢',need:0,lmin:0,arr:0.05,soil:0.08,h:6,grow:3,req:'Bare rock is fine'},
- {n:'Wildflowers',ic:'🌼',need:2,lmin:0.55,arr:0.15,soil:0.12,h:34,grow:1,req:'2 cm soil, full sun'},
- {n:'Grasses',ic:'🌾',need:4,lmin:0.45,arr:0.25,soil:0.12,h:42,grow:2,req:'4 cm soil, sun'},
- {n:'Shrubs',ic:'🌿',need:8,lmin:0.3,arr:0.06,life:35,soil:0.14,h:62,grow:6,req:'8 cm soil'},
- {n:'Pioneer trees',ic:'🌲',need:14,lmin:0.55,arr:0.03,life:90,soil:0.15,h:140,grow:25,req:'14 cm soil, seedlings need sun'},
- {n:'Mature forest',ic:'🌳',need:22,lmin:0,arr:0.006,life:300,soil:0.15,h:175,grow:45,tol:1,req:'22 cm soil, seedlings grow in shade'}];
+const STG=[{n:'Bare ground',ic:'⬛',c:'#9a9a9a'},
+ {n:'Lichens & mosses',ex:'map lichen, granite moss',ic:'🟢',c:'#b8c45a',need:0,lmin:0,arr:0.05,soil:0.08,h:6,grow:3,req:'Bare granite is fine'},
+ {n:'Wildflowers',ex:'lupine, fireweed',ic:'🌸',c:'#9b6bd1',need:2,lmin:0.55,arr:0.15,soil:0.12,h:36,grow:1,req:'2 cm soil, full sun'},
+ {n:'Grasses & sedges',ex:'squirreltail, sedges',ic:'🌾',c:'#c9b45a',need:4,lmin:0.45,arr:0.25,soil:0.12,h:40,grow:2,req:'4 cm soil, sun'},
+ {n:'Shrubs',ex:'greenleaf manzanita, deerbrush',ic:'🌿',c:'#8a5a3a',need:8,lmin:0.3,arr:0.06,life:35,soil:0.14,h:58,grow:6,req:'8 cm soil'},
+ {n:'Sun-loving pines',ex:'ponderosa & Jeffrey pine',ic:'🌲',c:'#d08a3a',need:14,lmin:0.55,arr:0.03,life:90,soil:0.15,h:160,grow:25,req:'14 cm soil; seedlings need sun'},
+ {n:'Shade-tolerant conifers',ex:'white fir, incense cedar',ic:'🌲',c:'#1f4a3a',need:22,lmin:0,arr:0.006,life:300,soil:0.15,h:150,grow:45,tol:1,req:'22 cm soil; seedlings grow in shade'}];
+const WHY={1:'Lichens settle on bare granite and slowly break it into soil',2:'Soil is deep enough for lupine (it adds nitrogen to the soil)',3:'Squirreltail and sedges crowd out the wildflowers',4:'Manzanita shades out the grasses',5:'A ponderosa pine grows up above the manzanita',6:'A white fir seedling grew up in the shade and replaced it'};
 const light=P=>{let tr=0,sh=0;P.slots.forEach(c=>{if(c.s>=5)tr++;else if(c.s===4)sh++});return Math.max(0.05,1-0.85*tr/NS-0.25*sh/NS)};
-const WHY={1:'Lichens settle on bare rock and start breaking it into soil',2:'Soil is now deep enough for wildflowers',3:'Grasses crowd out the wildflowers',4:'Taller shrubs shade out the grasses',5:'A pine grows up above the shrubs',6:'A shade-tolerant maple seedling grew in the shade and replaced it'};
-let A,B,yr=0,playing=false,acc=0;
-function plot(kind){return{kind,soil:kind==='p'?0:30,t0:yr,slots:Array.from({length:NS},()=>({s:kind==='p'?0:2,g:kind==='p'?0:0.6})),first:kind==='p'?{}:{2:0},hist:[[yr,kind==='p'?0:30]]}}
-function reset(){yr=0;A=plot('p');B=plot('s');draw(true)}
-function disturb(P,how){P.t0=yr;if(how==='lava'){P.soil=0;P.slots.forEach(c=>{c.s=0;c.g=0});P.first={}}else{if(how==='fire')P.soil*=0.9;P.slots.forEach(c=>{c.s=P.soil>=2?2:(P.soil>0?1:0);c.g=0.15});P.first=P.soil>=2?{2:0}:{}}P.hist.push([yr,P.soil]);draw(true)}
-function year(P){const cnt=new Array(7).fill(0);P.slots.forEach(c=>cnt[c.s]++);
+function plot(kind,cv){return{kind,cv,yr:0,acc:0,playing:false,soil:kind==='p'?0:30,slots:Array.from({length:NS},()=>({s:kind==='p'?0:2,g:kind==='p'?0:0.6})),first:kind==='p'?{}:{2:0},hist:[],notes:[],L:1}}
+function rec(P){const c=new Array(7).fill(0);P.slots.forEach(s=>c[s.s]++);P.hist.push([P.yr,P.soil,light(P)*100,...c.map(v=>v/NS*100)])}
+let A,B;
+function resetP(k){const P=plot(k);rec(P);if(k==='p')A=P;else B=P;setPlayP(P,false);drawSucc(true)}
+function disturb(P,how){if(how==='fire'){P.soil*=0.9;P.slots.forEach(c=>{c.s=P.soil>=2?2:(P.soil>0?1:0);c.g=0.15});note(P,7,'Fire burned the plants, but the soil and seeds remain');}rec(P);drawSucc(true)}
+function note(P,i,txt){if(P.notes.some(n=>n.txt===txt&&n.t<2))return;if(P.notes.length>=2)return;P.notes.push({i,txt,t:0})}
+function year(P){P.yr++;const cnt=new Array(7).fill(0);P.slots.forEach(c=>cnt[c.s]++);
   let ds=0.002;P.slots.forEach(c=>{if(c.s)ds+=STG[c.s].soil/NS});P.soil+=ds*Math.max(0,1-P.soil/45);
   const L=light(P);P.L=L;
-  P.slots.forEach((c,i)=>{const st=STG[c.s];if(st.life&&Math.random()<1/st.life){const was=c.s;c.s=P.soil>=4?3:1;c.g=0.2;note(P,i,was===5?'An old pine died; its own seedlings cannot grow in this shade':was===6?'An old maple died, opening a sunny gap':'A shrub died, leaving an opening');return}
+  P.slots.forEach((c,i)=>{const st=STG[c.s];if(st.life&&Math.random()<1/st.life){const was=c.s;c.s=P.soil>=4?3:1;c.g=0.2;note(P,i,was===5?'An old ponderosa pine died; pine seedlings cannot grow in this shade':was===6?'An old white fir died, opening a sunny gap':'A manzanita died, leaving an opening');return}
     for(let t=6;t>c.s;t--){const T=STG[t];if(P.soil<T.need||L<T.lmin)continue;let p=T.arr*(0.3+3*cnt[t]/NS);if(T.tol)p*=L<0.75?1:0.15;if(Math.random()<p){c.s=t;c.g=0.05;note(P,i,WHY[t]);break}}});
-  const c2=new Array(7).fill(0);P.slots.forEach(c=>c2[c.s]++);for(let t=1;t<7;t++)if(P.first[t]===undefined&&c2[t]>=3)P.first[t]=yr-P.t0;
-  P.hist.push([yr,P.soil])}
-function note(P,i,txt){if(!P.notes)P.notes=[];if(P.notes.some(n=>n.txt===txt&&n.t<2))return;if(P.notes.length>=2)return;P.notes.push({i,txt,t:0})}
-function grow(P,dyr){if(P.notes){P.notes.forEach(n=>n.t+=dyr/Math.max(1,val('speed'))*1);P.notes=P.notes.filter(n=>n.t<3)}P.slots.forEach(c=>{if(c.s)c.g=Math.min(1,c.g+dyr/STG[c.s].grow)})}
+  const c2=new Array(7).fill(0);P.slots.forEach(c=>c2[c.s]++);for(let t=1;t<7;t++)if(P.first[t]===undefined&&c2[t]>=3)P.first[t]=P.yr;rec(P)}
+function grow(P,dy){P.slots.forEach(c=>{if(c.s)c.g=Math.min(1,c.g+dy/STG[c.s].grow)});P.notes.forEach(n=>n.t+=dy/Math.max(1,P.speed||1));P.notes=P.notes.filter(n=>n.t<3)}
 const rr=s=>()=>(s=(s*16807)%2147483647)/2147483647;
+/* ---- Sierra plant drawings (shared with the fire plot) ---- */
+function ponderosa(x,px,base,h,sw){x.fillStyle='#b5652e';x.beginPath();x.moveTo(px-5,base);x.lineTo(px-2.5,base-h*0.92);x.lineTo(px+2.5,base-h*0.92);x.lineTo(px+5,base);x.fill();
+  x.strokeStyle='rgba(60,30,10,.5)';x.lineWidth=0.8;for(let y=base-6;y>base-h*0.5;y-=7){x.beginPath();x.moveTo(px-4,y);x.lineTo(px+4,y-2);x.stroke()}
+  const cr=[[0,0.86,0.2],[-0.12,0.74,0.17],[0.12,0.7,0.17],[-0.06,0.58,0.14],[0.08,0.52,0.13]];cr.forEach(([dx,dy,r],k)=>{x.fillStyle=k%2?'#2f5d3a':'#3a6b44';x.beginPath();x.ellipse(px+dx*h+sw*0.3,base-dy*h,r*h*0.95,r*h*0.55,0,0,7);x.fill()})}
+function fir(x,px,base,h,sw,cedar){x.fillStyle='#5a3a24';x.fillRect(px-2,base-h*0.15,4,h*0.15);const n=6;for(let k=0;k<n;k++){const y=base-h*(0.1+k*0.15),w=h*(0.24-k*0.035);x.fillStyle=cedar?(k%2?'#4a6b38':'#557a40'):(k%2?'#1f4a3a':'#2a5a46');x.beginPath();x.moveTo(px+sw*0.3*(k/n),y-h*0.24);x.lineTo(px-w,y);x.lineTo(px+w,y);x.fill()}}
+function manzanita(x,px,base,h){x.strokeStyle='#8a2a1a';x.lineWidth=2.4;for(let k=-2;k<=2;k++){x.beginPath();x.moveTo(px+k*2,base);x.quadraticCurveTo(px+k*7,base-h*0.4,px+k*10,base-h*0.7);x.stroke()}x.fillStyle='#8aa080';x.beginPath();x.arc(px,base-h*0.6,h*0.42,0,7);x.fill();x.fillStyle='#9fb595';x.beginPath();x.arc(px-h*0.2,base-h*0.7,h*0.26,0,7);x.arc(px+h*0.22,base-h*0.65,h*0.25,0,7);x.fill()}
+function grasses(x,px,base,h,sw,dry){x.strokeStyle=dry?'#c9b06a':'#a9a84a';x.lineWidth=1.8;for(let k=-5;k<=5;k++){x.beginPath();x.moveTo(px+k*2,base);x.quadraticCurveTo(px+k*3,base-h*0.6,px+k*4+sw,base-h*(0.75+0.25*Math.cos(k)));x.stroke()}}
 function drawPlant(x,c,px,base,i,tt){const s=c.s,g=0.25+0.75*c.g,h=STG[s].h*g,sw=Math.sin(tt*1.1+i)*1.5;
-  if(s===1){for(let k=0;k<4;k++){x.fillStyle=['#b8c45a','#e0a84a','#7aa84a','#c9d27a'][(i+k)%4];x.beginPath();x.ellipse(px-18+k*12,base-2,7*g,3.5*g,0,0,7);x.fill()}}
-  else if(s===2){for(let k=-1;k<=1;k++){const fx=px+k*14,fh=h*(0.8+0.2*((i+k)%2));x.strokeStyle='#4f8a35';x.lineWidth=2;x.beginPath();x.moveTo(fx,base);x.quadraticCurveTo(fx+sw,base-fh*0.5,fx+sw,base-fh);x.stroke();x.fillStyle=['#d977b8','#f2c14e','#ffffff'][(i+k+3)%3];for(let p=0;p<5;p++){x.beginPath();x.arc(fx+sw+Math.cos(p*1.26)*3.5,base-fh+Math.sin(p*1.26)*3.5,2.6,0,7);x.fill()}x.fillStyle='#e0a812';x.beginPath();x.arc(fx+sw,base-fh,2,0,7);x.fill()}}
-  else if(s===3){x.strokeStyle='#a9a84a';x.lineWidth=2;for(let k=-6;k<=6;k++){x.beginPath();x.moveTo(px+k*2,base);x.quadraticCurveTo(px+k*3,base-h*0.6,px+k*4.5+sw,base-h*(0.75+0.25*Math.cos(k)));x.stroke()}}
-  else if(s===4){x.fillStyle='#4f7f2c';x.beginPath();x.arc(px,base-h*0.45,h*0.45,0,7);x.fill();x.fillStyle='#6f9e3a';x.beginPath();x.arc(px-h*0.18,base-h*0.55,h*0.3,0,7);x.arc(px+h*0.2,base-h*0.5,h*0.28,0,7);x.fill()}
-  else if(s===5){x.fillStyle='#6b4a2a';x.fillRect(px-3,base-h*0.3,6,h*0.3);for(let k=0;k<4;k++){const y=base-h*(0.22+k*0.19),w=h*(0.26-k*0.05);x.fillStyle=k%2?'#2f7a4a':'#3f8a5a';x.beginPath();x.moveTo(px+sw*0.4,y-h*0.28);x.lineTo(px-w,y);x.lineTo(px+w,y);x.fill()}}
-  else if(s===6){x.fillStyle='#5a3a1e';x.beginPath();x.moveTo(px-6,base);x.lineTo(px-3,base-h*0.5);x.lineTo(px+3,base-h*0.5);x.lineTo(px+6,base);x.fill();x.fillStyle='#1f5a36';x.beginPath();x.arc(px+sw*0.3,base-h*0.72,h*0.24,0,7);x.fill();x.fillStyle='#2e7348';x.beginPath();x.arc(px-h*0.15,base-h*0.62,h*0.17,0,7);x.arc(px+h*0.16,base-h*0.6,h*0.16,0,7);x.fill()}}
-function drawPlot(cv,P,D){const x=ctx2d(cv,W,H),tt=performance.now()/1000;
+  if(s===1){for(let k=0;k<4;k++){x.fillStyle=['#c9a23a','#b8c45a','#e0a84a','#7aa84a'][(i+k)%4];x.beginPath();x.ellipse(px-18+k*12,base-2,7*g,3.5*g,0,0,7);x.fill()}}
+  else if(s===2){for(let k=-1;k<=1;k++){const fx=px+k*14,fh=h*(0.8+0.2*((i+k)%2)),lup=(i+k)%2===0;x.strokeStyle='#4f8a35';x.lineWidth=2;x.beginPath();x.moveTo(fx,base);x.lineTo(fx+sw,base-fh*0.55);x.stroke();
+    x.fillStyle=lup?'#6b5bd1':'#d9479b';for(let p=0;p<7;p++){x.beginPath();x.ellipse(fx+sw,base-fh*0.55-p*fh*0.065,3.4-p*0.3,2.4,0,0,7);x.fill()}}}
+  else if(s===3)grasses(x,px,base,h,sw,false);
+  else if(s===4)manzanita(x,px,base,h);
+  else if(s===5)ponderosa(x,px,base,h,sw);
+  else if(s===6)fir(x,px,base,h,sw,i%3===0)}
+function drawScene(P){const cv=P===A?$('#cA'):$('#cB'),x=ctx2d(cv,W,H),D=isDark(),tt=performance.now()/1000;
   const sky=x.createLinearGradient(0,0,0,GROUND);sky.addColorStop(0,D?'#1c2c44':'#a9d2f0');sky.addColorStop(1,D?'#34485e':'#e9f4fb');x.fillStyle=sky;x.fillRect(0,0,W,H);
-  // bedrock
-  const rockC=P.kind==='p'?['#3a3a3f','#232327']:['#6b5a48','#4a3d30'];const rk=x.createLinearGradient(0,GROUND,0,H);rk.addColorStop(0,rockC[0]);rk.addColorStop(1,rockC[1]);x.fillStyle=rk;x.fillRect(0,GROUND,W,H-GROUND);
-  // soil layer drawn ABOVE rock line so plants sit on it
+  // distant Sierra ridge
+  x.fillStyle=D?'#2a3a50':'#c3d3e2';x.beginPath();x.moveTo(0,150);for(let i=0;i<=W;i+=40)x.lineTo(i,120+Math.sin(i/70)*18+Math.sin(i/23)*6);x.lineTo(W,GROUND);x.lineTo(0,GROUND);x.fill();
+  const rk=x.createLinearGradient(0,GROUND,0,H);rk.addColorStop(0,P.kind==='p'?'#a7a7ab':'#6b5a48');rk.addColorStop(1,P.kind==='p'?'#7d7d82':'#4a3d30');x.fillStyle=rk;x.fillRect(0,GROUND,W,H-GROUND);
+  if(P.kind==='p'){const r=rr(3);x.fillStyle='rgba(30,30,30,.35)';for(let i=0;i<140;i++){x.beginPath();x.arc(r()*W,GROUND+4+r()*(H-GROUND-6),0.8+r()*1.4,0,7);x.fill()}}
   const sd=Math.min(40,P.soil*1.2),top=GROUND-sd;
   if(sd>0.5){const sg=x.createLinearGradient(0,top,0,GROUND);sg.addColorStop(0,'#5a3d22');sg.addColorStop(1,'#3e2a16');x.fillStyle=sg;x.fillRect(0,top,W,sd)}
-  x.fillStyle='rgba(255,255,255,.85)';x.font='bold 17px system-ui';x.fillText(P.kind==='p'?'Lava rock':'Subsoil',12,GROUND+26);
-  
+  x.fillStyle='rgba(255,255,255,.9)';x.font='bold 17px system-ui';x.fillText(P.kind==='p'?'Granite':'Subsoil',12,H-12);
   const sp=W/NS;P.slots.forEach((c,i)=>{if(c.s&&c.s<5)drawPlant(x,c,(i+0.5)*sp,top,i,tt)});P.slots.forEach((c,i)=>{if(c.s>=5)drawPlant(x,c,(i+0.5)*sp,top,i,tt)});
-  if(P.notes)P.notes.forEach((n,k)=>{const px=(n.i+0.5)*sp,a=Math.min(1,(3-n.t)*1.5);x.globalAlpha=a;x.font='bold 17px system-ui';const tw=x.measureText(n.txt).width+18,bx=Math.max(6,Math.min(W-tw-6,px-tw/2)),by=12+k*38;
-    x.fillStyle='rgba(16,32,46,.88)';x.beginPath();x.roundRect?x.roundRect(bx,by,tw,30,8):x.rect(bx,by,tw,30);x.fill();x.strokeStyle='rgba(16,32,46,.88)';x.lineWidth=2;x.beginPath();x.moveTo(px,by+30);x.lineTo(px,top-STG[P.slots[n.i].s].h*0.9);x.stroke();
+  P.notes.forEach((n,k)=>{const px=(n.i+0.5)*sp,a=Math.min(1,(3-n.t)*1.5);x.globalAlpha=Math.max(0,a);x.font='bold 17px system-ui';const tw=x.measureText(n.txt).width+18,bx=Math.max(6,Math.min(W-tw-6,px-tw/2)),by=12+k*38;
+    x.fillStyle='rgba(16,32,46,.9)';x.beginPath();x.roundRect?x.roundRect(bx,by,tw,30,8):x.rect(bx,by,tw,30);x.fill();x.strokeStyle='rgba(16,32,46,.9)';x.lineWidth=2;x.beginPath();x.moveTo(px,by+30);x.lineTo(px,top-Math.max(10,STG[P.slots[n.i].s].h*0.9));x.stroke();
     x.fillStyle='#fff';x.fillText(n.txt,bx+9,by+21);x.globalAlpha=1});
-  cv.setAttribute('aria-label',`${P.kind==='p'?'Primary':'Secondary'} succession, ${yr-P.t0} years: soil ${f(P.soil,1)} cm deep.`)}
+  cv.setAttribute('aria-label',`${P.kind==='p'?'Primary':'Secondary'} succession, year ${P.yr}: soil ${f(P.soil,1)} cm.`)}
 function ladder(el,P){const cnt=new Array(7).fill(0);P.slots.forEach(c=>cnt[c.s]++);const dom=cnt.indexOf(Math.max(...cnt));
-  el.innerHTML=STG.slice(1).map((s,k)=>{const t=k+1,d=P.first[t]!==undefined;const ok=P.soil>=s.need&&(P.L??1)>=s.lmin;return `<div class="${t===dom?'now':d?'done':''}"><i>${s.ic}</i>${s.n}<span class="req ${ok?'ok':''}">${ok?'✓ ':'✗ '}${s.req}</span><span>${d?(P.first[t]===0?'from the start':'arrived year '+P.first[t]):'not yet'}</span></div>`}).join('');return dom}
-function meters(el,P){const L=P.L??light(P),sd=P.soil;const ticks=STG.slice(2).map((s,k)=>`<i style="left:${s.need/45*100}%" title="${s.n}">${s.ic}</i>`).join('');
-  el.innerHTML=`<div class="mt"><span><b>Soil depth</b><small style="display:block;color:var(--muted)">icons = soil each plant needs</small></span><div class="mbar"><span style="width:${Math.min(100,sd/45*100)}%;background:#7a5230"></span>${ticks}</div><em>${f(sd,1)} cm</em></div><div class="mt"><span><b>Sunlight at ground level</b><small style="display:block;color:var(--muted)">☀️ = enough for sun-loving seedlings</small></span><div class="mbar"><span style="width:${L*100}%;background:#f2c14e"></span><i style="left:55%">☀️</i></div><em>${f(L*100,0)}%</em></div>`}
+  el.innerHTML=STG.slice(1).map((s,k)=>{const t=k+1,d=P.first[t]!==undefined,ok=P.soil>=s.need&&P.L>=s.lmin;return `<div class="${t===dom?'now':d?'done':''}"><i>${s.ic}</i>${s.n}<small>${s.ex}</small><span class="req ${ok?'ok':''}">${ok?'✓ ':'✗ '}${s.req}</span><span>${d?(P.first[t]===0?'from the start':'arrived year '+P.first[t]):'not yet'}</span></div>`}).join('')}
+function meters(el,P){const ticks=STG.slice(2).map(s=>`<i style="left:${s.need/45*100}%" title="${s.n}">${s.ic}</i>`).join('');
+  el.innerHTML=`<div class="mt"><span><b>Soil depth</b><small>icons = soil each plant needs</small></span><div class="mbar"><span style="width:${Math.min(100,P.soil/45*100)}%;background:#7a5230"></span>${ticks}</div><em>${f(P.soil,1)} cm</em></div><div class="mt"><span><b>Sunlight at ground level</b><small>☀️ = enough for sun-loving seedlings</small></span><div class="mbar"><span style="width:${P.L*100}%;background:#f2c14e"></span><i style="left:55%">☀️</i></div><em>${f(P.L*100,0)}%</em></div>`}
+function stacked(svg,P){const T=Math.max(60,P.yr),pts=P.hist,series=[];let lower=pts.map(h=>[h[0],0]);
+  for(let t=0;t<7;t++){const upper=pts.map((h,j)=>[h[0],lower[j][1]+h[3+t]]);series.push({pts:[...upper,...lower.slice().reverse()],color:t?STG[t].c:'#c8c8cc',fill:0.85});lower=upper}
+  chart(svg,{xmin:0,xmax:T,ymin:0,ymax:100,w:460,h:260,xlab:'Years',ylab:'% of the plot',series});svg.setAttribute('aria-label','Share of the plot held by each plant type over time.')}
 let lastUI=0;
-function draw(force){const D=isDark();drawPlot($('#cA'),A,D);drawPlot($('#cB'),B,D);const now=performance.now();if(!force&&now-lastUI<250)return;lastUI=now;showVals();
-  $('#yr').textContent=yr;const da=ladder($('#ladA'),A),db=ladder($('#ladB'),B);meters($('#metA'),A);meters($('#metB'),B);
-  const T=Math.max(100,yr);chart($('#c1'),{xmin:0,xmax:T,ymin:0,ymax:46,w:1100,h:260,xlab:'Years',ylab:'Soil depth (cm)',series:[{pts:A.hist,color:'#8a6a3a',width:3},{pts:B.hist,color:'#3f8a5a',width:3}]});
-  legend($('#leg1'),[['#8a6a3a','Primary (lava rock)'],['#3f8a5a','Secondary (old field)']]);$('#c1').setAttribute('aria-label',`Soil depth: primary ${f(A.soil,1)} cm, secondary ${f(B.soil,1)} cm.`);
-  let m;
-  if(yr<3)m='Press <b>Play</b>. Nothing can root in bare lava, so the first arrivals are lichens and mosses that cling to rock and slowly break it down. In the old field, seeds already in the soil sprout right away.';
-  else if(A.first[6]===undefined&&B.first[6]===undefined)m=`Watch the two meters under each scene. Each stage changes conditions for the next: plants add dead matter that builds <b>soil</b>, and taller plants cut the <b>sunlight</b> reaching the ground. A species moves in only when its needs are met (✓), and is replaced when something taller shades it out. ${A.first[5]===undefined?`On the lava, soil is still only ${f(A.soil,1)} cm deep, too thin for trees.`:''} The old field already has deep soil, so it moves through the stages much faster.`;
-  else if(A.first[6]===undefined)m=`The old field reached mature forest in ${B.first[6]} years. The lava rock is still building soil (${f(A.soil,1)} cm). Pioneer pines need full sun as seedlings, so once their own shade covers the ground they cannot replace themselves. Shade-tolerant maples and oaks can, so they slowly take over: that is why mature forest comes last.`;
-  else m=`Both places became forest: the old field in ${B.first[6]} years and the lava rock in ${A.first[6]}. The difference is soil. <b>Primary succession</b> starts without soil and must build it; <b>secondary succession</b> starts with soil and seeds. Try a <b>wildfire</b> on the mature forest: it turns into secondary succession and recovers far faster than the bare lava did.`;
+function drawSucc(force){if(!A||!B)return;drawScene(A);drawScene(B);const now=performance.now();if(!force&&now-lastUI<250)return;lastUI=now;showVals();
+  $('#yrA').textContent=A.yr;$('#yrB').textContent=B.yr;ladder($('#ladA'),A);ladder($('#ladB'),B);meters($('#metA'),A);meters($('#metB'),B);
+  stacked($('#cPA'),A);stacked($('#cPB'),B);const lg=[['#c8c8cc','Bare rock or soil'],...STG.slice(1).map(s=>[s.c,s.n])];legend($('#legPA'),lg);legend($('#legPB'),lg);
+  const T=Math.max(60,A.yr,B.yr);
+  chart($('#cL'),{xmin:0,xmax:T,ymin:0,ymax:100,w:460,h:260,xlab:'Years',ylab:'Sunlight at ground (%)',series:[{pts:A.hist.map(h=>[h[0],h[2]]),color:'#8a8a90',width:2.6},{pts:B.hist.map(h=>[h[0],h[2]]),color:'#3f8a5a',width:2.6}]});
+  chart($('#cS'),{xmin:0,xmax:T,ymin:0,ymax:46,w:460,h:260,xlab:'Years',ylab:'Soil depth (cm)',series:[{pts:A.hist.map(h=>[h[0],h[1]]),color:'#8a8a90',width:2.6},{pts:B.hist.map(h=>[h[0],h[1]]),color:'#3f8a5a',width:2.6}]});
+  legend($('#legL'),[['#8a8a90','Bare granite'],['#3f8a5a','Abandoned pasture']]);legend($('#legS'),[['#8a8a90','Bare granite'],['#3f8a5a','Abandoned pasture']]);
+  $('#cL').setAttribute('aria-label','Sunlight at ground level over time in both plots.');$('#cS').setAttribute('aria-label',`Soil depth: granite ${f(A.soil,1)} cm, pasture ${f(B.soil,1)} cm.`);
+  let m;if(!A.yr&&!B.yr)m='Press <b>Play</b> on each plot. Nothing can root in bare granite, so the first arrivals are lichens and mosses that cling to rock and slowly break it down. In the pasture, seeds already in the soil sprout right away.';
+  else m='Each plant type moves in only when its needs are met (✓): enough <b>soil</b>, built from rock and dead plants, and enough <b>sunlight</b> at the ground. As taller plants arrive they shade out shorter ones. Ponderosa and Jeffrey pine seedlings need full sun, so once a forest closes in they cannot replace themselves, while white fir and incense cedar seedlings grow in shade and slowly take over. The pasture already has soil, so <b>secondary succession</b> is much faster than <b>primary succession</b> on bare granite. In real Sierra forests, frequent fire usually reset this last step: see the fire simulation below.';
   $('#msg').innerHTML=m}
-const setPlay=v=>{playing=v;$('#play').textContent=v?'Pause':'Play'};
+function setPlayP(P,v){P.playing=v;$(P===A?'#playA':'#playB').textContent=v?'Pause':'Play'}
+$('#playA').onclick=()=>setPlayP(A,!A.playing);$('#playB').onclick=()=>setPlayP(B,!B.playing);
+$('#lavaA').onclick=()=>resetP('p');$('#plowB').onclick=()=>resetP('s');$('#fireA').onclick=()=>disturb(A,'fire');$('#fireB').onclick=()=>disturb(B,'fire');
+$('#spA').addEventListener('input',()=>drawSucc(true));$('#spB').addEventListener('input',()=>drawSucc(true));
+
+/* ================= FIRE ================= */
+const FN=22,FH=330,FG=290;
+let F,fPlaying=false,fAcc=0,fire=null,pol='natural';
+function fReset(){const r=rr(11);F={yr:1850,fuel:0.2,slots:[],hist:[],fires:[],last:null,post:0,msg:null};
+  for(let i=0;i<FN;i++){let k='grass',size=0;const u=r(),u2=r();if(i%3!==1&&u<0.8){k='pine';size=0.55+r()*0.45}else if(u2<0.12){k='fir';size=0.1+r()*0.15}else if(u2<0.2){k='shrub';size=0.6}F.slots.push({k,size,snag:0,u:0,ph:r()*6})}
+  frec();fSet(false);fDraw(true)}
+const big=()=>F.slots.filter(s=>s.k==='pine'&&s.size>0.6).length;
+function ladderF(){let l=0;F.slots.forEach(s=>{if(s.u>0)l+=s.u<0.15?0.4:1;if(s.k==='fir'&&s.size<0.7)l+=1;if(s.k==='pine'&&s.size<0.4)l+=0.6;if(s.k==='shrub')l+=0.5});return Math.min(1,l/FN*1.3)}
+function lightF(){let c=0;F.slots.forEach(s=>{if((s.k==='pine'||s.k==='fir')&&s.size>0.3)c+=s.k==='fir'?1:0.6});return Math.max(0.05,1-c/FN*1.3)}
+function frec(){F.hist.push([F.yr,F.fuel*100,ladderF()*100,big(),F.slots.filter(s=>s.k==='fir').length+F.slots.filter(s=>s.u>0).length,F.slots.filter(s=>s.k==='shrub').length])}
+function fYear(){F.yr++;F.post=Math.max(0,F.post-1);const L=lightF(),pines=F.slots.filter(s=>s.k==='pine'&&s.size>0.4).length,firs=F.slots.filter(s=>s.k==='fir'&&s.size>0.4).length;
+  F.fuel=Math.min(1,F.fuel+0.014+0.005*F.slots.filter(s=>s.k==='pine'||s.k==='fir').length/FN*3);
+  F.slots.forEach(s=>{
+    if(s.u>0)s.u=Math.min(0.75,s.u+0.012);else if((s.k==='pine'||s.k==='fir')&&s.size>0.4&&Math.random()<0.035)s.u=0.02;
+    if(s.k==='pine')s.size=Math.min(1,s.size+0.013*(0.4+L));else if(s.k==='fir')s.size=Math.min(1,s.size+0.014);else if(s.k==='shrub')s.size=Math.min(1,s.size+0.2);
+    if(s.k==='snag'){s.snag--;if(s.snag<=0){s.k='bare';F.fuel=Math.min(1,F.fuel+0.04)}return}
+    if(s.k==='pine'&&Math.random()<0.004){s.k='snag';s.snag=15}else if(s.k==='fir'&&Math.random()<0.006){s.k='snag';s.snag=12}
+    else if(s.k==='shrub'&&L<0.35&&Math.random()<0.08){s.k='grass';s.size=0}
+    if(s.k==='shrub'&&Math.random()<0.02){s.k='fir';s.size=0.05}
+    if(s.k==='grass'||s.k==='bare'){const seedP=pines>0?1:0.04;if(L>0.5&&Math.random()<0.035*seedP){s.k='pine';s.size=0.02}else if(Math.random()<0.03*(F.post?0.4:1)*(L<0.85?1:0.5)){s.k='fir';s.size=0.02}else if(L>0.45&&Math.random()<(F.post?0.35:0.03)){s.k='shrub';s.size=0.2}else if(s.k==='bare'&&Math.random()<0.3)s.k='grass'}});
+  // natural ignitions
+  if(Math.random()<1/10){if(pol==='natural')startFire(false,'Lightning');else if(pol==='suppress'){F.msg={t:F.yr,txt:'Lightning fire put out by firefighters'}}else startFire(false,'Lightning')}
+  if(pol==='rx'&&F.yr%8===0&&!fire)startFire(false,'Prescribed burn',0.55);
+  frec()}
+function startFire(drought,cause,mult=1){if(fire)return;const S=Math.min(1,(0.3*F.fuel+0.45*ladderF()+(drought?0.35:0))*mult);fire={t:0,S,drought,cause}}
+function applyFire(){const S=fire.S,sev=S<0.4?'Low':S<0.65?'Moderate':'High';let killedBig=0;
+  F.slots.forEach(s=>{if(s.u>0&&(sev==='High'||(sev==='Moderate'&&s.u<0.6)||s.u<0.3))s.u=0;if(s.k==='snag'||s.k==='bare')return;
+    if(s.k==='shrub'){s.size=0.1;return}
+    if(s.k==='pine'||s.k==='fir'){const sz=s.size;let p;if(sev==='Low')p=sz<0.25?1:(s.k==='fir'&&sz<0.5?0.5:0);else if(sev==='Moderate')p=sz<0.5?1:(s.k==='fir'?0.35:0.1);else p=0.92;
+      if(Math.random()<p){if(sz>0.6&&s.k==='pine')killedBig++;if(sz>0.3){s.k='snag';s.snag=15;s.u=0}else{s.k='bare';s.size=0}}}});
+  F.fuel=sev==='High'?0.05:F.fuel*(sev==='Low'?0.3:0.2);if(sev==='High')F.post=6;else F.post=Math.max(F.post,1);
+  F.last={yr:F.yr,sev,cause:fire.cause,killedBig};F.fires.push([F.yr,sev]);fire=null;frec()}
+function fSet(v){fPlaying=v;$('#playF').textContent=v?'Pause':'Play'}
+function fDraw(force){const cv=$('#cF'),x=ctx2d(cv,W,FH),D=isDark(),tt=performance.now()/1000,burning=!!fire;
+  const smoky=burning||(F.last&&F.yr-F.last.yr<2&&F.last.sev==='High');
+  const sky=x.createLinearGradient(0,0,0,FG);sky.addColorStop(0,smoky?(D?'#3a2a20':'#b9a28a'):(D?'#1c2c44':'#a9d2f0'));sky.addColorStop(1,smoky?(D?'#4a3020':'#e0c6a0'):(D?'#34485e':'#e9f4fb'));x.fillStyle=sky;x.fillRect(0,0,W,FH);
+  x.fillStyle=D?'#2a3a50':'#c3d3e2';x.beginPath();x.moveTo(0,160);for(let i=0;i<=W;i+=40)x.lineTo(i,130+Math.sin(i/80)*18+Math.sin(i/27)*6);x.lineTo(W,FG);x.lineTo(0,FG);x.fill();
+  x.fillStyle='#6b4f35';x.fillRect(0,FG,W,FH-FG);
+  // surface fuel litter
+  const r=rr(21);const nl=Math.round(F.fuel*160);x.fillStyle='#8a6a3a';for(let i=0;i<nl;i++){x.fillRect(r()*W,FG-2+r()*8,4+r()*6,1.6)}
+  for(let i=0;i<Math.round(F.fuel*8);i++){x.fillStyle='#5a3d22';x.save();x.translate(r()*W,FG+3);x.rotate((r()-0.5)*0.3);x.fillRect(-18,-3,36,6);x.restore()}
+  const sp=W/FN,front=burning?fire.t/2.6*(W+80)-40:-1;
+  F.slots.forEach((s,i)=>{const px=(i+0.5)*sp+(i%2?4:-4),sw=Math.sin(tt*1.1+s.ph)*1.2;if(s.u>0)fir(x,px+(i%2?-12:12),FG,14+105*s.u,sw,i%4===0);
+    if(s.k==='grass')grasses(x,px,FG,22,sw,true);
+    else if(s.k==='shrub')manzanita(x,px,FG,18+30*s.size);
+    else if(s.k==='pine')ponderosa(x,px,FG,22+165*s.size,sw);
+    else if(s.k==='fir')fir(x,px,FG,16+125*s.size,sw,i%3===0);
+    else if(s.k==='snag'){x.strokeStyle='#1a1410';x.lineWidth=5;x.beginPath();x.moveTo(px,FG);x.lineTo(px,FG-120);x.stroke();x.lineWidth=2;x.beginPath();x.moveTo(px,FG-80);x.lineTo(px+14,FG-96);x.moveTo(px,FG-60);x.lineTo(px-12,FG-70);x.stroke()}});
+  if(burning){const hi=fire.S>=0.65,mod=fire.S>=0.4;for(let fx=-20;fx<Math.min(W,front);fx+=9){const behind=front-fx;if(behind>220&&!hi)continue;const a=Math.max(0,1-behind/(hi?600:260));
+      const fh=(hi?150+Math.sin(fx+tt*20)*40:mod?40:16)*(0.6+0.4*Math.sin(fx*0.3+tt*18))*Math.max(0.2,a);const g=x.createLinearGradient(0,FG,0,FG-fh);g.addColorStop(0,`rgba(255,200,60,${a})`);g.addColorStop(0.5,`rgba(240,100,30,${a*0.9})`);g.addColorStop(1,'rgba(200,40,20,0)');
+      x.fillStyle=g;x.beginPath();x.moveTo(fx-7,FG);x.quadraticCurveTo(fx,FG-fh*1.1,fx+7,FG);x.fill()}
+    for(let k=0;k<10;k++){const cx=front-60-k*45,cy=FG-150-k*10+Math.sin(tt+k)*10,rad=45+k*4;if(cx<-rad)continue;const g=x.createRadialGradient(cx,cy,0,cx,cy,rad);g.addColorStop(0,`rgba(80,70,65,${hi?0.32:0.14})`);g.addColorStop(1,'rgba(80,70,65,0)');x.fillStyle=g;x.beginPath();x.arc(cx,cy,rad,0,7);x.fill()}
+    x.fillStyle='rgba(0,0,0,.65)';x.fillRect(W/2-170,12,340,32);x.fillStyle='#fff';x.font='bold 17px system-ui';x.textAlign='center';x.fillText(`${fire.cause}: ${hi?'HIGH-severity crown fire':mod?'Moderate-severity fire':'Low-severity surface fire'}`,W/2,34);x.textAlign='left'}
+  else if(F.msg&&F.yr-F.msg.t<3){x.fillStyle='rgba(0,0,0,.6)';x.fillRect(W/2-170,12,340,32);x.fillStyle='#fff';x.font='bold 16px system-ui';x.textAlign='center';x.fillText(F.msg.txt,W/2,34);x.textAlign='left'}
+  x.fillStyle='rgba(255,255,255,.9)';x.font='bold 17px system-ui';x.fillText(`${F.yr}`,12,FH-12);
+  cv.setAttribute('aria-label',`Mixed-conifer forest in ${F.yr}: ${big()} big pines, surface fuel ${f(F.fuel*100,0)}%, ladder fuel ${f(ladderF()*100,0)}%.`);
+  fUI(force)}
+let fLast=0;
+function fUI(force){const now=performance.now();if(!force&&now-fLast<300)return;fLast=now;showVals();
+  $('#fYr').textContent=F.yr;$('#fFuel').textContent=f(F.fuel*100,0)+'%';$('#fLad').textContent=f(ladderF()*100,0)+'%';$('#fBig').textContent=big();
+  $('#fLast').textContent=F.last?`${F.last.yr}: ${F.last.sev}`:'none yet';$('#fLast').style.color=F.last?(F.last.sev==='High'?'var(--bad)':F.last.sev==='Moderate'?'#d9822b':'var(--good)'):'';
+  legend($('#legF'),[['#b5652e','Ponderosa / Jeffrey pine (thick bark, survives low fire)'],['#1f4a3a','White fir / incense cedar (thin bark when young)'],['#8aa080','Manzanita, deerbrush'],['#8a6a3a','Dead needles & logs'],['#1a1410','Dead trees (snags)']]);
+  const T0=1850,T1=Math.max(1950,F.yr);const col={Low:'#f2c14e',Moderate:'#d9822b',High:'#c0392b'};
+  chart($('#cF1'),{xmin:T0,xmax:T1,ymin:0,ymax:110,w:460,h:280,xlab:'Year',ylab:'Fuel (% of maximum)',series:[{pts:F.hist.map(h=>[h[0],h[1]]),color:'#8a6a3a',width:2.6},{pts:F.hist.map(h=>[h[0],h[2]]),color:'#1f4a3a',width:2.6}],points:F.fires.map(([y,s])=>({x:y,y:104,color:col[s],r:5}))});
+  legend($('#legF1'),[['#8a6a3a','Surface fuel'],['#1f4a3a','Ladder fuel'],['#f2c14e','Low fire'],['#d9822b','Moderate'],['#c0392b','High-severity fire']]);
+  chart($('#cF2'),{xmin:T0,xmax:T1,ymin:0,ymax:FN*1.6,w:460,h:280,xlab:'Year',ylab:'Number in the stand',series:[{pts:F.hist.map(h=>[h[0],h[3]]),color:'#b5652e',width:2.6},{pts:F.hist.map(h=>[h[0],h[4]]),color:'#1f4a3a',width:2.6},{pts:F.hist.map(h=>[h[0],h[5]]),color:'#8aa080',width:2.6}]});
+  legend($('#legF2'),[['#b5652e','Big old pines'],['#1f4a3a','Firs & cedars (all sizes)'],['#8aa080','Shrubs']]);
+  $('#cF1').setAttribute('aria-label','Surface and ladder fuel over time with fires marked by severity.');$('#cF2').setAttribute('aria-label','Big pines, firs and cedars, and shrubs over time.');
+  let m;const L=F.last,shr=F.slots.filter(s=>s.k==='shrub').length;
+  if(L&&L.sev==='High'&&F.yr-L.yr<60)m=`<b>Megafire.</b> Decades of built-up fuel let the ${L.cause.toLowerCase()==='lightning'?'fire':'fire'} climb the small firs into the crowns${L.killedBig?` and kill ${L.killedBig} big old pines that had survived many fires before`:''}. With seed trees gone, pines return slowly; fire-adapted manzanita and deerbrush sprout and can hold the site for decades (${shr} shrub patches now). Fires like the 2020 Creek Fire, which burned more than 379,000 acres in the Sierra National Forest, behaved this way.`;
+  else if(pol==='natural')m='Frequent low-severity fires creep along the ground, burning dead needles and killing most small trees. Big ponderosa and Jeffrey pines, with thick bark and high branches, survive. The forest stays open and patchy, with little fuel. Now switch to <b>Put out every fire</b>.';
+  else if(pol==='suppress')m=`Every fire is put out, so dead needles and logs pile up (${f(F.fuel*100,0)}% surface fuel) and shade-tolerant white fir and incense cedar fill the gaps. These small trees are <b>ladder fuels</b> (${f(ladderF()*100,0)}%) that let flames climb into the canopy. Try <b>⚡ Lightning in a drought year</b>.`;
+  else m='Prescribed burns every 8 years, set in cool, moist weather, remove surface fuel and small trees the way natural fires once did. A drought-year lightning fire now stays on the ground, and the big pines survive. Land managers often combine burning with thinning to restore Sierra forests.';
+  $('#fMsg').innerHTML=m}
+seg($('#pol'),v=>{pol=v;fUI(true)});
+$('#playF').onclick=()=>fSet(!fPlaying);$('#resetF').onclick=()=>{fire=null;fReset()};$('#bolt').onclick=()=>{startFire(true,'Lightning in a drought year')};
+$('#spF').addEventListener('input',()=>fUI(true));
+
+/* ================= LOOP ================= */
 let lf=0;
-function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;if(playing){const dy=dt*val('speed');acc+=dy;grow(A,dy);grow(B,dy);while(acc>=1){acc-=1;yr++;year(A);year(B)}if(yr>=600)setPlay(false)}draw();requestAnimationFrame(frame)}
-$('#play').onclick=()=>setPlay(!playing);$('#reset').onclick=()=>{setPlay(false);reset()};
-$('#lavaA').onclick=()=>disturb(A,'lava');$('#fireA').onclick=()=>disturb(A,'fire');$('#plowB').onclick=()=>disturb(B,'plow');$('#fireB').onclick=()=>disturb(B,'fire');
-$('#speed').addEventListener('input',()=>draw(true));window.addEventListener('resize',()=>draw(true));
-reset();requestAnimationFrame(ts=>{lf=ts;frame(ts)});
+function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;
+  [A,B].forEach(P=>{const sp=val(P===A?'spA':'spB');P.speed=sp;if(P.playing){const dy=dt*sp;P.acc+=dy;grow(P,dy);while(P.acc>=1){P.acc-=1;year(P)}if(P.yr>=600)setPlayP(P,false)}else grow(P,dt)});
+  if(fire){fire.t+=dt;if(fire.t>=2.6)applyFire()}else if(fPlaying){fAcc+=dt*val('spF');while(fAcc>=1&&!fire){fAcc-=1;fYear()}if(F.yr>=2100)fSet(false)}
+  drawSucc();fDraw();requestAnimationFrame(frame)}
+window.addEventListener('resize',()=>{drawSucc(true);fDraw(true)});
+resetP('p');resetP('s');fReset();requestAnimationFrame(ts=>{lf=ts;frame(ts)});
 })();
 </script>
-<script>window.A11Y={tabsLabel:'Views',css:'',live:['#msg']};</script>
+<script>window.A11Y={tabsLabel:'Views',css:'',live:['#msg','#fMsg']};</script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
 <style id="a11y-css">
 .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}

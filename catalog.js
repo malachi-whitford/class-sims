@@ -154,12 +154,12 @@ const ITEMS = [
     tags: ["trophic levels", "10% rule", "energy pyramid", "food chain"]
   },
   {
-    title: "Primary and Secondary Succession",
+    title: "Succession and Fire in the Sierra Nevada",
     topic: ["ecosystems", "community"],
     type: "sim",
     url: "sims/succession/",
-    desc: "Watch bare lava rock and an abandoned farm field rebuild side by side, from lichens to mature forest. Track soil depth and see why secondary succession is so much faster.",
-    tags: ["succession", "primary", "secondary", "pioneer species", "soil"]
+    desc: "Watch bare granite and an abandoned pasture grow into Sierra forest, with soil and sunlight meters that show why species replace each other. Then see how fire suppression builds fuel and sets up megafires.",
+    tags: ["succession", "Sierra Nevada", "fire suppression", "megafire", "ponderosa pine"]
   },
 
   // ---------- Behavioral Ecology ----------
