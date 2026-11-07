@@ -129,11 +129,15 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 .eq b{color:var(--accent)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
 @media (max-width:820px){.layout>.ctrl{order:2}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) nav.tabs button.on{color:#0d1b2a}}
+:root{--amber-text:#8a5a00;--rust-text:#a0461f}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--amber-text:#f2c14e;--rust-text:#f0a070}}
 
 #forest{aspect-ratio:760/360}
 #scope{aspect-ratio:1/1;max-width:420px;margin:0 auto}
 .phase svg{cursor:crosshair}
 </style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
 </head>
 <body>
 <div class="wrap">
@@ -147,14 +151,14 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 <p class="small muted" style="margin:4px 0 0">H = snowshoe hares, L = lynx. Hares are born at rate b and eaten at rate a per lynx; each hare eaten adds c lynx; lynx die at rate m.</p></div>
 <div class="layout" style="margin-top:12px">
   <div class="card ctrl">
-    <div class="row"><button class="primary" id="pPlay">Play</button><button id="pReset">Start over</button></div>
+    <div class="row"><button class="primary" id="pPlay">Play</button><button id="pReset">Start over</button><button id="pRand">Random start</button></div>
     <label for="pb">Hare birth rate (b) <span class="val" id="pbV"></span></label><input type="range" id="pb" min="0.1" max="1.5" step="0.01" value="0.6" data-d="2">
     <label for="pa">Lynx attack rate (a) <span class="val" id="paV"></span></label><input type="range" id="pa" min="0.002" max="0.05" step="0.001" value="0.02" data-d="3">
     <label for="pc">Lynx made per hare eaten (c) <span class="val" id="pcV"></span></label><input type="range" id="pc" min="0.01" max="0.5" step="0.005" value="0.2" data-d="3">
     <label for="pm">Lynx death rate (m) <span class="val" id="pmV"></span></label><input type="range" id="pm" min="0.05" max="1.5" step="0.01" value="0.5" data-d="2">
     <label class="check"><input type="checkbox" id="pK"> <span>Hares limited by food (K = 300)</span></label>
     <label for="pSpeed">Speed <span class="val" id="pSpeedV"></span></label><input type="range" id="pSpeed" min="1" max="5" step="1" value="1" data-suf="×" data-nobox>
-    <p class="small muted">Tap the phase plot to choose new starting numbers.</p>
+    <p class="small muted">Tap the phase plot, or press Random start, to choose new starting numbers.</p>
   </div>
   <div>
     <div class="tiles"><div class="tile"><div class="k">Year</div><div class="v" id="pT"></div></div><div class="tile"><div class="k">Hares</div><div class="v" id="pH" style="color:var(--s1)"></div></div><div class="tile"><div class="k">Lynx</div><div class="v" id="pL" style="color:var(--s2)"></div></div><div class="tile"><div class="k">Cycle length</div><div class="v" id="pPer"></div></div></div>
@@ -173,14 +177,14 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 <p class="small muted" style="margin:4px 0 0">Two <i>Paramecium</i> species in one tube. K = how many each could reach alone. α₁₂ = how much one individual of species 2 hurts species 1, counted in species-1 individuals.</p></div>
 <div class="layout" style="margin-top:12px">
   <div class="card ctrl">
-    <div class="row"><button class="primary" id="cPlay">Play</button><button id="cReset">Start over</button></div>
+    <div class="row"><button class="primary" id="cPlay">Play</button><button id="cReset">Start over</button><button id="cRand">Random start</button></div>
     <div class="row presets"><button data-cp="1">Species 1 wins</button><button data-cp="2">Species 2 wins</button><button data-cp="3">Coexist</button><button data-cp="4">Head start wins</button></div>
     <label for="K1">K₁ (<i>P. aurelia</i> alone) <span class="val" id="K1V"></span></label><input type="range" id="K1" min="50" max="400" step="5" value="200">
     <label for="K2">K₂ (<i>P. caudatum</i> alone) <span class="val" id="K2V"></span></label><input type="range" id="K2" min="50" max="400" step="5" value="150">
     <label for="a12">α₁₂ (effect of 2 on 1) <span class="val" id="a12V"></span></label><input type="range" id="a12" min="0" max="2.5" step="0.05" value="0.6" data-d="2">
     <label for="a21">α₂₁ (effect of 1 on 2) <span class="val" id="a21V"></span></label><input type="range" id="a21" min="0" max="2.5" step="0.05" value="1.3" data-d="2">
     <label for="cSpeed">Speed <span class="val" id="cSpeedV"></span></label><input type="range" id="cSpeed" min="1" max="5" step="1" value="1" data-suf="×" data-nobox>
-    <p class="small muted">Tap the phase plot to start from different numbers.</p>
+    <p class="small muted">Tap the phase plot, or press Random start, to start from different numbers.</p>
   </div>
   <div>
     <div class="tiles"><div class="tile"><div class="k">Day</div><div class="v" id="cT"></div></div><div class="tile"><div class="k"><i>P. aurelia</i> (N₁)</div><div class="v" id="cN1" style="color:var(--s1)"></div></div><div class="tile"><div class="k"><i>P. caudatum</i> (N₂)</div><div class="v" id="cN2" style="color:var(--s2)"></div></div><div class="tile"><div class="k">Predicted outcome</div><div class="v" id="cOut" style="font-size:1rem"></div></div></div>
@@ -301,7 +305,7 @@ function paperTab(el,P){
 }
 /* canvas helper: size for DPR, return ctx in logical units W x H */
 function ctx2d(cv,W,H){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round((r.width||W)*dpr)),h=Math.max(1,Math.round((r.width||W)*H/W*dpr));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(w/W,0,0,h/H,0,0);return x}
-function seg(el,cb){$$('button',el).forEach(b=>b.onclick=()=>{$$('button',el).forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v,b)})}
+function seg(el,cb){const bs=$$('button',el),sync=()=>bs.forEach(x=>x.setAttribute('aria-pressed',x.classList.contains('on')?'true':'false'));if(!el.getAttribute('role')){el.setAttribute('role','group');const lab=el.previousElementSibling;if(lab&&lab.textContent.trim()&&lab.textContent.length<60)el.setAttribute('aria-label',lab.textContent.trim())}bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle('on',x===b));sync();cb(b.dataset.v,b)});sync()}
 function isDark(){return document.documentElement.dataset.theme==='dark'||(document.documentElement.dataset.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)}
 
 (function(){
@@ -341,6 +345,7 @@ function frame(ts){const dt=Math.min(0.1,(ts-lf)/1000);lf=ts;
   if($('#t1').classList.contains('on')){if(pPlaying){const yrs=dt*val('pSpeed')*0.9,n=Math.ceil(yrs/0.01),f_=pf();for(let i=0;i<n;i++){PY=rk(f_,PY,yrs/n);pt+=yrs/n}pH.push([pt,...PY]);if(pH.length>6000)pH.shift()}pDraw()}
   if($('#t2').classList.contains('on')){if(cPlaying){const days=dt*val('cSpeed')*1.8,n=Math.ceil(days/0.02),f_=cf();for(let i=0;i<n;i++){CY=rk(f_,CY,days/n);ct+=days/n}cH.push([ct,...CY])}cDraw()}
   requestAnimationFrame(frame)}
+$('#pRand').onclick=()=>{pReset([20+Math.random()*200,2+Math.random()*40]);pSet(true)};
 $('#pPlay').onclick=()=>pSet(!pPlaying);$('#pPlay2').onclick=()=>pSet(!pPlaying);$('#pReset').onclick=()=>pReset();
 $$('#t1 input').forEach(i=>i.addEventListener('input',()=>pDraw(true)));
 $('#pC2').addEventListener('click',e=>{const s=$('#pC2'),inv=s._inv;if(!inv)return;const p=inv(e.clientX,e.clientY);if(!p[2])return;if(p&&p[0]>0&&p[1]>0){pReset([p[0],p[1]]);pSet(true)}});
@@ -359,7 +364,7 @@ function scope(){const x=ctx2d($('#scope'),420,420),D=isDark();x.fillStyle=D?'#0
   for(let s=0;s<2;s++){let have=cells.filter(c=>c.s===s);while(have.length<want[s]){const a=Math.random()*6.28,r=Math.sqrt(Math.random())*180;const c={s,x:210+Math.cos(a)*r,y:210+Math.sin(a)*r,h:Math.random()*6.28,ph:Math.random()*6};cells.push(c);have.push(c)}
     while(have.length>want[s]){const c=have.pop();cells.splice(cells.indexOf(c),1)}}
   const tt=performance.now()/1000;
-  for(const c of cells){if(cPlaying||true){c.h+=(Math.random()-0.5)*0.15;c.x+=Math.cos(c.h)*0.6;c.y+=Math.sin(c.h)*0.6;const dx=c.x-210,dy=c.y-210;if(dx*dx+dy*dy>185*185){c.h+=Math.PI;c.x=210+dx*0.98;c.y=210+dy*0.98}}
+  for(const c of cells){if(cPlaying){c.h+=(Math.random()-0.5)*0.15;c.x+=Math.cos(c.h)*0.6;c.y+=Math.sin(c.h)*0.6;const dx=c.x-210,dy=c.y-210;if(dx*dx+dy*dy>185*185){c.h+=Math.PI;c.x=210+dx*0.98;c.y=210+dy*0.98}}
     const L=c.s?17:11,Wd=c.s?6:4.5;x.save();x.translate(c.x,c.y);x.rotate(c.h);x.strokeStyle=c.s?'rgba(217,83,44,.5)':'rgba(31,111,191,.5)';x.lineWidth=0.6;for(let k=-L;k<L;k+=2.5){const w=Math.sin(tt*20+k+c.ph)*1.2;x.beginPath();x.moveTo(k,-Wd);x.lineTo(k+w,-Wd-2.5);x.moveTo(k,Wd);x.lineTo(k-w,Wd+2.5);x.stroke()}
     x.fillStyle=c.s?'rgba(217,83,44,.85)':'rgba(31,111,191,.85)';x.beginPath();x.ellipse(0,0,L,Wd,0,0,7);x.fill();x.fillStyle='rgba(255,255,255,.55)';x.beginPath();x.ellipse(-L*0.2,0,L*0.3,Wd*0.45,0,0,7);x.fill();x.restore()}
   x.strokeStyle='#000';x.lineWidth=14;x.beginPath();x.arc(210,210,205,0,7);x.stroke();
@@ -377,6 +382,7 @@ function cDraw(force){scope();const now=performance.now();if(!force&&now-cUI<200
   $('#cC2').setAttribute('aria-label',`Phase plot with isoclines. Predicted outcome: ${o}.`);$('#cC1').setAttribute('aria-label',`Numbers over time: P. aurelia ${f(CY[0],0)}, P. caudatum ${f(CY[1],0)}.`);
   const T={aurelia:`Species 1's line lies entirely above species 2's line. Wherever the path starts, it ends at K₁ = ${K1} with species 2 gone: <b>competitive exclusion</b>. This is what Gause saw: <i>P. aurelia</i> eliminated <i>P. caudatum</i>.`,caudatum:`Species 2's line lies entirely above species 1's line, so species 2 always wins and species 1 is excluded.`,both:`The lines cross, and each species holds itself back more than it holds back the other (α₁₂ each species hurts itself more than it hurts the other (α < K ratios)lt; K₁/K₂ and α₂₁ &lt; K₂/K₁). Each can grow when rare, so both persist where the lines cross: <b>stable coexistence</b>. In nature this usually requires niche differences, such as eating different food.`,either:`The lines cross, but each species hurts the other more than itself. The crossing point is unstable: whichever species gets ahead pushes the other out. Tap the phase plot on either side of the crossing to see both outcomes.`}[k];
   $('#cMsg').innerHTML=ct<1?'Press <b>Play</b>. Each line on the phase plot shows where one species stops growing. Where the path ends depends on how the two lines are arranged.':T}
+$('#cRand').onclick=()=>{cReset([5+Math.random()*val('K1'),5+Math.random()*val('K2')]);cSet(true)};
 $('#cPlay').onclick=()=>cSet(!cPlaying);$('#cReset').onclick=()=>cReset();
 $$('[data-cp]').forEach(b=>b.onclick=()=>{setSliders(PRE[b.dataset.cp]);cReset(b.dataset.cp==='4'?[60,40]:[10,10]);cSet(true)});
 $$('#t2 input').forEach(i=>i.addEventListener('input',()=>cDraw(true)));
@@ -387,6 +393,32 @@ pReset();cReset();window.addEventListener('resize',()=>{pDraw(true);cDraw(true)}
 requestAnimationFrame(ts=>{lf=ts;frame(ts)});
 })();
 </script>
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
 <script>window.A11Y={tabsLabel:'Models',css:'',live:['#pMsg','#cMsg']};</script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
 <style id="a11y-css">

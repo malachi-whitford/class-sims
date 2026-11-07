@@ -78,3 +78,10 @@ Each simulation also has a pause control for continuous animation, and colors we
 - `img`: a description of each canvas or diagram (what it shows and where to find the numbers)
 - `live`: the IDs of the result or message boxes that should be read aloud when they change
 - `names` and `units`: only needed if a control's label is unclear or missing
+
+## License, AI disclosure, and accessibility
+
+- **License:** © 2026 Malachi Whitford. Licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). See `LICENSE`.
+- **AI disclosure:** The simulations were created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford. Every page shows this notice at the bottom.
+- **Accessibility:** Pages aim to meet WCAG 2.1 AA: keyboard operable controls with visible focus, text alternatives for canvases and charts, screen-reader announcements of results, text contrast of at least 4.5:1 in light and dark mode, reflow at 320 px, and a "Pause all animation" button on every page.
+- **Adding a new page:** include the notice block (between `<!--SIM-NOTICE-->` markers) used on the other pages.
