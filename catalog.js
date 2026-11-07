@@ -29,7 +29,11 @@ const TOPICS = [
   { id: "cells",  label: "Cells & Membranes",       blurb: "Diffusion, osmosis, and how cells respond to their surroundings." },
   { id: "plants", label: "Plant Science",           blurb: "How plants capture carbon and move water." },
   { id: "soils",  label: "Soil Science",            blurb: "Soil water, soil chemistry, and the exchange of nutrients." },
+  { id: "population", label: "Population Ecology",  blurb: "How populations grow, which life stages matter, and how to count animals you can't see." },
   { id: "community", label: "Community Ecology",    blurb: "How species interact, coexist, and assemble into communities." },
+  { id: "ecosystems", label: "Ecosystems",          blurb: "How energy flows through food chains and how communities rebuild after disturbance." },
+  { id: "behavior", label: "Behavioral Ecology",    blurb: "Why animals behave the way they do, using game theory and evolution." },
+  { id: "environment", label: "Environmental Science", blurb: "People, shared resources, and sustainability." },
   { id: "field",  label: "Field Methods & Conservation", blurb: "Tools and background for working as a field biologist." }
 ];
 
@@ -96,6 +100,40 @@ const ITEMS = [
     tags: ["pH", "buffering", "lime", "CEC"]
   },
 
+  // ---------- Population Ecology ----------
+  {
+    title: "Population Growth: Exponential, Logistic & Chaos",
+    topic: "population",
+    type: "sim",
+    url: "sims/population-growth/",
+    desc: "Release rabbits on an island and compare exponential (r), geometric (λ), and logistic (K) growth, then push a population into cycles and chaos with a cobweb plot and bifurcation diagram.",
+    tags: ["N", "r", "λ", "K", "logistic", "chaos"]
+  },
+  {
+    title: "Which Life Stage Matters Most? (Sea Turtles)",
+    topic: ["population", "field"],
+    type: "sim",
+    url: "sims/stage-sensitivity/",
+    desc: "Protect different life stages of loggerhead sea turtles and see which raises the population growth rate most, with a stage-based matrix model, projections, and elasticity analysis.",
+    tags: ["stage matrix", "sensitivity", "elasticity", "λ", "Crouse"]
+  },
+  {
+    title: "Mark–Recapture",
+    topic: ["population", "field"],
+    type: "sim",
+    url: "sims/mark-recapture/",
+    desc: "Net, tag, and release fish in a murky pond, then recapture and estimate the population with Lincoln–Petersen and Chapman. Break the method's assumptions and see how estimates go wrong.",
+    tags: ["Lincoln–Petersen", "Chapman", "population estimate", "field methods"]
+  },
+  {
+    title: "Lotka–Volterra: Predators, Prey & Competitors",
+    topic: ["population", "community"],
+    type: "sim",
+    url: "sims/lotka-volterra/",
+    desc: "Watch hares and lynx cycle and trace their path on a phase plot, then pit two Paramecium species against each other and use isoclines to predict exclusion or coexistence.",
+    tags: ["Lotka–Volterra", "predator–prey", "competition", "isoclines", "phase plot"]
+  },
+
   // ---------- Community Ecology ----------
   {
     title: "Trophic Cascade: Spiders, Grasshoppers & Grass",
@@ -104,6 +142,44 @@ const ITEMS = [
     url: "sims/trophic-cascade/",
     desc: "Three identical cages of grass, goldenrod, and grasshoppers: no spiders, hunting spiders, and glued spiders that can only scare. Watch grasshoppers switch to goldenrod for cover, and separate eating (consumptive) from fear (non-consumptive) effects.",
     tags: ["trophic cascade", "non-consumptive effects", "predation risk", "Schmitz", "indirect effects"]
+  },
+
+  // ---------- Ecosystems ----------
+  {
+    title: "Energy Flow Through a Food Chain",
+    topic: "ecosystems",
+    type: "sim",
+    url: "sims/energy-flow/",
+    desc: "Follow packets of energy from the sun through grass, grasshoppers, frogs, snakes, and hawks. See the losses to heat and decomposers, the pyramid of energy, and why eating lower on the food chain feeds more people.",
+    tags: ["trophic levels", "10% rule", "energy pyramid", "food chain"]
+  },
+  {
+    title: "Primary and Secondary Succession",
+    topic: ["ecosystems", "community"],
+    type: "sim",
+    url: "sims/succession/",
+    desc: "Watch bare lava rock and an abandoned farm field rebuild side by side, from lichens to mature forest. Track soil depth and see why secondary succession is so much faster.",
+    tags: ["succession", "primary", "secondary", "pioneer species", "soil"]
+  },
+
+  // ---------- Behavioral Ecology ----------
+  {
+    title: "Hawks and Doves: Game Theory",
+    topic: "behavior",
+    type: "sim",
+    url: "sims/hawk-dove/",
+    desc: "Birds that always fight (hawks) or only display (doves) compete over food. Change the value of food and the cost of fighting and watch the population evolve to an evolutionarily stable mix.",
+    tags: ["game theory", "ESS", "hawk–dove", "evolution"]
+  },
+
+  // ---------- Environmental Science ----------
+  {
+    title: "Tragedy of the Commons",
+    topic: "environment",
+    type: "sim",
+    url: "sims/tragedy-commons/",
+    desc: "Run a herd on a shared pasture with four other herders. See why everyone adding cows ruins the grass, then try community limits and private plots.",
+    tags: ["commons", "sustainability", "Hardin", "Ostrom", "overgrazing"]
   },
 
   // ---------- Field Methods & Conservation ----------
