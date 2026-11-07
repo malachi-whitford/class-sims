@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Disturbance &amp; Succession: The Intermediate Disturbance Hypothesis</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+--s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;
+--s1:#5a9cf0;--s2:#f07a45;--s3:#2fc08b;--s4:#e0a82a;--s5:#e67aa6;--s6:#9a8cf0;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:12px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:300px 1fr;gap:12px;align-items:start}
+.layout>.card{margin-bottom:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:12px}
+.grid2>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+select{font:inherit;font-size:.85rem;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl .hint{font-size:.75rem;color:var(--muted);margin:0 0 2px}
+.ctrl h3:first-child{margin-top:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent)}
+.check{display:flex;gap:6px;align-items:center;font-size:.86rem;margin:8px 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:0 0 10px}
+.tile{background:var(--soft);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:.76rem;color:var(--muted)}
+.tile .v{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums}
+.chart svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart .ax{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
+.chart .lab{fill:var(--text);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);margin:2px 0 6px}
+.legend span{display:flex;align-items:center;gap:5px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none}
+.msg{font-size:.9rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:8px 12px;margin-top:8px}
+.msg.good{border-left-color:var(--good)} .msg.bad{border-left-color:var(--bad)}
+.formula{font-family:ui-monospace,Consolas,monospace;font-size:.85rem;background:var(--soft);border-radius:8px;padding:8px 10px;margin:6px 0;line-height:1.7;overflow-x:auto}
+details{margin-top:8px} details summary{cursor:pointer;font-weight:600;font-size:.9rem}
+.presets button{font-size:.8rem;padding:5px 10px}
+/* quiz */
+.q{border-top:1px solid var(--line);padding:10px 0}
+.q:first-of-type{border-top:none}
+.q p{margin:0 0 6px;font-weight:600}
+.q .opts{display:flex;flex-direction:column;gap:5px}
+.q .opts button{text-align:left}
+.q .opts button.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--card))}
+.q .opts button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
+.q .fb{font-size:.88rem;margin-top:6px;min-height:1em}
+canvas{display:block;width:100%;height:auto;border-radius:8px;background:var(--soft);touch-action:manipulation}
+@media(max-width:820px){.layout{grid-template-columns:1fr}}
+@media(max-width:520px){.grid2{grid-template-columns:1fr} body{padding:10px}}
+.ctrl label.check{justify-content:flex-start;font-size:.86rem}
+.ctrl .island h3{display:flex;align-items:center;gap:6px}
+
+#grid{aspect-ratio:3/2;cursor:crosshair;image-rendering:pixelated}
+.sp{display:grid;grid-template-columns:14px 1fr;gap:2px 8px;font-size:.82rem;align-items:start;margin:6px 0}
+.sp .sw{margin-top:3px}
+.prog{height:8px;background:var(--soft);border-radius:99px;overflow:hidden;margin:8px 0}
+.prog i{display:block;height:100%;width:0;background:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>Disturbance &amp; Succession</h1>
+<p class="sub">An old field is abandoned. Weeds move in first, then grasses, shrubs, and finally trees. Fires, floods, and grazing keep knocking patches back to bare ground. How does the amount of disturbance change which species are present and how diverse the community is?</p>
+
+<nav class="tabs">
+  <button class="on" data-tab="field">1. The field</button>
+  <button data-tab="idh">2. Disturbance experiment</button>
+  <button data-tab="quiz">3. Check your understanding</button>
+</nav>
+
+<!-- ============ TAB 1 ============ -->
+<section class="panel on" id="field">
+<div class="layout">
+  <div class="card ctrl">
+    <div class="row"><button class="primary" id="play">Pause</button><button id="reset">Start over from bare ground</button></div>
+    <label for="speed">Speed <span class="val" id="speedV"></span></label>
+    <input type="range" id="speed" min="1" max="10" step="1" value="2" data-suf=" yrs/frame">
+    <h3>Disturbance</h3>
+    <label for="freq">How often <span class="val" id="freqV"></span></label>
+    <input type="range" id="freq" min="0" max="30" step="0.5" value="0" data-d="1" data-suf=" per yr">
+    <label for="size">Patch size <span class="val" id="sizeV"></span></label>
+    <input type="range" id="size" min="2" max="20" step="1" value="8" data-suf=" cells wide">
+    <p class="hint">Each disturbance clears a square patch to bare ground. Tap the field to make your own.</p>
+    <div class="row"><button id="fire">Big fire</button><button id="clearcut">Clear-cut everything</button></div>
+    <h3>The species</h3>
+    <div id="spList"></div>
+    <p class="hint">Each species can take over a cell from any species listed above it. Better competitors produce fewer seeds that travel shorter distances: a <b>competition–colonization trade-off</b>.</p>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Year</div><div class="v" id="tYr"></div></div>
+      <div class="tile"><div class="k">Species richness</div><div class="v" id="tS"></div></div>
+      <div class="tile"><div class="k">Shannon diversity H′</div><div class="v" id="tH"></div></div>
+      <div class="tile"><div class="k">Bare ground</div><div class="v" id="tBare"></div></div>
+    </div>
+    <div class="card"><canvas id="grid" width="900" height="600"></canvas></div>
+    <div class="card chart"><h2>Cover of each species over time</h2><div class="legend" id="legC"></div><svg id="cC"></svg></div>
+    <div class="msg" id="fMsg"></div>
+  </div>
+</div>
+</section>
+
+<!-- ============ TAB 2 ============ -->
+<section class="panel" id="idh">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Test the intermediate disturbance hypothesis</h3>
+    <p class="small" style="margin-top:0">Connell (1978) predicted that diversity is highest at intermediate levels of disturbance. Run the field from bare ground at 10 disturbance rates for 600 years each, and average diversity over the last 400 years.</p>
+    <label for="xsize">Patch size <span class="val" id="xsizeV"></span></label>
+    <input type="range" id="xsize" min="2" max="20" step="1" value="8" data-suf=" cells wide">
+    <div class="row"><button class="primary" id="runX">Run experiment</button></div>
+    <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
+    <p class="small muted" id="progTxt">Takes a few seconds.</p>
+    <label class="check"><input type="checkbox" id="keepOld" checked> Keep earlier runs on the graph</label>
+  </div>
+  <div>
+    <div class="grid2">
+      <div class="card chart"><h2>Diversity vs. disturbance</h2><div class="legend" id="legX"></div><svg id="cX"></svg></div>
+      <div class="card chart"><h2>Which species persist?</h2><div class="legend" id="legX2"></div><svg id="cX2"></svg></div>
+    </div>
+    <div class="msg" id="xMsg">Press <b>Run experiment</b>.</div>
+  </div>
+</div>
+</section>
+
+<!-- ============ TAB 3 ============ -->
+<section class="panel" id="quiz">
+  <div class="card"><h2>Check your understanding</h2><div id="quizBox"></div></div>
+</section>
+</div>
+
+<script>
+/* ---------- shared helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const f=(v,d=2)=>Number.isFinite(v)?v.toFixed(d):'—';
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS='http://www.w3.org/2000/svg';
+function niceTicks(lo,hi,n=5){const span=hi-lo||1;let step=Math.pow(10,Math.floor(Math.log10(span/n)));const err=span/n/step;if(err>=7.5)step*=10;else if(err>=3.5)step*=5;else if(err>=1.5)step*=2;const out=[];for(let v=Math.ceil(lo/step-1e-9)*step;v<=hi+1e-9;v+=step)out.push(+v.toFixed(10));return out}
+let _clip=0;
+/* chart(svg,{xmin,xmax,ymin,ymax,xlab,ylab,series:[{pts,color,width,dash,fill}],points:[{x,y,color,r,ring}],texts:[{x,y,t,color,anchor}],logx,logy}) */
+function chart(svg,o){
+  const W=o.w||560,H=o.h||330,m={l:o.ml||56,r:14,t:12,b:44};
+  const pw=W-m.l-m.r,ph=H-m.t-m.b;
+  const tx=v=>o.logx?Math.log10(v):v, ty=v=>o.logy?Math.log10(v):v;
+  const x0=tx(o.xmin),x1=tx(o.xmax),y0=ty(o.ymin),y1=ty(o.ymax);
+  const X=v=>m.l+(tx(v)-x0)/(x1-x0)*pw, Y=v=>m.t+ph-(ty(v)-y0)/(y1-y0)*ph;
+  const id='c'+(++_clip);
+  let s=`<defs><clipPath id="${id}"><rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"/></clipPath></defs>`;
+  const xt=o.logx?logTicks(o.xmin,o.xmax):niceTicks(o.xmin,o.xmax,o.xticks||6), yt=o.logy?logTicks(o.ymin,o.ymax):niceTicks(o.ymin,o.ymax,5);
+  xt.forEach(v=>{const x=X(v);if(x<m.l-1||x>m.l+pw+1)return;s+=`<line class="grid" x1="${x}" x2="${x}" y1="${m.t}" y2="${m.t+ph}"/><text x="${x}" y="${m.t+ph+16}" text-anchor="middle">${fmtTick(v)}</text>`});
+  yt.forEach(v=>{const y=Y(v);if(y<m.t-1||y>m.t+ph+1)return;s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${y}" y2="${y}"/><text x="${m.l-6}" y="${y+4}" text-anchor="end">${fmtTick(v)}</text>`});
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab||''}</text>`;
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
+  s+=`<g clip-path="url(#${id})">`;
+  (o.series||[]).forEach(se=>{if(!se.pts||!se.pts.length)return;
+    const d=se.pts.filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1])).map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(Math.max(o.logy?1e-9:-1e9,Math.min(p[1],o.ymax*50+1e6))).toFixed(1)).join('');
+    if(se.fill)s+=`<path d="${d}" fill="${se.color}" fill-opacity="${se.fill}" stroke="none"/>`;
+    else s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="${se.width||2.2}" ${se.dash?`stroke-dasharray="${se.dash}"`:''} stroke-linejoin="round" stroke-linecap="round" ${se.opacity?`opacity="${se.opacity}"`:''}/>`});
+  (o.points||[]).forEach(p=>{if(!Number.isFinite(p.x)||!Number.isFinite(p.y))return;s+=`<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="${p.r||5}" fill="${p.ring?'var(--card)':p.color}" stroke="${p.color}" stroke-width="${p.ring?2.5:1.5}"/>`});
+  s+='</g>';
+  (o.texts||[]).forEach(t=>{s+=`<text x="${X(t.x)+(t.dx||0)}" y="${Y(t.y)+(t.dy||0)}" text-anchor="${t.anchor||'start'}" style="fill:${t.color||'var(--text)'};font-weight:600">${t.t}</text>`});
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;
+  const inv=(cx,cy)=>{const r=svg.getBoundingClientRect(),sx=(cx-r.left)/r.width*W,sy=(cy-r.top)/r.height*H;
+    let vx=x0+(sx-m.l)/pw*(x1-x0),vy=y0+(m.t+ph-sy)/ph*(y1-y0);if(o.logx)vx=10**vx;if(o.logy)vy=10**vy;return[vx,vy,sx>=m.l&&sx<=m.l+pw&&sy>=m.t&&sy<=m.t+ph]};
+  return{X,Y,inv};
+}
+function logTicks(lo,hi){const out=[];for(let e=Math.floor(Math.log10(lo));e<=Math.ceil(Math.log10(hi));e++)out.push(10**e);return out}
+function fmtTick(v){const a=Math.abs(v);if(a>=10000)return(v/1000)+'k';if(a>=1||a===0)return+v.toFixed(2)+'';return+v.toPrecision(2)+''}
+function legend(el,items){el.innerHTML=items.map(([c,t,dash])=>`<span><i class="sw" style="background:${dash?'transparent':c};${dash?`border:2px dashed ${c}`:''}"></i>${t}</span>`).join('')}
+/* sliders: <input type=range id=x data-d=decimals> with <span id=xV> */
+function val(id){return+$('#'+id).value}
+function showVals(){$$('input[type=range]').forEach(r=>{const o=$('#'+r.id+'V');if(o)o.textContent=(r.dataset.pre||'')+(+r.value).toFixed(+(r.dataset.d||0))+(r.dataset.suf||'')})}
+function setSliders(obj){Object.entries(obj).forEach(([k,v])=>{const e=$('#'+k);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else e.value=v});showVals()}
+/* tabs */
+function initTabs(RENDER){let cur=$('nav.tabs button.on').dataset.tab;
+  $$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));cur=b.dataset.tab;if(RENDER[cur])RENDER[cur]();try{history.replaceState(null,'','#'+cur)}catch(e){}});
+  const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();
+  return()=>cur}
+/* quiz */
+function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted" id="score"></p>';
+  const got={};
+  $$('.q',el).forEach(d=>{const q=QS[+d.dataset.i];$$('.opts button',d).forEach(b=>b.onclick=()=>{const j=+b.dataset.j,ok=j===q.a;
+    $$('.opts button',d).forEach(x=>x.classList.remove('right','wrong'));b.classList.add(ok?'right':'wrong');
+    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the simulation.'));
+    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('#score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+
+(function(){
+const SP=[
+  {name:'Annual weeds',c:3,R:12,col:['#e5b800','#ffd84a'],note:'Many tiny seeds, blow in from far away. Weakest competitor.'},
+  {name:'Grasses',c:1.6,R:8,col:['#9ccc3c','#b9e25e'],note:'Spread fast by seed and runners.'},
+  {name:'Shrubs',c:0.9,R:5,col:['#3f9a5a','#58c27a'],note:'Shade out grasses; seeds spread by birds.'},
+  {name:'Pines',c:0.55,R:3,col:['#1d6b6e','#38a3a6'],note:'Shade-intolerant trees that overtop shrubs.'},
+  {name:'Oaks',c:0.35,R:2,col:['#5b3a8c','#9b7fd9'],note:'Few heavy acorns that fall close by. Strongest competitor.'}];
+const NS_=SP.length,W=90,H=60,N=W*H,BARE=['#b9a07a','#5e5040'];
+const M=0.04,RAIN=0.0003;
+const dk=()=>matchMedia('(prefers-color-scheme: dark)').matches;
+const spColor=i=>SP[i].col[dk()?1:0];
+$('#spList').innerHTML=SP.map((s,i)=>`<div class="sp"><i class="sw" style="background:${s.col[0]}"></i><div><b>${s.name}</b><br><span class="muted">${s.note}</span></div></div>`).join('')+`<div class="sp"><i class="sw" style="background:${BARE[0]}"></i><div><b>Bare ground</b></div></div>`;
+
+function step(g,freq,size){
+  for(let k=0;k<N;k++)if(g[k]>=0&&Math.random()<M)g[k]=-1;
+  const src=g.slice();
+  for(let k=0;k<N;k++){const s=src[k];if(s<0)continue;let c=SP[s].c;const R=SP[s].R,x=k%W,y=(k/W)|0;
+    while(c>0){if(c<1&&Math.random()>c)break;c-=1;
+      const tx=(x+Math.round((Math.random()*2-1)*R)+W)%W,ty=(y+Math.round((Math.random()*2-1)*R)+H)%H,t=ty*W+tx;if(g[t]<s)g[t]=s}}
+  for(let k=0;k<N;k++)if(g[k]<0&&Math.random()<RAIN)g[k]=(Math.random()*NS_)|0;
+  let ev=freq;while(ev>0){if(ev<1&&Math.random()>ev)break;ev-=1;clear(g,(Math.random()*W)|0,(Math.random()*H)|0,size)}
+}
+function clear(g,x0,y0,s){for(let dy=0;dy<s;dy++)for(let dx=0;dx<s;dx++)g[((y0+dy)%H)*W+(x0+dx)%W]=-1}
+function stats(g){const cnt=new Array(NS_).fill(0);let bare=0;for(let k=0;k<N;k++){if(g[k]<0)bare++;else cnt[g[k]]++}
+  const tot=N-bare;let Hs=0,S=0;cnt.forEach(n=>{if(n/N>=0.005)S++;if(n>0){const p=n/tot;Hs-=p*Math.log(p)}});return{cnt,bare,H:Hs,S}}
+
+/* ---------- live field ---------- */
+let g=new Int8Array(N).fill(-1),yr=0,hist=[],playing=true;
+const cv=$('#grid'),ctx=cv.getContext('2d'),img=ctx.createImageData(W,H),off=document.createElement('canvas');off.width=W;off.height=H;const octx=off.getContext('2d');
+const hex=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+function draw(){
+  const pal=SP.map((s,i)=>hex(spColor(i))),bare=hex(BARE[dk()?1:0]);
+  for(let k=0;k<N;k++){const c=g[k]<0?bare:pal[g[k]];img.data[k*4]=c[0];img.data[k*4+1]=c[1];img.data[k*4+2]=c[2];img.data[k*4+3]=255}
+  octx.putImageData(img,0,0);ctx.imageSmoothingEnabled=false;ctx.drawImage(off,0,0,cv.width,cv.height);
+  const st=stats(g);
+  $('#tYr').textContent=yr;$('#tS').textContent=st.S;$('#tH').textContent=f(st.H,2);$('#tBare').textContent=f(st.bare/N*100,0)+'%';
+  const T0=hist.length?hist[0][0]:0,T1=Math.max(T0+100,yr);
+  chart($('#cC'),{xmin:T0,xmax:T1,ymin:0,ymax:100,w:760,h:280,xlab:'Year',ylab:'Cover (%)',
+    series:[{pts:hist.map(h=>[h[0],h[6]]),color:BARE[dk()?1:0],width:1.6,dash:'4 3'},...SP.map((s,i)=>({pts:hist.map(h=>[h[0],h[i+1]]),color:spColor(i),width:2.4}))]});
+  legend($('#legC'),[...SP.map((s,i)=>[spColor(i),s.name]),[BARE[dk()?1:0],'Bare',1]]);
+  const order=st.cnt.map((n,i)=>[n,i]).sort((a,b)=>b[0]-a[0]);
+  cv.setAttribute('aria-label',`Map of the field, ${W} by ${H} cells, year ${yr}. Cover: `+SP.map((s,i)=>`${s.name} ${f(st.cnt[i]/N*100,0)}%`).join(', ')+`, bare ground ${f(st.bare/N*100,0)}%.`);
+  $('#cC').setAttribute('aria-label','Line graph of percent cover of each species over time. '+SP.map((s,i)=>`${s.name} now ${f(st.cnt[i]/N*100,0)}%`).join(', ')+'.');
+  const fq=val('freq'),dom=SP[order[0][1]].name;
+  let m;
+  if(yr<6)m='Bare ground. Watch which species arrive first.';
+  else if(fq===0&&order[0][1]===4&&order[0][0]/N>0.8)m=`<b>Climax community.</b> With no disturbance, oaks, the strongest competitor, have taken over almost everything and diversity has dropped (H′ = ${f(st.H,2)}). Early species survive only where an old tree dies. Try adding disturbance.`;
+  else if(fq===0)m=`<b>Succession in progress.</b> ${dom} cover the most ground right now. Each wave of species changes the site and is replaced by stronger competitors: weeds → grasses → shrubs → pines → oaks.`;
+  else if(st.S>=4)m=`<b>A patchwork.</b> Disturbance keeps opening gaps that fast colonizers fill before the strong competitors arrive, so early and late species live side by side. This is the intermediate disturbance idea: H′ = ${f(st.H,2)}.`;
+  else if(order[0][1]<=1)m=`<b>Too much disturbance.</b> Patches are cleared before slow-spreading trees can get established, so only fast colonizers (${dom.toLowerCase()}) hold on. Diversity is low again.`;
+  else m=`${dom} dominate. Try changing how often or how big the disturbances are.`;
+  $('#fMsg').innerHTML=m;
+}
+function record(){const st=stats(g);hist.push([yr,...st.cnt.map(n=>n/N*100),st.bare/N*100]);if(hist.length>400)hist.shift()}
+function reset(){g.fill(-1);yr=0;hist=[];record();draw()}
+let lastT=0;
+function loop(t){if(playing&&$('#field').classList.contains('on')&&t-lastT>70){lastT=t;for(let i=0;i<val('speed');i++){step(g,val('freq'),val('size'));yr++;record()}draw()}requestAnimationFrame(loop)}
+$('#play').onclick=()=>{playing=!playing;$('#play').textContent=playing?'Pause':'Play'};
+$('#reset').onclick=reset;
+$('#fire').onclick=()=>{const cx=(Math.random()*W)|0,cy=(Math.random()*H)|0,r=16;for(let y=-r;y<=r;y++)for(let x=-r;x<=r;x++)if(x*x+y*y<=r*r*(0.75+0.5*Math.random()))g[((cy+y+H)%H)*W+(cx+x+W)%W]=-1;draw()};
+$('#clearcut').onclick=()=>{g.fill(-1);draw()};
+cv.onclick=e=>{const r=cv.getBoundingClientRect(),x=Math.floor((e.clientX-r.left)/r.width*W),y=Math.floor((e.clientY-r.top)/r.height*H),s=val('size');clear(g,(x-Math.floor(s/2)+W)%W,(y-Math.floor(s/2)+H)%H,s);draw()};
+$$('#field input').forEach(i=>i.addEventListener('input',showVals));
+
+/* ---------- experiment ---------- */
+const FREQS=[0,1,2,4,6,8,12,16,24,32];let runs=[],busy=false;
+const RUNCOL=['var(--s1)','var(--s2)','var(--s3)','var(--s6)'];
+function drawX(){
+  if(!runs.length)return;
+  const ymax=Math.max(1.6,...runs.flatMap(r=>r.res.map(p=>p.H)))*1.1;
+  chart($('#cX'),{xmin:0,xmax:32,ymin:0,ymax:ymax,w:460,h:360,xlab:'Disturbances per year',ylab:'Shannon diversity H′',
+    series:runs.map((r,i)=>({pts:r.res.map(p=>[p.f,p.H]),color:RUNCOL[i%4],width:2.6})),points:runs.flatMap((r,i)=>r.res.map(p=>({x:p.f,y:p.H,color:RUNCOL[i%4],r:4})))});
+  legend($('#legX'),runs.map((r,i)=>[RUNCOL[i%4],`Patch size ${r.size}`]));
+  const last=runs[runs.length-1];
+  chart($('#cX2'),{xmin:0,xmax:32,ymin:0,ymax:100,w:460,h:360,xlab:'Disturbances per year',ylab:'Average cover (%)',
+    series:SP.map((s,i)=>({pts:last.res.map(p=>[p.f,p.cov[i]]),color:spColor(i),width:2.4}))});
+  legend($('#legX2'),SP.map((s,i)=>[spColor(i),s.name]));
+  const best=last.res.reduce((a,b)=>b.H>a.H?b:a);
+  $('#cX').setAttribute('aria-label','Diversity versus disturbance rate. '+runs.map(r=>`Patch size ${r.size}: `+r.res.map(p=>`${p.f} per year H ${f(p.H,2)}`).join(', ')).join('. '));
+  $('#cX2').setAttribute('aria-label',`Average cover of each species versus disturbance rate for patch size ${last.size}. Oaks dominate at low disturbance; annual weeds and grasses dominate at high disturbance.`);
+  $('#xMsg').innerHTML=`Diversity peaked at about <b>${best.f} disturbances per year</b> (H′ = ${f(best.H,2)}) with patch size ${last.size}. At low disturbance, oaks crowd everything out (competitive exclusion). At high disturbance, only fast colonizers can keep up. In between, both kinds of species find space. ${runs.length>1?'Compare the curves: bigger patches shift the peak toward <b>fewer</b> disturbances, because each one does more damage.':'Now change the patch size and run it again.'}`;
+}
+$('#runX').onclick=()=>{if(busy)return;busy=true;$('#runX').disabled=true;const size=val('xsize'),res=[];let fi=0,t=0,gg=new Int8Array(N).fill(-1),acc=null;
+  if(!$('#keepOld').checked)runs=[];
+  const total=FREQS.length*600;
+  function chunk(){const t0=performance.now();
+    while(performance.now()-t0<30&&fi<FREQS.length){step(gg,FREQS[fi],size);t++;
+      if(t>200){const st=stats(gg);if(!acc)acc={H:0,cov:new Array(NS_).fill(0),n:0};acc.H+=st.H;st.cnt.forEach((c,i)=>acc.cov[i]+=c/N*100);acc.n++}
+      if(t>=600){res.push({f:FREQS[fi],H:acc.H/acc.n,cov:acc.cov.map(c=>c/acc.n)});fi++;t=0;gg.fill(-1);acc=null}}
+    const done=(fi*600+t)/total;$('#progBar').style.width=(done*100)+'%';$('#progTxt').textContent=fi<FREQS.length?`Running ${FREQS[fi]} disturbances per year…`:'Done.';
+    if(fi<FREQS.length)setTimeout(chunk,0);else{runs.push({size,res});if(runs.length>4)runs.shift();busy=false;$('#runX').disabled=false;drawX()}}
+  chunk()};
+$('#xsize').oninput=showVals;
+
+quiz($('#quizBox'),[
+ {q:'With no disturbance, what happens to diversity over a long time in this field?',opts:['It keeps increasing','It peaks during mid-succession, then falls as the strongest competitor takes over','It stays the same','It drops to zero immediately'],a:1,why:'Mid-succession has a mix of early and late species. Without disturbance, oaks eventually exclude most others.'},
+ {q:'Why do annual weeds arrive first on bare ground?',opts:['They are the strongest competitors','They produce many seeds that travel far','They need shade','Oaks help them grow'],a:1,why:'Pioneer species are good colonizers: lots of small, far-traveling seeds. They are poor competitors, so they are replaced later.'},
+ {q:'The intermediate disturbance hypothesis predicts that diversity is highest when disturbance is…',opts:['absent','very frequent','intermediate in frequency or size','only from fire'],a:2,why:'Moderate disturbance opens space for colonizers without wiping out slow-growing competitors, so both types coexist.'},
+ {q:'What is the competition–colonization trade-off?',opts:['Species that compete well also spread well','Species that compete well tend to spread poorly, and good colonizers tend to be poor competitors','Competition increases colonization','Colonizers are always predators'],a:1,why:'Investing in big seeds, deep roots, or tall trunks leaves fewer resources for many far-traveling seeds, and vice versa.'},
+ {q:'Primary succession starts on…',opts:['an abandoned farm field','a forest after a fire','bare rock or new land with no soil, such as a lava flow or retreating glacier','a lawn that stopped being mowed'],a:2,why:'Primary succession starts with no soil. This simulation (an old field or a burned forest) is secondary succession: soil and seeds are already there.'},
+ {q:'In this simulation, bigger disturbance patches move the diversity peak toward…',opts:['more frequent disturbance','less frequent disturbance','no change','zero disturbance only'],a:1,why:'Each large disturbance clears more ground, so fewer of them are needed to reach the "intermediate" amount of disturbed area.'}
+]);
+
+initTabs({field:draw,idh:drawX});
+setSliders({});reset();requestAnimationFrame(loop);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{draw();drawX()});
+})();
+</script>
+<script>
+window.A11Y = {
+  tabsLabel: 'Simulation sections',
+  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
+  live: ['#xMsg', '#progTxt', '#score']
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
+

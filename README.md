@@ -1,6 +1,6 @@
 # Dr. Whitford's Class Simulations
 
-Interactive simulations and web apps for biology, plant science, soil science, and field methods courses at Clovis Community College.
+Interactive simulations and web apps for biology, plant science, soil science, community ecology, and field methods courses at Clovis Community College.
 
 **Live site:** https://malachi-whitford.github.io/class-sims/
 
@@ -20,6 +20,10 @@ class-sims/
     ├── soil-water/index.html
     ├── soil-cation-exchange/index.html
     ├── soil-ph/index.html
+    ├── competition/index.html
+    ├── predator-prey/index.html
+    ├── island-biogeography/index.html
+    ├── disturbance-succession/index.html
     ├── environmental-laws/index.html
     ├── field_bio_review/index.html
     └── species-diversity/index.html
@@ -41,13 +45,14 @@ Add an item to `catalog.js` with `type: "app"` (for Apps Script or other web app
 
 ## Adding or renaming a topic tab
 
-Edit the `TOPICS` list at the top of `catalog.js`. The tabs appear in the order listed. Every item's `topic` must match one of the topic `id`s.
+Edit the `TOPICS` list at the top of `catalog.js`. The tabs appear in the order listed. Every item's `topic` must match one of the topic `id`s. To show a card under more than one tab, give a list instead, e.g. `topic: ["community", "field"]`.
 
 ## Linking students to a specific tab
 
 Add the topic id after a `#`:
 
 - https://malachi-whitford.github.io/class-sims/#soils
+- https://malachi-whitford.github.io/class-sims/#community
 - https://malachi-whitford.github.io/class-sims/#plants
 - https://malachi-whitford.github.io/class-sims/#cells
 - https://malachi-whitford.github.io/class-sims/#field

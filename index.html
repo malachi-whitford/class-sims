@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dr. Whitford's Class Simulations</title>
-<meta name="description" content="Interactive simulations and web apps for biology, plant science, soil science, and field methods courses at Clovis Community College.">
+<meta name="description" content="Interactive simulations and web apps for biology, plant science, soil science, community ecology, and field methods courses at Clovis Community College.">
 <style>
   :root{
     --bg:#f5f7f3; --card:#fff; --ink:#1e2a20; --muted:#5c6a5e; --line:#d9e2d6;
@@ -64,7 +64,7 @@
 <header>
   <div class="wrap">
     <h1>Dr. Whitford's Class Simulations</h1>
-    <p>Interactive simulations and tools for biology, plant science, soil science, and field methods. Clovis Community College.</p>
+    <p>Interactive simulations and tools for biology, plant science, soil science, community ecology, and field methods. Clovis Community College.</p>
     <a class="home-link" href="https://malachi-whitford.github.io/">← Dr. Whitford's main website</a>
   </div>
 </header>
@@ -100,6 +100,7 @@
   const searchEl = document.getElementById('search');
   const topicById = Object.fromEntries(TOPICS.map(t => [t.id, t]));
   const TYPE_LABEL = { sim: 'Simulation', app: 'Web app', link: 'Resource' };
+  const topicsOf = i => Array.isArray(i.topic) ? i.topic : [i.topic];
   const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
   let current = 'all';
@@ -107,7 +108,7 @@
   // Build tabs: "All" plus one per topic
   const tabs = [{ id: 'all', label: 'All', blurb: 'Everything in one place. Pick a topic above to narrow it down.' }, ...TOPICS];
   tabsEl.innerHTML = tabs.map(t => {
-    const n = t.id === 'all' ? ITEMS.length : ITEMS.filter(i => i.topic === t.id).length;
+    const n = t.id === 'all' ? ITEMS.length : ITEMS.filter(i => topicsOf(i).includes(t.id)).length;
     return `<button data-id="${t.id}">${esc(t.label)}<span class="n" aria-label=", ${n} items">${n}</span></button>`;
   }).join('');
   tabsEl.querySelectorAll('button').forEach(b => b.onclick = () => {
@@ -128,9 +129,9 @@
     blurbEl.textContent = q ? `Search results for “${searchEl.value.trim()}”` : tab.blurb;
 
     const list = ITEMS.filter(i => {
-      if (!q && current !== 'all' && i.topic !== current) return false;
+      if (!q && current !== 'all' && !topicsOf(i).includes(current)) return false;
       if (!q) return true;
-      const hay = [i.title, i.desc, (i.tags || []).join(' '), topicById[i.topic]?.label || ''].join(' ').toLowerCase();
+      const hay = [i.title, i.desc, (i.tags || []).join(' '), topicsOf(i).map(t => topicById[t]?.label || '').join(' ')].join(' ').toLowerCase();
       return hay.includes(q);
     });
 
@@ -148,7 +149,7 @@
       return `<a class="card ${type}" href="${esc(i.url)}"${external ? ' target="_blank" rel="noopener"' : ''}>
         <span class="type ${type}">${TYPE_LABEL[type]}</span>
         <h2>${esc(i.title)}</h2>
-        ${showTopic && topicById[i.topic] ? `<div class="topic">${esc(topicById[i.topic].label)}</div>` : ''}
+        ${showTopic ? `<div class="topic">${esc(topicsOf(i).filter(t => topicById[t]).map(t => topicById[t].label).join(' · '))}</div>` : ''}
         <p>${esc(i.desc)}</p>
         ${tags ? `<div class="tags">${tags}</div>` : ''}
         <div class="open">${external ? 'Open in new tab ↗' : 'Open simulation →'}</div>
