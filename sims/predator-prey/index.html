@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Predator–Prey: The Snowshoe Hare Cycle</title>
+<title>Predation: Four Classic Papers</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -94,192 +94,48 @@ table.cmp td.num{text-align:right;font-variant-numeric:tabular-nums}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .steps li::before{color:#0d1b2a}}
 label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .layout>*{min-width:0}
+/* paper tabs */
+.pp-sec{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.pp-sec>h2{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.pp-sec>h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:.85rem;flex:none}
+.pp-sec p,.pp-sec li{font-size:.93rem}
+.pp-head{border-left:5px solid var(--s4)}
+.pp-head h2{font-size:1.15rem;margin-bottom:4px}
+.pp-head .cite{font-size:.85rem;color:var(--muted);margin:4px 0 0}
+.hyp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:6px}
+.hyp div{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:.88rem}
+.pred-opts{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.pred-opts button{text-align:left}
+.pred-opts button.picked{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card));font-weight:600}
+.locked{position:relative}
+.locked>.lockmsg{display:block;padding:16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.locked>.lockbody{display:none}
+.locked.unlocked>.lockmsg{display:none}
+.locked.unlocked>.lockbody{display:block}
+.discuss li{margin:6px 0}
+.datatbl{margin-top:8px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-sec>h2 .num{color:#0d1b2a}}
+.pp-sec .chart svg{max-width:760px;margin:0 auto}
 
+#hBoard{max-width:460px;aspect-ratio:1/1;cursor:crosshair;background:#d8c9a8}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hBoard{background:#4a4234}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Predator–Prey: The Snowshoe Hare Cycle</h1>
-<p class="sub">Snowshoe hares in the boreal forest of Canada and Alaska rise and crash about every 10 years, and lynx, coyotes, and owls follow them up and down. Is the cycle driven by food, by predators, or both? Explore a predator–prey model, then run the famous Kluane experiment and a test of whether fear alone can shrink a prey population.</p>
-
+<h1>Predation: Four Classic Papers</h1>
+<p class="sub">Each tab walks through one landmark study of predators and prey. Read the question, see how the study was designed, make a prediction, then look at what the authors found and decide what it means.</p>
 <nav class="tabs">
-  <button class="on" data-tab="pp">1. The hare cycle</button>
-  <button data-tab="kl">2. The Kluane experiment</button>
-  <button data-tab="fear">3. Fear of predators</button>
-  <button data-tab="fr">4. Functional responses</button>
-  <button data-tab="quiz">5. Check your understanding</button>
+  <button class="on" data-tab="t1">Paine 1966: keystone sea star</button>
+  <button data-tab="t2">Huffaker 1958: mites</button>
+  <button data-tab="t3">Krebs et al. 1995: hares</button>
+  <button data-tab="t4">Holling 1959: discs</button>
 </nav>
-
-<!-- ============ TAB 1 ============ -->
-<section class="panel on" id="pp">
-<div class="layout">
-  <div class="card ctrl">
-    <h3>Try a scenario</h3>
-    <div class="row presets">
-      <button data-p="kluane">Hare cycle (Kluane-like)</button>
-      <button data-p="classic">Original Lotka–Volterra</button>
-      <button data-p="enrich">Paradox of enrichment</button>
-      <button data-p="refuge">Dense cover (refuge)</button>
-      <button data-p="type3">Predators switch prey</button>
-    </div>
-    <h3><i class="sw" style="background:var(--s3)"></i>Snowshoe hares (prey)</h3>
-    <label for="b">Birth rate b (per year) <span class="val" id="bV"></span></label>
-    <input type="range" id="b" min="0.2" max="4" step="0.01" value="2.07" data-d="2">
-    <label for="d">Death rate without predators d <span class="val" id="dV"></span></label>
-    <input type="range" id="d" min="0" max="1.5" step="0.01" value="0.2" data-d="2">
-    <label for="K">Carrying capacity K (food supply) <span class="val" id="KV"></span></label>
-    <input type="range" id="K" min="10" max="1000" step="1" value="100">
-    <label class="check"><input type="checkbox" id="Kinf"> Unlimited food (K = ∞)</label>
-    <label for="ref">Hares safe in dense cover <span class="val" id="refV"></span></label>
-    <input type="range" id="ref" min="0" max="0.9" step="0.01" value="0" data-d="2">
-    <label for="phi">Fear of predators <span class="val" id="phiV"></span></label>
-    <input type="range" id="phi" min="0" max="0.5" step="0.001" value="0" data-d="3">
-    <p class="hint">Fearful hares feed less and have fewer young (see tab 3).</p>
-    <h3><i class="sw" style="background:var(--s2)"></i>Predators (lynx, coyotes, owls)</h3>
-    <label for="a">Attack rate a <span class="val" id="aV"></span></label>
-    <input type="range" id="a" min="0.005" max="1" step="0.001" value="0.163" data-d="3">
-    <label for="h">Handling time h (years per hare) <span class="val" id="hV"></span></label>
-    <input type="range" id="h" min="0" max="2" step="0.001" value="0.246" data-d="3">
-    <label for="e">Conversion efficiency e <span class="val" id="eV"></span></label>
-    <input type="range" id="e" min="0.02" max="1" step="0.001" value="0.334" data-d="3">
-    <label for="m">Predator death rate m <span class="val" id="mV"></span></label>
-    <input type="range" id="m" min="0.02" max="2" step="0.001" value="0.777" data-d="3">
-    <label for="ftype">Functional response</label>
-    <select id="ftype" style="width:100%"><option value="2">Type II (saturating)</option><option value="3">Type III (predators switch prey when hares are rare)</option></select>
-    <label for="N3">Switching density (type III only) <span class="val" id="N3V"></span></label>
-    <input type="range" id="N3" min="1" max="100" step="1" value="20">
-    <h3>Start and run</h3>
-    <label for="N0">Starting hares <span class="val" id="N0V"></span></label>
-    <input type="range" id="N0" min="1" max="500" step="1" value="30">
-    <label for="P0">Starting predators <span class="val" id="P0V"></span></label>
-    <input type="range" id="P0" min="0.1" max="100" step="0.1" value="3" data-d="1">
-    <label for="Tmax">Years to run <span class="val" id="TmaxV"></span></label>
-    <input type="range" id="Tmax" min="10" max="300" step="1" value="60">
-    <details><summary>The equations</summary>
-      <div class="formula">Hares eaten per predator per year: f = a N′ / (1 + a h N′), N′ = (1 − cover) N<br>Type III: a is multiplied by N′ / (N′ + switching density)<br>dN/dt = N [ b / (1 + fear·P) − d − (b − d) N / K ] − f P<br>dP/dt = e f P − m P</div>
-      <p class="small">This is the Rosenzweig–MacArthur model (1963) with a refuge and a fear term (Wang, Zanette &amp; Zou 2016). The default values were chosen to give a cycle of about 10 years; hare and predator numbers are relative, not real densities.</p>
-    </details>
-  </div>
-  <div>
-    <div class="tiles">
-      <div class="tile"><div class="k">Long-run outcome</div><div class="v" id="tOut" style="font-size:1.05rem"></div></div>
-      <div class="tile"><div class="k">Cycle length</div><div class="v" id="tPer"></div></div>
-      <div class="tile"><div class="k">Hares (low–high)</div><div class="v" id="tN" style="color:var(--s3);font-size:1.15rem"></div></div>
-      <div class="tile"><div class="k">Predators (low–high)</div><div class="v" id="tP" style="color:var(--s2);font-size:1.15rem"></div></div>
-    </div>
-    <div class="grid2">
-      <div class="card chart"><h2>Populations over time</h2><div class="legend" id="legT"></div><svg id="cT"></svg></div>
-      <div class="card chart"><h2>Phase plane</h2><div class="legend" id="legP"></div><svg id="cP"></svg></div>
-    </div>
-    <div class="msg" id="ppMsg"></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 2: KLUANE ============ -->
-<section class="panel" id="kl">
-<div class="paper">
-  <b>The paper.</b> Near Kluane Lake in the Yukon, Charles Krebs and colleagues ran one of the largest field experiments in ecology. On 1-km² blocks of forest they added food (commercial rabbit chow), built electric fences that kept out lynx and coyotes (but not owls and hawks, which could fly in), or did both, and compared hare numbers with unmanipulated control blocks for 8 years. During the peak and decline of the cycle, <b>predator exclusion doubled</b> hare density, <b>food addition tripled</b> it, and <b>both together raised it 11-fold</b>, more than the two effects added together. Fertilizing plants increased plant growth but not hares.
-  <p class="cite">Krebs, C. J., S. Boutin, R. Boonstra, A. R. E. Sinclair, J. N. M. Smith, M. R. T. Dale, K. Martin, &amp; R. Turkington (1995). Impact of food and predation on the snowshoe hare cycle. <i>Science</i> 269: 1112–1115. <a href="https://doi.org/10.1126/science.269.5227.1112" target="_blank" rel="noopener">doi:10.1126/science.269.5227.1112</a></p>
-</div>
-<div class="layout">
-  <div class="card ctrl">
-    <h3>Treatments</h3>
-    <label for="food">Food addition: K multiplied by <span class="val" id="foodV"></span></label>
-    <input type="range" id="food" min="1" max="10" step="0.1" value="3" data-d="1">
-    <label for="fence">Fence: share of predation removed <span class="val" id="fenceV"></span></label>
-    <input type="range" id="fence" min="0" max="100" step="1" value="50" data-suf="%">
-    <p class="hint">The fence stopped mammals but not birds of prey, so it removed only part of the predation.</p>
-    <label for="kT">Years to show <span class="val" id="kTV"></span></label>
-    <input type="range" id="kT" min="10" max="150" step="1" value="40">
-    <label class="check"><input type="checkbox" id="klog" checked> Log scale for hares</label>
-    <p class="hint">All four plots use the hare and predator values from tab 1. Change them there and come back.</p>
-  </div>
-  <div>
-    <div class="card"><h2>Follow along</h2><ol class="steps">
-      <li><b>Run the experiment as designed.</b> Food ×3 and a fence that removes half the predation. Compare the model's fold-changes with Krebs's in the table.</li>
-      <li><b>Find the fence strength that doubles hares,</b> and the food level that triples them, one at a time.</li>
-      <li><b>Now look at the combined plot.</b> Is the model's combined effect bigger than food + fence added together? Does it reach 11-fold?</li>
-      <li><b>Explain the gap.</b> The model has only two levels: hares and predators. The hares' food is just a number (K). Krebs and colleagues concluded that the cycle comes from a <b>three-level interaction</b> of plants, hares, and predators. What would you need to add to the model?</li>
-    </ol></div>
-    <div class="card chart"><h2>Hares in the four kinds of plots</h2><div class="legend" id="legK"></div><svg id="cK"></svg></div>
-    <div class="card"><h2>Paper vs. model</h2><div class="tablewrap"><table class="cmp" id="kTbl"></table></div>
-      <p class="small muted" style="margin:6px 0 0">Model values are the long-run average hare density relative to the control plot. Krebs et al. compared densities during the peak and decline of the cycle.</p></div>
-    <div class="msg" id="kMsg"></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 3: FEAR ============ -->
-<section class="panel" id="fear">
-<div class="paper">
-  <b>The paper.</b> Can predators reduce prey numbers just by scaring them? Liana Zanette and colleagues protected every song sparrow nest on small islands in British Columbia with electric fences and netting so that no predator could reach them. Then, for a whole breeding season, they played recordings of predator calls to some birds and harmless animal sounds to others. Birds that heard predators laid fewer eggs, fed their chicks less, and produced <b>40% fewer offspring</b> per year, even though no predator ever touched them.
-  <p class="cite">Zanette, L. Y., A. F. White, M. C. Allen, &amp; M. Clinchy (2011). Perceived predation risk reduces the number of offspring songbirds produce per year. <i>Science</i> 334: 1398–1401. <a href="https://doi.org/10.1126/science.1210908" target="_blank" rel="noopener">doi:10.1126/science.1210908</a></p>
-</div>
-<div class="layout">
-  <div class="card ctrl">
-    <h3>Add fear to the hare model</h3>
-    <label for="fphi">Fear strength <span class="val" id="fphiV"></span></label>
-    <input type="range" id="fphi" min="0" max="0.5" step="0.001" value="0" data-d="3">
-    <div class="tiles" style="margin-top:10px">
-      <div class="tile"><div class="k">Birth rate lost to fear at the usual number of predators</div><div class="v" id="fLoss"></div></div>
-    </div>
-    <p class="hint">Uses the average number of predators in the no-fear run. All other values come from tab 1.</p>
-    <label for="fT">Years to show <span class="val" id="fTV"></span></label>
-    <input type="range" id="fT" min="10" max="150" step="1" value="60">
-  </div>
-  <div>
-    <div class="card"><h2>Follow along</h2><ol class="steps">
-      <li><b>Match the sparrows.</b> Raise fear strength until hares lose about 40% of their births at the usual predator level, like Zanette's sparrows.<br><button id="match40">Set it to 40% for me</button></li>
-      <li><b>Compare the two runs.</b> Did fear make hares rarer on average? What happened to the predators, which now kill fewer hares?</li>
-      <li><b>Look at the cycle.</b> Did fear make the boom-and-bust cycle bigger or smaller?</li>
-      <li><b>Think about the Kluane fences.</b> Fences removed predators' killing <i>and</i> their scariness. How could that help explain why fenced plots did better than a model with killing alone predicts?</li>
-    </ol></div>
-    <div class="card chart"><h2>Hares and predators, with and without fear</h2><div class="legend" id="legF"></div><svg id="cFear"></svg></div>
-    <div class="card"><div class="tablewrap"><table class="cmp" id="fTbl"></table></div></div>
-    <div class="msg" id="fMsg"></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 4: FUNCTIONAL RESPONSES ============ -->
-<section class="panel" id="fr">
-<div class="paper">
-  <b>The paper.</b> How many prey can one predator eat? C. S. Holling answered with a famous tabletop experiment: a blindfolded assistant tapped a table to find sandpaper discs ("prey") and set each one aside before searching again. As discs got more common, the number found per minute leveled off because time spent handling each disc left less time to search. In the Kluane study, predators also showed a type III response: they ate few hares when hares were scarce and switched to other prey such as red squirrels.
-  <p class="cite">Holling, C. S. (1959). Some characteristics of simple types of predation and parasitism. <i>The Canadian Entomologist</i> 91: 385–398.<br>Krebs, C. J., R. Boonstra, S. Boutin, &amp; A. R. E. Sinclair, eds. (2001). <i>Ecosystem Dynamics of the Boreal Forest: The Kluane Project</i>. Oxford University Press.</p>
-</div>
-<div class="layout">
-  <div class="card ctrl">
-    <h3>One predator's feeding rate</h3>
-    <label for="fa">Attack rate a <span class="val" id="faV"></span></label>
-    <input type="range" id="fa" min="0.005" max="0.2" step="0.001" value="0.03" data-d="3">
-    <label for="fh">Handling time h <span class="val" id="fhV"></span></label>
-    <input type="range" id="fh" min="0.02" max="2" step="0.01" value="0.4" data-d="2">
-    <label for="fN3">Switching density (type III) <span class="val" id="fN3V"></span></label>
-    <input type="range" id="fN3" min="1" max="200" step="1" value="40">
-    <label class="check"><input type="checkbox" id="sh1" checked> Type I</label>
-    <label class="check"><input type="checkbox" id="sh2" checked> Type II</label>
-    <label class="check"><input type="checkbox" id="sh3" checked> Type III</label>
-  </div>
-  <div>
-    <div class="tiles">
-      <div class="tile"><div class="k">Maximum feeding rate (1/h)</div><div class="v" id="fMax"></div></div>
-      <div class="tile"><div class="k">Prey density for half of max, type II (1/ah)</div><div class="v" id="fHalf"></div></div>
-    </div>
-    <div class="grid2">
-      <div class="card chart"><h2>Prey eaten per predator</h2><div class="legend" id="legFR"></div><svg id="cF"></svg></div>
-      <div class="card chart"><h2>Risk to each prey individual</h2><div class="legend" id="legR"></div><svg id="cR"></svg></div>
-    </div>
-    <div class="msg"><b>Type I:</b> feeding rises in a straight line until the predator is full. <b>Type II:</b> handling time limits feeding (Holling's discs); each prey's risk <i>falls</i> as prey get common, which can destabilize populations. <b>Type III:</b> predators ignore rare prey and switch to them once common, so each prey's risk <i>rises</i> at low density. That protects rare prey. Try type III in tab 1 to see how it changes the hare cycle.</div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 5 ============ -->
-<section class="panel" id="quiz">
-  <div class="card"><h2>Check your understanding</h2><div id="quizBox"></div></div>
-</section>
+<section class="panel on" id="t1"></section>
+<section class="panel" id="t2"></section>
+<section class="panel" id="t3"></section>
+<section class="panel" id="t4"></section>
 </div>
 
 <script>
@@ -341,150 +197,189 @@ function initTabs(RENDER){let cur=$('nav.tabs button.on').dataset.tab;
   const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();
   return()=>cur}
 /* quiz */
-function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted" id="score"></p>';
+function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted score"></p>';
   const got={};
   $$('.q',el).forEach(d=>{const q=QS[+d.dataset.i];$$('.opts button',d).forEach(b=>b.onclick=()=>{const j=+b.dataset.j,ok=j===q.a;
     $$('.opts button',d).forEach(x=>x.classList.remove('right','wrong'));b.classList.add(ok?'right':'wrong');
-    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the simulation.'));
-    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('#score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the results.'));
+    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('.score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+/* bar chart: bars(svg,{cats:[...],series:[{name,color,vals:[...]}],ymax,ylab,xlab,w,h,fmt}) */
+function bars(svg,o){
+  const W=o.w||560,H=o.h||330,m={l:o.ml||56,r:14,t:16,b:o.mb||52},pw=W-m.l-m.r,ph=H-m.t-m.b,n=o.cats.length,k=o.series.length;
+  const ymax=o.ymax||Math.max(...o.series.flatMap(s=>s.vals))*1.15||1,Y=v=>m.t+ph-v/ymax*ph,gw=pw/n,bw=Math.min(60,gw*0.8/k);
+  let s='';niceTicks(0,ymax,5).forEach(v=>{const y=Y(v);s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${y}" y2="${y}"/><text x="${m.l-6}" y="${y+4}" text-anchor="end">${fmtTick(v)}</text>`});
+  s+=`<line class="ax" x1="${m.l}" x2="${m.l+pw}" y1="${m.t+ph}" y2="${m.t+ph}"/>`;
+  o.cats.forEach((c,i)=>{const cx=m.l+gw*(i+0.5);
+    o.series.forEach((se,j)=>{const v=se.vals[i];if(v==null||!Number.isFinite(v))return;const x=cx-k*bw/2+j*bw,y=Y(v);
+      s+=`<rect x="${x+1}" y="${y}" width="${bw-2}" height="${m.t+ph-y}" fill="${se.color}" rx="2" ${se.hatch?'fill-opacity=".45" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 2"':''}/>`;
+      s+=`<text x="${x+bw/2}" y="${y-4}" text-anchor="middle" style="fill:var(--text);font-size:11px">${o.fmt?o.fmt(v):fmtTick(+v.toFixed(2))}</text>`});
+    String(c).split('\n').forEach((line,li)=>{s+=`<text x="${cx}" y="${m.t+ph+16+li*13}" text-anchor="middle">${line}</text>`})});
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
+  if(o.xlab)s+=`<text class="lab" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab}</text>`;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s}
+
+/* ---------- paper-tab engine ----------
+ P = {id, cite, doi, why, question, hyps:[[title,text]], design(html), predict:{q,opts:[text],note?:[fb per option]},
+      results(html), afterResults(fn), found(html), interpret:[quiz items], model(html)?, afterModel(fn)?, discuss:[...] } */
+function paperTab(el,P){
+  const sec=(n,t,body,cls='')=>`<div class="pp-sec ${cls}"><h2>${n?`<span class="num">${n}</span>`:''}${t}</h2>${body}</div>`;
+  let n=1,h='';
+  h+=`<div class="pp-sec pp-head"><h2>${P.title}</h2><p style="margin:0">${P.why}</p><p class="cite">${P.cite}${P.doi?` <a href="https://doi.org/${P.doi}" target="_blank" rel="noopener">doi:${P.doi}</a>`:''}${P.url?` <a href="${P.url}" target="_blank" rel="noopener">Read it</a>`:''}</p></div>`;
+  h+=sec(n++,'The question',`<p>${P.question}</p>${P.hyps?`<div class="hyp">${P.hyps.map(x=>`<div><b>${x[0]}</b><br>${x[1]}</div>`).join('')}</div>`:''}`);
+  h+=sec(n++,'What they did',P.design);
+  h+=sec(n++,'Your prediction',`<p>${P.predict.q}</p><div class="pred-opts" id="${P.id}-pred">${P.predict.opts.map((o,i)=>`<button data-i="${i}" aria-pressed="false">${o}</button>`).join('')}</div><div class="msg small" id="${P.id}-predfb" style="display:none" aria-live="polite"></div>`);
+  h+=sec(n++,'What they found',`<div class="locked" id="${P.id}-lock"><div class="lockmsg">Make a prediction above to unlock the results.</div><div class="lockbody">${P.results}<div class="msg" style="margin-top:10px">${P.found}</div></div></div>`);
+  h+=sec(n++,'Interpret the results',`<div id="${P.id}-quiz"></div>`);
+  if(P.model)h+=sec(n++,P.modelTitle||'Try the model',P.model);
+  h+=sec(n++,'Discuss',`<ol class="discuss">${P.discuss.map(d=>`<li>${d}</li>`).join('')}</ol>`);
+  el.innerHTML=h;
+  quiz($(`#${P.id}-quiz`),P.interpret);
+  let shown=false;
+  $$(`#${P.id}-pred button`).forEach(b=>b.onclick=()=>{
+    $$(`#${P.id}-pred button`).forEach(x=>{x.classList.toggle('picked',x===b);x.setAttribute('aria-pressed',x===b?'true':'false')});
+    const fb=$(`#${P.id}-predfb`);fb.style.display='block';fb.innerHTML=`<b>Prediction saved.</b> ${P.predict.note?P.predict.note[+b.dataset.i]:''} Scroll down to compare with what the authors found.`;
+    const L=$(`#${P.id}-lock`);L.classList.add('unlocked');if(!shown){shown=true;if(P.afterResults)P.afterResults()}});
+  if(P.afterModel)P.afterModel();
+  return{redraw:()=>{if(shown&&P.afterResults)P.afterResults();if(P.afterModel)P.afterModel()}};
+}
 
 (function(){
-const CN='var(--s3)',CP='var(--s2)';
-addBoxes();
-function P(){return{b:val('b'),d:val('d'),K:val('K'),Kinf:$('#Kinf').checked,ref:val('ref'),phi:val('phi'),a:val('a'),h:val('h'),e:val('e'),m:val('m'),t3:$('#ftype').value==='3',N3:val('N3')}}
-function feed(p,N){const Na=(1-p.ref)*N;const ae=p.t3?p.a*Na/(Na+p.N3):p.a;return ae*Na/(1+ae*p.h*Na)}
-function deriv(p,N,Q){const fr=feed(p,N),r=p.b-p.d;const g=p.b/(1+p.phi*Q)-p.d-(p.Kinf?0:r*N/p.K);return[g*N-fr*Q,p.e*fr*Q-p.m*Q]}
-function run(p,N,Q,T,keep=600){const dt=0.01,steps=Math.round(T/dt),every=Math.max(1,Math.round(steps/keep)),out=[[0,N,Q]];
-  for(let i=1;i<=steps;i++){const k1=deriv(p,N,Q),k2=deriv(p,N+dt/2*k1[0],Q+dt/2*k1[1]),k3=deriv(p,N+dt/2*k2[0],Q+dt/2*k2[1]),k4=deriv(p,N+dt*k3[0],Q+dt*k3[1]);
-    N=Math.max(0,N+dt/6*(k1[0]+2*k2[0]+2*k3[0]+k4[0]));Q=Math.max(0,Q+dt/6*(k1[1]+2*k2[1]+2*k3[1]+k4[1]));if(N>1e6)N=1e6;if(i%every===0)out.push([i*dt,N,Q])}
-  return out}
-function longrun(p,N0,P0){const o=run(p,N0,P0,250,5000),tail=o.filter(r=>r[0]>=120);
-  const Ns=tail.map(r=>r[1]),Ps=tail.map(r=>r[2]),mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
-  const r={nmin:Math.min(...Ns),nmax:Math.max(...Ns),pmin:Math.min(...Ps),pmax:Math.max(...Ps),nmean:mean(Ns),pmean:mean(Ps)};
-  const pk=[];for(let i=1;i<tail.length-1;i++)if(tail[i][1]>tail[i-1][1]&&tail[i][1]>=tail[i+1][1]&&tail[i][1]>r.nmean)pk.push(tail[i][0]);
-  r.per=pk.length>1?(pk[pk.length-1]-pk[0])/(pk.length-1):NaN;return r}
-function classify(p,c){const lv=p.Kinf&&p.h===0&&p.ref===0&&p.phi===0&&!p.t3;
-  if(p.b<=p.d)return'prey';if(c.pmax<0.01)return'predext';if(p.Kinf&&c.nmax>5e5)return'boom';if(lv)return'neutral';
-  return(c.nmax-c.nmin)/c.nmean<0.04?'stable':(c.nmin<1?'crash':'cycles')}
-const LABEL={neutral:'Neutral cycles',stable:'Steady numbers',cycles:'Regular cycles',crash:'Boom and bust',predext:'Predators die out',prey:'Hares die out',boom:'Hares explode'};
-function render(){
-  showVals();$('#K').disabled=$('#Kinf').checked;
-  const p=P(),T=val('Tmax'),N0=val('N0'),P0=val('P0');
-  const tr=run(p,N0,P0,T),c=longrun(p,N0,P0),kind=classify(p,c);
-  const ymax=Math.min(Math.max(...tr.map(r=>Math.max(r[1],r[2])))*1.08,5000)||1;
-  chart($('#cT'),{xmin:0,xmax:T,ymin:0,ymax:ymax,w:460,h:400,xlab:'Years',ylab:'Number (relative)',series:[{pts:tr.map(r=>[r[0],r[1]]),color:CN,width:2.4},{pts:tr.map(r=>[r[0],r[2]]),color:CP,width:2.4}]});
-  legend($('#legT'),[[CN,'Hares'],[CP,'Predators']]);
-  const r=p.b-p.d,NX=Math.min(5000,Math.max(...tr.map(q=>q[1]),p.Kinf?1:p.K)*1.05),PX=Math.min(5000,Math.max(...tr.map(q=>q[2]))*1.15)||1;
-  const prey=[];for(let i=1;i<=240;i++){const N=NX*i/240,D=p.d+(p.Kinf?0:r*N/p.K),H=feed(p,N)/N;let Pv;
-    if(p.phi>0){const B=H+D*p.phi,disc=B*B-4*H*p.phi*(D-p.b);Pv=(-B+Math.sqrt(Math.max(0,disc)))/(2*H*p.phi)}else Pv=(p.b-D)/H;if(Pv>=0&&Number.isFinite(Pv))prey.push([N,Pv])}
-  let Nstar=null;for(let i=1;i<=4000;i++){const N=NX*2*i/4000;if(p.e*feed(p,N)>=p.m){Nstar=N;break}}
-  const series=[{pts:prey,color:CN,width:3,opacity:.85}];if(Nstar)series.push({pts:[[Nstar,0],[Nstar,PX*2]],color:CP,width:3,opacity:.85});
-  series.push({pts:tr.map(q=>[q[1],q[2]]),color:'var(--text)',width:2});
-  chart($('#cP'),{xmin:0,xmax:NX,ymin:0,ymax:PX,w:460,h:400,xlab:'Hares',ylab:'Predators',series,points:[{x:N0,y:P0,color:'var(--text)',r:5,ring:1}]});
-  legend($('#legP'),[[CN,'Hare zero-growth line'],[CP,'Predator zero-growth line'],['var(--text)','Path (open dot = start)']]);
-  $('#tOut').textContent=LABEL[kind];$('#tPer').textContent=(kind==='cycles'||kind==='crash'||kind==='neutral')&&Number.isFinite(c.per)?f(c.per,1)+' yr':'—';
-  $('#tN').textContent=kind==='stable'?f(c.nmean,0):`${f(c.nmin,c.nmin<10?1:0)}–${c.nmax>5e5?'∞':f(c.nmax,0)}`;
-  $('#tP').textContent=kind==='stable'?f(c.pmean,1):`${f(c.pmin,1)}–${f(c.pmax,1)}`;
-  $('#cT').setAttribute('aria-label',`Hares and predators over ${T} years. Long-run outcome: ${LABEL[kind]}. Hares range ${$('#tN').textContent}; predators ${$('#tP').textContent}; cycle length ${$('#tPer').textContent}.`);
-  $('#cP').setAttribute('aria-label',`Phase plane of predators against hares. The predator zero-growth line is at about ${Nstar?f(Nstar,0):'no'} hares.`);
-  const M={neutral:'<b>Neutral cycles.</b> The original Lotka–Volterra model: hares rise, predators follow, hares crash, predators starve. The size of the loop depends only on where you start.',
-    stable:`<b>Steady numbers.</b> The populations spiral in to where the two zero-growth lines cross.${p.ref>0?' Dense cover keeps some hares safe, which damps the cycle.':''}${p.phi>0?' Fear lowers hare births when predators are common, which also calms the cycle.':''}${p.t3?' Type III predators ease off when hares are rare, protecting them.':''}`,
-    cycles:`<b>Regular cycles</b> of about ${f(c.per,1)} years. Whatever the starting numbers, the populations settle into the same repeating cycle. Real snowshoe hares cycle every 8–11 years. Predator peaks lag behind hare peaks.`,
-    crash:`<b>Boom and bust</b>, about every ${f(c.per,1)} years. Hares fall to almost nothing each cycle.${!p.Kinf&&p.K>200?' Try lowering K: in this model, more food can make cycles <i>wilder</i> (the paradox of enrichment, Rosenzweig 1971).':''}`,
-    predext:'<b>Predators die out.</b> Even with the most hares available, predators cannot eat enough to replace their losses.',prey:'<b>Hares cannot grow:</b> births do not exceed deaths.',boom:'<b>Hares explode:</b> with unlimited food, saturated predators cannot keep up.'};
-  $('#ppMsg').innerHTML=M[kind];
-}
-const BASE={b:2.07,d:0.2,K:100,Kinf:0,ref:0,phi:0,a:0.163,h:0.246,e:0.334,m:0.777,ftype:'2',N3:20,N0:30,P0:3,Tmax:60};
-const PRE={kluane:{...BASE},classic:{...BASE,Kinf:1,h:0,a:0.05,b:1,d:0,e:0.3,m:0.6,N0:30,P0:15,Tmax:60},enrich:{...BASE,K:400},refuge:{...BASE,ref:0.35},type3:{...BASE,ftype:'3',N3:20}};
-$$('[data-p]').forEach(b=>b.onclick=()=>{const s=PRE[b.dataset.p];setSliders(s);$('#ftype').value=s.ftype||'2';render()});
-$$('#pp input,#pp select').forEach(i=>i.addEventListener('input',render));
+const tabs={};
 
-/* ---------- Kluane ---------- */
-const KC=['var(--muted)','var(--s4)','var(--s1)','var(--s3)'];
-const KLAB=['Control','Food added','Predator fence','Food + fence'],PAPER=[1,3,2,11];
-function kluane(){showVals();
-  const p=P(),T=val('kT'),fx=val('food'),fe=val('fence')/100,N0=val('N0'),P0=val('P0');
-  const ps=[p,{...p,K:p.K*fx},{...p,a:p.a*(1-fe)},{...p,K:p.K*fx,a:p.a*(1-fe)}];
-  const runs=ps.map(q=>run(q,N0,P0,T)),lr=ps.map(q=>longrun(q,N0,P0));
-  const lg=$('#klog').checked,ymax=Math.max(...runs.flatMap(r=>r.map(q=>q[1])))*1.2;
-  chart($('#cK'),{xmin:0,xmax:T,ymin:lg?Math.max(0.1,Math.min(...runs.flatMap(r=>r.map(q=>q[1])))*0.8):0,ymax:ymax,logy:lg,w:760,h:340,xlab:'Years',ylab:'Hares'+(lg?' (log scale)':''),
-    series:runs.map((r,i)=>({pts:r.map(q=>[q[0],Math.max(q[1],1e-3)]),color:KC[i],width:i?2.4:2,dash:i?null:'5 4'}))});
-  legend($('#legK'),KLAB.map((l,i)=>[KC[i],l,i===0]));
-  const fold=lr.map(c=>c.nmean/lr[0].nmean);
-  const addv=1+(fold[1]-1)+(fold[2]-1),mult=fold[1]*fold[2];
-  $('#kTbl').innerHTML='<thead><tr><th>Plot</th><th class="num">Krebs et al. (1995)</th><th class="num">Model</th></tr></thead><tbody>'+
-    KLAB.map((l,i)=>`<tr><td><i class="sw" style="background:${KC[i]};display:inline-block;margin-right:6px"></i>${l}</td><td class="num">${PAPER[i]}×</td><td class="num">${f(fold[i],1)}×</td></tr>`).join('')+
-    `<tr><td>If food and fence simply added up</td><td class="num">4×</td><td class="num">${f(addv,1)}×</td></tr></tbody>`;
-  $('#cK').setAttribute('aria-label','Hare numbers over time in four kinds of plots. Model fold changes relative to control: '+KLAB.map((l,i)=>`${l} ${f(fold[i],1)} times`).join(', ')+'. Krebs et al. found 3, 2, and 11 times.');
-  let m;
-  if(fold[3]>addv*1.1)m=`In the model, food + fence gives ${f(fold[3],1)}×, <b>more than additive</b> (${f(addv,1)}×), like the real experiment.`;
-  else m=`In the model, food + fence gives ${f(fold[3],1)}×, which is <b>not more than additive</b> (${f(addv,1)}×). The real plots reached 11×.`;
-  m+=` ${fold[3]<8?'A two-level model (hares and predators, with food as a fixed K) has trouble producing the real 11-fold jump. Krebs and colleagues concluded that food and predators interact: well-fed hares in safe plots survive and breed far better than either change alone would suggest.':'You found settings that come close to the real 11-fold effect. Are they realistic?'}`;
-  if(lr[3].pmax<0.01||lr[2].pmax<0.01)m+=' Note: in at least one fenced plot the model\'s predators died out completely, which did not happen in the real plots because owls and hawks still hunted there.';
-  $('#kMsg').innerHTML=m;
-}
-$$('#kl input').forEach(i=>i.addEventListener('input',kluane));
+/* =================== 1. PAINE =================== */
+tabs.t1=paperTab($('#t1'),{id:'p',title:'Food web complexity and species diversity',
+  why:'The experiment behind the keystone species idea. It showed that one predator can control the diversity of a whole community. It is the most-cited data paper ever published in <i>The American Naturalist</i>.',
+  cite:'Paine, R. T. (1966). Food web complexity and species diversity. <i>The American Naturalist</i> 100: 65–75.',
+  question:'Why do some places have more species than others? Paine proposed that <b>local diversity depends on how well predators stop any one prey species from taking over the space</b> that everything else needs. On rocky shores, that space is bare rock.',
+  hyps:[['Predators reduce diversity','Predators kill prey, so removing them should let more species survive.'],['Predators maintain diversity','A predator that eats the best competitor for space keeps that species from crowding everything else out.']],
+  design:`<p>At Mukkaw Bay, on the outer coast of Washington, Paine first watched what predators ate. The ochre sea star <i>Pisaster ochraceus</i> was the top predator (he recorded 1,049 of its meals); the whelk <i>Thais</i> was the other main carnivore (287 meals). Both ate many barnacles, and <i>Pisaster</i> also ate mussels, chitons, limpets, and snails.</p>
+    <p>Then, starting in June 1963, he pried every <i>Pisaster</i> off a strip of shore about 8 m long and 2 m tall and threw them into deeper water, again and again. A neighboring strip was left alone as a <b>control</b>. He counted the species in both.</p>
+    <p>He also compared the food web at Mukkaw Bay with similar webs in the Gulf of California and Costa Rica.</p>`,
+  predict:{q:'What happened to the number of species where <i>Pisaster</i> was removed?',opts:['It went up: with no sea stars eating them, more prey species survived.','It stayed the same.','It went down: one prey species took over the space.','Every species disappeared.']},
+  results:`<div class="grid2"><div class="chart"><h3>Species in the study area</h3><svg id="pR1"></svg></div><div class="chart"><h3>Size of the food web</h3><svg id="pR2"></svg></div></div>
+    <div class="legend" id="pLeg"></div>
+    <h3>What happened in the removal area</h3><ol class="small"><li>The acorn barnacle <i>Balanus glandula</i> settled across the area and soon covered roughly 60–80% of the space.</li><li>Within about a year, mussels (<i>Mytilus</i>) and goose barnacles (<i>Mitella</i>) were crowding the acorn barnacles out.</li><li>Algae, chitons, limpets, and other species lost their space and disappeared from the area.</li></ol>`,
+  found:'Removing <i>Pisaster</i> <b>reduced</b> diversity, from 15 species to 8. With the sea star gone, mussels and goose barnacles monopolized the rock. The control area stayed about the same. Paine concluded that the predator maintained diversity by eating the dominant competitor. A few years later he called such species <b>keystone species</b>. Food webs with more predator species, like the Gulf of California web, also held more species overall.',
+  afterResults:()=>{
+    bars($('#pR1'),{cats:['Control\n(sea stars present)','Removal\n(sea stars removed)'],series:[{color:'var(--s3)',vals:[15,8]}],ymax:18,ylab:'Number of species',w:420,h:300});
+    bars($('#pR2'),{cats:['Mukkaw Bay','Gulf of California'],series:[{color:'var(--s1)',vals:[13,45]},{color:'var(--s2)',vals:[2,11]}],ymax:50,ylab:'Number of species',w:420,h:300});
+    legend($('#pLeg'),[['var(--s1)','All species in the food web'],['var(--s2)','Carnivore species']]);
+    $('#pR1').setAttribute('aria-label','Bar chart: 15 species in the control area, 8 in the removal area.');$('#pR2').setAttribute('aria-label','Bar chart: Mukkaw Bay food web had 13 species including 2 carnivores; Gulf of California web had 45 species including 11 carnivores.')},
+  interpret:[
+    {q:'Why did removing a predator DECREASE the number of prey species?',opts:['The predator was also a prey species','Without the predator, the best competitors for space (mussels, goose barnacles) took over','The removal area was smaller','Sea stars fertilize the rocks'],a:1,why:'Pisaster ate the dominant space competitors. Without it, they monopolized the rock and excluded other species.'},
+    {q:'What was the purpose of the control area?',opts:['To give the sea stars somewhere to live','To show what would have happened without the removal, so changes could be blamed on the removal','To count more species','It was not needed'],a:1,why:'Without a control, changes over time (weather, a good settlement year) could be mistaken for effects of removing the predator.'},
+    {q:'What makes Pisaster a "keystone" species?',opts:['It is the most abundant species','Its effect on the community is much larger than its abundance would suggest','It is the largest species','It eats only one prey'],a:1,why:'Like the keystone of an arch, removing it causes the structure (here, the diverse community) to collapse.'}],
+  discuss:['Paine studied one removal plot and one control. What would you add to make the conclusion stronger?','Predators increase diversity in this system. Can you think of a system where removing a predator might increase diversity instead?','Sea star wasting disease killed huge numbers of <i>Pisaster</i> along the Pacific coast beginning in 2013. Based on this paper, what would you predict for those shores?']});
 
-/* ---------- Fear ---------- */
-function fearTab(){showVals();
-  const p=P(),T=val('fT'),N0=val('N0'),P0=val('P0'),phi=val('fphi');
-  const p0={...p,phi:0},p1={...p,phi};
-  const r0=run(p0,N0,P0,T),r1=run(p1,N0,P0,T),c0=longrun(p0,N0,P0),c1=longrun(p1,N0,P0);
-  const loss=1-1/(1+phi*c0.pmean);$('#fLoss').textContent=f(loss*100,0)+'%';
-  const ymax=Math.max(...r0.flatMap(q=>[q[1],q[2]]),...r1.flatMap(q=>[q[1],q[2]]))*1.08;
-  chart($('#cFear'),{xmin:0,xmax:T,ymin:0,ymax:ymax,w:760,h:340,xlab:'Years',ylab:'Number (relative)',
-    series:[{pts:r0.map(q=>[q[0],q[1]]),color:CN,width:1.6,dash:'5 4'},{pts:r0.map(q=>[q[0],q[2]]),color:CP,width:1.6,dash:'5 4'},{pts:r1.map(q=>[q[0],q[1]]),color:CN,width:2.6},{pts:r1.map(q=>[q[0],q[2]]),color:CP,width:2.6}]});
-  legend($('#legF'),[[CN,'Hares, no fear',1],[CP,'Predators, no fear',1],[CN,'Hares, with fear'],[CP,'Predators, with fear']]);
-  const amp=c=>c.nmax-c.nmin;
-  $('#fTbl').innerHTML=`<thead><tr><th></th><th class="num">No fear</th><th class="num">With fear</th></tr></thead><tbody>
-    <tr><td>Average hares</td><td class="num">${f(c0.nmean,1)}</td><td class="num">${f(c1.nmean,1)}</td></tr>
-    <tr><td>Average predators</td><td class="num">${f(c0.pmean,2)}</td><td class="num">${f(c1.pmean,2)}</td></tr>
-    <tr><td>Hare swing (high − low)</td><td class="num">${f(amp(c0),1)}</td><td class="num">${f(amp(c1),1)}</td></tr></tbody>`;
-  $('#cFear').setAttribute('aria-label',`Hares and predators over ${T} years without fear (dashed) and with fear strength ${phi} (solid). Average hares ${f(c0.nmean,1)} versus ${f(c1.nmean,1)}; hare swing ${f(amp(c0),1)} versus ${f(amp(c1),1)}.`);
-  let m=phi===0?'Raise the fear strength to see what fear alone does.':`With fear costing hares about ${f(loss*100,0)}% of their births, average predators change from ${f(c0.pmean,2)} to ${f(c1.pmean,2)} and the hare swing from ${f(amp(c0),0)} to ${f(amp(c1),0)}. `;
-  if(phi>0&&amp(c1)<amp(c0)*0.7)m+='Fear <b>calms the cycle</b>: when predators are common, hares breed less instead of being eaten, so there is less boom to crash.';
-  if(phi>0&&c1.pmean<c0.pmean)m+=' Predators also become less common, because fearful hares are a smaller food supply.';
-  $('#fMsg').innerHTML=m;
-}
-$('#match40').onclick=()=>{const p=P(),c0=longrun({...p,phi:0},val('N0'),val('P0'));setSliders({fphi:Math.min(0.5,+(0.4/0.6/c0.pmean).toFixed(3))});fearTab()};
-$$('#fear input').forEach(i=>i.addEventListener('input',fearTab));
+/* =================== 2. HUFFAKER =================== */
+tabs.t2=paperTab($('#t2'),{id:'h',title:'Experimental studies on predation: dispersion factors and predator–prey oscillations',
+  why:'A famous lab test of whether predators and prey can persist together, and of how habitat structure keeps them from going extinct.',
+  cite:'Huffaker, C. B. (1958). Experimental studies on predation: dispersion factors and predator–prey oscillations. <i>Hilgardia</i> 27: 343–383.',doi:'10.3733/hilg.v27n14p343',
+  question:'Gause had found that when predators and prey were put together in a simple container, the predators ate all the prey and then starved. Simple models predicted cycles that should go on forever. <b>Can predators and prey persist together, and does the structure of the environment matter?</b>',
+  hyps:[['Overexploitation is inevitable','Predators always find and eat all prey, so both go extinct.'],['Space can save them','In a large, patchy environment, prey can escape to places predators have not reached yet, so the system can keep cycling.']],
+  design:`<p>Huffaker used the six-spotted mite (<i>Eotetranychus sexmaculatus</i>), which eats oranges, as prey, and the predatory mite <i>Typhlodromus occidentalis</i>. He built "universes" on trays of oranges and rubber balls. By wrapping oranges in paper and wax, he controlled how much food each orange offered, and he arranged them in different patterns.</p>
+    <ul class="small"><li><b>Simple universes:</b> a few oranges, grouped together or spread among rubber balls.</li><li><b>Complex universe:</b> 120 oranges, each with only a small area exposed, with petroleum-jelly barriers that slowed the walking predators, and small upright sticks that let the prey launch themselves on silk threads and drift to new oranges.</li></ul>
+    <p>He counted both mites on every orange over many weeks.</p>`,
+  predict:{q:'In which universe do you expect predators and prey to last the longest?',opts:['A few oranges grouped together, where prey are easy to find','A few oranges spread far apart among rubber balls','The large, complex universe with barriers that slowed predators and posts that helped prey disperse','They will go extinct at the same time everywhere']},
+  results:`<p class="small muted">Huffaker reported his results as graphs of mite counts over time. The diagrams below are <b>schematic sketches of the pattern he described</b>, not his data.</p>
+    <div class="grid2"><div class="chart"><h3>Simple universe (schematic)</h3><svg id="hS"></svg></div><div class="chart"><h3>Complex universe (schematic)</h3><svg id="hC"></svg></div></div><div class="legend" id="hLeg"></div>`,
+  found:'In the simple universes, the prey increased, the predators followed and ate them all, and then the predators starved: one oscillation and both were gone. In the large, complex universe, predators could not reach every orange at once, and prey kept colonizing oranges the predators had not found. The two species went through <b>three successive oscillations</b> before the predators finally overexploited the prey. Huffaker concluded that a heterogeneous environment, where prey can find temporary refuges, makes predator–prey systems more stable.',
+  afterResults:()=>{const t=[];for(let i=0;i<=200;i++)t.push(i);
+    const bump=(x,c,w,h)=>h*Math.exp(-(((x-c)/w)**2));
+    const sP=t.map(x=>[x,x<70?bump(x,30,14,100):0]),sD=t.map(x=>[x,x<80?bump(x,42,12,40):0]);
+    chart($('#hS'),{xmin:0,xmax:200,ymin:0,ymax:110,w:440,h:280,xlab:'Time →',ylab:'Mites',xticks:2,series:[{pts:sP,color:'var(--s3)',width:2.4},{pts:sD,color:'var(--s2)',width:2.4}]});
+    const cP=t.map(x=>[x,bump(x,25,10,90)+bump(x,85,12,80)+bump(x,145,12,70)]),cD=t.map(x=>[x,x<185?bump(x,38,10,30)+bump(x,98,11,28)+bump(x,158,11,30):0]);
+    chart($('#hC'),{xmin:0,xmax:200,ymin:0,ymax:110,w:440,h:280,xlab:'Time →',ylab:'Mites',xticks:2,series:[{pts:cP,color:'var(--s3)',width:2.4},{pts:cD,color:'var(--s2)',width:2.4}]});
+    legend($('#hLeg'),[['var(--s3)','Prey mite'],['var(--s2)','Predatory mite']]);
+    $('#hS').setAttribute('aria-label','Schematic: in a simple universe, prey rise and fall once, predators follow, and both reach zero.');
+    $('#hC').setAttribute('aria-label','Schematic: in the complex universe, prey and predators go through three oscillations, with predator peaks after prey peaks, before ending.')},
+  interpret:[
+    {q:'What feature of the complex universe was most important for persistence?',opts:['More total food','Patchiness: barriers and dispersal routes kept predators from reaching all prey at once','Warmer temperature','Fewer predators at the start'],a:1,why:'Huffaker emphasized dispersion: prey could escape to unoccupied oranges while predators were slowed by barriers.'},
+    {q:'Even the complex universe eventually crashed. What does that suggest?',opts:['Huffaker made an error','Real systems may need even larger or more complex landscapes, or other stabilizing factors, to persist indefinitely','Predators always win','Oranges are poor habitat'],a:1,why:'Three oscillations is longer persistence, not indefinite persistence. Huffaker himself suggested that more complexity might allow more oscillations.'},
+    {q:'How does this connect to conservation today?',opts:['It doesn\'t','Connected networks of habitat patches can let populations persist when single patches would fail','Predators should always be removed','Small habitats are best'],a:1,why:'The idea that populations persist across a network of patches, even when local populations go extinct, became central to metapopulation ecology and reserve design.'}],
+  discuss:['Why did Huffaker use rubber balls between the oranges instead of just leaving empty space?','Compare this with Krebs\'s hare study (tab 3). In which system is the environment more "complex" in Huffaker\'s sense?','How could you test Huffaker\'s idea in a field system, such as aphids and ladybugs on plants?']});
 
-/* ---------- functional responses ---------- */
-function fr(){showVals();
-  const a=val('fa'),h=val('fh'),N3=val('fN3'),X=Math.max(200,Math.min(1000,4/(a*h)));
-  const xs=[];for(let i=0;i<=200;i++)xs.push(X*i/200);
-  const t1=n=>Math.min(a*n,1/h),t2=n=>a*n/(1+a*h*n),t3=n=>{const ae=a*n/(n+N3);return ae*n/(1+ae*h*n)};
-  const S=[],R=[],L=[];
-  [[1,t1,'var(--s4)','Type I'],[2,t2,'var(--s1)','Type II'],[3,t3,'var(--s5)','Type III']].forEach(([k,fn,c,l])=>{if(!$('#sh'+k).checked)return;S.push({pts:xs.map(n=>[n,fn(n)]),color:c,width:2.6});R.push({pts:xs.slice(1).map(n=>[n,fn(n)/n]),color:c,width:2.6});L.push([c,l])});
-  S.unshift({pts:[[0,1/h],[X,1/h]],color:'var(--muted)',dash:'5 4',width:1.4});
-  chart($('#cF'),{xmin:0,xmax:X,ymin:0,ymax:1/h*1.15,w:460,h:360,xlab:'Prey density',ylab:'Prey eaten per predator',series:S});
-  const rmax=Math.max(a*1.1,...R.flatMap(s=>s.pts.map(q=>q[1])));
-  chart($('#cR'),{xmin:0,xmax:X,ymin:0,ymax:rmax,w:460,h:360,ml:64,xlab:'Prey density',ylab:'Chance each prey is eaten',series:R});
-  legend($('#legFR'),[...L,['var(--muted)','Maximum (1/h)',1]]);legend($('#legR'),L);
-  $('#fMax').textContent=f(1/h,2);$('#fHalf').textContent=f(1/(a*h),0);
-  $('#cF').setAttribute('aria-label',`Feeding rate versus prey density for the selected types. All level off at ${f(1/h,2)}.`);
-  $('#cR').setAttribute('aria-label','Per-prey risk versus prey density. Type II risk falls as prey get common; type III risk rises at low density, peaks, then falls.');
-}
-$$('#fr input').forEach(i=>i.addEventListener('input',fr));
+/* =================== 3. KREBS =================== */
+tabs.t3=paperTab($('#t3'),{id:'k',title:'Impact of food and predation on the snowshoe hare cycle',
+  why:'One of the largest field experiments in ecology. It tested whether a famous 10-year population cycle is driven by food, by predators, or by both.',
+  cite:'Krebs, C. J., S. Boutin, R. Boonstra, A. R. E. Sinclair, J. N. M. Smith, M. R. T. Dale, K. Martin, &amp; R. Turkington (1995). Impact of food and predation on the snowshoe hare cycle. <i>Science</i> 269: 1112–1115.',doi:'10.1126/science.269.5227.1112',
+  question:'Snowshoe hares in the boreal forest rise and crash about every 10 years, and lynx follow them. <b>What causes the cycle: running out of food, being eaten by predators, or an interaction of the two?</b>',
+  hyps:[['Food','Hares eat their winter food down at the peak, then starve and crash.'],['Predators','Predators increase after hares do and then drive hares down.'],['Food × predators','Both act together, through the plant–hare–predator food chain.']],
+  design:`<p>Near Kluane Lake in the Yukon, the team set up 1-km² blocks of forest and ran them for 8 years in a <b>factorial design</b>, which crosses two treatments so their combined effect can be measured:</p>
+    <table class="cmp" style="max-width:560px"><tr><th></th><th>No added food</th><th>Food added</th></tr><tr><th>Predators present</th><td>Control</td><td>Food</td></tr><tr><th>Mammal predators fenced out</th><td>Fence</td><td>Food + fence</td></tr></table>
+    <p>The electric fences kept out lynx and coyotes, but owls and hawks could still fly in. Two more blocks were fertilized to boost plant growth. Hares were live-trapped twice a year to estimate density.</p>`,
+  predict:{q:'Food tripled hare density and the fence doubled it. What do you predict for the food + fence plot?',opts:['About 5× (3 + 2: the effects add)','About 6× (3 × 2: the effects multiply)','More than 6× (the effects reinforce each other)','No change: the effects cancel out']},
+  results:`<div class="chart"><svg id="kR"></svg></div>
+    <p class="small muted">Hare density during the peak and decline of the cycle, relative to control plots (from the paper's abstract). Fertilized plots: plants grew more, but hare density did not increase.</p>`,
+  found:'During the peak and decline, the predator fence <b>doubled</b> hare density, added food <b>tripled</b> it, and the two together increased it <b>11-fold</b>, more than adding or multiplying the separate effects would predict. Fertilizer made plants grow but did not increase hares. The authors concluded that neither food nor predation alone explains the cycle: it comes from an interaction among three levels of the food chain (plants, hares, and predators).',
+  afterResults:()=>{bars($('#kR'),{cats:['Control','Fence','Food','Food + fence','If effects\nadded (5×)','If effects\nmultiplied (6×)'],series:[{color:'var(--s3)',vals:[1,2,3,11,5,6]}],ymax:12.5,ylab:'Hare density relative to control',w:720,h:340,mb:60,fmt:v=>v+'×'});
+    $('#kR').setAttribute('aria-label','Bar chart of hare density relative to control: control 1, fence 2, food 3, food plus fence 11. For comparison, adding the effects predicts 5 and multiplying predicts 6.');
+    const bars2=$$('#kR rect');if(bars2[4])bars2[4].setAttribute('fill-opacity','.35');if(bars2[5])bars2[5].setAttribute('fill-opacity','.35')},
+  interpret:[
+    {q:'Why was a factorial design (all four combinations) necessary?',opts:['To use more land','To measure whether food and predators interact, which you cannot see if you test each one separately','To make the experiment shorter','It was not necessary'],a:1,why:'Only by including the food + fence combination could the team see that the combined effect was larger than expected from each treatment alone.'},
+    {q:'The fences did not stop owls and hawks. How does that affect the interpretation?',opts:['It makes the fence effect an underestimate of the full effect of predators','It means predators had no effect','It means food was not important','It doesn\'t matter'],a:0,why:'Some predation continued inside the fences, so removing all predators would probably have had an even larger effect.'},
+    {q:'Fertilizer increased plant growth but not hares. What does that suggest?',opts:['Plant quantity alone was not limiting hares','Hares don\'t eat plants','Fertilizer is toxic to hares','The study failed'],a:0,why:'More plant growth did not translate into more hares, while added food did. The kind of food available in winter, not just plant growth, mattered.'}],
+  discuss:['Even food + fence plots eventually declined. What does that tell you about what drives the cycle?','Predators may also affect hares through fear: stressed hares have fewer young. How could that help explain the 11-fold effect?','Why might a lab study (like Huffaker\'s) and a field study (like this one) lead to different conclusions about predators?']});
 
-quiz($('#quizBox'),[
- {q:'In the Kluane experiment, food addition tripled hares and predator fences doubled them. Food + fences together increased hares…',opts:['5-fold (exactly additive)','6-fold (exactly multiplicative)','11-fold, more than either rule predicts','not at all'],a:2,why:'The combined effect was larger than adding or even multiplying the single effects, suggesting food and predation interact.'},
- {q:'Why did the Kluane fences remove only part of the predation?',opts:['Hares dug under them','Owls and hawks could fly over them','Lynx could jump them','They were turned off in winter'],a:1,why:'Electric fences kept out mammals (lynx, coyotes) but not birds of prey.'},
- {q:'In predator–prey cycles, the predator peak usually comes…',opts:['before the hare peak','at the same time','after the hare peak','only when hares go extinct'],a:2,why:'Predators need time to turn eaten hares into new predators, so their peaks lag behind.'},
- {q:'Zanette\'s sparrows produced 40% fewer offspring when they heard predator calls. This shows that predators can…',opts:['only affect prey by killing them','reduce prey populations just by scaring them','make prey reproduce faster','be replaced by recordings in the wild'],a:1,why:'Nests were fully protected, so the drop came only from fear: a nonconsumptive effect of predators.'},
- {q:'In the model, what happens to the hare cycle when you give hares much more food (raise K a lot)?',opts:['It becomes calmer','It gets wilder, with deeper crashes','Predators always die out','Nothing changes'],a:1,why:'This is the paradox of enrichment: more prey food can destabilize a predator–prey system.'},
- {q:'Which functional response protects rare prey best?',opts:['Type I','Type II','Type III','All equally'],a:2,why:'With type III, predators ignore or rarely find prey at low density, so risk to each prey is low when that prey is rare.'}
-]);
+/* =================== 4. HOLLING =================== */
+let hState=null;
+tabs.t4=paperTab($('#t4'),{id:'d',title:'Some characteristics of simple types of predation and parasitism',
+  why:'Introduced handling time and the "disc equation," the most widely used description of how much a predator eats.',
+  cite:'Holling, C. S. (1959). Some characteristics of simple types of predation and parasitism. <i>The Canadian Entomologist</i> 91: 385–398.',
+  question:'How does the number of prey a predator eats change as prey become more common? Holling had seen that small mammals eating sawfly cocoons did not keep eating more and more as cocoons got denser. <b>What sets the limit?</b>',
+  hyps:[['Straight line','Prey eaten rises in proportion to prey density.'],['Leveling off','Each prey takes time to handle, and that time cuts into searching, so feeding levels off.']],
+  design:`<p>Holling built a model predator: a blindfolded assistant tapped a tabletop with a finger to "search" for sandpaper discs. Each time the assistant found a disc, it had to be picked up and set aside (the "handling time") before searching could resume. Trials lasted a fixed amount of time, with discs scattered at different densities.</p>
+    <p>From the results he derived the <b>disc equation</b>: prey eaten = aNT / (1 + a·h·N), where N is prey density, T is the time available, a is the search rate, and h is the handling time per prey.</p>`,
+  predict:{q:'As disc density increases from a few to many, what happens to the number of discs found per minute?',opts:['It rises in a straight line forever','It rises quickly at first, then levels off','It stays the same at all densities','It falls as discs get more common']},
+  results:`<div class="chart"><svg id="dR"></svg></div><p class="small muted">The general shape Holling found, drawn from the disc equation (not his exact data). Run your own version of the experiment below.</p>`,
+  found:'The number of discs found rose with density but leveled off. At high densities, the assistant spent most of the trial picking up discs rather than searching. Holling called this a <b>type II functional response</b> and showed that it follows from just two things: search rate and handling time. He also described type I (straight-line) and type III (S-shaped) responses.',
+  afterResults:()=>{const a=0.04,h=2,T=60,xs=[];for(let i=0;i<=100;i++)xs.push(i);
+    chart($('#dR'),{xmin:0,xmax:100,ymin:0,ymax:32,w:620,h:300,xlab:'Discs on the table',ylab:'Discs found in 1 minute',series:[{pts:xs.map(n=>[n,a*n*T/(1+a*h*n)]),color:'var(--s1)',width:2.8},{pts:[[0,T/h],[100,T/h]],color:'var(--muted)',dash:'5 4',width:1.4}],texts:[{x:98,y:T/h,t:'maximum = T / h',color:'var(--muted)',anchor:'end',dy:-6}]});
+    $('#dR').setAttribute('aria-label','Curve of discs found per minute against disc density, rising and leveling off toward a maximum set by handling time.')},
+  interpret:[
+    {q:'In the disc equation, what sets the maximum number of prey eaten?',opts:['Search rate a','Handling time h (maximum = T/h)','Prey density','The size of the table'],a:1,why:'When prey are everywhere, no search time is needed, and the predator is limited by how long it takes to handle each prey.'},
+    {q:'With a type II response, what happens to each individual prey\'s chance of being eaten as prey become more common?',opts:['It goes up','It goes down','It stays the same','It becomes zero'],a:1,why:'Prey eaten levels off while prey density keeps rising, so the proportion eaten falls: there is "safety in numbers."'},
+    {q:'Why use a blindfolded person instead of a real animal?',opts:['Animals cannot be studied','To control search rate and handling time exactly and test the logic of the model','People are better predators','It was cheaper'],a:1,why:'A simple, controlled "predator" let Holling isolate the effect of handling time on feeding rate.'}],
+  modelTitle:'Run Holling\'s experiment yourself',
+  model:`<p class="small">Click the board to "tap" for hidden discs. When you find one, you must wait out the handling time before searching again. Run a 30-second trial at each density, then fit the disc equation to your data.</p>
+    <div class="layout"><div class="ctrl">
+      <label for="hN">Discs on the board <span class="val" id="hNV"></span></label><input type="range" id="hN" min="2" max="60" step="1" value="10">
+      <label for="hH">Handling time (seconds) <span class="val" id="hHV"></span></label><input type="range" id="hH" min="0.5" max="5" step="0.5" value="2" data-d="1">
+      <div class="row"><button class="primary" id="hGo">Start 30-second trial</button><button id="hClear">Clear my data</button></div>
+      <div class="tiles"><div class="tile"><div class="k">Time left</div><div class="v" id="hTime">30</div></div><div class="tile"><div class="k">Found</div><div class="v" id="hFound">0</div></div></div>
+      <p class="hint" id="hStat">Discs are invisible until you click on one.</p>
+    </div><div><canvas id="hBoard" width="460" height="460"></canvas>
+      <div class="chart"><h3>Your data and the fitted disc equation</h3><svg id="hFit"></svg></div><div class="msg small" id="hMsg">Run trials at several densities (for example 4, 10, 20, 40, 60).</div></div></div>`,
+  afterModel:()=>{if(!$('#hNBox'))addBoxes($('#t4'));
+    const cv=$('#hBoard'),ctx=cv.getContext('2d');let data=[],discs=[],t0=0,found=0,busyTill=0,running=false,timer=null;
+    const R=18;
+    const draw=()=>{ctx.clearRect(0,0,460,460);discs.forEach(d=>{if(d.found){ctx.fillStyle='rgba(120,120,120,.35)';ctx.beginPath();ctx.arc(d.x,d.y,R,0,7);ctx.fill()}});
+      if(running&&performance.now()<busyTill){ctx.fillStyle='rgba(0,0,0,.35)';ctx.fillRect(0,0,460,460);ctx.fillStyle='#fff';ctx.font='bold 22px system-ui';ctx.textAlign='center';ctx.fillText('Handling…',230,235)}
+      cv.setAttribute('aria-label',`Search board with ${discs.length} hidden discs. ${found} found so far.`)};
+    const fit=()=>{showVals();if(!data.length){chart($('#hFit'),{xmin:0,xmax:60,ymin:0,ymax:20,w:460,h:280,xlab:'Discs on the board',ylab:'Found in 30 s'});return}
+      let best=null;for(let a=0.001;a<=0.2;a*=1.08)for(let h=0.2;h<=8;h+=0.1){const e=data.reduce((s,[n,y])=>s+(a*n*30/(1+a*h*n)-y)**2,0);if(!best||e<best.e)best={a,h,e}}
+      const xs=[];for(let i=0;i<=60;i++)xs.push(i);
+      chart($('#hFit'),{xmin:0,xmax:60,ymin:0,ymax:Math.max(10,...data.map(d=>d[1]))*1.2,w:460,h:280,xlab:'Discs on the board',ylab:'Found in 30 s',series:[{pts:xs.map(n=>[n,best.a*n*30/(1+best.a*best.h*n)]),color:'var(--s1)',width:2.4}],points:data.map(([n,y])=>({x:n,y,color:'var(--s2)',r:5}))});
+      $('#hFit').setAttribute('aria-label',`Your ${data.length} trials with a fitted curve: search rate ${f(best.a,3)}, handling time ${f(best.h,1)} seconds.`);
+      $('#hMsg').innerHTML=`Fitted search rate a = <b>${f(best.a,3)}</b> (share of the board searched per second); fitted handling time h = <b>${f(best.h,1)} s</b> (the real handling time was ${val('hH')} s, plus however long you took to click). ${data.length<4?'Add more densities for a better fit.':'Did your curve level off?'}`};
+    $('#hGo').onclick=()=>{if(running)return;const n=val('hN');discs=[];for(let i=0;i<n;i++){let x,y,ok;let tries=0;do{x=R+Math.random()*(460-2*R);y=R+Math.random()*(460-2*R);ok=discs.every(d=>Math.hypot(d.x-x,d.y-y)>2*R);tries++}while(!ok&&tries<200);discs.push({x,y,found:false})}
+      found=0;running=true;t0=performance.now();busyTill=0;$('#hFound').textContent=0;$('#hStat').textContent='Searching…';
+      timer=setInterval(()=>{const left=Math.max(0,30-(performance.now()-t0)/1000);$('#hTime').textContent=f(left,0);draw();
+        if(left<=0){clearInterval(timer);running=false;data.push([n,found]);$('#hStat').textContent=`Trial done: ${found} discs at density ${n}.`;draw();fit()}},100)};
+    cv.onclick=e=>{if(!running||performance.now()<busyTill)return;const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*460,y=(e.clientY-r.top)/r.height*460;
+      const d=discs.find(d=>!d.found&&Math.hypot(d.x-x,d.y-y)<R);if(d){d.found=true;found++;$('#hFound').textContent=found;busyTill=performance.now()+val('hH')*1000;
+        setTimeout(()=>{d.x=R+Math.random()*(460-2*R);d.y=R+Math.random()*(460-2*R);d.found=false;draw()},val('hH')*1000)}draw()};
+    $('#hClear').onclick=()=>{data=[];fit()};$('#hN').oninput=showVals;$('#hH').oninput=showVals;draw();fit()},
+  discuss:['In this version, found discs are put back so density stays the same. The disc equation assumes prey density does not change during a trial. What would change if found prey were not replaced?','What would a type III response look like on the board? What behavior would cause it?','How could you measure handling time for a real predator, such as a snake eating mice or a bat eating moths?']});
 
-initTabs({pp:render,kl:kluane,fear:fearTab,fr});
-setSliders({});render();fr();
+initTabs({t1:()=>tabs.t1.redraw(),t2:()=>tabs.t2.redraw(),t3:()=>tabs.t3.redraw(),t4:()=>tabs.t4.redraw()});
 })();
 </script>
 <script>
 window.A11Y = {
-  tabsLabel: 'Simulation sections',
+  tabsLabel: 'Papers',
   css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
-  live: ['#ppMsg', '#tOut', '#kMsg', '#fMsg', '#score']
+  live: ['#hMsg', '#hStat', '.score']
 };
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->

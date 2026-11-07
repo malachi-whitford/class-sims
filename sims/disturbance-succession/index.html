@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Disturbance &amp; Succession: Sousa's Boulder Field</title>
+<title>Succession &amp; Disturbance: Four Classic Papers</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -94,157 +94,48 @@ table.cmp td.num{text-align:right;font-variant-numeric:tabular-nums}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .steps li::before{color:#0d1b2a}}
 label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .layout>*{min-width:0}
+/* paper tabs */
+.pp-sec{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.pp-sec>h2{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.pp-sec>h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:.85rem;flex:none}
+.pp-sec p,.pp-sec li{font-size:.93rem}
+.pp-head{border-left:5px solid var(--s4)}
+.pp-head h2{font-size:1.15rem;margin-bottom:4px}
+.pp-head .cite{font-size:.85rem;color:var(--muted);margin:4px 0 0}
+.hyp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:6px}
+.hyp div{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:.88rem}
+.pred-opts{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.pred-opts button{text-align:left}
+.pred-opts button.picked{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card));font-weight:600}
+.locked{position:relative}
+.locked>.lockmsg{display:block;padding:16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.locked>.lockbody{display:none}
+.locked.unlocked>.lockmsg{display:none}
+.locked.unlocked>.lockbody{display:block}
+.discuss li{margin:6px 0}
+.datatbl{margin-top:8px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-sec>h2 .num{color:#0d1b2a}}
+.pp-sec .chart svg{max-width:760px;margin:0 auto}
 
-#boulder{aspect-ratio:1/1;max-width:420px;margin:0 auto;background:transparent}
-#field{aspect-ratio:900/440}
-.prog{height:8px;background:var(--soft);border-radius:99px;overflow:hidden;margin:8px 0}
-.prog i{display:block;height:100%;width:0;background:var(--accent)}
-.traits th,.traits td{font-size:.82rem;padding:4px 6px}
-.traits input[type=number]{width:70px}
-.sizebtn button{font-size:.78rem;padding:4px 8px}
+.modelsel button{font-size:.85rem}
+.modelsel button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Disturbance &amp; Succession: Sousa's Boulder Field</h1>
-<p class="sub">On the low shore at Ellwood Beach, California, the tops of boulders are covered with seaweeds and barnacles. Winter waves roll the boulders over, scraping them clean and starting succession again. Small boulders roll often, big ones almost never. Wayne Sousa used this natural experiment to test the <b>intermediate disturbance hypothesis</b>.</p>
-
+<h1>Succession &amp; Disturbance: Four Classic Papers</h1>
+<p class="sub">Each tab walks through one landmark paper on how communities change after disturbance and how disturbance shapes diversity. Read the question, see the design, make a prediction, then look at what the authors found.</p>
 <nav class="tabs">
-  <button class="on" data-tab="one">1. One boulder</button>
-  <button data-tab="fieldT">2. The boulder field</button>
-  <button data-tab="stab">3. Bolt down the boulders</button>
-  <button data-tab="idh">4. Disturbance experiment</button>
-  <button data-tab="quiz">5. Check your understanding</button>
+  <button class="on" data-tab="t1">Connell &amp; Slatyer 1977</button>
+  <button data-tab="t2">Connell 1978</button>
+  <button data-tab="t3">Sousa 1979: boulders</button>
+  <button data-tab="t4">Tilman 1994</button>
 </nav>
-
-<div class="paper">
-  <b>The papers.</b> When a boulder top is scraped clean, the green alga <i>Ulva</i> and barnacles arrive within weeks. Over the next fall and winter several red algae settle, and if nothing disturbs the boulder, the red alga <i>Gigartina canaliculata</i> slowly takes over, holding 60–90% of the surface after 2–3 years and keeping others out. Sousa measured the force needed to move boulders and sorted them into three classes. Each month, about 42% of small boulders rolled over, compared with 9% of intermediate and 0.1% of large ones. Intermediate boulders had the most species.
-  <p class="cite">Sousa, W. P. (1979). Disturbance in marine intertidal boulder fields: the nonequilibrium maintenance of species diversity. <i>Ecology</i> 60: 1225–1239. <a href="https://doi.org/10.2307/1936969" target="_blank" rel="noopener">doi:10.2307/1936969</a><br>
-  Sousa, W. P. (1979). Experimental investigations of disturbance and ecological succession in a rocky intertidal algal community. <i>Ecological Monographs</i> 49: 227–254. <a href="https://doi.org/10.2307/1942484" target="_blank" rel="noopener">doi:10.2307/1942484</a></p>
-</div>
-
-<!-- ============ TAB 1 ============ -->
-<section class="panel on" id="one">
-<div class="layout">
-  <div class="card ctrl">
-    <div class="row"><button class="primary" id="play">Play</button><button id="stepM">+1 month</button><button id="roll">Roll it over now</button></div>
-    <label for="speed">Speed <span class="val" id="speedV"></span></label>
-    <input type="range" id="speed" min="1" max="12" step="1" value="1" data-suf=" months/frame">
-    <h3>How often does it roll?</h3>
-    <div class="row sizebtn"><button data-sz="0.42">Small (0.42)</button><button data-sz="0.09">Intermediate (0.09)</button><button data-sz="0.001">Large (0.001)</button><button data-sz="0">Bolted (0)</button></div>
-    <label for="pflip">Chance of rolling each month <span class="val" id="pflipV"></span></label>
-    <input type="range" id="pflip" min="0" max="1" step="0.001" value="0.09" data-d="3">
-    <label class="check"><input type="checkbox" id="winterOnly"> Storms only in winter (Nov–Mar)</label>
-    <p class="hint">Keeps the same yearly total but puts all the rolling in winter, as in the real boulder field.</p>
-  </div>
-  <div>
-    <div class="card"><h2>Follow along</h2><ol class="steps">
-      <li><b>Bolt the boulder down</b> (chance 0), roll it over to start clean, and press Play. Which species arrives first? Which takes over by year 3? Sousa's cleared boulders followed this same order.</li>
-      <li><b>Watch the number of species</b> rise and then fall as <i>G. canaliculata</i> spreads. Diversity peaks in the middle of succession.</li>
-      <li><b>Now try each boulder size.</b> What does a small boulder (rolls 42% of months) look like most of the time? An intermediate one?</li>
-      <li><b>Change a trait.</b> Make <i>G. canaliculata</i> unable to overgrow (set Overgrow to 0). How does the climax community change?</li>
-    </ol></div>
-    <div class="tiles">
-      <div class="tile"><div class="k">Date</div><div class="v" id="tDate" style="font-size:1.05rem"></div></div>
-      <div class="tile"><div class="k">Species present</div><div class="v" id="tS"></div></div>
-      <div class="tile"><div class="k">Bare rock</div><div class="v" id="tBare"></div></div>
-      <div class="tile"><div class="k">Months since it last rolled</div><div class="v" id="tAge"></div></div>
-    </div>
-    <div class="grid2">
-      <div class="card"><h2>Top of the boulder</h2><canvas id="boulder" width="420" height="420"></canvas><div class="legend" id="legB" style="margin-top:8px"></div></div>
-      <div class="card chart"><h2>Cover over time</h2><svg id="cB"></svg></div>
-    </div>
-    <div class="msg" id="bMsg"></div>
-    <details open class="card" style="margin-top:12px"><summary>Species traits (edit them!)</summary>
-      <div class="tablewrap" style="margin-top:6px"><table class="cmp traits" id="traitTbl"></table></div>
-      <p class="hint"><b>Settle</b>: chance a spore or larva settles on a bare spot each month. <b>Die</b>: chance of dying each month. <b>Spread</b>: chance of growing into a neighboring bare spot. <b>Overgrow</b>: 1 = can grow over species listed above it. <b>Winter loss</b>: extra dying in winter storms.</p>
-      <button id="resetTraits">Reset to the values tuned to Sousa's data</button>
-    </details>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 2 ============ -->
-<section class="panel" id="fieldT">
-<div class="layout">
-  <div class="card ctrl">
-    <div class="row"><button class="primary" id="fPlay">Play</button><button id="fReset">Start over</button></div>
-    <label for="fSpeed">Speed <span class="val" id="fSpeedV"></span></label>
-    <input type="range" id="fSpeed" min="1" max="12" step="1" value="2" data-suf=" months/frame">
-    <h3>Monthly chance of rolling</h3>
-    <label for="pS">Small boulders <span class="val" id="pSV"></span></label>
-    <input type="range" id="pS" min="0" max="1" step="0.001" value="0.42" data-d="3">
-    <label for="pI">Intermediate boulders <span class="val" id="pIV"></span></label>
-    <input type="range" id="pI" min="0" max="1" step="0.001" value="0.09" data-d="3">
-    <label for="pL">Large boulders <span class="val" id="pLV"></span></label>
-    <input type="range" id="pL" min="0" max="1" step="0.001" value="0.001" data-d="3">
-    <p class="hint">Sousa's averages from Table 1: 0.42, 0.09, and 0.001. Species traits come from tab 1.</p>
-  </div>
-  <div>
-    <div class="card"><h2>Follow along</h2><ol class="steps">
-      <li><b>Press Play</b> and let the field run for at least 5 years so the boulders are a mix of ages.</li>
-      <li><b>Compare the model with Sousa's census</b> in the table. Which size class has the most species per boulder? The most bare rock?</li>
-      <li><b>Explain the hump.</b> What keeps diversity low on small boulders? On large ones?</li>
-      <li><b>What if storms got stronger?</b> Raise all three rolling chances. Which class becomes the most diverse now?</li>
-    </ol></div>
-    <div class="tiles"><div class="tile"><div class="k">Years run</div><div class="v" id="fYr"></div></div></div>
-    <div class="card"><canvas id="field" width="900" height="440"></canvas><div class="legend" id="legF" style="margin-top:8px"></div></div>
-    <div class="card"><h2>Paper vs. model</h2><div class="tablewrap"><table class="cmp" id="fTbl"></table></div>
-      <p class="small muted" style="margin:6px 0 0">Paper: ranges across Sousa's four censuses, Nov 1975–May 1977 (Table 5: mean species per boulder; Table 2: mean % bare space). Model: averages over the last 12 months.</p></div>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 3 ============ -->
-<section class="panel" id="stab">
-<div class="layout">
-  <div class="card ctrl">
-    <h3>Sousa's stabilization experiment</h3>
-    <p class="small" style="margin-top:0">To prove that rolling, not boulder size itself, caused the pattern, Sousa bolted small rocks to the bottom so they could not move, and compared them with loose small rocks. All were cleared at the start.</p>
-    <label for="sN">Rocks in each group <span class="val" id="sNV"></span></label>
-    <input type="range" id="sN" min="5" max="100" step="1" value="30">
-    <label for="sP">Loose rocks: monthly chance of rolling <span class="val" id="sPV"></span></label>
-    <input type="range" id="sP" min="0" max="1" step="0.001" value="0.42" data-d="3">
-    <div class="row"><button class="primary" id="sRun">Run the experiment</button></div>
-  </div>
-  <div>
-    <div class="card"><h2>Follow along</h2><ol class="steps">
-      <li><b>Run the experiment</b> and compare the bolted rocks (model) with Sousa's bolted rocks (dots).</li>
-      <li><b>How many species</b> did bolted small rocks reach after about a year? Sousa found they matched intermediate boulders, even though they were small.</li>
-      <li><b>Why bolt the rocks</b> instead of just comparing small and large boulders? (Hint: what else differs between small and large boulders?)</li>
-    </ol></div>
-    <div class="card chart"><h2>Species per rock after clearing</h2><div class="legend" id="legSt"></div><svg id="cSt"></svg></div>
-    <div class="msg" id="sMsg">Press <b>Run the experiment</b>.</div>
-    <p class="small muted">Sousa's points are the mean number of species on bolted rocks, calculated from the percentages in his Table 8 (Aug 1975–Jan 1977, n = 10–15 rocks).</p>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 4 ============ -->
-<section class="panel" id="idh">
-<div class="layout">
-  <div class="card ctrl">
-    <h3>Test the intermediate disturbance hypothesis</h3>
-    <p class="small" style="margin-top:0">Connell (1978) predicted that diversity is highest at intermediate disturbance. Run 40 model boulders at each of 13 rolling chances for 10 years and average the last 5.</p>
-    <div class="row"><button class="primary" id="runX">Run experiment</button></div>
-    <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
-    <p class="small muted" id="progTxt">Takes a few seconds.</p>
-    <label class="check"><input type="checkbox" id="keepOld" checked> Keep earlier runs</label>
-    <p class="hint">Change the species traits in tab 1 between runs to see how they shift the curve.</p>
-  </div>
-  <div>
-    <div class="card chart"><h2>Species per boulder vs. how often boulders roll</h2><div class="legend" id="legX"></div><svg id="cX"></svg></div>
-    <div class="msg" id="xMsg">Press <b>Run experiment</b>.</div>
-    <p class="small muted">Connell, J. H. (1978). Diversity in tropical rain forests and coral reefs. <i>Science</i> 199: 1302–1310.</p>
-  </div>
-</div>
-</section>
-
-<!-- ============ TAB 5 ============ -->
-<section class="panel" id="quiz">
-  <div class="card"><h2>Check your understanding</h2><div id="quizBox"></div></div>
-</section>
+<section class="panel on" id="t1"></section>
+<section class="panel" id="t2"></section>
+<section class="panel" id="t3"></section>
+<section class="panel" id="t4"></section>
 </div>
 
 <script>
@@ -306,172 +197,177 @@ function initTabs(RENDER){let cur=$('nav.tabs button.on').dataset.tab;
   const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();
   return()=>cur}
 /* quiz */
-function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted" id="score"></p>';
+function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted score"></p>';
   const got={};
   $$('.q',el).forEach(d=>{const q=QS[+d.dataset.i];$$('.opts button',d).forEach(b=>b.onclick=()=>{const j=+b.dataset.j,ok=j===q.a;
     $$('.opts button',d).forEach(x=>x.classList.remove('right','wrong'));b.classList.add(ok?'right':'wrong');
-    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the simulation.'));
-    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('#score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the results.'));
+    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('.score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+/* bar chart: bars(svg,{cats:[...],series:[{name,color,vals:[...]}],ymax,ylab,xlab,w,h,fmt}) */
+function bars(svg,o){
+  const W=o.w||560,H=o.h||330,m={l:o.ml||56,r:14,t:16,b:o.mb||52},pw=W-m.l-m.r,ph=H-m.t-m.b,n=o.cats.length,k=o.series.length;
+  const ymax=o.ymax||Math.max(...o.series.flatMap(s=>s.vals))*1.15||1,Y=v=>m.t+ph-v/ymax*ph,gw=pw/n,bw=Math.min(60,gw*0.8/k);
+  let s='';niceTicks(0,ymax,5).forEach(v=>{const y=Y(v);s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${y}" y2="${y}"/><text x="${m.l-6}" y="${y+4}" text-anchor="end">${fmtTick(v)}</text>`});
+  s+=`<line class="ax" x1="${m.l}" x2="${m.l+pw}" y1="${m.t+ph}" y2="${m.t+ph}"/>`;
+  o.cats.forEach((c,i)=>{const cx=m.l+gw*(i+0.5);
+    o.series.forEach((se,j)=>{const v=se.vals[i];if(v==null||!Number.isFinite(v))return;const x=cx-k*bw/2+j*bw,y=Y(v);
+      s+=`<rect x="${x+1}" y="${y}" width="${bw-2}" height="${m.t+ph-y}" fill="${se.color}" rx="2" ${se.hatch?'fill-opacity=".45" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 2"':''}/>`;
+      s+=`<text x="${x+bw/2}" y="${y-4}" text-anchor="middle" style="fill:var(--text);font-size:11px">${o.fmt?o.fmt(v):fmtTick(+v.toFixed(2))}</text>`});
+    String(c).split('\n').forEach((line,li)=>{s+=`<text x="${cx}" y="${m.t+ph+16+li*13}" text-anchor="middle">${line}</text>`})});
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
+  if(o.xlab)s+=`<text class="lab" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab}</text>`;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s}
+
+/* ---------- paper-tab engine ----------
+ P = {id, cite, doi, why, question, hyps:[[title,text]], design(html), predict:{q,opts:[text],note?:[fb per option]},
+      results(html), afterResults(fn), found(html), interpret:[quiz items], model(html)?, afterModel(fn)?, discuss:[...] } */
+function paperTab(el,P){
+  const sec=(n,t,body,cls='')=>`<div class="pp-sec ${cls}"><h2>${n?`<span class="num">${n}</span>`:''}${t}</h2>${body}</div>`;
+  let n=1,h='';
+  h+=`<div class="pp-sec pp-head"><h2>${P.title}</h2><p style="margin:0">${P.why}</p><p class="cite">${P.cite}${P.doi?` <a href="https://doi.org/${P.doi}" target="_blank" rel="noopener">doi:${P.doi}</a>`:''}${P.url?` <a href="${P.url}" target="_blank" rel="noopener">Read it</a>`:''}</p></div>`;
+  h+=sec(n++,'The question',`<p>${P.question}</p>${P.hyps?`<div class="hyp">${P.hyps.map(x=>`<div><b>${x[0]}</b><br>${x[1]}</div>`).join('')}</div>`:''}`);
+  h+=sec(n++,'What they did',P.design);
+  h+=sec(n++,'Your prediction',`<p>${P.predict.q}</p><div class="pred-opts" id="${P.id}-pred">${P.predict.opts.map((o,i)=>`<button data-i="${i}" aria-pressed="false">${o}</button>`).join('')}</div><div class="msg small" id="${P.id}-predfb" style="display:none" aria-live="polite"></div>`);
+  h+=sec(n++,'What they found',`<div class="locked" id="${P.id}-lock"><div class="lockmsg">Make a prediction above to unlock the results.</div><div class="lockbody">${P.results}<div class="msg" style="margin-top:10px">${P.found}</div></div></div>`);
+  h+=sec(n++,'Interpret the results',`<div id="${P.id}-quiz"></div>`);
+  if(P.model)h+=sec(n++,P.modelTitle||'Try the model',P.model);
+  h+=sec(n++,'Discuss',`<ol class="discuss">${P.discuss.map(d=>`<li>${d}</li>`).join('')}</ol>`);
+  el.innerHTML=h;
+  quiz($(`#${P.id}-quiz`),P.interpret);
+  let shown=false;
+  $$(`#${P.id}-pred button`).forEach(b=>b.onclick=()=>{
+    $$(`#${P.id}-pred button`).forEach(x=>{x.classList.toggle('picked',x===b);x.setAttribute('aria-pressed',x===b?'true':'false')});
+    const fb=$(`#${P.id}-predfb`);fb.style.display='block';fb.innerHTML=`<b>Prediction saved.</b> ${P.predict.note?P.predict.note[+b.dataset.i]:''} Scroll down to compare with what the authors found.`;
+    const L=$(`#${P.id}-lock`);L.classList.add('unlocked');if(!shown){shown=true;if(P.afterResults)P.afterResults()}});
+  if(P.afterModel)P.afterModel();
+  return{redraw:()=>{if(shown&&P.afterResults)P.afterResults();if(P.afterModel)P.afterModel()}};
+}
 
 (function(){
-addBoxes();
-const G=8,NC=G*G;
-const NB=[];for(let k=0;k<NC;k++){const x=k%G,y=(k/G)|0,n=[];if(x>0)n.push(k-1);if(x<G-1)n.push(k+1);if(y>0)n.push(k-G);if(y<G-1)n.push(k+G);NB.push(n)}
-const DEF=[
-  {name:'Ulva',it:1,col:['#5fae2e','#86d455'],rain:.29,mort:.21,veg:.09,over:0,wloss:0},
-  {name:'Barnacles',it:0,col:['#b8ad94','#d6ccb4'],rain:.034,mort:.175,veg:0,over:0,wloss:0},
-  {name:'Gelidium coulteri',it:1,col:['#a0522d','#d07a50'],rain:.003,mort:.068,veg:.14,over:0,wloss:0},
-  {name:'Gigartina leptorhynchos',it:1,col:['#d0485e','#f0788c'],rain:.0075,mort:.02,veg:.083,over:0,wloss:0},
-  {name:'Rhodoglossum affine',it:1,col:['#e48ab5','#f2aed0'],rain:.007,mort:.073,veg:.227,over:0,wloss:0},
-  {name:'Gigartina canaliculata',it:1,col:['#5a1e5c','#b06ab3'],rain:.008,mort:.0204,veg:.6,over:1,wloss:.1}];
-let S=DEF.map(s=>({...s}));const NS=S.length;
-const BARE=['#9aa0a8','#4d535b'];
-const dk=()=>matchMedia('(prefers-color-scheme: dark)').matches;
-const spc=i=>S[i].col[dk()?1:0],bare=()=>BARE[dk()?1:0];
-const nm=i=>S[i].it?`<i>${S[i].name}</i>`:S[i].name;
-const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const isWinter=mo=>mo>=10||mo<=2;
-function flipChance(p,mo){if(!$('#winterOnly').checked)return p;return isWinter(mo)?Math.min(1,p*12/5):0}
-function month(b,mo,p){
-  if(Math.random()<flipChance(p,mo)){b.fill(-1);return true}
-  const old=b.slice(),w=isWinter(mo);
-  for(let k=0;k<NC;k++){const s=old[k];
-    if(s>=0){if(Math.random()<S[s].mort+(w?S[s].wloss:0)){b[k]=-1;continue}
-      for(const j of NB[k]){const t=old[j];if(t>s&&S[t].over>0&&Math.random()<S[t].veg*S[t].over/4){b[k]=t;break}}continue}
-    let got=-1;for(const j of NB[k]){const t=old[j];if(t>=0&&S[t].veg>0&&Math.random()<S[t].veg/4){if(t>got)got=t}}
-    if(got<0){const order=[...Array(NS).keys()].sort(()=>Math.random()-.5);for(const i of order)if(Math.random()<S[i].rain){got=i;break}}
-    b[k]=got}
-  return false}
-const rich=b=>{const s=new Set();for(const v of b)if(v>=0)s.add(v);return s.size};
-const bareP=b=>{let n=0;for(const v of b)if(v<0)n++;return n/NC*100};
-const cover=b=>{const c=new Array(NS).fill(0);for(const v of b)if(v>=0)c[v]++;return c.map(n=>n/NC*100)};
+const tabs={};
 
-/* ---------- traits table ---------- */
-const TF=[['rain','Settle'],['mort','Die'],['veg','Spread'],['over','Overgrow'],['wloss','Winter loss']];
-function buildTraits(){$('#traitTbl').innerHTML='<thead><tr><th>Species</th>'+TF.map(t=>`<th>${t[1]}</th>`).join('')+'</tr></thead><tbody>'+
-  S.map((s,i)=>`<tr><td><i class="sw" style="background:${spc(i)};display:inline-block;margin-right:4px"></i>${nm(i)}</td>`+TF.map(t=>`<td><input type="number" min="0" max="1" step="0.001" value="${s[t[0]]}" data-i="${i}" data-f="${t[0]}" aria-label="${s.name} ${t[1]}"></td>`).join('')+'</tr>').join('')+'</tbody>';
-  $$('#traitTbl input').forEach(inp=>inp.onchange=()=>{let v=+inp.value;if(!Number.isFinite(v))v=0;v=Math.max(0,Math.min(1,v));inp.value=v;S[+inp.dataset.i][inp.dataset.f]=v})}
-$('#resetTraits').onclick=()=>{S=DEF.map(s=>({...s}));buildTraits()};
+/* =================== 1. CONNELL & SLATYER =================== */
+const CSM={fac:'Facilitation',tol:'Tolerance',inh:'Inhibition'};
+tabs.t1=paperTab($('#t1'),{id:'cs',title:'Mechanisms of succession in natural communities',
+  why:'Replaced the old idea of succession as one fixed path to a "climax" with three testable models of how early species affect later ones.',
+  cite:'Connell, J. H., &amp; R. O. Slatyer (1977). Mechanisms of succession in natural communities and their role in community stability and organization. <i>The American Naturalist</i> 111: 1119–1144.',doi:'10.1086/283241',
+  question:'After a disturbance opens up space, a sequence of species moves in, each replaced by the next. The classic view held that early species prepare the site for later ones. <b>Is that the only way succession works? How do early species actually affect the species that replace them?</b>',
+  hyps:[['Facilitation','Early species change the site (adding soil, nitrogen, or shade) so that later species can only establish after them.'],['Tolerance','Early species neither help nor hinder later ones; later species can grow at lower resource levels and eventually take over anyway.'],['Inhibition','Early species hold the space and keep later species out; later species take over only when early ones die or are damaged.']],
+  design:`<p>This was a <b>synthesis paper</b>. Connell and Slatyer reviewed studies of succession in forests, old fields, grasslands, and marine communities, and organized the possible mechanisms into the three models above (their Figure 1). The key point was that the models make <b>different predictions for experiments</b>: if you remove the early species, what happens to the later ones?</p>`,
+  predict:{q:'Suppose early colonists are removed from a cleared site. Under the INHIBITION model, what happens to later species?',opts:['They fail to establish','They establish at the same rate as usual','They establish faster than usual','They disappear from the region']},
+  results:`<p>Choose a model to see its prediction for a removal experiment (conceptual curves, not data).</p><div class="row modelsel" id="csSel"><button data-m="fac">Facilitation</button><button data-m="tol">Tolerance</button><button data-m="inh" class="on">Inhibition</button></div>
+    <div class="chart"><svg id="csR"></svg></div><div class="legend" id="csLeg"></div>
+    <table class="cmp" style="margin-top:8px"><tr><th>Model</th><th>Remove early species → later species…</th></tr><tr><td>Facilitation</td><td>fail or establish more slowly</td></tr><tr><td>Tolerance</td><td>establish about the same</td></tr><tr><td>Inhibition</td><td>establish <b>faster</b></td></tr></table>`,
+  found:'Connell and Slatyer argued that the classic facilitation model fits some cases, especially some primary successions on bare ground, but that much of the evidence fit the tolerance and inhibition models better. Under inhibition, the sequence of species reflects their <b>life histories</b> (who arrives first, who lives longest) rather than one species preparing the way for the next. They urged ecologists to test the models with removal experiments, and many later studies did, including Sousa\'s boulder experiments (tab 3), which supported inhibition.',
+  afterResults:()=>{let m='inh';const go=()=>{const xs=[];for(let i=0;i<=100;i++)xs.push(i*0.2);
+      const L=(t,on)=>100/(1+Math.exp(-(t-on)*1.2));
+      const pres={fac:t=>L(t,8),tol:t=>L(t,8),inh:t=>L(t,12)}[m],rem={fac:t=>Math.min(8,L(t,30)),tol:t=>L(t,8),inh:t=>L(t,4)}[m];
+      chart($('#csR'),{xmin:0,xmax:20,ymin:0,ymax:105,w:620,h:300,xlab:'Time since disturbance →',ylab:'Cover of later species (%)',xticks:2,series:[{pts:xs.map(t=>[t,pres(t)]),color:'var(--s1)',width:2.6},{pts:xs.map(t=>[t,rem(t)]),color:'var(--s2)',width:2.6,dash:'6 4'}]});
+      legend($('#csLeg'),[['var(--s1)','Early species left in place'],['var(--s2)','Early species removed',1]]);
+      $('#csR').setAttribute('aria-label',`Conceptual curves for the ${CSM[m]} model: ${m==='fac'?'later species barely establish when early species are removed':m==='tol'?'later species establish at the same time either way':'later species establish sooner when early species are removed'}.`);
+      $$('#csSel button').forEach(b=>b.classList.toggle('on',b.dataset.m===m))};
+    $$('#csSel button').forEach(b=>b.onclick=()=>{m=b.dataset.m;go()});go()},
+  interpret:[
+    {q:'Sousa removed the green alga Ulva from cleared boulders, and red algae then established faster. Which model does this support?',opts:['Facilitation','Tolerance','Inhibition','None'],a:2,why:'Removing the early species sped up the later ones, so the early species were inhibiting them.'},
+    {q:'Why can\'t you tell the three models apart just by watching the order in which species appear?',opts:['Because all three can produce the same sequence of species; only experiments reveal the mechanism','Because species appear randomly','Because succession never happens','Because observation is illegal'],a:0,why:'Early species are replaced by later ones under every model. The mechanism only shows up when you manipulate the early species.'},
+    {q:'Under which model does succession depend most on which species happen to arrive first?',opts:['Facilitation','Tolerance','Inhibition','All equally'],a:2,why:'Under inhibition, whoever holds the space first resists invasion, so arrival order matters a lot.'}],
+  discuss:['Give an example from California (for example, after a wildfire or on a new sandbar) where you think one model fits best. What experiment would test it?','Could different mechanisms operate at different stages of the same succession?','Why did this paper matter for restoration ecology?']});
 
-/* ---------- one boulder ---------- */
-let b1=new Int8Array(NC).fill(-1),mo1=3,yr1=1975,age=0,hist=[],playing=false;
-const cv=$('#boulder'),ctx=cv.getContext('2d');
-function drawB(){
-  const W=cv.width,c=W/G;ctx.clearRect(0,0,W,W);
-  ctx.save();ctx.beginPath();if(ctx.roundRect)ctx.roundRect(4,4,W-8,W-8,60);else ctx.rect(4,4,W-8,W-8);ctx.clip();
-  for(let k=0;k<NC;k++){const x=k%G,y=(k/G)|0,s=b1[k];ctx.fillStyle=s<0?bare():spc(s);ctx.fillRect(x*c,y*c,c+0.5,c+0.5);
-    if(s===1){ctx.fillStyle=dk()?'#8a826e':'#8f866e';for(let q=0;q<3;q++){ctx.beginPath();ctx.arc(x*c+c*(0.25+0.25*q),y*c+c*(0.35+0.15*(q%2)),c*0.11,0,7);ctx.fill()}}}
-  ctx.restore();
-  const st=rich(b1),bp=bareP(b1),cov=cover(b1);
-  $('#tDate').textContent=`${MON[mo1]} ${yr1}`;$('#tS').textContent=st;$('#tBare').textContent=f(bp,0)+'%';$('#tAge').textContent=age;
-  cv.setAttribute('aria-label',`Top of a boulder, ${G} by ${G} patches, ${MON[mo1]} ${yr1}. `+S.map((s,i)=>`${s.name} ${f(cov[i],0)}%`).join(', ')+`, bare rock ${f(bp,0)}%.`);
-  const T0=hist.length?hist[0][0]:0,T1=Math.max(T0+36,hist.length?hist[hist.length-1][0]:0);
-  chart($('#cB'),{xmin:T0,xmax:T1,ymin:0,ymax:100,w:460,h:400,xlab:'Months',ylab:'Cover (%)',
-    series:[{pts:hist.map(h=>[h[0],h[NS+1]]),color:bare(),width:1.6,dash:'4 3'},...S.map((s,i)=>({pts:hist.map(h=>[h[0],h[i+1]]),color:spc(i),width:2.4}))]});
-  $('#cB').setAttribute('aria-label','Percent cover of each species over time. Now: '+S.map((s,i)=>`${s.name} ${f(cov[i],0)}%`).join(', ')+'.');
-  legend($('#legB'),[...S.map((s,i)=>[spc(i),s.name]),[bare(),'Bare rock']]);
-  let m;const gc=cov[5];
-  if(age<2&&bp>70)m='<b>Freshly cleared.</b> Bare rock, ready for colonists.';
-  else if(cov[0]>40&&gc<20)m='<b>Early succession.</b> <i>Ulva</i> and barnacles grab space first: they settle quickly but do not live long. Sousa found that these early species actually <i>slow</i> the arrival of later ones by taking up space (the inhibition model).';
-  else if(gc>=60)m=`<b>Late succession.</b> <i>G. canaliculata</i> covers ${f(gc,0)}% and spreads into any gap. Diversity has dropped. Sousa found the same 60–90% cover after 2–3 years without disturbance.`;
-  else m=`<b>Mid-succession.</b> ${st} species share the boulder: early species have not all died out and late ones are moving in. This is where diversity peaks.`;
-  $('#bMsg').innerHTML=m;
-}
-function stepOne(){const rolled=month(b1,mo1,val('pflip'));age=rolled?0:age+1;mo1++;if(mo1>11){mo1=0;yr1++}
-  const t=hist.length?hist[hist.length-1][0]+1:0;hist.push([t,...cover(b1),bareP(b1)]);if(hist.length>120)hist.shift()}
-$('#play').onclick=()=>{playing=!playing;$('#play').textContent=playing?'Pause':'Play'};
-$('#stepM').onclick=()=>{stepOne();drawB()};
-$('#roll').onclick=()=>{b1.fill(-1);age=0;drawB()};
-$$('[data-sz]').forEach(b=>b.onclick=()=>{setSliders({pflip:+b.dataset.sz})});
-$('#pflip').addEventListener('input',showVals);$('#speed').addEventListener('input',showVals);
+/* =================== 2. CONNELL 1978 =================== */
+tabs.t2=paperTab($('#t2'),{id:'id',title:'Diversity in tropical rain forests and coral reefs',
+  why:'Introduced the intermediate disturbance hypothesis, one of the most cited ideas in ecology.',
+  cite:'Connell, J. H. (1978). Diversity in tropical rain forests and coral reefs. <i>Science</i> 199: 1302–1310.',doi:'10.1126/science.199.4335.1302',
+  question:'Tropical rain forests and coral reefs hold enormous numbers of species living side by side. If competition leads to exclusion, <b>how do so many species coexist?</b> Is the high diversity a stable equilibrium, or something that persists only because the system never settles down?',
+  hyps:[['Equilibrium','Species are finely specialized (niche differences), so many can coexist stably once the community settles.'],['Nonequilibrium','Disturbances (storms, treefalls, predators) keep knocking the community back before the best competitors can exclude the rest.']],
+  design:`<p>Connell compared six hypotheses for high diversity, grouped into equilibrium and nonequilibrium explanations, and weighed them against evidence. Much of it came from his own long-term studies: permanent plots of rain forest trees in Queensland, Australia, and coral reef plots at Heron Island on the Great Barrier Reef, which he began photographing in 1962.</p>
+    <p>He defined disturbance by its <b>frequency</b>, its <b>intensity</b>, and the <b>time since</b> the last one.</p>`,
+  predict:{q:'According to the intermediate disturbance hypothesis, where should diversity be highest?',opts:['Where disturbance never happens','Where disturbance is very frequent or very intense','Where disturbance is intermediate in frequency or intensity, or some time after a disturbance','Diversity does not depend on disturbance']},
+  results:`<div class="chart"><svg id="idR"></svg></div><p class="small muted">The shape of Connell's conceptual figure (not data).</p>`,
+  found:'Connell concluded that the high diversity of trees in rain forests and of corals on reefs is usually a <b>nonequilibrium</b> state. Left undisturbed, these communities would drift toward fewer species as the best competitors took over. Disturbances often enough, but not too often, keep that from happening. With too little disturbance, a few dominants win; with too much, only fast colonizers survive. Diversity is highest in between.',
+  afterResults:()=>{const xs=[];for(let i=0;i<=100;i++)xs.push(i);
+    chart($('#idR'),{xmin:0,xmax:100,ymin:0,ymax:100,w:620,h:320,xlab:'Disturbance: frequency or intensity (low → high), or time since disturbance (long → short)',ylab:'Species diversity',xticks:2,
+      series:[{pts:xs.map(x=>[x,90*Math.exp(-(((x-50)/26)**2))+5]),color:'var(--s3)',width:3}],texts:[{x:6,y:20,t:'competitive exclusion',color:'var(--muted)'},{x:94,y:20,t:'only colonizers survive',color:'var(--muted)',anchor:'end'},{x:50,y:97,t:'mix of early and late species',color:'var(--muted)',anchor:'middle'}]});
+    $('#idR').setAttribute('aria-label','Conceptual hump-shaped curve: diversity is low at low disturbance, highest at intermediate disturbance, and low at high disturbance.')},
+  interpret:[
+    {q:'Why is diversity low when disturbance is very rare?',opts:['Nothing can colonize','The best competitors have time to exclude other species','Disturbance kills everything','Predators eat all the species'],a:1,why:'Without disturbance, the community approaches equilibrium, where the strongest competitors dominate.'},
+    {q:'Why is diversity low when disturbance is very frequent or intense?',opts:['Only species that colonize quickly and grow fast can persist','Competition is too strong','There are too many species','Disturbance creates new species'],a:0,why:'Frequent disturbance resets the community before slower-growing, competitively superior species can establish.'},
+    {q:'What kind of evidence would best test this idea?',opts:['A single photo of a reef','Comparing sites or treatments that differ in disturbance and measuring diversity, ideally over long periods','Counting species in one place once','Asking divers'],a:1,why:'You need variation in disturbance and repeated measurements, like Sousa\'s boulders (tab 3) or Connell\'s long-term reef plots.'}],
+  discuss:['Connell\'s reef plots at Heron Island were followed for decades. Why are long-term plots so valuable for testing ideas about disturbance?','Later studies found the hump shape in some systems but not others. What might cause the pattern to fail?','How could managers use this idea, for example with prescribed fire in Sierra foothill grasslands and woodlands?']});
 
-/* ---------- boulder field ---------- */
-const NPER=30,CLS=['Small','Intermediate','Large'],CIDS=['pS','pI','pL'];
-let fb=[],fMo=3,fMonths=0,fHist=[],fPlaying=false;
-function fReset(){fb=CLS.map(()=>Array.from({length:NPER},()=>new Int8Array(NC).fill(-1)));fMonths=0;fHist=[];fMo=3;fDraw()}
-function fStep(){CLS.forEach((c,ci)=>fb[ci].forEach(b=>month(b,fMo,val(CIDS[ci]))));fMo=(fMo+1)%12;fMonths++;
-  fHist.push(CLS.map((c,ci)=>[fb[ci].reduce((s,b)=>s+rich(b),0)/NPER,fb[ci].reduce((s,b)=>s+bareP(b),0)/NPER]));if(fHist.length>12)fHist.shift()}
-const fcv=$('#field'),fctx=fcv.getContext('2d');
-function fDraw(){showVals();
-  const W=fcv.width,H=fcv.height;fctx.clearRect(0,0,W,H);fctx.fillStyle=dk()?'#1f2a33':'#d9cfbd';fctx.fillRect(0,0,W,H);
-  const sizes=[3,5,7],cols=[15,15,10],rows=[2,2,3],gap=6;let y=26;
-  CLS.forEach((c,ci)=>{const cs=sizes[ci],tile=cs*G;fctx.fillStyle=dk()?'#e7ecf2':'#1d2530';fctx.font='bold 13px system-ui';fctx.textAlign='left';fctx.fillText(`${c} boulders (roll ${f(val(CIDS[ci]),3)} per month)`,10,y-8);
-    fb[ci].forEach((b,j)=>{const col=j%cols[ci],row=Math.floor(j/cols[ci]),x0=10+col*(tile+gap),y0=y+row*(tile+gap);
-      for(let k=0;k<NC;k++){const s=b[k];fctx.fillStyle=s<0?bare():spc(s);fctx.fillRect(x0+(k%G)*cs,y0+((k/G)|0)*cs,cs,cs)}});
-    y+=rows[ci]*(tile+gap)+22});
-  fcv.setAttribute('aria-label',`Boulder field after ${f(fMonths/12,1)} years: ${NPER} small, ${NPER} intermediate, and ${NPER} large boulders, each drawn as a small grid colored by species.`);
-  legend($('#legF'),[...S.map((s,i)=>[spc(i),s.name]),[bare(),'Bare rock']]);
-  $('#fYr').textContent=f(fMonths/12,1);
-  const PS=[[1.4,1.9],[3.4,4.3],[2.3,3.5]],PB=[[50,78],[26,36],[5,15]];
-  const avg=ci=>fHist.length?[fHist.reduce((s,h)=>s+h[ci][0],0)/fHist.length,fHist.reduce((s,h)=>s+h[ci][1],0)/fHist.length]:[NaN,NaN];
-  $('#fTbl').innerHTML='<thead><tr><th>Boulder size</th><th class="num">Species per boulder: Sousa</th><th class="num">Model</th><th class="num">% bare rock: Sousa</th><th class="num">Model</th></tr></thead><tbody>'+
-    CLS.map((c,ci)=>{const a=avg(ci);return `<tr><td>${c}</td><td class="num">${PS[ci][0]}–${PS[ci][1]}</td><td class="num"><b>${f(a[0],1)}</b></td><td class="num">${PB[ci][0]}–${PB[ci][1]}</td><td class="num"><b>${f(a[1],0)}</b></td></tr>`}).join('')+'</tbody>';
-}
-$('#fPlay').onclick=()=>{fPlaying=!fPlaying;$('#fPlay').textContent=fPlaying?'Pause':'Play'};
-$('#fReset').onclick=fReset;
-$$('#fieldT input').forEach(i=>i.addEventListener('input',showVals));
+/* =================== 3. SOUSA =================== */
+const CENS=['Nov 1975','May 1976','Oct 1976','May 1977'],SP=[[1.7,1.9,1.9,1.4],[3.7,4.3,3.4,3.6],[2.5,3.5,2.3,3.2]],BARE=[[78.0,66.5,67.7,49.9],[26.5,35.9,32.2,34.2],[11.4,4.7,14.5,6.1]];
+const STAB=[[2,1.13],[4,1.8],[7,3.75],[11,4.08],[13,5.08],[16,5.29],[19,4.9]];
+tabs.t3=paperTab($('#t3'),{id:'so',title:'Disturbance in marine intertidal boulder fields: the nonequilibrium maintenance of species diversity',
+  why:'One of the first field tests of the intermediate disturbance hypothesis, using a natural gradient of disturbance and a clever experiment.',
+  cite:'Sousa, W. P. (1979). Disturbance in marine intertidal boulder fields: the nonequilibrium maintenance of species diversity. <i>Ecology</i> 60: 1225–1239.',doi:'10.2307/1936969',
+  question:'In a boulder field at Ellwood Beach, California, winter waves roll boulders over and scrape their tops clean. Small boulders roll often and large ones rarely. <b>Does the frequency of disturbance control how many species live on a boulder?</b>',
+  hyps:[['Diversity rises with stability','The least-disturbed (large) boulders have the most species.'],['Intermediate disturbance','Boulders disturbed at an intermediate rate have the most species.']],
+  design:`<p>Sousa measured the force needed to move each boulder and grouped boulders into three classes: easily moved (under 49 newtons), intermediate (50–294 N), and hard to move (over 294 N). He marked boulders and recorded how often each class rolled over, and censused the algae and barnacles on boulder tops four times between November 1975 and May 1977.</p>
+    <p>To show that disturbance, not boulder size itself, caused the differences, he <b>bolted small rocks to the bottom</b> so they could not roll, and followed them for over a year.</p>`,
+  predict:{q:'Which boulder class do you expect to have the most species?',opts:['Small (rolled most often)','Intermediate','Large (rarely rolled)','All the same']},
+  results:`<div class="tiles"><div class="tile"><div class="k">Small: chance of rolling per month</div><div class="v">0.42</div></div><div class="tile"><div class="k">Intermediate</div><div class="v">0.09</div></div><div class="tile"><div class="k">Large</div><div class="v">0.001</div></div></div>
+    <div class="row"><b class="small">Show:</b><button class="primary" id="soA">Species per boulder</button><button id="soB">% bare space</button></div>
+    <div class="chart"><svg id="soR"></svg></div><div class="legend" id="soLeg"></div>
+    <h3>Bolted-down small rocks</h3><div class="chart"><svg id="soS"></svg></div>
+    <p class="small muted">Monthly rolling chances: Table 1. Species per boulder: Table 5. Bare space: Table 2. Bolted-rock means calculated from the percentages in Table 8.</p>`,
+  found:'In every census, <b>intermediate boulders had the most species</b>. Small boulders, rolled over almost every other month, held mostly bare rock with the early colonists <i>Ulva</i> and barnacles. Large boulders, almost never rolled, were dominated by the late-successional red alga <i>Gigartina canaliculata</i>, which crowded out other species. Bolted small rocks gained species until they matched intermediate boulders, showing that the frequency of disturbance, not boulder size, controlled diversity. Diversity was maintained by disturbance in a <b>nonequilibrium</b> patchwork.',
+  afterResults:()=>{let mode='a';const cols=['var(--s4)','var(--s1)','var(--s5)'];const go=()=>{const d=mode==='a'?SP:BARE;
+      bars($('#soR'),{cats:CENS,series:['Small','Intermediate','Large'].map((n,i)=>({name:n,color:cols[i],vals:d[i]})),ymax:mode==='a'?5:90,ylab:mode==='a'?'Mean species per boulder':'Mean % bare space',w:720,h:320,fmt:v=>mode==='a'?v.toFixed(1):v.toFixed(0)+'%'});
+      legend($('#soLeg'),[['var(--s4)','Small (rolls often)'],['var(--s1)','Intermediate'],['var(--s5)','Large (rarely rolls)']]);
+      $('#soR').setAttribute('aria-label',(mode==='a'?'Mean species per boulder':'Mean percent bare space')+' by census. '+['Small','Intermediate','Large'].map((n,i)=>`${n}: ${d[i].join(', ')}`).join('; ')+'.');
+      $('#soA').classList.toggle('primary',mode==='a');$('#soB').classList.toggle('primary',mode==='b')};
+    $('#soA').onclick=()=>{mode='a';go()};$('#soB').onclick=()=>{mode='b';go()};go();
+    chart($('#soS'),{xmin:0,xmax:20,ymin:0,ymax:6,w:620,h:280,xlab:'Months after the rocks were cleared',ylab:'Mean species per rock',series:[{pts:STAB,color:'var(--s3)',width:2.4},{pts:[[0,3.75],[20,3.75]],color:'var(--s1)',dash:'5 4',width:1.4}],points:STAB.map(([t,v])=>({x:t,y:v,color:'var(--s3)',r:5})),texts:[{x:19.5,y:3.75,t:'intermediate boulders (avg)',color:'var(--s1)',anchor:'end',dy:-6}]});
+    $('#soS').setAttribute('aria-label','Mean species per bolted rock rises from about 1 at 2 months to about 5 at 13 to 19 months, above the average for intermediate boulders of 3.75.')},
+  interpret:[
+    {q:'Why did large boulders have fewer species than intermediate ones?',opts:['They were too cold','Without disturbance, Gigartina canaliculata took over and excluded other species','Waves scraped them every month','They had no algae'],a:1,why:'Large boulders rarely rolled, so succession ran to the late-successional dominant.'},
+    {q:'What was the purpose of bolting small rocks down?',opts:['To stop them from washing away','To separate the effect of disturbance from the effect of rock size','To kill the algae','To measure wave force'],a:1,why:'Small and large boulders differ in more than disturbance (surface area, for example). Removing disturbance while keeping size the same isolates its effect.'},
+    {q:'Why is this called a "nonequilibrium" explanation of diversity?',opts:['Because the boulders are not level','Because diversity is maintained by repeated disturbance that keeps the community from reaching competitive equilibrium','Because there are no species','Because the data were uneven'],a:1,why:'At equilibrium one species would dominate; disturbance keeps boulders at a mix of successional stages.'}],
+  discuss:['Sousa used boulder size as a stand-in for disturbance frequency. What else differs between small and large boulders that could matter?','Large boulders had more species in spring than in fall. Using what you know about winter storms, why?','How would you design a similar study in a California grassland or chaparral using fire instead of waves?']});
 
-/* ---------- stabilization ---------- */
-const SOUSA_ST=[[2,1.13],[4,1.8],[7,3.75],[11,4.08],[13,5.08],[16,5.29],[19,4.9]];
-let stabRuns=null;
-$('#sRun').onclick=()=>{const n=val('sN'),p=val('sP'),T=20;const bolt=Array(T+1).fill(0),loose=Array(T+1).fill(0);
-  for(let r=0;r<n;r++){const a=new Int8Array(NC).fill(-1),c=new Int8Array(NC).fill(-1);for(let t=1;t<=T;t++){const mo=(t+4)%12;month(a,mo,0);month(c,mo,p);bolt[t]+=rich(a)/n;loose[t]+=rich(c)/n}}
-  stabRuns={bolt,loose};drawStab()};
-function drawStab(){showVals();if(!stabRuns)return;const {bolt,loose}=stabRuns;
-  chart($('#cSt'),{xmin:0,xmax:20,ymin:0,ymax:7,w:760,h:340,xlab:'Months after clearing (start: June)',ylab:'Species per rock',
-    series:[{pts:bolt.map((v,i)=>[i,v]),color:'var(--s1)',width:2.6},{pts:loose.map((v,i)=>[i,v]),color:'var(--s2)',width:2.6}],points:SOUSA_ST.map(([t,v])=>({x:t,y:v,color:'var(--s1)',r:6,ring:1}))});
-  legend($('#legSt'),[['var(--s1)','Bolted rocks (model)'],['var(--s2)','Loose small rocks (model)'],['var(--s1)','Bolted rocks (Sousa, open circles)',1]]);
-  $('#cSt').setAttribute('aria-label',`Species per rock over 20 months. Model bolted rocks reach ${f(bolt[12],1)} at 12 months; loose rocks ${f(loose[12],1)}. Sousa's bolted rocks: `+SOUSA_ST.map(([t,v])=>`${v} at month ${t}`).join(', ')+'.');
-  $('#sMsg').innerHTML=`After a year, the model's bolted rocks have about <b>${f(bolt[12],1)}</b> species and loose rocks about <b>${f(loose[12],1)}</b>. Sousa's bolted rocks had about 4–5, like intermediate boulders. Because the bolted rocks were the same size as the loose ones, the difference must come from <b>disturbance</b>, not size. ${bolt[2]>2?'Notice the model fills the first months faster than the real rocks did: in the field, the first census found mostly <i>Ulva</i> alone.':''}`}
-$('#sN').addEventListener('input',showVals);$('#sP').addEventListener('input',showVals);
+/* =================== 4. TILMAN 1994 =================== */
+tabs.t4=paperTab($('#t4'),{id:'ti',title:'Competition and biodiversity in spatially structured habitats',
+  why:'Showed mathematically that a trade-off between competing and colonizing can let many species coexist on a single limiting resource.',
+  cite:'Tilman, D. (1994). Competition and biodiversity in spatially structured habitats. <i>Ecology</i> 75: 2–16.',
+  question:'Plants in a prairie compete for the same few resources, yet dozens of species coexist. <b>Can many species coexist on one limiting resource if habitat is made of separate sites that are colonized and vacated?</b>',
+  hyps:[['No','The best competitor should take every site.'],['Yes, with a trade-off','If better competitors are worse at colonizing new sites, poorer competitors can persist by reaching open sites first.']],
+  design:`<p>Tilman built a mathematical model of a landscape made of many small sites, each holding one individual. Species colonize empty sites at rate c and die at rate m. A better competitor can take over a site held by a weaker one. He solved for the share of sites each species occupies at equilibrium:</p>
+    <div class="formula">p₁* = 1 − m/c₁ &nbsp;&nbsp;(best competitor)<br>pᵢ* = 1 − m/cᵢ − Σ<sub>j&lt;i</sub> pⱼ*(1 + cⱼ/cᵢ) &nbsp;&nbsp;(species i, ranked by competitive ability)</div>
+    `,
+  predict:{q:'In this model, how many species can coexist on a single resource?',opts:['Only one, the best competitor','At most two','Many, as long as each weaker competitor colonizes sufficiently better','None']},
+  results:`<p class="small">Use the model below to see the result: with a strong enough competition–colonization trade-off, many species coexist.</p>`,
+  found:'In Tilman\'s model, an unlimited number of species could in principle coexist on a single resource, as long as each weaker competitor was a sufficiently better colonizer than the species above it. There is a <b>limiting similarity</b>: species too similar in colonization rate are excluded. The model shows why spatial structure and dispersal matter for biodiversity.',
+  interpret:[
+    {q:'In this model, why can a weak competitor persist?',opts:['It wins every contest','It colonizes empty sites faster than better competitors can take them','It never dies','It eats the better competitor'],a:1,why:'Fugitive species persist by reaching open sites first, before superior competitors arrive.'},
+    {q:'Why does the best competitor not fill every site?',opts:['It dies (m > 0) and colonizes slowly, so some sites are always empty for a while','It is excluded by weaker species','Sites are too large','It has no seeds'],a:0,why:'p₁* = 1 − m/c₁: with mortality and limited colonization, the best competitor cannot occupy everything.'},
+    {q:'How does this connect to Sousa\'s boulders and Connell\'s intermediate disturbance idea?',opts:['It doesn\'t','Disturbance creates open sites; species that colonize well but compete poorly depend on those openings','It shows disturbance is unnecessary','It only applies to animals'],a:1,why:'Both involve a trade-off between colonizing new space and holding space against competitors.'}],
+  modelTitle:'Tilman\'s competition–colonization model',
+  model:`<div class="layout"><div class="ctrl">
+      <label for="tn">Number of species <span class="val" id="tnV"></span></label><input type="range" id="tn" min="2" max="12" step="1" value="6">
+      <label for="tm">Mortality m <span class="val" id="tmV"></span></label><input type="range" id="tm" min="0.01" max="0.5" step="0.01" value="0.1" data-d="2">
+      <label for="tc">Colonization rate of best competitor c₁ <span class="val" id="tcV"></span></label><input type="range" id="tc" min="0.05" max="2" step="0.01" value="0.2" data-d="2">
+      <label for="tr">Each weaker species colonizes ×<span class="val" id="trV"></span> more</label><input type="range" id="tr" min="1" max="4" step="0.05" value="1.8" data-d="2">
+    </div><div><div class="tiles"><div class="tile"><div class="k">Species that persist</div><div class="v" id="tS"></div></div><div class="tile"><div class="k">Sites left empty</div><div class="v" id="tE"></div></div></div>
+      <div class="chart"><svg id="tM"></svg></div><div class="msg small" id="tMsg"></div></div></div>`,
+  afterModel:()=>{if(!$('#tnBox'))addBoxes($('#t4'));const go=()=>{showVals();const n=Math.round(val('tn')),m=val('tm'),c1=val('tc'),r=val('tr');
+      const c=[];for(let i=0;i<n;i++)c.push(c1*r**i);
+      const q=[];for(let i=0;i<n;i++){let v=1-m/c[i];for(let j=0;j<i;j++)v-=q[j]*(1+c[j]/c[i]);q.push(Math.max(0,v))}
+      bars($('#tM'),{cats:q.map((v,i)=>`Sp ${i+1}\nc=${c[i]<10?c[i].toFixed(2):c[i].toFixed(0)}`),series:[{color:'var(--s3)',vals:q.map(v=>v*100)}],ymax:100,ylab:'% of sites occupied',w:640,h:300,mb:58,fmt:v=>v.toFixed(0)});
+      const S=q.filter(v=>v>1e-4).length,E=Math.max(0,1-q.reduce((a,b)=>a+b,0));
+      $('#tS').textContent=`${S} of ${n}`;$('#tE').textContent=f(E*100,0)+'%';
+      $('#tM').setAttribute('aria-label','Share of sites occupied by each species, ranked from best competitor: '+q.map((v,i)=>`species ${i+1} ${f(v*100,0)}%`).join(', ')+'.');
+      $('#tMsg').innerHTML=S===n?'All species persist: each weaker competitor colonizes enough faster to escape the ones above it.':`${n-S} species ${n-S===1?'is':'are'} excluded. Try a larger colonization advantage (×) or lower mortality. Species 1 is the best competitor.`};
+    $$('#t4 .ctrl input').forEach(i=>i.oninput=go);go()},
+  discuss:['Real plants trade off seed number against seed size or root investment. Name a pair of California plants that might fit this trade-off.','In this model, which species would you expect to disappear first if half the sites were destroyed? Why might that be surprising?','How could you test the competition–colonization trade-off in a field experiment?']});
 
-/* ---------- IDH sweep ---------- */
-const PX=[0.0005,0.001,0.003,0.01,0.02,0.04,0.06,0.09,0.15,0.25,0.42,0.6,0.85];let runs=[],busy=false;
-const RC=['var(--s1)','var(--s3)','var(--s6)','var(--s5)'];
-function drawX(){if(!runs.length)return;
-  chart($('#cX'),{xmin:0.0004,xmax:1,logx:1,ymin:0,ymax:5,w:760,h:380,xlab:'Chance a boulder rolls each month (log scale)',ylab:'Species per boulder',
-    series:runs.map((r,i)=>({pts:r.map(p=>[p.p,p.S]),color:RC[i%4],width:2.6})),
-    points:[...runs.flatMap((r,i)=>r.map(p=>({x:p.p,y:p.S,color:RC[i%4],r:3.5}))),{x:0.42,y:1.73,color:'var(--s4)',r:8,ring:1},{x:0.09,y:3.75,color:'var(--s4)',r:8,ring:1},{x:0.001,y:2.88,color:'var(--s4)',r:8,ring:1}]});
-  legend($('#legX'),[...runs.map((r,i)=>[RC[i%4],`Model run ${i+1}`]),['var(--s4)','Sousa: small, intermediate, large boulders (open circles)',1]]);
-  const last=runs[runs.length-1],best=last.reduce((a,b)=>b.S>a.S?b:a);
-  $('#cX').setAttribute('aria-label','Species per boulder versus monthly chance of rolling, log scale. Model peak at '+best.p+' with '+f(best.S,1)+' species. Sousa: 2.9 species at 0.001, 3.75 at 0.09, 1.7 at 0.42.');
-  $('#xMsg').innerHTML=`The model peaks at a rolling chance of about <b>${best.p}</b> per month (${f(best.S,1)} species per boulder). Rarely-rolled boulders are taken over by <i>G. canaliculata</i>; constantly rolled ones never get past <i>Ulva</i> and barnacles. Sousa's three classes (open circles) trace the same hump.`}
-$('#runX').onclick=()=>{if(busy)return;busy=true;$('#runX').disabled=true;if(!$('#keepOld').checked)runs=[];
-  const res=[];let pi=0,bi=0;const NBo=40,T=120;
-  function chunk(){const t0=performance.now();
-    while(performance.now()-t0<30&&pi<PX.length){let s=0,n=0;const b=new Int8Array(NC).fill(-1);for(let t=0;t<T;t++){month(b,t%12,PX[pi]);if(t>=60){s+=rich(b);n++}}
-      res[pi]=(res[pi]||0)+s/n/NBo;bi++;if(bi>=NBo){bi=0;pi++}}
-    $('#progBar').style.width=(pi/PX.length*100)+'%';$('#progTxt').textContent=pi<PX.length?`Running rolling chance ${PX[pi]}…`:'Done.';
-    if(pi<PX.length)setTimeout(chunk,0);else{runs.push(PX.map((p,i)=>({p,S:res[i]})));if(runs.length>4)runs.shift();busy=false;$('#runX').disabled=false;drawX()}}
-  chunk()};
-
-/* ---------- animation ---------- */
-let lastT=0;
-function loop(t){if(t-lastT>110){lastT=t;
-  if(playing&&$('#one').classList.contains('on')){for(let i=0;i<val('speed');i++)stepOne();drawB()}
-  if(fPlaying&&$('#fieldT').classList.contains('on')){for(let i=0;i<val('fSpeed');i++)fStep();fDraw()}}
-  requestAnimationFrame(loop)}
-
-quiz($('#quizBox'),[
- {q:'Which boulders had the most species in Sousa\'s study?',opts:['Small boulders that roll often','Intermediate boulders','Large boulders that almost never roll','All the same'],a:1,why:'Intermediate boulders rolled often enough to stop G. canaliculata from taking over, but not so often that only early colonists could live there.'},
- {q:'Why do large boulders have few species?',opts:['They are too cold','Without disturbance, Gigartina canaliculata takes over and keeps other species out','Waves scrape them every month','Ulva grows too fast on them'],a:1,why:'Large boulders rarely roll, so succession runs to the late-successional red alga, which spreads vegetatively and resists invasion.'},
- {q:'Why did Sousa bolt small rocks to the bottom?',opts:['To keep them from being collected','To separate the effect of disturbance from the effect of rock size','To kill the algae','To measure wave height'],a:1,why:'Small and large boulders differ in more than disturbance. Bolting small rocks removed disturbance while keeping size the same, and they gained as many species as intermediate boulders.'},
- {q:'In this system, early colonists like Ulva…',opts:['help later species settle (facilitation)','slow the arrival of later species by taking space (inhibition)','have no effect','eat the red algae'],a:1,why:'Sousa found early species inhibited later ones; later species took over only as early ones died.'},
- {q:'The intermediate disturbance hypothesis predicts that diversity is highest when disturbance is…',opts:['absent','very frequent','intermediate in frequency','only in summer'],a:2,why:'Moderate disturbance opens space for colonizers without wiping out slow-growing competitors.'},
- {q:'Which is an example of secondary succession?',opts:['Lichens colonizing a new lava flow','Algae recolonizing a boulder that was scraped clean','Plants on rock left by a retreating glacier','Life on a brand-new volcanic island'],a:1,why:'Secondary succession follows a disturbance that removes organisms but leaves the habitat (here, the boulder surface) in place.'}
-]);
-
-initTabs({one:drawB,fieldT:fDraw,stab:drawStab,idh:drawX});
-buildTraits();setSliders({});
-hist=[[0,...cover(b1),bareP(b1)]];drawB();fReset();requestAnimationFrame(loop);
-matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{buildTraits();drawB();fDraw();drawX();drawStab()});
+initTabs({t1:()=>tabs.t1.redraw(),t2:()=>tabs.t2.redraw(),t3:()=>tabs.t3.redraw(),t4:()=>tabs.t4.redraw()});
 })();
 </script>
 <script>
 window.A11Y = {
-  tabsLabel: 'Simulation sections',
-  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
-  live: ['#sMsg', '#xMsg', '#progTxt', '#score']
+  tabsLabel: 'Papers',
+  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary, :root:not([data-theme="light"]) .modelsel button.on{color:#0d1b2a}}',
+  live: ['#tMsg', '.score']
 };
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
