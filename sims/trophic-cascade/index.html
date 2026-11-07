@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Trophic Cascades: Spiders, Grasshoppers, and Plants</title>
+<title>Trophic Cascade: Spiders, Grasshoppers, and Grass</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -121,105 +121,44 @@ label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:re
 .ctrl label.hasbox{display:block}
 
 .cagewrap{position:relative}
-#cage{width:100%;aspect-ratio:760/480;display:block;border-radius:12px;cursor:pointer;touch-action:manipulation}
-.cagewrap .hint{position:absolute;left:10px;bottom:8px;font-size:.75rem;background:rgba(0,0,0,.55);color:#fff;padding:3px 8px;border-radius:6px;pointer-events:none}
-.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
-.seg button{flex:1 1 auto;font-size:.82rem;padding:6px 8px}
-.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-.follow{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.88rem;align-items:center}
-.meter{height:10px;border-radius:6px;background:var(--soft);overflow:hidden;border:1px solid var(--line)}
-.meter i{display:block;height:100%;background:linear-gradient(90deg,#f2c14e,#d9532c)}
-#web{width:100%;max-width:460px;display:block;margin:0 auto}
-.budget{display:flex;height:26px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin:6px 0}
-.budget span{display:block;height:100%;transition:width .3s}
-.minis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.mini{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px}
-.mini h3{margin:0 0 6px;font-size:.92rem}
-.mini canvas{width:100%;aspect-ratio:760/480;display:block;border-radius:8px}
-.mini .small{margin-top:4px}
-@media (max-width:640px){.minis{grid-template-columns:minmax(0,1fr)}}
-.big{font-size:1.05rem}
+.cagewrap canvas{width:100%;aspect-ratio:760/480;display:block;border-radius:12px}
+.cagehead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:6px}
+.cagehead h2{margin:0}
+.cagehead .stat{font-size:.9rem;color:var(--muted)}
+.cagehead .stat b{color:var(--text)}
+.bar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:flex-end}
+.bar>div{flex:1 1 200px;min-width:0}
+.bar .row{margin:0}
+#casc{width:100%;display:block}
 .ovl{position:absolute;right:10px;top:10px;border-radius:999px;padding:6px 14px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;border:1px solid rgba(255,255,255,.4)}
-@media (max-width:900px){#t1 .layout>.ctrl,#t2 .layout>.ctrl{order:2}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Trophic Cascades</h1>
-<p class="sub">A predator can help plants without ever touching them. Watch spiders, grasshoppers, grass, and goldenrod in a field cage, and find out how much of the effect comes from <b>eating</b> grasshoppers and how much comes from <b>scaring</b> them.</p>
-<div class="paperstrip">Built on Oswald Schmitz's old-field cages in Connecticut: the nursery web spider <i>Pisaurina mira</i> sits and waits in the plants; the red-legged grasshopper <i>Melanoplus femurrubrum</i> prefers grass but hides in goldenrod (<i>Solidago</i>) when spiders are near. Spiders with their mouthparts glued shut, which could not kill anything, still changed the plants almost as much as hunting spiders. Rates here are illustrative.
+<h1>Trophic Cascade</h1>
+<p class="sub">Two identical field cages full of grass and grasshoppers. Only one has spiders. Watch what happens to the grass.</p>
+<div class="paperstrip">Based on Oswald Schmitz's field cages in Connecticut old fields, with the nursery web spider <i>Pisaurina mira</i> and the red-legged grasshopper <i>Melanoplus femurrubrum</i>. Rates here are illustrative.
   <div class="cite">Schmitz, O. J., A. P. Beckerman, &amp; K. M. O'Brien (1997). Behaviorally mediated trophic cascades: effects of predation risk on food web interactions. <i>Ecology</i> 78: 1388–1399.</div></div>
-<nav class="tabs">
-  <button class="on" data-tab="t1">One field cage</button>
-  <button data-tab="t2">Four cages side by side</button>
-</nav>
 
-<!-- ================= ONE CAGE ================= -->
-<section class="panel on" id="t1">
-<div class="layout">
-  <div class="card ctrl">
-    <div class="row"><button class="primary" id="play">Play</button><button id="reset">New season</button></div>
-    <label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="12" step="1" value="3" data-suf="×">
-    <h3>Predator</h3>
-    <div class="seg" id="spType"><button data-sp="sit" class="on">Hunting spider<br><span class="small">sits and waits</span></button><button data-sp="glued">Glued spider<br><span class="small">scary, can't kill</span></button><button data-sp="active">Roaming spider<br><span class="small">hunts actively</span></button></div>
-    <label for="nSp">Spiders in the cage <span class="val" id="nSpV"></span></label><input type="range" id="nSp" min="0" max="6" step="1" value="2">
-    <div class="row"><button id="addSp">Tap to place a spider</button><button id="rmSp">Remove spiders now</button></div>
-    <label for="att">Spider catch success <span class="val" id="attV"></span></label><input type="range" id="att" min="0" max="1" step="0.05" value="0.5" data-d="2">
-    <label for="cueR">How far grasshoppers can sense a spider (cm) <span class="val" id="cueRV"></span></label><input type="range" id="cueR" min="5" max="40" step="1" value="20">
-    <h3>Grasshoppers</h3>
-    <label for="nGh">Grasshoppers at the start <span class="val" id="nGhV"></span></label><input type="range" id="nGh" min="0" max="40" step="1" value="16">
-    <label for="fear">How strongly they react to danger <span class="val" id="fearV"></span></label><input type="range" id="fear" min="0" max="2" step="0.05" value="1" data-d="2">
-    <label for="eat">Eating rate <span class="val" id="eatV"></span></label><input type="range" id="eat" min="0.01" max="0.2" step="0.005" value="0.05" data-d="3">
-    <label for="gPal">How much they like goldenrod (vs. grass = 1) <span class="val" id="gPalV"></span></label><input type="range" id="gPal" min="0" max="1" step="0.05" value="0.4" data-d="2">
-    <h3>Plants</h3>
-    <label for="rG">Grass regrowth per day <span class="val" id="rGV"></span></label><input type="range" id="rG" min="0" max="0.15" step="0.005" value="0.04" data-d="3">
-    <label for="rS">Goldenrod regrowth per day <span class="val" id="rSV"></span></label><input type="range" id="rS" min="0" max="0.15" step="0.005" value="0.025" data-d="3">
-    <label for="gShare">Share of plants that are goldenrod <span class="val" id="gShareV"></span></label><input type="range" id="gShare" min="10" max="60" step="5" value="30" data-suf="%">
-    <h3>Show</h3>
-    <label class="check"><input type="checkbox" id="showRisk" checked> <span>Danger zones grasshoppers can sense</span></label>
-    <label class="check"><input type="checkbox" id="showTrail"> <span>Grasshopper paths</span></label>
-  </div>
-  <div>
-    <div class="tiles"><div class="tile"><div class="k">Day</div><div class="v" id="tDay"></div></div><div class="tile"><div class="k">Grasshoppers alive</div><div class="v" id="tGh"></div></div><div class="tile"><div class="k">Grass vs. no-spider cage</div><div class="v" id="tGr"></div></div><div class="tile"><div class="k">Goldenrod vs. no-spider cage</div><div class="v" id="tSo"></div></div></div>
-    <div class="card"><div class="cagewrap"><canvas id="cage" width="760" height="480" role="img"></canvas><div class="hint" id="hint">Tap a grasshopper to follow it</div><button class="ovl" id="play2" aria-label="Play or pause">▶ Play</button></div>
-      <div class="legend" id="leg0" style="margin-top:6px"></div></div>
-    <div class="grid2">
-      <div class="card"><h2>The food web right now</h2><svg id="web" viewBox="0 0 460 360" role="img"></svg><p class="small muted">Arrow width = how much food is flowing. Dashed = fear. Colored labels = effect of the spiders on each plant, compared with an identical cage that has no spiders.</p></div>
-      <div class="card"><h2>How grasshoppers spend their time</h2><div class="budget" id="budget"></div><div class="legend" id="legB"></div>
-        <h2 style="margin-top:14px">Followed grasshopper</h2><div id="follow" class="small muted">Tap a grasshopper in the cage.</div></div>
-    </div>
-    <div class="card chart"><h2>Plants over the season</h2><div class="legend" id="legC"></div><svg id="cP"></svg></div>
-    <div class="msg" id="msg"></div>
-  </div>
+<div class="card ctrl bar">
+  <div><div class="row"><button class="primary" id="play">Play</button><button id="reset">New season</button><button id="toggleSp">Remove the spiders</button></div></div>
+  <div><label for="nSp">Spiders in the right cage <span class="val" id="nSpV"></span></label><input type="range" id="nSp" min="1" max="4" step="1" value="2" data-nobox></div>
+  <div><label for="nGh">Grasshoppers in each cage <span class="val" id="nGhV"></span></label><input type="range" id="nGh" min="5" max="40" step="1" value="20" data-nobox></div>
+  <div><label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="5" step="1" value="2" data-suf="×" data-nobox></div>
 </div>
-</section>
 
-<!-- ================= FOUR CAGES ================= -->
-<section class="panel" id="t2">
-<div class="layout">
-  <div class="card ctrl">
-    <p class="small">Four identical cages start with the same plants and grasshoppers in the same places. Only the predator differs.</p>
-    <div class="row"><button class="primary" id="xRun">Run the season</button><button id="xReset">Reset</button></div>
-    <label for="xDays">Season length (days) <span class="val" id="xDaysV"></span></label><input type="range" id="xDays" min="10" max="80" step="5" value="40">
-    <label for="xGh">Grasshoppers per cage <span class="val" id="xGhV"></span></label><input type="range" id="xGh" min="4" max="40" step="1" value="16">
-    <label for="xSp">Spiders per cage <span class="val" id="xSpV"></span></label><input type="range" id="xSp" min="1" max="6" step="1" value="2">
-    <label for="xFear">How strongly grasshoppers react to danger <span class="val" id="xFearV"></span></label><input type="range" id="xFear" min="0" max="2" step="0.05" value="1" data-d="2">
-    <label for="xAtt">Spider catch success <span class="val" id="xAttV"></span></label><input type="range" id="xAtt" min="0" max="1" step="0.05" value="0.5" data-d="2">
-    <label for="xRep">Extra replicate seasons for the averages <span class="val" id="xRepV"></span></label><input type="range" id="xRep" min="0" max="12" step="1" value="6">
-    <p class="small muted">Other settings (eating rate, plant regrowth, goldenrod share) come from the first tab.</p>
-  </div>
-  <div>
-    <div class="row" style="margin-bottom:8px"><button class="primary" id="xRun2">Run the season</button></div><div class="minis" id="minis"></div>
-    <div class="grid2" style="margin-top:12px">
-      <div class="card chart"><h2>Plants at the end (% of the no-spider cage)</h2><div class="legend" id="xLeg1"></div><svg id="xC1"></svg></div>
-      <div class="card chart"><h2>Where did the effect on grass come from?</h2><svg id="xC2"></svg><p class="small muted" id="xNote2">Run the season to see the breakdown.</p></div>
-    </div>
-    <div class="card chart"><h2>Grasshoppers: survival and time spent eating</h2><div class="legend" id="xLeg3"></div><svg id="xC3"></svg></div>
-    <div class="msg" id="xMsg"></div>
-  </div>
+<div class="grid2" style="margin-top:12px">
+  <div class="card"><div class="cagehead"><h2>No spiders</h2><span class="stat" id="sA"></span></div><div class="cagewrap"><canvas id="cA" width="760" height="480" role="img"></canvas><button class="ovl" id="play2" aria-label="Play or pause">▶ Play</button></div></div>
+  <div class="card"><div class="cagehead"><h2 id="hB">With spiders</h2><span class="stat" id="sB"></span></div><div class="cagewrap"><canvas id="cB" width="760" height="480" role="img"></canvas></div></div>
 </div>
-</section>
+<div class="legend" id="leg" style="margin:8px 2px"></div>
+
+<div class="grid2">
+  <div class="card"><h2>The cascade, level by level</h2><svg id="casc" viewBox="0 0 460 300" role="img"></svg></div>
+  <div class="card chart"><h2>Grass over the season</h2><div class="legend" id="legC"></div><svg id="cG"></svg></div>
+</div>
+<div class="msg" id="msg"></div>
 </div>
 
 <script>
@@ -439,121 +378,66 @@ function drawCage(cv,c,o){const x=cv.getContext('2d'),dpr=cv._dpr||1;x.setTransf
   x.fillStyle='rgba(255,255,255,.85)';x.font='11px system-ui';x.fillText('10 cm',W-58,H-14);x.fillRect(W-62,H-10,10*PX_PER_CM,2.5)}
 function fitCanvas(cv){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.round(r.width*dpr),h=Math.round(r.width*H/W*dpr);if(w>0&&(cv.width!==w||cv.height!==h)){cv.width=w;cv.height=h}}
 
-/* ---------- tab 1 ---------- */
-let spType='sit',main,twin,playing=false,sel=null,placing=false,seed=1;
-const P1=()=>({rG:val('rG'),rS:val('rS'),eat:val('eat'),gPal:val('gPal'),fear:val('fear'),att:val('att'),cueR:val('cueR'),spMove:4,trail:$('#showTrail').checked});
-function newSeason(keepSeed){if(!keepSeed)seed=(Math.random()*1e9)|0;const o={seed,goldShare:val('gShare')/100,nGh:val('nGh'),nSp:val('nSp'),spType,salt:1};main=makeCageFull(o);twin=makeCageFull({...o,nSp:0,salt:2});sel=null;draw1(true)}
-const cv=$('#cage');
-const BUD=[['fg','Eating grass','#4fa03a'],['fs','Eating goldenrod','#e0a812'],['wt','Frozen, watching for danger','#d9532c'],['mv','Moving','#8a8f98']];
-function web(){const D=dk(),txt=D?'#e7ecf2':'#10202e',svg=$('#web');const live=main.hoppers.filter(h=>h.alive).length;
-  const st=main.stats(),ct=twin.stats(),dg=ct[1]>0?(st[1]-ct[1])/ct[1]*100:0,ds=ct[2]>0?(st[2]-ct[2])/ct[2]*100:0;
-  const nodes={sp:[200,48],gh:[200,175],gr:[90,292],so:[330,292]};
-  const wg=Math.min(18,1.5+main.ema.g*12),ws=Math.min(18,1.5+main.ema.s*12),wk=Math.min(16,1.5+main.ema.k*6),wf=Math.min(12,main.ema.fear*10*(main.spiders.length?1:0));
-  const arrow=(a,b,w,col,dash,lab,lx,ly)=>{const[x1,y1]=nodes[a],[x2,y2]=nodes[b];const ang=Math.atan2(y2-y1,x2-x1),r1=34,r2=40;const sx=x1+Math.cos(ang)*r1,sy=y1+Math.sin(ang)*r1,ex=x2-Math.cos(ang)*r2,ey=y2-Math.sin(ang)*r2;
-    return `<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="${col}" stroke-width="${w}" stroke-linecap="round" ${dash?'stroke-dasharray="7 6"':''} marker-end="url(#ah_${col.replace('#','')})" opacity=".9"/>${lab?`<text x="${lx}" y="${ly}" font-size="12" fill="${txt}" text-anchor="middle">${lab}</text>`:''}`};
-  const cols=['#4fa03a','#e0a812','#8a5a3a','#d9532c'];
-  let s=`<defs>${cols.map(c=>`<marker id="ah_${c.replace('#','')}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0L10,5L0,10z" fill="${c}"/></marker>`).join('')}</defs>`;
-  s+=arrow('gr','gh',wg,'#4fa03a',0,'eaten',120,228)+arrow('so','gh',ws,'#e0a812',0,'eaten',300,228)+arrow('gh','sp',wk,'#8a5a3a',0,'',0,0);
-  if(main.spiders.length){const[x1,y1]=nodes.sp,[x2,y2]=nodes.gh;s+=`<path d="M${x1-28},${y1+20} Q${x1-62},${(y1+y2)/2} ${x2-30},${y2-26}" fill="none" stroke="#d9532c" stroke-width="${Math.max(1.5,wf)}" stroke-dasharray="7 6" marker-end="url(#ah_d9532c)"/><text x="${x1-58}" y="${(y1+y2)/2+4}" font-size="12" fill="${txt}" text-anchor="end">fear</text><text x="${x1+8}" y="${(y1+y2)/2+4}" font-size="12" fill="${txt}">eaten</text>`}
-  const node=(k,label,sub,emoji,c,side)=>{const[x,y]=nodes[k];const tx=side?x+40:x,ty=side?y-2:y+50,an=side?'start':'middle';return `<circle cx="${x}" cy="${y}" r="32" fill="${c}" stroke="${D?'#e7ecf2':'#10202e'}" stroke-opacity=".25"/><text x="${x}" y="${y+8}" font-size="24" text-anchor="middle">${emoji}</text><text x="${tx}" y="${ty}" font-size="13" font-weight="700" fill="${txt}" text-anchor="${an}">${label}</text><text x="${tx}" y="${ty+15}" font-size="11" fill="${D?'#aab4c0':'#5b6672'}" text-anchor="${an}">${sub}</text>`};
-  s+=node('sp','Spiders',main.spiders.length?`${main.spiders.length} in cage · ${main.kills} kills`:'none','🕷️',D?'#3a2e26':'#f1e4d8',1);
-  s+=node('gh','Grasshoppers',`${live} alive · fear ${f(Math.min(1,main.ema.fear)*100,0)}%`,'🦗',D?'#33391f':'#eef1d6',1);
-  s+=node('gr','Grass',`${f(st[1],0)}% of full`,'🌾',D?'#21381c':'#dff0d4');s+=node('so','Goldenrod',`${f(st[2],0)}% of full`,'🌼',D?'#3a331a':'#f8efcc');
-  if(main.spiders.length||main.kills){const lab=(v,x,y)=>{const c=v>=0?'#2e9d55':'#d9532c';return `<rect x="${x-34}" y="${y-14}" width="68" height="22" rx="11" fill="${c}"/><text x="${x}" y="${y+2}" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">${v>=0?'+':''}${f(v,0)}%</text>`};
-    s+=`<path d="M170,40 Q20,90 64,262" fill="none" stroke="${dg>=0?'#2e9d55':'#d9532c'}" stroke-width="2" stroke-dasharray="2 5" opacity=".8"/><path d="M232,58 Q430,150 360,266" fill="none" stroke="${ds>=0?'#2e9d55':'#d9532c'}" stroke-width="2" stroke-dasharray="2 5" opacity=".8"/>`+lab(dg,42,150)+lab(ds,410,215)}
-  svg.innerHTML=s;svg.setAttribute('aria-label',`Food web: ${main.spiders.length} spiders, ${live} grasshoppers, grass ${f(st[1],0)}% and goldenrod ${f(st[2],0)}% of full. Compared with the no-spider cage, grass ${f(dg,0)}% and goldenrod ${f(ds,0)}%.`);return{dg,ds,st,ct}}
-function budget(){const a=main.acc,tot=a.fg+a.fs+a.wt+a.mv||1;$('#budget').innerHTML=BUD.map(([k,l,c])=>`<span style="width:${a[k]/tot*100}%;background:${c}" title="${l}"></span>`).join('');
-  legend($('#legB'),BUD.map(([k,l,c])=>[c,`${l} ${f(a[k]/tot*100,0)}%`]))}
-function follow(){const el=$('#follow');if(!sel){el.className='small muted';el.innerHTML='Tap a grasshopper in the cage.';return}
-  el.className='';if(!sel.alive){el.innerHTML=`<p class="big"><b>Grasshopper #${sel.id}</b> was caught by a spider.</p>`;return}
-  const S={fg:'Eating grass 🌾',fs:'Eating goldenrod 🌼',watch:'Frozen, watching for danger 👀',move:'Moving'}[sel.state];
-  el.innerHTML=`<div class="follow"><b>Grasshopper</b><span>#${sel.id}</span><b>Doing</b><span>${S}</span><b>Fear</b><div class="meter"><i style="width:${Math.min(100,sel.fear*100)}%"></i></div><b>Ate grass</b><span>${f(sel.eatG*100,1)} units</span><b>Ate goldenrod</b><span>${f(sel.eatS*100,1)} units</span></div>`}
+/* ---------- page ---------- */
+const P={rG:0.04,rS:0.025,eat:0.07,gPal:0.4,fear:1,att:0.5,cueR:20,spMove:4,trail:false};
+const SEASON=40;
+let A,B,playing=false,spOn=true,savedSp=[];
+function newSeason(){const seed=(Math.random()*1e9)|0,o={seed,goldShare:0,nGh:val('nGh'),spType:'sit'};
+  A=makeCageFull({...o,nSp:0,salt:3});B=makeCageFull({...o,nSp:val('nSp'),salt:3});spOn=true;savedSp=[];$('#toggleSp').textContent='Remove the spiders';setPlay(false);draw(true)}
+const setPlay=v=>{playing=v;$('#play').textContent=v?'Pause':(A&&A.day>=SEASON?'Season over':'Play');$('#play2').textContent=v?'❚❚ Pause':'▶ Play'};
+const pct=(v,b)=>b>0?(v-b)/b*100:0,sgn=v=>(v>=0?'+':'')+f(v,0)+'%';
+function cascade(){const D=dk(),txt=D?'#e7ecf2':'#10202e',mut=D?'#aab4c0':'#5b6672',svg=$('#casc');
+  const a=A.stats(),b=B.stats(),n0=A.n0||1,maxSp=4;
+  const rows=[['🕷️','Spiders',0,spOn?B.spiders.length:0,maxSp,'#c49460',v=>v?`${v}`:'0'],['🦗','Grasshoppers',a[3],b[3],Math.max(n0,1),'#a8a052',v=>`${v}`],['🌾','Grass',a[1],b[1],100,'#7cc24a',v=>`${f(v,0)}%`]];
+  const X0=150,BW=210;let s=`<rect x="${X0}" y="10" width="12" height="10" rx="2" fill="${mut}" opacity=".45"/><text x="${X0+18}" y="19" font-size="12" fill="${mut}">No spiders</text><rect x="${X0+110}" y="10" width="12" height="10" rx="2" fill="${mut}"/><text x="${X0+128}" y="19" font-size="12" fill="${mut}">With spiders</text>`;
+  rows.forEach(([em,lab,va,vb,mx,col,fmt],i)=>{const y=60+i*82;
+    s+=`<text x="22" y="${y+22}" font-size="26" text-anchor="middle">${em}</text><text x="44" y="${y+14}" font-size="14" font-weight="700" fill="${txt}">${lab}</text>`;
+    s+=`<rect x="${X0}" y="${y}" width="${Math.max(2,va/mx*BW)}" height="16" rx="4" fill="${col}" opacity=".45"/><text x="${X0+Math.max(2,va/mx*BW)+6}" y="${y+13}" font-size="12" fill="${txt}">${fmt(va)}</text>`;
+    s+=`<rect x="${X0}" y="${y+22}" width="${Math.max(2,vb/mx*BW)}" height="16" rx="4" fill="${col}"/><text x="${X0+Math.max(2,vb/mx*BW)+6}" y="${y+35}" font-size="12" fill="${txt}">${fmt(vb)}</text>`;
+    let ch,up;if(i===0){up=vb>0;ch=vb>0?'added':'none'}else{const p=pct(vb,va);up=p>=0;ch=Math.abs(p)<1?'same':sgn(p)}
+    const c=ch==='none'||ch==='same'?mut:(up?'#2e9d55':'#d9532c');
+    s+=`<g transform="translate(420 ${y+19})"><circle r="17" fill="${c}"/><text y="7" font-size="20" font-weight="800" fill="#fff" text-anchor="middle">${ch==='same'||ch==='none'?'=':up?'↑':'↓'}</text></g><text x="420" y="${y+52}" font-size="12" font-weight="700" fill="${c}" text-anchor="middle">${ch}</text>`;
+    if(i<2)s+=`<text x="44" y="${y+34}" font-size="11" fill="${mut}">eat ↓</text>`});
+  svg.innerHTML=s;svg.setAttribute('aria-label',`No-spider cage: ${a[3]} grasshoppers, grass ${f(a[1],0)}%. Spider cage: ${spOn?B.spiders.length:0} spiders, ${b[3]} grasshoppers, grass ${f(b[1],0)}%.`)}
 let lastUI=0;
-function draw1(force){fitCanvas(cv);drawCage(cv,main,{risk:$('#showRisk').checked,trail:$('#showTrail').checked,cueR:val('cueR'),sel});
+function draw(force){[[$('#cA'),A],[$('#cB'),B]].forEach(([cv,c])=>{fitCanvas(cv);drawCage(cv,c,{risk:true,trail:false,cueR:P.cueR,sel:null})});
   const now=performance.now();if(!force&&now-lastUI<250)return;lastUI=now;showVals();
-  const w=web();budget();follow();
-  $('#tDay').textContent=f(main.day,1);$('#tGh').textContent=`${w.st[3]} / ${main.n0}`;$('#tGr').textContent=(w.dg>=0?'+':'')+f(w.dg,0)+'%';$('#tSo').textContent=(w.ds>=0?'+':'')+f(w.ds,0)+'%';
-  $('#tGr').style.color=w.dg>=0?'var(--good)':'var(--bad)';$('#tSo').style.color=w.ds>=0?'var(--good)':'var(--bad)';
-  legend($('#leg0'),[['#7cc24a','Grass (blades shrink as it is eaten)'],['#e0a812','Goldenrod (holes = chewed)'],['#a8a052','Grasshopper'],['#c49460','Hunting or glued spider (glued = white dot)'],['#161616','Roaming spider'],['rgba(230,60,40,.5)','Danger zone'],['#f2c14e','Frozen grasshopper']]);
-  const T=Math.max(30,main.day);
-  chart($('#cP'),{xmin:0,xmax:T,ymin:0,ymax:100,w:760,h:300,xlab:'Days',ylab:'Plant size (% of full)',series:[{pts:twin.hist.map(h=>[h[0],h[1]]),color:'#4fa03a',width:1.6,dash:'6 5'},{pts:twin.hist.map(h=>[h[0],h[2]]),color:'#e0a812',width:1.6,dash:'6 5'},{pts:main.hist.map(h=>[h[0],h[1]]),color:'#4fa03a',width:3},{pts:main.hist.map(h=>[h[0],h[2]]),color:'#e0a812',width:3}]});
-  legend($('#legC'),[['#4fa03a','Grass, this cage'],['#e0a812','Goldenrod, this cage'],['#4fa03a','Grass, identical cage with no spiders',1],['#e0a812','Goldenrod, no spiders',1]]);
-  cv.setAttribute('aria-label',`Field cage on day ${f(main.day,0)}: ${w.st[3]} grasshoppers, ${main.spiders.length} spiders, grass at ${f(w.st[1],0)}% and goldenrod at ${f(w.st[2],0)}% of full size.`);
-  $('#cP').setAttribute('aria-label','Grass and goldenrod size over time in this cage and in an identical cage without spiders.');
-  $('#hint').style.display=placing?'block':(sel?'none':'block');$('#hint').textContent=placing?'Tap where the spider should sit':'Tap a grasshopper to follow it';
-  msg1(w)}
-function msg1(w){const n=main.spiders.length,a=main.acc,tot=a.fg+a.fs+a.wt+a.mv||1;let m;
-  if(main.day<1)m='Press <b>Play</b>. Grasshoppers head for the plants they like best: grass first, goldenrod second.';
-  else if(!n&&!main.kills)m=`With no spiders, grasshoppers spend their time eating grass, and the grass is ${w.st[1]<50?'being grazed down hard':'getting thinner'}. Add spiders to see what a predator changes.`;
-  else if(spType==='glued')m=`These spiders <b>cannot kill</b> (${main.kills} kills), yet grass is ${f(Math.abs(w.dg),0)}% ${w.dg>=0?'higher':'lower'} than in the no-spider cage. Grasshoppers near a spider freeze or move into goldenrod, so they eat less grass. Changing prey <b>behavior</b> alone passes the effect down the food chain: a <b>trait-mediated</b> (fear) cascade.`;
-  else if(spType==='active')m=`Roaming spiders move around and leave no fixed danger zone, so grasshoppers barely change what they do (frozen ${f(a.wt/tot*100,0)}% of the time). Any help to the grass comes from grasshoppers being <b>eaten</b> (${main.kills} so far): a <b>density-mediated</b> cascade.`;
-  else m=`Spiders have eaten ${main.kills} grasshoppers, and the survivors spend ${f(a.wt/tot*100,0)}% of their time frozen and more time in goldenrod. Grass is ${(w.dg>=0?'+':'')+f(w.dg,0)}% and goldenrod ${(w.ds>=0?'+':'')+f(w.ds,0)}% compared with the no-spider cage. A predator two levels up is changing the plants: a <b>trophic cascade</b>. Switch to <b>Glued spider</b> to see how much of it is fear alone.`;
+  const a=A.stats(),b=B.stats();
+  $('#sA').innerHTML=`Day <b>${f(A.day,0)}</b> · 🦗 <b>${a[3]}</b> · grass <b>${f(a[1],0)}%</b>`;$('#sB').innerHTML=`🦗 <b>${b[3]}</b> · grass <b>${f(b[1],0)}%</b>`;
+  $('#hB').textContent=spOn?'With spiders':'Spiders removed';
+  legend($('#leg'),[['#7cc24a','Grass (shrinks and browns as it is eaten)'],['#a8a052','Grasshopper'],['#c49460','Spider'],['rgba(230,60,40,.5)','Area where grasshoppers sense a spider'],['#f2c14e','Grasshopper frozen in fear']]);
+  cascade();
+  chart($('#cG'),{xmin:0,xmax:SEASON,ymin:0,ymax:100,w:460,h:300,xlab:'Days',ylab:'Grass (% of full size)',series:[{pts:A.hist.map(h=>[h[0],h[1]]),color:'var(--muted)',width:2.6,dash:'6 5'},{pts:B.hist.map(h=>[h[0],h[1]]),color:'#4fa03a',width:3}]});
+  legend($('#legC'),[['var(--muted)','No spiders',1],['#4fa03a',spOn?'With spiders':'Spider cage']]);
+  $('#cA').setAttribute('aria-label',`Cage without spiders, day ${f(A.day,0)}: ${a[3]} grasshoppers, grass at ${f(a[1],0)}% of full size.`);
+  $('#cB').setAttribute('aria-label',`Cage ${spOn?'with '+B.spiders.length+' spiders':'with spiders removed'}, day ${f(B.day,0)}: ${b[3]} grasshoppers, grass at ${f(b[1],0)}% of full size.`);
+  $('#cG').setAttribute('aria-label','Grass size over the season in both cages.');
+  msg(a,b)}
+function msg(a,b){const g=pct(b[1],a[1]),eaten=B.kills;let m;
+  if(A.day<0.5)m='Press <b>Play</b>. Both cages start with the same grass and the same grasshoppers in the same places.';
+  else if(!spOn)m=`The spiders are gone. Grasshoppers in the right cage stop hiding and go back to eating, so its grass starts to fall toward the no-spider cage. Press <b>Put the spiders back</b> to restore the cascade.`;
+  else if(A.day<8)m='Grasshoppers in both cages head for the grass. In the right cage, they avoid the red areas around spiders and freeze when one is close.';
+  else m=`The spiders never eat grass, yet the grass in their cage is <b>${sgn(g)}</b> compared with the cage without them. Spiders reduce grasshoppers (they ate ${eaten}) and make the survivors spend time hiding instead of eating, so grasshoppers eat less grass. A predator's effect passing down two levels like this is a <b>trophic cascade</b>: spiders <b>↑</b>, grasshoppers <b>↓</b>, grass <b>↑</b>.${A.day>=SEASON?' The season is over. Start a new season or change the number of spiders.':''}`;
   $('#msg').innerHTML=m}
 let lastF=0;
 function frame(t){const dtR=Math.min(0.1,(t-lastF)/1000);lastF=t;
-  if($('#t1').classList.contains('on')){if(playing){const days=dtR*0.35*val('speed'),n=Math.ceil(days/0.004),P=P1();for(let i=0;i<n;i++){main.step(days/n,P);twin.step(days/n,P)}if(main.day>=120)setPlay(false)}draw1()}
-  if($('#t2').classList.contains('on'))frame2(dtR);
-  requestAnimationFrame(frame)}
-const setPlay=v=>{playing=v;$('#play').textContent=v?'Pause':'Play';$('#play2').textContent=v?'❚❚ Pause':'▶ Play'};$('#play').onclick=()=>setPlay(!playing);$('#play2').onclick=e=>{e.stopPropagation();setPlay(!playing)};
-$('#reset').onclick=()=>newSeason(false);
-$$('#spType button').forEach(b=>b.onclick=()=>{spType=b.dataset.sp;$$('#spType button').forEach(x=>x.classList.toggle('on',x===b));main.spiders.forEach(s=>s.type=spType);draw1(true)});
-['nGh','gShare'].forEach(id=>$('#'+id).addEventListener('change',()=>newSeason(true)));
-$('#nSp').addEventListener('change',()=>{const n=val('nSp'),r=main.r;if(n>main.spiders.length){const old=main.spiders.slice();placeSpiders(main,n-old.length,spType,r);main.spiders=old.concat(main.spiders)}else main.spiders=main.spiders.slice(0,n);draw1(true)});
-$('#rmSp').onclick=()=>{main.spiders=[];setSliders({nSp:0});draw1(true)};
-$('#addSp').onclick=()=>{placing=!placing;$('#addSp').textContent=placing?'Tap in the cage…':'Tap to place a spider';draw1(true)};
-$$('#t1 input').forEach(i=>i.addEventListener('input',()=>draw1(true)));
-cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
-  if(placing){main.spiders.push(newSpider(x,y,spType,main.r));main.spiders[main.spiders.length-1].moveT=6;setSliders({nSp:Math.min(6,main.spiders.length)});placing=false;$('#addSp').textContent='Tap to place a spider';draw1(true);return}
-  let best=null,bd=30;for(const h of main.hoppers){if(!h.alive)continue;const d=Math.hypot(h.x-x,h.y-y);if(d<bd){bd=d;best=h}}sel=best;if(sel)$('#showTrail').checked=true;draw1(true)});
-
-/* ---------- tab 2: four cages ---------- */
-const TR=[['none','No spiders','#8a8f98'],['sit','Hunting spiders','#8a5a3a'],['glued','Glued spiders (fear only)','#d9532c'],['active','Roaming spiders','#1f6fbf']];
-let X=null,xRunning=false,xRes=null;
-$('#minis').innerHTML=TR.map(([k,l],i)=>`<div class="mini"><h3>${l}</h3><canvas id="m${i}" width="380" height="240" role="img"></canvas><div class="small" id="ms${i}"></div></div>`).join('');
-const xP=()=>({rG:val('rG'),rS:val('rS'),eat:val('eat'),gPal:val('gPal'),fear:val('xFear'),att:val('xAtt'),cueR:val('cueR'),spMove:4,trail:false});
-function xMake(sd){return TR.map(([k])=>makeCageFull({seed:sd,goldShare:val('gShare')/100,nGh:val('xGh'),nSp:k==='none'?0:val('xSp'),spType:k==='none'?'sit':k,salt:3}))}
-function xReset(){X=xMake((Math.random()*1e9)|0);xRunning=false;xRes=null;$('#xRun').textContent=$('#xRun2').textContent='Run the season';drawX(true)}
-function drawX(force){X.forEach((c,i)=>{const m=$('#m'+i);fitCanvas(m);drawCage(m,c,{risk:true,trail:false,cueR:val('cueR'),sel:null});const s=c.stats(),a=c.acc,tot=a.fg+a.fs+a.wt+a.mv||1;
-  $('#ms'+i).innerHTML=`Day ${f(c.day,0)} · ${s[3]} grasshoppers · grass ${f(s[1],0)}% · goldenrod ${f(s[2],0)}% · frozen ${f(a.wt/tot*100,0)}% of the time`;m.setAttribute('aria-label',`${TR[i][1]} cage, day ${f(c.day,0)}: ${s[3]} grasshoppers, grass ${f(s[1],0)}%, goldenrod ${f(s[2],0)}%.`)});
-  if(force)showVals();xCharts()}
-function summarize(cs){return cs.map(c=>{const s=c.stats(),a=c.acc,tot=a.fg+a.fs+a.wt+a.mv||1;return{g:s[1],s:s[2],surv:s[3]/Math.max(1,c.n0)*100,feed:(a.fg+a.fs)/tot*100}})}
-function xCharts(){const res=xRes||summarize(X),base=res[0];const pct=(v,b)=>b>0?v/b*100:0;
-  bars($('#xC1'),{cats:TR.map(t=>t[1].replace(' (fear only)','')),series:[{color:'#4fa03a',vals:res.map(r=>pct(r.g,base.g))},{color:'#e0a812',vals:res.map(r=>pct(r.s,base.s))}],ymax:Math.max(150,...res.map(r=>Math.max(pct(r.g,base.g),pct(r.s,base.s))))*1.08,ylab:'% of no-spider cage',w:460,h:320,mb:56,fmt:v=>f(v,0)+'%'});
-  legend($('#xLeg1'),[['#4fa03a','Grass'],['#e0a812','Goldenrod']]);
-  bars($('#xC3'),{cats:TR.map(t=>t[1].replace(' (fear only)','')),series:[{color:'var(--s1)',vals:res.map(r=>r.surv)},{color:'var(--s3)',vals:res.map(r=>r.feed)}],ymax:110,ylab:'%',w:760,h:230,mb:40,fmt:v=>f(v,0)+'%'});
-  legend($('#xLeg3'),[['var(--s1)','Grasshoppers surviving'],['var(--s3)','Time spent eating']]);
-  // partition: total effect on grass = hunting - none; fear part = glued - none; eating part = remainder
-  const tot=res[1].g-base.g,fear=res[2].g-base.g,eat=tot-fear,svg=$('#xC2'),D=dk(),txt=D?'#e7ecf2':'#10202e';
-  const mx=Math.max(5,Math.abs(tot),Math.abs(fear),Math.abs(eat))*1.15,X0=230,sc=180/mx;
-  const row=(y,v,c,l)=>`<text x="10" y="${y+15}" font-size="13" fill="${txt}">${l}</text><rect x="${v>=0?X0:X0+v*sc}" y="${y}" width="${Math.abs(v)*sc}" height="22" rx="4" fill="${c}"/><text x="${X0+v*sc+(v>=0?6:-6)}" y="${y+16}" font-size="13" font-weight="700" fill="${txt}" text-anchor="${v>=0?'start':'end'}">${v>=0?'+':''}${f(v,1)}</text>`;
-  svg.setAttribute('viewBox','0 0 460 200');svg.innerHTML=`<line x1="${X0}" x2="${X0}" y1="10" y2="170" stroke="${D?'#5b6672':'#aab4c0'}"/>`+row(20,tot,'#8a5a3a','Total (hunting spiders)')+row(70,fear,'#d9532c','From fear alone')+row(120,eat,'#1f6fbf','From grasshoppers eaten')+`<text x="${X0}" y="192" font-size="11" fill="${D?'#aab4c0':'#5b6672'}" text-anchor="middle">change in grass size (percentage points) vs. no spiders</text>`;
-  svg.setAttribute('aria-label',`Effect of hunting spiders on grass: total ${f(tot,1)} points, of which fear ${f(fear,1)} and eating ${f(eat,1)}.`);
-  $('#xNote2').textContent=xRes?`Average of ${val('xRep')+1} seasons. Fear alone = glued-spider cage minus no-spider cage. The rest of the hunting-spider effect comes from grasshoppers actually being eaten.`:'Live values for the cages above. Run the full season for averages.';
-  $('#xC1').setAttribute('aria-label','Plant size at the end as a percent of the no-spider cage: '+res.map((r,i)=>`${TR[i][1]}: grass ${f(pct(r.g,base.g),0)}%, goldenrod ${f(pct(r.s,base.s),0)}%`).join('; '));
-  $('#xC3').setAttribute('aria-label','Grasshopper survival and time spent eating: '+res.map((r,i)=>`${TR[i][1]}: ${f(r.surv,0)}% survived, ${f(r.feed,0)}% eating`).join('; '));
-  const share=tot!==0?fear/tot*100:0;
-  $('#xMsg').innerHTML=!xRes?'All four cages start identical. Press <b>Run the season</b>.':
-    `Hunting spiders changed grass by ${tot>=0?'+':''}${f(tot,1)} points. Spiders that could not kill changed it by ${fear>=0?'+':''}${f(fear,1)} points, so about <b>${f(Math.max(0,Math.min(150,share)),0)}%</b> of the cascade came from fear rather than from eating. Roaming spiders, which create no fixed danger zone, killed grasshoppers but caused little change in their behavior. Schmitz found that the fear effect could be as large as the effect of predators actually eating prey.`}
-function frame2(dtR){if(!X)return;if(xRunning){const days=dtR*2.4,n=Math.ceil(days/0.005),P=xP();for(let i=0;i<n;i++)X.forEach(c=>c.step(days/n,P));
-    if(X[0].day>=val('xDays')){xRunning=false;$('#xRun').textContent=$('#xRun2').textContent='Averaging…';setTimeout(xReplicates,30)}}
-  drawX(false)}
-function xReplicates(){const P=xP(),reps=val('xRep'),T=val('xDays'),all=[summarize(X)];
-  for(let k=0;k<reps;k++){const cs=xMake((Math.random()*1e9)|0);for(let t=0;t<T;t+=0.01)cs.forEach(c=>c.step(0.01,P));all.push(summarize(cs))}
-  xRes=TR.map((_,i)=>{const o={};['g','s','surv','feed'].forEach(k=>o[k]=all.reduce((a,r)=>a+r[i][k],0)/all.length);return o});$('#xRun').textContent=$('#xRun2').textContent='Run another season';drawX(true)}
-$('#xRun').onclick=()=>{if(xRunning)return;if(X[0].day>=val('xDays')-0.01||xRes){X=xMake((Math.random()*1e9)|0);xRes=null}xRunning=true;$('#xRun').textContent=$('#xRun2').textContent='Running…'};
-$('#xReset').onclick=xReset;$('#xRun2').onclick=()=>$('#xRun').click();
-$$('#t2 input').forEach(i=>i.addEventListener('change',()=>{if(['xGh','xSp'].includes(i.id))xReset();else{xRes=null;drawX(true)}}));
-
-initTabs({t1:()=>draw1(true),t2:()=>drawX(true)});
-newSeason(false);xReset();requestAnimationFrame(t=>{lastF=t;frame(t)});
-window.addEventListener('resize',()=>draw1(true));
+  if(playing){const days=dtR*0.6*val('speed'),n=Math.ceil(days/0.005);for(let i=0;i<n;i++){A.step(days/n,P);B.step(days/n,P)}if(A.day>=SEASON){setPlay(false)}}
+  draw();requestAnimationFrame(frame)}
+$('#play').onclick=()=>{if(A.day>=SEASON)return;setPlay(!playing)};$('#play2').onclick=()=>{if(A.day>=SEASON)newSeason();setPlay(!playing)};
+$('#reset').onclick=newSeason;
+$('#toggleSp').onclick=()=>{if(spOn){savedSp=B.spiders;B.spiders=[];spOn=false;$('#toggleSp').textContent='Put the spiders back'}else{B.spiders=savedSp.length?savedSp:[];if(!B.spiders.length)placeSpiders(B,val('nSp'),'sit',B.r);spOn=true;$('#toggleSp').textContent='Remove the spiders'}draw(true)};
+$('#nGh').addEventListener('change',newSeason);
+$('#nSp').addEventListener('change',()=>{if(!spOn)return;const n=val('nSp'),old=B.spiders;if(n>old.length){placeSpiders(B,n-old.length,'sit',B.r);B.spiders=old.concat(B.spiders)}else B.spiders=old.slice(0,n);draw(true)});
+$$('.ctrl input').forEach(i=>i.addEventListener('input',()=>draw(true)));
+window.addEventListener('resize',()=>draw(true));
+newSeason();requestAnimationFrame(t=>{lastF=t;frame(t)});
 })();
 </script>
 <script>
 window.A11Y = {
-  tabsLabel: 'Simulation views',
-  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary, :root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}',
-  live: ['#msg','#xMsg']
+  tabsLabel: 'Simulation',
+  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary{color:#0d1b2a}}',
+  live: ['#msg']
 };
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->

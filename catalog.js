@@ -98,12 +98,12 @@ const ITEMS = [
 
   // ---------- Community Ecology ----------
   {
-    title: "Trophic Cascades: Spiders, Grasshoppers & Plants",
+    title: "Trophic Cascade: Spiders, Grasshoppers & Grass",
     topic: "community",
     type: "sim",
     url: "sims/trophic-cascade/",
-    desc: "Watch spiders, grasshoppers, grass, and goldenrod in a field cage. Compare hunting, roaming, and “glued” spiders that can scare but not kill, and see how much of a trophic cascade comes from fear.",
-    tags: ["trophic cascade", "predation risk", "trait-mediated", "Schmitz", "food web", "indirect effects"]
+    desc: "Two identical field cages of grass and grasshoppers, one with spiders. Watch the spiders protect the grass without ever touching it, then remove them and watch the cascade reverse.",
+    tags: ["trophic cascade", "food chain", "predation", "Schmitz", "indirect effects"]
   },
 
   // ---------- Field Methods & Conservation ----------
