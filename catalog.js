@@ -98,36 +98,12 @@ const ITEMS = [
 
   // ---------- Community Ecology ----------
   {
-    title: "Competition Simulations",
+    title: "Trophic Cascades: Spiders, Grasshoppers & Plants",
     topic: "community",
     type: "sim",
-    url: "sims/competition/",
-    desc: "Simulate competitive exclusion with Gause’s yeasts, niches on Connell’s barnacle shore, resource partitioning in MacArthur’s warblers, and resource ratios in Tilman’s diatom chemostats.",
-    tags: ["Gause", "Connell", "MacArthur", "Tilman", "competition", "niche", "real data"]
-  },
-  {
-    title: "Predation Simulations",
-    topic: "community",
-    type: "sim",
-    url: "sims/predator-prey/",
-    desc: "Remove Paine’s keystone sea star, build Huffaker’s orange-and-mite universes, cycle Krebs’s snowshoe hares with food and fences, and run Holling’s disc-search functional response.",
-    tags: ["Paine", "keystone", "Huffaker", "Krebs", "Holling", "predation", "functional response"]
-  },
-  {
-    title: "Island Biogeography & Fragmentation Simulations",
-    topic: "community",
-    type: "sim",
-    url: "sims/island-biogeography/",
-    desc: "Recolonize Krakatau, fumigate Simberloff & Wilson’s mangrove islands, watch Newmark’s national parks lose mammals, and fragment a forest to see edge effects and extinction debt (Haddad et al. 2015).",
-    tags: ["MacArthur & Wilson", "Simberloff", "Newmark", "Haddad", "fragmentation", "turnover", "real data"]
-  },
-  {
-    title: "Succession & Disturbance Simulations",
-    topic: "community",
-    type: "sim",
-    url: "sims/disturbance-succession/",
-    desc: "Test Connell & Slatyer’s three succession models with removals, storm a coral reef to find the diversity peak, roll Sousa’s boulders, and explore Tilman’s competition–colonization trade-off.",
-    tags: ["Connell", "Sousa", "Tilman", "succession", "intermediate disturbance", "real data"]
+    url: "sims/trophic-cascade/",
+    desc: "Watch spiders, grasshoppers, grass, and goldenrod in a field cage. Compare hunting, roaming, and “glued” spiders that can scare but not kill, and see how much of a trophic cascade comes from fear.",
+    tags: ["trophic cascade", "predation risk", "trait-mediated", "Schmitz", "food web", "indirect effects"]
   },
 
   // ---------- Field Methods & Conservation ----------
