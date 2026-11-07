@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trophic Cascades: Spiders, Grasshoppers, and Plants</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+--s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;
+--s1:#5a9cf0;--s2:#f07a45;--s3:#2fc08b;--s4:#e0a82a;--s5:#e67aa6;--s6:#9a8cf0;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:12px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px;align-items:start}
+.layout>.card{margin-bottom:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:12px}
+.grid2>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+select{font:inherit;font-size:.85rem;padding:4px 6px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl .hint{font-size:.75rem;color:var(--muted);margin:0 0 2px}
+.ctrl h3:first-child{margin-top:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent)}
+.check{display:flex;gap:6px;align-items:center;font-size:.86rem;margin:8px 0}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:0 0 10px}
+.tile{background:var(--soft);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:.76rem;color:var(--muted)}
+.tile .v{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums}
+.chart svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart .ax{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
+.chart .lab{fill:var(--text);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);margin:2px 0 6px}
+.legend span{display:flex;align-items:center;gap:5px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none}
+.msg{font-size:.9rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:8px 12px;margin-top:8px}
+.msg.good{border-left-color:var(--good)} .msg.bad{border-left-color:var(--bad)}
+.formula{font-family:ui-monospace,Consolas,monospace;font-size:.85rem;background:var(--soft);border-radius:8px;padding:8px 10px;margin:6px 0;line-height:1.7;overflow-x:auto}
+details{margin-top:8px} details summary{cursor:pointer;font-weight:600;font-size:.9rem}
+.presets button{font-size:.8rem;padding:5px 10px}
+/* quiz */
+.q{border-top:1px solid var(--line);padding:10px 0}
+.q:first-of-type{border-top:none}
+.q p{margin:0 0 6px;font-weight:600}
+.q .opts{display:flex;flex-direction:column;gap:5px}
+.q .opts button{text-align:left}
+.q .opts button.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--card))}
+.q .opts button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
+.q .fb{font-size:.88rem;margin-top:6px;min-height:1em}
+canvas{display:block;width:100%;height:auto;border-radius:8px;background:var(--soft);touch-action:manipulation}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:520px){.grid2{grid-template-columns:1fr} body{padding:10px}}
+.ctrl label.check{justify-content:flex-start;font-size:.86rem}
+.ctrl .island h3{display:flex;align-items:center;gap:6px}
+.rng{display:flex;gap:8px;align-items:center}
+.rng input[type=range]{flex:1;min-width:0}
+.box{width:78px;flex:none;font:inherit;font-size:.82rem;padding:3px 5px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--text);font-variant-numeric:tabular-nums}
+.paper{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--s4);border-radius:12px;padding:12px 16px;margin:0 0 12px}
+.paper .cite{font-size:.84rem;color:var(--muted);margin:6px 0 0}
+.paper p{margin:6px 0}
+.steps{counter-reset:st;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:st;position:relative;padding:6px 0 6px 34px;border-top:1px solid var(--line);font-size:.9rem}
+.steps li:first-child{border-top:none}
+.steps li::before{content:counter(st);position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.steps li button{margin-top:5px;font-size:.8rem;padding:4px 10px}
+table.cmp{border-collapse:collapse;width:100%;font-size:.86rem}
+table.cmp th,table.cmp td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.cmp th{background:var(--soft)}
+table.cmp td.num{text-align:right;font-variant-numeric:tabular-nums}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.traits input[type=number]{width:70px;font:inherit;font-size:.8rem;padding:2px 4px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--text)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .steps li::before{color:#0d1b2a}}
+label.hasbox .val{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.layout>*{min-width:0}
+/* paper tabs */
+.pp-sec{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.pp-sec>h2{display:flex;align-items:center;gap:8px;font-size:1.05rem}
+.pp-sec>h2 .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-size:.85rem;flex:none}
+.pp-sec p,.pp-sec li{font-size:.93rem}
+.pp-head{border-left:5px solid var(--s4)}
+.pp-head h2{font-size:1.15rem;margin-bottom:4px}
+.pp-head .cite{font-size:.85rem;color:var(--muted);margin:4px 0 0}
+.hyp{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:6px}
+.hyp div{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:.88rem}
+.pred-opts{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.pred-opts button{text-align:left}
+.pred-opts button.picked{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,var(--card));font-weight:600}
+.locked{position:relative}
+.locked>.lockmsg{display:block;padding:16px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+.locked>.lockbody{display:none}
+.locked.unlocked>.lockmsg{display:none}
+.locked.unlocked>.lockbody{display:block}
+.discuss li{margin:6px 0}
+.datatbl{margin-top:8px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pp-sec>h2 .num{color:#0d1b2a}}
+.pp-sec .chart svg{max-width:760px;margin:0 auto}
+.paperstrip{font-size:.88rem;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--s4);border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.paperstrip .cite{color:var(--muted);font-size:.8rem;margin-top:4px}
+.ctrl label.hasbox{display:block}
+
+.cagewrap{position:relative}
+#cage{width:100%;aspect-ratio:760/480;display:block;border-radius:12px;cursor:pointer;touch-action:manipulation}
+.cagewrap .hint{position:absolute;left:10px;bottom:8px;font-size:.75rem;background:rgba(0,0,0,.55);color:#fff;padding:3px 8px;border-radius:6px;pointer-events:none}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 10px}
+.seg button{flex:1 1 auto;font-size:.82rem;padding:6px 8px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.follow{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:.88rem;align-items:center}
+.meter{height:10px;border-radius:6px;background:var(--soft);overflow:hidden;border:1px solid var(--line)}
+.meter i{display:block;height:100%;background:linear-gradient(90deg,#f2c14e,#d9532c)}
+#web{width:100%;max-width:460px;display:block;margin:0 auto}
+.budget{display:flex;height:26px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin:6px 0}
+.budget span{display:block;height:100%;transition:width .3s}
+.minis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mini{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px}
+.mini h3{margin:0 0 6px;font-size:.92rem}
+.mini canvas{width:100%;aspect-ratio:760/480;display:block;border-radius:8px}
+.mini .small{margin-top:4px}
+@media (max-width:640px){.minis{grid-template-columns:minmax(0,1fr)}}
+.big{font-size:1.05rem}
+.ovl{position:absolute;right:10px;top:10px;border-radius:999px;padding:6px 14px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;border:1px solid rgba(255,255,255,.4)}
+@media (max-width:900px){#t1 .layout>.ctrl,#t2 .layout>.ctrl{order:2}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>Trophic Cascades</h1>
+<p class="sub">A predator can help plants without ever touching them. Watch spiders, grasshoppers, grass, and goldenrod in a field cage, and find out how much of the effect comes from <b>eating</b> grasshoppers and how much comes from <b>scaring</b> them.</p>
+<div class="paperstrip">Built on Oswald Schmitz's old-field cages in Connecticut: the nursery web spider <i>Pisaurina mira</i> sits and waits in the plants; the red-legged grasshopper <i>Melanoplus femurrubrum</i> prefers grass but hides in goldenrod (<i>Solidago</i>) when spiders are near. Spiders with their mouthparts glued shut, which could not kill anything, still changed the plants almost as much as hunting spiders. Rates here are illustrative.
+  <div class="cite">Schmitz, O. J., A. P. Beckerman, &amp; K. M. O'Brien (1997). Behaviorally mediated trophic cascades: effects of predation risk on food web interactions. <i>Ecology</i> 78: 1388–1399.</div></div>
+<nav class="tabs">
+  <button class="on" data-tab="t1">One field cage</button>
+  <button data-tab="t2">Four cages side by side</button>
+</nav>
+
+<!-- ================= ONE CAGE ================= -->
+<section class="panel on" id="t1">
+<div class="layout">
+  <div class="card ctrl">
+    <div class="row"><button class="primary" id="play">Play</button><button id="reset">New season</button></div>
+    <label for="speed">Speed <span class="val" id="speedV"></span></label><input type="range" id="speed" min="1" max="12" step="1" value="3" data-suf="×">
+    <h3>Predator</h3>
+    <div class="seg" id="spType"><button data-sp="sit" class="on">Hunting spider<br><span class="small">sits and waits</span></button><button data-sp="glued">Glued spider<br><span class="small">scary, can't kill</span></button><button data-sp="active">Roaming spider<br><span class="small">hunts actively</span></button></div>
+    <label for="nSp">Spiders in the cage <span class="val" id="nSpV"></span></label><input type="range" id="nSp" min="0" max="6" step="1" value="2">
+    <div class="row"><button id="addSp">Tap to place a spider</button><button id="rmSp">Remove spiders now</button></div>
+    <label for="att">Spider catch success <span class="val" id="attV"></span></label><input type="range" id="att" min="0" max="1" step="0.05" value="0.5" data-d="2">
+    <label for="cueR">How far grasshoppers can sense a spider (cm) <span class="val" id="cueRV"></span></label><input type="range" id="cueR" min="5" max="40" step="1" value="20">
+    <h3>Grasshoppers</h3>
+    <label for="nGh">Grasshoppers at the start <span class="val" id="nGhV"></span></label><input type="range" id="nGh" min="0" max="40" step="1" value="16">
+    <label for="fear">How strongly they react to danger <span class="val" id="fearV"></span></label><input type="range" id="fear" min="0" max="2" step="0.05" value="1" data-d="2">
+    <label for="eat">Eating rate <span class="val" id="eatV"></span></label><input type="range" id="eat" min="0.01" max="0.2" step="0.005" value="0.05" data-d="3">
+    <label for="gPal">How much they like goldenrod (vs. grass = 1) <span class="val" id="gPalV"></span></label><input type="range" id="gPal" min="0" max="1" step="0.05" value="0.4" data-d="2">
+    <h3>Plants</h3>
+    <label for="rG">Grass regrowth per day <span class="val" id="rGV"></span></label><input type="range" id="rG" min="0" max="0.15" step="0.005" value="0.04" data-d="3">
+    <label for="rS">Goldenrod regrowth per day <span class="val" id="rSV"></span></label><input type="range" id="rS" min="0" max="0.15" step="0.005" value="0.025" data-d="3">
+    <label for="gShare">Share of plants that are goldenrod <span class="val" id="gShareV"></span></label><input type="range" id="gShare" min="10" max="60" step="5" value="30" data-suf="%">
+    <h3>Show</h3>
+    <label class="check"><input type="checkbox" id="showRisk" checked> <span>Danger zones grasshoppers can sense</span></label>
+    <label class="check"><input type="checkbox" id="showTrail"> <span>Grasshopper paths</span></label>
+  </div>
+  <div>
+    <div class="tiles"><div class="tile"><div class="k">Day</div><div class="v" id="tDay"></div></div><div class="tile"><div class="k">Grasshoppers alive</div><div class="v" id="tGh"></div></div><div class="tile"><div class="k">Grass vs. no-spider cage</div><div class="v" id="tGr"></div></div><div class="tile"><div class="k">Goldenrod vs. no-spider cage</div><div class="v" id="tSo"></div></div></div>
+    <div class="card"><div class="cagewrap"><canvas id="cage" width="760" height="480" role="img"></canvas><div class="hint" id="hint">Tap a grasshopper to follow it</div><button class="ovl" id="play2" aria-label="Play or pause">▶ Play</button></div>
+      <div class="legend" id="leg0" style="margin-top:6px"></div></div>
+    <div class="grid2">
+      <div class="card"><h2>The food web right now</h2><svg id="web" viewBox="0 0 460 360" role="img"></svg><p class="small muted">Arrow width = how much food is flowing. Dashed = fear. Colored labels = effect of the spiders on each plant, compared with an identical cage that has no spiders.</p></div>
+      <div class="card"><h2>How grasshoppers spend their time</h2><div class="budget" id="budget"></div><div class="legend" id="legB"></div>
+        <h2 style="margin-top:14px">Followed grasshopper</h2><div id="follow" class="small muted">Tap a grasshopper in the cage.</div></div>
+    </div>
+    <div class="card chart"><h2>Plants over the season</h2><div class="legend" id="legC"></div><svg id="cP"></svg></div>
+    <div class="msg" id="msg"></div>
+  </div>
+</div>
+</section>
+
+<!-- ================= FOUR CAGES ================= -->
+<section class="panel" id="t2">
+<div class="layout">
+  <div class="card ctrl">
+    <p class="small">Four identical cages start with the same plants and grasshoppers in the same places. Only the predator differs.</p>
+    <div class="row"><button class="primary" id="xRun">Run the season</button><button id="xReset">Reset</button></div>
+    <label for="xDays">Season length (days) <span class="val" id="xDaysV"></span></label><input type="range" id="xDays" min="10" max="80" step="5" value="40">
+    <label for="xGh">Grasshoppers per cage <span class="val" id="xGhV"></span></label><input type="range" id="xGh" min="4" max="40" step="1" value="16">
+    <label for="xSp">Spiders per cage <span class="val" id="xSpV"></span></label><input type="range" id="xSp" min="1" max="6" step="1" value="2">
+    <label for="xFear">How strongly grasshoppers react to danger <span class="val" id="xFearV"></span></label><input type="range" id="xFear" min="0" max="2" step="0.05" value="1" data-d="2">
+    <label for="xAtt">Spider catch success <span class="val" id="xAttV"></span></label><input type="range" id="xAtt" min="0" max="1" step="0.05" value="0.5" data-d="2">
+    <label for="xRep">Extra replicate seasons for the averages <span class="val" id="xRepV"></span></label><input type="range" id="xRep" min="0" max="12" step="1" value="6">
+    <p class="small muted">Other settings (eating rate, plant regrowth, goldenrod share) come from the first tab.</p>
+  </div>
+  <div>
+    <div class="row" style="margin-bottom:8px"><button class="primary" id="xRun2">Run the season</button></div><div class="minis" id="minis"></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="card chart"><h2>Plants at the end (% of the no-spider cage)</h2><div class="legend" id="xLeg1"></div><svg id="xC1"></svg></div>
+      <div class="card chart"><h2>Where did the effect on grass come from?</h2><svg id="xC2"></svg><p class="small muted" id="xNote2">Run the season to see the breakdown.</p></div>
+    </div>
+    <div class="card chart"><h2>Grasshoppers: survival and time spent eating</h2><div class="legend" id="xLeg3"></div><svg id="xC3"></svg></div>
+    <div class="msg" id="xMsg"></div>
+  </div>
+</div>
+</section>
+</div>
+
+<script>
+/* ---------- shared helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const f=(v,d=2)=>Number.isFinite(v)?v.toFixed(d):'—';
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const NS='http://www.w3.org/2000/svg';
+function niceTicks(lo,hi,n=5){const span=hi-lo||1;let step=Math.pow(10,Math.floor(Math.log10(span/n)));const err=span/n/step;if(err>=7.5)step*=10;else if(err>=3.5)step*=5;else if(err>=1.5)step*=2;const out=[];for(let v=Math.ceil(lo/step-1e-9)*step;v<=hi+1e-9;v+=step)out.push(+v.toFixed(10));return out}
+let _clip=0;
+/* chart(svg,{xmin,xmax,ymin,ymax,xlab,ylab,series:[{pts,color,width,dash,fill}],points:[{x,y,color,r,ring}],texts:[{x,y,t,color,anchor}],logx,logy}) */
+function chart(svg,o){
+  const W=o.w||560,H=o.h||330,m={l:o.ml||56,r:14,t:12,b:44};
+  const pw=W-m.l-m.r,ph=H-m.t-m.b;
+  const tx=v=>o.logx?Math.log10(v):v, ty=v=>o.logy?Math.log10(v):v;
+  const x0=tx(o.xmin),x1=tx(o.xmax),y0=ty(o.ymin),y1=ty(o.ymax);
+  const X=v=>m.l+(tx(v)-x0)/(x1-x0)*pw, Y=v=>m.t+ph-(ty(v)-y0)/(y1-y0)*ph;
+  const id='c'+(++_clip);
+  let s=`<defs><clipPath id="${id}"><rect x="${m.l}" y="${m.t}" width="${pw}" height="${ph}"/></clipPath></defs>`;
+  const xt=o.logx?logTicks(o.xmin,o.xmax):niceTicks(o.xmin,o.xmax,o.xticks||6), yt=o.logy?logTicks(o.ymin,o.ymax):niceTicks(o.ymin,o.ymax,5);
+  xt.forEach(v=>{const x=X(v);if(x<m.l-1||x>m.l+pw+1)return;s+=`<line class="grid" x1="${x}" x2="${x}" y1="${m.t}" y2="${m.t+ph}"/><text x="${x}" y="${m.t+ph+16}" text-anchor="middle">${fmtTick(v)}</text>`});
+  yt.forEach(v=>{const y=Y(v);if(y<m.t-1||y>m.t+ph+1)return;s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${y}" y2="${y}"/><text x="${m.l-6}" y="${y+4}" text-anchor="end">${fmtTick(v)}</text>`});
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab||''}</text>`;
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
+  s+=`<g clip-path="url(#${id})">`;
+  (o.series||[]).forEach(se=>{if(!se.pts||!se.pts.length)return;
+    const d=se.pts.filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1])).map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(Math.max(o.logy?1e-9:-1e9,Math.min(p[1],o.ymax*50+1e6))).toFixed(1)).join('');
+    if(se.fill)s+=`<path d="${d}" fill="${se.color}" fill-opacity="${se.fill}" stroke="none"/>`;
+    else s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="${se.width||2.2}" ${se.dash?`stroke-dasharray="${se.dash}"`:''} stroke-linejoin="round" stroke-linecap="round" ${se.opacity?`opacity="${se.opacity}"`:''}/>`});
+  (o.points||[]).forEach(p=>{if(!Number.isFinite(p.x)||!Number.isFinite(p.y))return;s+=`<circle cx="${X(p.x)}" cy="${Y(p.y)}" r="${p.r||5}" fill="${p.ring?'var(--card)':p.color}" stroke="${p.color}" stroke-width="${p.ring?2.5:1.5}"/>`});
+  s+='</g>';
+  (o.texts||[]).forEach(t=>{s+=`<text x="${X(t.x)+(t.dx||0)}" y="${Y(t.y)+(t.dy||0)}" text-anchor="${t.anchor||'start'}" style="fill:${t.color||'var(--text)'};font-weight:600">${t.t}</text>`});
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;
+  const inv=(cx,cy)=>{const r=svg.getBoundingClientRect(),sx=(cx-r.left)/r.width*W,sy=(cy-r.top)/r.height*H;
+    let vx=x0+(sx-m.l)/pw*(x1-x0),vy=y0+(m.t+ph-sy)/ph*(y1-y0);if(o.logx)vx=10**vx;if(o.logy)vy=10**vy;return[vx,vy,sx>=m.l&&sx<=m.l+pw&&sy>=m.t&&sy<=m.t+ph]};
+  return{X,Y,inv};
+}
+function logTicks(lo,hi){const out=[];for(let e=Math.floor(Math.log10(lo));e<=Math.ceil(Math.log10(hi));e++)out.push(10**e);return out}
+function fmtTick(v){const a=Math.abs(v);if(a>=10000)return(v/1000)+'k';if(a>=1||a===0)return+v.toFixed(2)+'';return+v.toPrecision(2)+''}
+function legend(el,items){el.innerHTML=items.map(([c,t,dash])=>`<span><i class="sw" style="background:${dash?'transparent':c};${dash?`border:2px dashed ${c}`:''}"></i>${t}</span>`).join('')}
+/* sliders: <input type=range id=x data-d=decimals> with <span id=xV> */
+function val(id){const b=document.getElementById(id+'Box');return b&&b.value!==''?+b.value:+document.getElementById(id).value}
+function showVals(){$$('input[type=range]').forEach(r=>{const b=document.getElementById(r.id+'Box'),v=val(r.id);if(b&&document.activeElement!==b&&+b.value!==v)b.value=v;const o=$('#'+r.id+'V');if(o)o.textContent=(r.dataset.pre||'')+v.toFixed(+(r.dataset.d||0))+(r.dataset.suf||'')})}
+/* typed-value boxes beside every slider (skip with data-nobox) */
+function addBoxes(root=document){$$('input[type=range]:not([data-nobox])',root).forEach(r=>{if(document.getElementById(r.id+'Box'))return;
+  const w=document.createElement('div');w.className='rng';r.parentNode.insertBefore(w,r);w.appendChild(r);
+  const b=document.createElement('input');b.type='number';b.className='box';b.id=r.id+'Box';b.step='any';b.value=r.value;
+  const lab=r.labels&&r.labels[0];if(lab)lab.classList.add('hasbox');let nm=lab?lab.cloneNode(true):null;if(nm)$$('.val',nm).forEach(x=>x.remove());
+  b.setAttribute('aria-label',(nm?nm.textContent.replace(/\s+/g,' ').trim():r.id)+', type an exact value');b.title='Type an exact value';w.appendChild(b);
+  b.addEventListener('change',()=>{let v=+b.value;if(!Number.isFinite(v)){b.value=r.value;return}
+    const lo=b.dataset.min!==undefined?+b.dataset.min:+r.min,hi=b.dataset.max!==undefined?+b.dataset.max:+r.max;v=Math.min(hi,Math.max(lo,v));b.value=v;
+    r._fromBox=true;r.value=v;r.dispatchEvent(new Event('input',{bubbles:true}));r._fromBox=false})})}
+document.addEventListener('input',e=>{const r=e.target;if(r.type!=='range'||r._fromBox)return;const b=document.getElementById(r.id+'Box');if(b)b.value=r.value},true);
+function setSliders(obj){Object.entries(obj).forEach(([k,v])=>{const e=$('#'+k);if(!e)return;if(e.type==='checkbox')e.checked=!!v;else{e.value=v;const b=document.getElementById(k+'Box');if(b)b.value=v}});showVals()}
+/* tabs */
+function initTabs(RENDER){let cur=$('nav.tabs button.on').dataset.tab;
+  $$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));cur=b.dataset.tab;if(RENDER[cur])RENDER[cur]();try{history.replaceState(null,'','#'+cur)}catch(e){}});
+  const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();
+  return()=>cur}
+/* quiz */
+function quiz(el,QS){el.innerHTML=QS.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${q.q}</p><div class="opts">${q.opts.map((o,j)=>`<button data-j="${j}">${o}</button>`).join('')}</div><div class="fb" aria-live="polite"></div></div>`).join('')+'<p class="small muted score"></p>';
+  const got={};
+  $$('.q',el).forEach(d=>{const q=QS[+d.dataset.i];$$('.opts button',d).forEach(b=>b.onclick=()=>{const j=+b.dataset.j,ok=j===q.a;
+    $$('.opts button',d).forEach(x=>x.classList.remove('right','wrong'));b.classList.add(ok?'right':'wrong');
+    $('.fb',d).innerHTML=(ok?'<b class="ok" style="color:var(--good)">Correct.</b> ':'<b style="color:var(--bad)">Not quite.</b> ')+(ok?q.why:(q.hint||'Try again, or look back at the results.'));
+    if(!(d.dataset.i in got))got[d.dataset.i]=ok;$('.score',el).textContent=`First-try score: ${Object.values(got).filter(Boolean).length} of ${Object.keys(got).length} answered (${QS.length} total).`})})}
+/* bar chart: bars(svg,{cats:[...],series:[{name,color,vals:[...]}],ymax,ylab,xlab,w,h,fmt}) */
+function bars(svg,o){
+  const W=o.w||560,H=o.h||330,m={l:o.ml||56,r:14,t:16,b:o.mb||52},pw=W-m.l-m.r,ph=H-m.t-m.b,n=o.cats.length,k=o.series.length;
+  const ymax=o.ymax||Math.max(...o.series.flatMap(s=>s.vals))*1.15||1,Y=v=>m.t+ph-v/ymax*ph,gw=pw/n,bw=Math.min(60,gw*0.8/k);
+  let s='';niceTicks(0,ymax,5).forEach(v=>{const y=Y(v);s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${y}" y2="${y}"/><text x="${m.l-6}" y="${y+4}" text-anchor="end">${fmtTick(v)}</text>`});
+  s+=`<line class="ax" x1="${m.l}" x2="${m.l+pw}" y1="${m.t+ph}" y2="${m.t+ph}"/>`;
+  o.cats.forEach((c,i)=>{const cx=m.l+gw*(i+0.5);
+    o.series.forEach((se,j)=>{const v=se.vals[i];if(v==null||!Number.isFinite(v))return;const x=cx-k*bw/2+j*bw,y=Y(v);
+      s+=`<rect x="${x+1}" y="${y}" width="${bw-2}" height="${m.t+ph-y}" fill="${se.color}" rx="2" ${se.hatch?'fill-opacity=".45" stroke="'+se.color+'" stroke-width="1.5" stroke-dasharray="4 2"':''}/>`;
+      s+=`<text x="${x+bw/2}" y="${y-4}" text-anchor="middle" style="fill:var(--text);font-size:11px">${o.fmt?o.fmt(v):fmtTick(+v.toFixed(2))}</text>`});
+    String(c).split('\n').forEach((line,li)=>{s+=`<text x="${cx}" y="${m.t+ph+16+li*13}" text-anchor="middle">${line}</text>`})});
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
+  if(o.xlab)s+=`<text class="lab" x="${m.l+pw/2}" y="${H-6}" text-anchor="middle">${o.xlab}</text>`;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s}
+
+/* ---------- paper-tab engine ----------
+ P = {id, cite, doi, why, question, hyps:[[title,text]], design(html), predict:{q,opts:[text],note?:[fb per option]},
+      results(html), afterResults(fn), found(html), interpret:[quiz items], model(html)?, afterModel(fn)?, discuss:[...] } */
+function paperTab(el,P){
+  const sec=(n,t,body,cls='')=>`<div class="pp-sec ${cls}"><h2>${n?`<span class="num">${n}</span>`:''}${t}</h2>${body}</div>`;
+  let n=1,h='';
+  h+=`<div class="pp-sec pp-head"><h2>${P.title}</h2><p style="margin:0">${P.why}</p><p class="cite">${P.cite}${P.doi?` <a href="https://doi.org/${P.doi}" target="_blank" rel="noopener">doi:${P.doi}</a>`:''}${P.url?` <a href="${P.url}" target="_blank" rel="noopener">Read it</a>`:''}</p></div>`;
+  h+=sec(n++,'The question',`<p>${P.question}</p>${P.hyps?`<div class="hyp">${P.hyps.map(x=>`<div><b>${x[0]}</b><br>${x[1]}</div>`).join('')}</div>`:''}`);
+  h+=sec(n++,'What they did',P.design);
+  h+=sec(n++,'Your prediction',`<p>${P.predict.q}</p><div class="pred-opts" id="${P.id}-pred">${P.predict.opts.map((o,i)=>`<button data-i="${i}" aria-pressed="false">${o}</button>`).join('')}</div><div class="msg small" id="${P.id}-predfb" style="display:none" aria-live="polite"></div>`);
+  h+=sec(n++,'What they found',`<div class="locked" id="${P.id}-lock"><div class="lockmsg">Make a prediction above to unlock the results.</div><div class="lockbody">${P.results}<div class="msg" style="margin-top:10px">${P.found}</div></div></div>`);
+  h+=sec(n++,'Interpret the results',`<div id="${P.id}-quiz"></div>`);
+  if(P.model)h+=sec(n++,P.modelTitle||'Try the model',P.model);
+  h+=sec(n++,'Discuss',`<ol class="discuss">${P.discuss.map(d=>`<li>${d}</li>`).join('')}</ol>`);
+  el.innerHTML=h;
+  quiz($(`#${P.id}-quiz`),P.interpret);
+  let shown=false;
+  $$(`#${P.id}-pred button`).forEach(b=>b.onclick=()=>{
+    $$(`#${P.id}-pred button`).forEach(x=>{x.classList.toggle('picked',x===b);x.setAttribute('aria-pressed',x===b?'true':'false')});
+    const fb=$(`#${P.id}-predfb`);fb.style.display='block';fb.innerHTML=`<b>Prediction saved.</b> ${P.predict.note?P.predict.note[+b.dataset.i]:''} Scroll down to compare with what the authors found.`;
+    const L=$(`#${P.id}-lock`);L.classList.add('unlocked');if(!shown){shown=true;if(P.afterResults)P.afterResults()}});
+  if(P.afterModel)P.afterModel();
+  return{redraw:()=>{if(shown&&P.afterResults)P.afterResults();if(P.afterModel)P.afterModel()}};
+}
+
+(function(){
+addBoxes();
+const W=760,H=480,PX_PER_CM=760/100; // cage is 1 m wide
+const dk=()=>matchMedia('(prefers-color-scheme: dark)').matches;
+function rng(seed){let a=seed>>>0;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const CUEW={sit:1,glued:1,active:0.03};
+
+/* ---------- the model ---------- */
+function makeLayout(seed,goldShare){const r=rng(seed),plants=[],cols=8,rows=5;
+  for(let i=0;i<cols;i++)for(let j=0;j<rows;j++){const x=(i+0.5)*W/cols+(r()-0.5)*50,y=(j+0.5)*H/rows+(r()-0.5)*44;plants.push({x,y,gold:false,B:0.85+r()*0.15,rot:r()*6.28,seed:r()})}
+  const idx=plants.map((p,i)=>i).sort((a,b)=>plants[a].seed-plants[b].seed);const nG=Math.round(plants.length*goldShare);idx.slice(0,nG).forEach(i=>plants[i].gold=true);
+  return plants}
+function placeSpiders(cage,n,type,r){const grass=cage.plants.filter(p=>!p.gold);cage.spiders=[];
+  for(let k=0;k<n;k++){let best=null,bd=-1;for(let t=0;t<20;t++){const p=grass[(r()*grass.length)|0];const d=Math.min(1e9,...cage.spiders.map(s=>Math.hypot(s.x-p.x,s.y-p.y)));if(d>bd){bd=d;best=p}}
+    cage.spiders.push(newSpider(best.x+(r()-0.5)*10,best.y+(r()-0.5)*10,type,r))}}
+function newSpider(x,y,type,r){return{x,y,tx:x,ty:y,type,handling:0,moveT:2+r()*3,hd:r()*6.28,leg:0,kills:0}}
+const proto={
+  stats(){let g=0,s=0,ng=0,ns=0;for(const p of this.plants){if(p.gold){s+=p.B;ns++}else{g+=p.B;ng++}}return[this.day,100*g/Math.max(1,ng),100*s/Math.max(1,ns),this.hoppers.filter(h=>h.alive).length]},
+  step(dt,P){const r=this.r,plants=this.plants,sp=this.spiders;
+    for(const p of plants){const rr=p.gold?P.rS:P.rG;p.B+=(rr*p.B*(1-p.B)+0.002)*dt;if(p.B>1)p.B=1}
+    const live=this.hoppers.filter(h=>h.alive);
+    for(const s of sp){s.leg+=dt*4;if(s.handling>0)s.handling-=dt;
+      if(s.type==='active'){let tg=null,bd=170;for(const h of live){const d=Math.hypot(h.x-s.x,h.y-s.y);if(d<bd){bd=d;tg=h}}
+        if(s.handling<=0&&tg&&bd<110){s.tx=tg.x;s.ty=tg.y}else tg=null;if(s.handling<=0&&!tg&&Math.hypot(s.tx-s.x,s.ty-s.y)<8){s.tx=30+r()*(W-60);s.ty=30+r()*(H-60)}else if(Math.hypot(s.tx-s.x,s.ty-s.y)<8){s.tx=30+r()*(W-60);s.ty=30+r()*(H-60)}
+        const d=Math.hypot(s.tx-s.x,s.ty-s.y);if(d>1&&s.handling<=0){const v=Math.min(d,(tg?200:140)*dt);s.hd=Math.atan2(s.ty-s.y,s.tx-s.x);s.x+=Math.cos(s.hd)*v;s.y+=Math.sin(s.hd)*v;s.leg+=v*0.4}}
+      else{s.moveT-=dt;if(s.moveT<=0){const grass=plants.filter(p=>!p.gold);const p=grass[(r()*grass.length)|0];s.tx=p.x+(r()-0.5)*12;s.ty=p.y+(r()-0.5)*12;s.moveT=P.spMove*(0.6+r()*0.8)}
+        const d=Math.hypot(s.tx-s.x,s.ty-s.y);if(d>1){const v=Math.min(d,300*dt);s.hd=Math.atan2(s.ty-s.y,s.tx-s.x);s.x+=Math.cos(s.hd)*v;s.y+=Math.sin(s.hd)*v;s.leg+=v*0.4}}}
+    const R=P.cueR*PX_PER_CM;let eG=0,eS=0,fearSum=0;
+    for(const h of live){
+      let cue=0,near=null,nd=1e9;for(const s of sp){const d=Math.hypot(h.x-s.x,h.y-s.y);if(d<R)cue+=CUEW[s.type]*(1-d/R);if(d<nd){nd=d;near=s}}
+      h.fear+=(P.fear*6*Math.min(1.5,cue)-0.5*h.fear)*dt;if(h.fear<0)h.fear=0;if(h.fear>1.5)h.fear=1.5;fearSum+=h.fear;
+      h.decide-=dt;const cur=plants[h.tgt];
+      if(h.decide<=0||!cur||cur.B<0.06){let best=-1,bs=-1e9;
+        for(let i=0;i<plants.length;i++){const p=plants[i];const d=Math.hypot(p.x-h.x,p.y-h.y);let danger=0;for(const s of sp){danger+=CUEW[s.type]*Math.exp(-Math.hypot(p.x-s.x,p.y-s.y)/R)}
+          const sc=(p.gold?P.gPal:1)*p.B-0.0011*d-P.fear*Math.min(1,h.fear)*danger*1.3+(p.gold?0.7*Math.min(1,h.fear)*P.fear:0)+(r()-0.5)*0.08;if(sc>bs){bs=sc;best=i}}
+        h.tgt=best;h.decide=0.25+r()*0.35;h.ox=(r()-0.5)*16;h.oy=(r()-0.5)*16}
+      const p=plants[h.tgt];const tx=p.x+h.ox,ty=p.y+h.oy,d=Math.hypot(tx-h.x,ty-h.y);
+      if(h.jump>0)h.jump-=dt;
+      if(cue>0.55&&r()<dt*4*P.fear&&near){const a=Math.atan2(h.y-near.y,h.x-near.x)+(r()-0.5);h.x=Math.max(8,Math.min(W-8,h.x+Math.cos(a)*45));h.y=Math.max(8,Math.min(H-8,h.y+Math.sin(a)*45));h.jump=0.08;h.decide=0;h.state='move';this.acc.mv+=dt;continue}
+      const vig=Math.min(0.9,Math.min(1,h.fear)*0.7);
+      if(d>5){const v=Math.min(d,380*dt);h.hd=Math.atan2(ty-h.y,tx-h.x);h.x+=Math.cos(h.hd)*v;h.y+=Math.sin(h.hd)*v;h.leg+=v*0.5;h.state='move';this.acc.mv+=dt}
+      else if(vig>0.42){h.state='watch';this.acc.wt+=dt;const e=Math.min(p.B,P.eat*(1-vig)*dt);p.B-=e;if(p.gold){h.eatS+=e;eS+=e}else{h.eatG+=e;eG+=e}}
+      else{h.state=p.gold?'fs':'fg';const e=Math.min(p.B,P.eat*(1-vig)*dt);p.B-=e;if(p.gold){h.eatS+=e;eS+=e;this.acc.fs+=dt}else{h.eatG+=e;eG+=e;this.acc.fg+=dt}}
+      if(P.trail&&(h.trail.length===0||Math.hypot(h.trail[h.trail.length-1][0]-h.x,h.trail[h.trail.length-1][1]-h.y)>6)){h.trail.push([h.x,h.y]);if(h.trail.length>60)h.trail.shift()}
+      for(const s of sp){if(s.type==='glued'||s.handling>0)continue;const ds=Math.hypot(h.x-s.x,h.y-s.y),rs=s.type==='active'?16:24;
+        if(ds<rs&&r()<P.att*(h.state==='move'?1.4:1)*(1-0.5*vig)*dt*(s.type==='active'?0.3:10)){h.alive=false;s.handling=s.type==='active'?2:0.8;s.kills++;this.kills++;s.prey={x:h.x,y:h.y,hd:h.hd};this.ema.k+=1;break}}}
+    const a=Math.min(1,dt*2);this.ema.g+=(eG/dt-this.ema.g)*a;this.ema.s+=(eS/dt-this.ema.s)*a;this.ema.k*=Math.exp(-dt*0.7);this.ema.fear+=((live.length?fearSum/live.length:0)-this.ema.fear)*a;
+    this.day+=dt;if(this.day-this.hist[this.hist.length-1][0]>=0.25)this.hist.push(this.stats())}
+};
+function makeCageFull(o){const c=Object.assign(Object.create(proto),makeCageNoStats(o));c.hist=[c.stats()];return c}
+function makeCageNoStats(o){const r=rng(o.seed+7);const c={plants:makeLayout(o.seed,o.goldShare),hoppers:[],spiders:[],day:0,r:rng(o.seed*31+o.salt),acc:{fg:0,fs:0,mv:0,wt:0},ema:{g:0,s:0,k:0,fear:0},kills:0,n0:o.nGh};
+  for(let i=0;i<o.nGh;i++)c.hoppers.push({id:i+1,x:20+r()*(W-40),y:20+r()*(H-40),hd:r()*6.28,tgt:-1,state:'move',fear:0,decide:0,alive:true,eatG:0,eatS:0,trail:[],leg:r()*6,jump:0,ox:0,oy:0});
+  if(o.nSp>0)placeSpiders(c,o.nSp,o.spType,r);return c}
+
+/* ---------- drawing ---------- */
+const soilCache={};
+function soil(){if(soilCache.c)return soilCache.c;const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#7a5a3a');g.addColorStop(1,'#5e4229');x.fillStyle=g;x.fillRect(0,0,W,H);
+  const r=rng(99);for(let i=0;i<2600;i++){x.fillStyle=`rgba(${r()<.5?'40,25,12':'150,120,85'},${0.15+r()*0.25})`;x.beginPath();x.arc(r()*W,r()*H,0.6+r()*1.8,0,7);x.fill()}
+  for(let i=0;i<70;i++){x.strokeStyle=`rgba(190,170,110,${0.25+r()*0.3})`;x.lineWidth=1;const a=r()*W,b=r()*H,an=r()*6.28;x.beginPath();x.moveTo(a,b);x.lineTo(a+Math.cos(an)*8,b+Math.sin(an)*8);x.stroke()}
+  soilCache.c=c;return c}
+function drawGrass(x,p){const n=12+Math.round(p.B*16),L=10+p.B*30;const r=rng((p.seed*1e6)|0);
+  x.fillStyle='rgba(40,70,25,.35)';x.beginPath();x.arc(p.x,p.y,5+p.B*7,0,7);x.fill();
+  for(let i=0;i<n;i++){const a=p.rot+r()*6.283,l=L*(0.55+r()*0.6),bend=(r()-0.5)*0.9;
+    const ex=p.x+Math.cos(a)*l,ey=p.y+Math.sin(a)*l,cx=p.x+Math.cos(a+bend)*l*0.6,cy=p.y+Math.sin(a+bend)*l*0.6;
+    const gr=x.createLinearGradient(p.x,p.y,ex,ey);gr.addColorStop(0,'#5d8a2e');gr.addColorStop(0.7,p.B>0.35?'#a8d45a':'#bdb86a');gr.addColorStop(1,p.B>0.25?'#d4ec8a':'#d6bf7a');
+    x.strokeStyle=gr;x.lineWidth=1.1+(i%3)*0.35;x.lineCap='round';x.beginPath();x.moveTo(p.x,p.y);x.quadraticCurveTo(cx,cy,ex,ey);x.stroke()}
+  if(p.B<0.6){x.strokeStyle='rgba(214,191,122,.9)';x.lineWidth=1;const nb=Math.round((0.6-p.B)*10);for(let k=0;k<nb;k++){const a=r()*6.28,l=4+r()*6;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(p.x+Math.cos(a)*l,p.y+Math.sin(a)*l);x.stroke()}}}
+function drawGold(x,p){const n=8,L=12+p.B*28;const r=rng((p.seed*1e6)|0);
+  for(let i=0;i<n;i++){const a=p.rot+i/n*6.283+(r()-0.5)*0.3,l=L*(0.8+r()*0.4),w=5+p.B*6;
+    x.save();x.translate(p.x,p.y);x.rotate(a);const gr=x.createLinearGradient(0,0,l,0);gr.addColorStop(0,'#1f4d2e');gr.addColorStop(1,p.B>0.3?'#3f7f4f':'#7f8f55');x.fillStyle=gr;
+    x.beginPath();x.moveTo(0,0);x.quadraticCurveTo(l*0.5,-w,l,0);x.quadraticCurveTo(l*0.5,w,0,0);x.fill();
+    x.strokeStyle='rgba(180,220,170,.45)';x.lineWidth=0.9;x.beginPath();x.moveTo(2,0);x.lineTo(l*0.9,0);x.stroke();
+    if(p.B<0.7){x.fillStyle='rgba(94,66,41,.9)';const nb=Math.round((0.7-p.B)*8);for(let k=0;k<nb;k++){x.beginPath();x.arc(l*(0.4+0.5*r()),(r()<.5?-1:1)*w*0.55,1.6+r()*1.6,0,7);x.fill()}}
+    x.restore()}
+  if(p.B>0.35){const nf=Math.round(p.B*26);for(let i=0;i<nf;i++){const a=r()*6.28,rr=r()*10*p.B;x.fillStyle=i%3?'#f2c41e':'#e0a812';x.beginPath();x.arc(p.x+Math.cos(a)*rr,p.y+Math.sin(a)*rr,1.8+r()*1.2,0,7);x.fill()}}
+  else{x.fillStyle='#4a6a30';x.beginPath();x.arc(p.x,p.y,3,0,7);x.fill()}}
+function drawHopper(x,h,sel,t){x.save();x.translate(h.x,h.y);x.rotate(h.hd);const s=(h.jump>0?1.25:1)*1.55;x.scale(s,s);
+  const chew=(h.state==='fg'||h.state==='fs')?Math.sin(t*30+h.id)*0.6:0,lp=Math.sin(h.leg)*2;
+  x.strokeStyle='#4b3a1c';x.lineWidth=1;// small legs
+  for(const sgn of[-1,1]){x.beginPath();x.moveTo(3,sgn*2);x.lineTo(5+lp*sgn*0.3,sgn*6);x.stroke();x.beginPath();x.moveTo(0,sgn*2.5);x.lineTo(-1-lp*sgn*0.3,sgn*7);x.stroke()}
+  // hind jumping legs with red femur
+  for(const sgn of[-1,1]){x.strokeStyle='#c0392b';x.lineWidth=2.6;x.beginPath();x.moveTo(-1,sgn*2.5);x.lineTo(-8,sgn*6.5);x.stroke();x.strokeStyle='#5b4a22';x.lineWidth=1.2;x.beginPath();x.moveTo(-8,sgn*6.5);x.lineTo(-14,sgn*3.2);x.stroke()}
+  const g=x.createLinearGradient(-12,0,8,0);g.addColorStop(0,'#8a7a3a');g.addColorStop(1,'#a8a052');x.fillStyle=g;x.beginPath();x.ellipse(-2,0,10.5,3.4,0,0,7);x.fill();
+  x.fillStyle='#7d8a3e';x.beginPath();x.ellipse(-4,0,7,2.2,0,0,7);x.fill();
+  x.fillStyle='#9a9448';x.beginPath();x.ellipse(8.2+chew*0.4,0,3.4,3,0,0,7);x.fill();x.fillStyle='#111';x.beginPath();x.arc(9,-1.9,0.9,0,7);x.arc(9,1.9,0.9,0,7);x.fill();
+  x.strokeStyle='#4b3a1c';x.lineWidth=0.8;x.beginPath();x.moveTo(10,-1.5);x.quadraticCurveTo(15,-4,18,-7);x.moveTo(10,1.5);x.quadraticCurveTo(15,4,18,7);x.stroke();
+  x.restore();
+  if(h.state==='watch'){x.strokeStyle='rgba(242,193,78,.95)';x.lineWidth=2;x.beginPath();x.arc(h.x,h.y,21+Math.sin(t*12)*1.5,0,7);x.stroke()}
+  if(sel){x.strokeStyle='#fff';x.lineWidth=2.5;x.setLineDash([4,3]);x.beginPath();x.arc(h.x,h.y,27,0,7);x.stroke();x.setLineDash([])}}
+function drawSpider(x,s){x.save();x.translate(s.x,s.y);x.fillStyle='rgba(255,240,210,.22)';x.beginPath();x.arc(0,0,24,0,7);x.fill();x.rotate(s.hd);x.scale(1.5,1.5);const act=s.type==='active';
+  x.strokeStyle=act?'#f4f4f4':'#e8d2a8';x.lineWidth=act?1.7:1.6;x.lineCap='round';
+  for(let i=0;i<4;i++)for(const sgn of[-1,1]){const base=-1+i*1.6,ang=(i-1.5)*0.55,w=Math.sin(s.leg*3+i+sgn)*1.5,l=act?9:13;
+    const kx=base+Math.cos(ang)*l*0.6,ky=sgn*(4+l*0.55);x.beginPath();x.moveTo(base,sgn*2);x.lineTo(kx+w,ky);x.lineTo(kx+Math.cos(ang)*l*0.7+w,ky+sgn*l*0.45);x.stroke()}
+  if(act){x.fillStyle='#161616';x.beginPath();x.ellipse(-6,0,6,4.6,0,0,7);x.fill();x.beginPath();x.ellipse(3,0,4.4,4,0,0,7);x.fill();x.fillStyle='#fff';x.beginPath();x.arc(-7,-1.8,1,0,7);x.arc(-7,1.8,1,0,7);x.arc(-4,0,0.9,0,7);x.fill();x.fillStyle='#5ad';x.beginPath();x.arc(6.2,-1.3,1,0,7);x.arc(6.2,1.3,1,0,7);x.fill()}
+  else{const g=x.createLinearGradient(-14,0,6,0);g.addColorStop(0,'#9a6a3c');g.addColorStop(1,'#c49460');x.fillStyle=g;x.beginPath();x.ellipse(-7,0,8,3.8,0,0,7);x.fill();x.beginPath();x.ellipse(3,0,4.6,3.6,0,0,7);x.fill();
+    x.strokeStyle='#f4ead2';x.lineWidth=1.3;x.beginPath();x.moveTo(-14,0);x.lineTo(6,0);x.stroke();x.strokeStyle='rgba(40,25,10,.8)';x.lineWidth=0.8;x.beginPath();x.ellipse(-7,0,8,3.8,0,0,7);x.stroke()}
+  if(s.type==='glued'){x.fillStyle='#fff';x.beginPath();x.arc(7.6,0,2,0,7);x.fill()}
+  x.restore();
+  if(s.handling>0&&s.prey){x.save();x.globalAlpha=0.85;x.translate(s.x+Math.cos(s.hd)*15,s.y+Math.sin(s.hd)*15);x.rotate(s.prey.hd);x.scale(1.5,1.5);x.fillStyle='#8a7a3a';x.beginPath();x.ellipse(0,0,8,2.6,0,0,7);x.fill();x.strokeStyle='#c0392b';x.lineWidth=2;x.beginPath();x.moveTo(-1,2);x.lineTo(-7,5);x.stroke();x.restore()}}
+function drawCage(cv,c,o){const x=cv.getContext('2d'),dpr=cv._dpr||1;x.setTransform(dpr*cv.width/(W*dpr),0,0,dpr*cv.height/(H*dpr),0,0);
+  x.drawImage(soil(),0,0);const t=performance.now()/1000;
+  if(o.risk){const R=o.cueR*PX_PER_CM;for(const s of c.spiders){const w=CUEW[s.type];const g=x.createRadialGradient(s.x,s.y,4,s.x,s.y,R);g.addColorStop(0,`rgba(230,60,40,${0.38*w})`);g.addColorStop(1,'rgba(230,60,40,0)');x.fillStyle=g;x.beginPath();x.arc(s.x,s.y,R,0,7);x.fill();
+    x.strokeStyle=`rgba(255,120,90,${0.55*w})`;x.setLineDash([5,5]);x.lineWidth=1.2;x.beginPath();x.arc(s.x,s.y,R,0,7);x.stroke();x.setLineDash([])}}
+  for(const p of c.plants)if(!p.gold)drawGrass(x,p);for(const p of c.plants)if(p.gold)drawGold(x,p);
+  if(o.trail){x.lineWidth=1.4;for(const h of c.hoppers){if(!h.alive||h.trail.length<2)continue;x.strokeStyle=o.sel===h?'rgba(255,255,255,.9)':'rgba(255,255,255,.35)';x.beginPath();h.trail.forEach(([a,b],i)=>i?x.lineTo(a,b):x.moveTo(a,b));x.lineTo(h.x,h.y);x.stroke()}}
+  for(const h of c.hoppers)if(h.alive)drawHopper(x,h,o.sel===h,t);
+  for(const s of c.spiders)drawSpider(x,s);
+  // mesh frame
+  x.strokeStyle='rgba(220,220,220,.55)';x.lineWidth=6;x.strokeRect(3,3,W-6,H-6);x.strokeStyle='rgba(255,255,255,.12)';x.lineWidth=1;for(let i=0;i<W;i+=12){x.beginPath();x.moveTo(i,0);x.lineTo(i,6);x.moveTo(i,H-6);x.lineTo(i,H);x.stroke()}
+  x.fillStyle='rgba(255,255,255,.85)';x.font='11px system-ui';x.fillText('10 cm',W-58,H-14);x.fillRect(W-62,H-10,10*PX_PER_CM,2.5)}
+function fitCanvas(cv){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.round(r.width*dpr),h=Math.round(r.width*H/W*dpr);if(w>0&&(cv.width!==w||cv.height!==h)){cv.width=w;cv.height=h}}
+
+/* ---------- tab 1 ---------- */
+let spType='sit',main,twin,playing=false,sel=null,placing=false,seed=1;
+const P1=()=>({rG:val('rG'),rS:val('rS'),eat:val('eat'),gPal:val('gPal'),fear:val('fear'),att:val('att'),cueR:val('cueR'),spMove:4,trail:$('#showTrail').checked});
+function newSeason(keepSeed){if(!keepSeed)seed=(Math.random()*1e9)|0;const o={seed,goldShare:val('gShare')/100,nGh:val('nGh'),nSp:val('nSp'),spType,salt:1};main=makeCageFull(o);twin=makeCageFull({...o,nSp:0,salt:2});sel=null;draw1(true)}
+const cv=$('#cage');
+const BUD=[['fg','Eating grass','#4fa03a'],['fs','Eating goldenrod','#e0a812'],['wt','Frozen, watching for danger','#d9532c'],['mv','Moving','#8a8f98']];
+function web(){const D=dk(),txt=D?'#e7ecf2':'#10202e',svg=$('#web');const live=main.hoppers.filter(h=>h.alive).length;
+  const st=main.stats(),ct=twin.stats(),dg=ct[1]>0?(st[1]-ct[1])/ct[1]*100:0,ds=ct[2]>0?(st[2]-ct[2])/ct[2]*100:0;
+  const nodes={sp:[200,48],gh:[200,175],gr:[90,292],so:[330,292]};
+  const wg=Math.min(18,1.5+main.ema.g*12),ws=Math.min(18,1.5+main.ema.s*12),wk=Math.min(16,1.5+main.ema.k*6),wf=Math.min(12,main.ema.fear*10*(main.spiders.length?1:0));
+  const arrow=(a,b,w,col,dash,lab,lx,ly)=>{const[x1,y1]=nodes[a],[x2,y2]=nodes[b];const ang=Math.atan2(y2-y1,x2-x1),r1=34,r2=40;const sx=x1+Math.cos(ang)*r1,sy=y1+Math.sin(ang)*r1,ex=x2-Math.cos(ang)*r2,ey=y2-Math.sin(ang)*r2;
+    return `<line x1="${sx}" y1="${sy}" x2="${ex}" y2="${ey}" stroke="${col}" stroke-width="${w}" stroke-linecap="round" ${dash?'stroke-dasharray="7 6"':''} marker-end="url(#ah_${col.replace('#','')})" opacity=".9"/>${lab?`<text x="${lx}" y="${ly}" font-size="12" fill="${txt}" text-anchor="middle">${lab}</text>`:''}`};
+  const cols=['#4fa03a','#e0a812','#8a5a3a','#d9532c'];
+  let s=`<defs>${cols.map(c=>`<marker id="ah_${c.replace('#','')}" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto"><path d="M0,0L10,5L0,10z" fill="${c}"/></marker>`).join('')}</defs>`;
+  s+=arrow('gr','gh',wg,'#4fa03a',0,'eaten',120,228)+arrow('so','gh',ws,'#e0a812',0,'eaten',300,228)+arrow('gh','sp',wk,'#8a5a3a',0,'',0,0);
+  if(main.spiders.length){const[x1,y1]=nodes.sp,[x2,y2]=nodes.gh;s+=`<path d="M${x1-28},${y1+20} Q${x1-62},${(y1+y2)/2} ${x2-30},${y2-26}" fill="none" stroke="#d9532c" stroke-width="${Math.max(1.5,wf)}" stroke-dasharray="7 6" marker-end="url(#ah_d9532c)"/><text x="${x1-58}" y="${(y1+y2)/2+4}" font-size="12" fill="${txt}" text-anchor="end">fear</text><text x="${x1+8}" y="${(y1+y2)/2+4}" font-size="12" fill="${txt}">eaten</text>`}
+  const node=(k,label,sub,emoji,c,side)=>{const[x,y]=nodes[k];const tx=side?x+40:x,ty=side?y-2:y+50,an=side?'start':'middle';return `<circle cx="${x}" cy="${y}" r="32" fill="${c}" stroke="${D?'#e7ecf2':'#10202e'}" stroke-opacity=".25"/><text x="${x}" y="${y+8}" font-size="24" text-anchor="middle">${emoji}</text><text x="${tx}" y="${ty}" font-size="13" font-weight="700" fill="${txt}" text-anchor="${an}">${label}</text><text x="${tx}" y="${ty+15}" font-size="11" fill="${D?'#aab4c0':'#5b6672'}" text-anchor="${an}">${sub}</text>`};
+  s+=node('sp','Spiders',main.spiders.length?`${main.spiders.length} in cage · ${main.kills} kills`:'none','🕷️',D?'#3a2e26':'#f1e4d8',1);
+  s+=node('gh','Grasshoppers',`${live} alive · fear ${f(Math.min(1,main.ema.fear)*100,0)}%`,'🦗',D?'#33391f':'#eef1d6',1);
+  s+=node('gr','Grass',`${f(st[1],0)}% of full`,'🌾',D?'#21381c':'#dff0d4');s+=node('so','Goldenrod',`${f(st[2],0)}% of full`,'🌼',D?'#3a331a':'#f8efcc');
+  if(main.spiders.length||main.kills){const lab=(v,x,y)=>{const c=v>=0?'#2e9d55':'#d9532c';return `<rect x="${x-34}" y="${y-14}" width="68" height="22" rx="11" fill="${c}"/><text x="${x}" y="${y+2}" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">${v>=0?'+':''}${f(v,0)}%</text>`};
+    s+=`<path d="M170,40 Q20,90 64,262" fill="none" stroke="${dg>=0?'#2e9d55':'#d9532c'}" stroke-width="2" stroke-dasharray="2 5" opacity=".8"/><path d="M232,58 Q430,150 360,266" fill="none" stroke="${ds>=0?'#2e9d55':'#d9532c'}" stroke-width="2" stroke-dasharray="2 5" opacity=".8"/>`+lab(dg,42,150)+lab(ds,410,215)}
+  svg.innerHTML=s;svg.setAttribute('aria-label',`Food web: ${main.spiders.length} spiders, ${live} grasshoppers, grass ${f(st[1],0)}% and goldenrod ${f(st[2],0)}% of full. Compared with the no-spider cage, grass ${f(dg,0)}% and goldenrod ${f(ds,0)}%.`);return{dg,ds,st,ct}}
+function budget(){const a=main.acc,tot=a.fg+a.fs+a.wt+a.mv||1;$('#budget').innerHTML=BUD.map(([k,l,c])=>`<span style="width:${a[k]/tot*100}%;background:${c}" title="${l}"></span>`).join('');
+  legend($('#legB'),BUD.map(([k,l,c])=>[c,`${l} ${f(a[k]/tot*100,0)}%`]))}
+function follow(){const el=$('#follow');if(!sel){el.className='small muted';el.innerHTML='Tap a grasshopper in the cage.';return}
+  el.className='';if(!sel.alive){el.innerHTML=`<p class="big"><b>Grasshopper #${sel.id}</b> was caught by a spider.</p>`;return}
+  const S={fg:'Eating grass 🌾',fs:'Eating goldenrod 🌼',watch:'Frozen, watching for danger 👀',move:'Moving'}[sel.state];
+  el.innerHTML=`<div class="follow"><b>Grasshopper</b><span>#${sel.id}</span><b>Doing</b><span>${S}</span><b>Fear</b><div class="meter"><i style="width:${Math.min(100,sel.fear*100)}%"></i></div><b>Ate grass</b><span>${f(sel.eatG*100,1)} units</span><b>Ate goldenrod</b><span>${f(sel.eatS*100,1)} units</span></div>`}
+let lastUI=0;
+function draw1(force){fitCanvas(cv);drawCage(cv,main,{risk:$('#showRisk').checked,trail:$('#showTrail').checked,cueR:val('cueR'),sel});
+  const now=performance.now();if(!force&&now-lastUI<250)return;lastUI=now;showVals();
+  const w=web();budget();follow();
+  $('#tDay').textContent=f(main.day,1);$('#tGh').textContent=`${w.st[3]} / ${main.n0}`;$('#tGr').textContent=(w.dg>=0?'+':'')+f(w.dg,0)+'%';$('#tSo').textContent=(w.ds>=0?'+':'')+f(w.ds,0)+'%';
+  $('#tGr').style.color=w.dg>=0?'var(--good)':'var(--bad)';$('#tSo').style.color=w.ds>=0?'var(--good)':'var(--bad)';
+  legend($('#leg0'),[['#7cc24a','Grass (blades shrink as it is eaten)'],['#e0a812','Goldenrod (holes = chewed)'],['#a8a052','Grasshopper'],['#c49460','Hunting or glued spider (glued = white dot)'],['#161616','Roaming spider'],['rgba(230,60,40,.5)','Danger zone'],['#f2c14e','Frozen grasshopper']]);
+  const T=Math.max(30,main.day);
+  chart($('#cP'),{xmin:0,xmax:T,ymin:0,ymax:100,w:760,h:300,xlab:'Days',ylab:'Plant size (% of full)',series:[{pts:twin.hist.map(h=>[h[0],h[1]]),color:'#4fa03a',width:1.6,dash:'6 5'},{pts:twin.hist.map(h=>[h[0],h[2]]),color:'#e0a812',width:1.6,dash:'6 5'},{pts:main.hist.map(h=>[h[0],h[1]]),color:'#4fa03a',width:3},{pts:main.hist.map(h=>[h[0],h[2]]),color:'#e0a812',width:3}]});
+  legend($('#legC'),[['#4fa03a','Grass, this cage'],['#e0a812','Goldenrod, this cage'],['#4fa03a','Grass, identical cage with no spiders',1],['#e0a812','Goldenrod, no spiders',1]]);
+  cv.setAttribute('aria-label',`Field cage on day ${f(main.day,0)}: ${w.st[3]} grasshoppers, ${main.spiders.length} spiders, grass at ${f(w.st[1],0)}% and goldenrod at ${f(w.st[2],0)}% of full size.`);
+  $('#cP').setAttribute('aria-label','Grass and goldenrod size over time in this cage and in an identical cage without spiders.');
+  $('#hint').style.display=placing?'block':(sel?'none':'block');$('#hint').textContent=placing?'Tap where the spider should sit':'Tap a grasshopper to follow it';
+  msg1(w)}
+function msg1(w){const n=main.spiders.length,a=main.acc,tot=a.fg+a.fs+a.wt+a.mv||1;let m;
+  if(main.day<1)m='Press <b>Play</b>. Grasshoppers head for the plants they like best: grass first, goldenrod second.';
+  else if(!n&&!main.kills)m=`With no spiders, grasshoppers spend their time eating grass, and the grass is ${w.st[1]<50?'being grazed down hard':'getting thinner'}. Add spiders to see what a predator changes.`;
+  else if(spType==='glued')m=`These spiders <b>cannot kill</b> (${main.kills} kills), yet grass is ${f(Math.abs(w.dg),0)}% ${w.dg>=0?'higher':'lower'} than in the no-spider cage. Grasshoppers near a spider freeze or move into goldenrod, so they eat less grass. Changing prey <b>behavior</b> alone passes the effect down the food chain: a <b>trait-mediated</b> (fear) cascade.`;
+  else if(spType==='active')m=`Roaming spiders move around and leave no fixed danger zone, so grasshoppers barely change what they do (frozen ${f(a.wt/tot*100,0)}% of the time). Any help to the grass comes from grasshoppers being <b>eaten</b> (${main.kills} so far): a <b>density-mediated</b> cascade.`;
+  else m=`Spiders have eaten ${main.kills} grasshoppers, and the survivors spend ${f(a.wt/tot*100,0)}% of their time frozen and more time in goldenrod. Grass is ${(w.dg>=0?'+':'')+f(w.dg,0)}% and goldenrod ${(w.ds>=0?'+':'')+f(w.ds,0)}% compared with the no-spider cage. A predator two levels up is changing the plants: a <b>trophic cascade</b>. Switch to <b>Glued spider</b> to see how much of it is fear alone.`;
+  $('#msg').innerHTML=m}
+let lastF=0;
+function frame(t){const dtR=Math.min(0.1,(t-lastF)/1000);lastF=t;
+  if($('#t1').classList.contains('on')){if(playing){const days=dtR*0.35*val('speed'),n=Math.ceil(days/0.004),P=P1();for(let i=0;i<n;i++){main.step(days/n,P);twin.step(days/n,P)}if(main.day>=120)setPlay(false)}draw1()}
+  if($('#t2').classList.contains('on'))frame2(dtR);
+  requestAnimationFrame(frame)}
+const setPlay=v=>{playing=v;$('#play').textContent=v?'Pause':'Play';$('#play2').textContent=v?'❚❚ Pause':'▶ Play'};$('#play').onclick=()=>setPlay(!playing);$('#play2').onclick=e=>{e.stopPropagation();setPlay(!playing)};
+$('#reset').onclick=()=>newSeason(false);
+$$('#spType button').forEach(b=>b.onclick=()=>{spType=b.dataset.sp;$$('#spType button').forEach(x=>x.classList.toggle('on',x===b));main.spiders.forEach(s=>s.type=spType);draw1(true)});
+['nGh','gShare'].forEach(id=>$('#'+id).addEventListener('change',()=>newSeason(true)));
+$('#nSp').addEventListener('change',()=>{const n=val('nSp'),r=main.r;if(n>main.spiders.length){const old=main.spiders.slice();placeSpiders(main,n-old.length,spType,r);main.spiders=old.concat(main.spiders)}else main.spiders=main.spiders.slice(0,n);draw1(true)});
+$('#rmSp').onclick=()=>{main.spiders=[];setSliders({nSp:0});draw1(true)};
+$('#addSp').onclick=()=>{placing=!placing;$('#addSp').textContent=placing?'Tap in the cage…':'Tap to place a spider';draw1(true)};
+$$('#t1 input').forEach(i=>i.addEventListener('input',()=>draw1(true)));
+cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
+  if(placing){main.spiders.push(newSpider(x,y,spType,main.r));main.spiders[main.spiders.length-1].moveT=6;setSliders({nSp:Math.min(6,main.spiders.length)});placing=false;$('#addSp').textContent='Tap to place a spider';draw1(true);return}
+  let best=null,bd=30;for(const h of main.hoppers){if(!h.alive)continue;const d=Math.hypot(h.x-x,h.y-y);if(d<bd){bd=d;best=h}}sel=best;if(sel)$('#showTrail').checked=true;draw1(true)});
+
+/* ---------- tab 2: four cages ---------- */
+const TR=[['none','No spiders','#8a8f98'],['sit','Hunting spiders','#8a5a3a'],['glued','Glued spiders (fear only)','#d9532c'],['active','Roaming spiders','#1f6fbf']];
+let X=null,xRunning=false,xRes=null;
+$('#minis').innerHTML=TR.map(([k,l],i)=>`<div class="mini"><h3>${l}</h3><canvas id="m${i}" width="380" height="240" role="img"></canvas><div class="small" id="ms${i}"></div></div>`).join('');
+const xP=()=>({rG:val('rG'),rS:val('rS'),eat:val('eat'),gPal:val('gPal'),fear:val('xFear'),att:val('xAtt'),cueR:val('cueR'),spMove:4,trail:false});
+function xMake(sd){return TR.map(([k])=>makeCageFull({seed:sd,goldShare:val('gShare')/100,nGh:val('xGh'),nSp:k==='none'?0:val('xSp'),spType:k==='none'?'sit':k,salt:3}))}
+function xReset(){X=xMake((Math.random()*1e9)|0);xRunning=false;xRes=null;$('#xRun').textContent=$('#xRun2').textContent='Run the season';drawX(true)}
+function drawX(force){X.forEach((c,i)=>{const m=$('#m'+i);fitCanvas(m);drawCage(m,c,{risk:true,trail:false,cueR:val('cueR'),sel:null});const s=c.stats(),a=c.acc,tot=a.fg+a.fs+a.wt+a.mv||1;
+  $('#ms'+i).innerHTML=`Day ${f(c.day,0)} · ${s[3]} grasshoppers · grass ${f(s[1],0)}% · goldenrod ${f(s[2],0)}% · frozen ${f(a.wt/tot*100,0)}% of the time`;m.setAttribute('aria-label',`${TR[i][1]} cage, day ${f(c.day,0)}: ${s[3]} grasshoppers, grass ${f(s[1],0)}%, goldenrod ${f(s[2],0)}%.`)});
+  if(force)showVals();xCharts()}
+function summarize(cs){return cs.map(c=>{const s=c.stats(),a=c.acc,tot=a.fg+a.fs+a.wt+a.mv||1;return{g:s[1],s:s[2],surv:s[3]/Math.max(1,c.n0)*100,feed:(a.fg+a.fs)/tot*100}})}
+function xCharts(){const res=xRes||summarize(X),base=res[0];const pct=(v,b)=>b>0?v/b*100:0;
+  bars($('#xC1'),{cats:TR.map(t=>t[1].replace(' (fear only)','')),series:[{color:'#4fa03a',vals:res.map(r=>pct(r.g,base.g))},{color:'#e0a812',vals:res.map(r=>pct(r.s,base.s))}],ymax:Math.max(150,...res.map(r=>Math.max(pct(r.g,base.g),pct(r.s,base.s))))*1.08,ylab:'% of no-spider cage',w:460,h:320,mb:56,fmt:v=>f(v,0)+'%'});
+  legend($('#xLeg1'),[['#4fa03a','Grass'],['#e0a812','Goldenrod']]);
+  bars($('#xC3'),{cats:TR.map(t=>t[1].replace(' (fear only)','')),series:[{color:'var(--s1)',vals:res.map(r=>r.surv)},{color:'var(--s3)',vals:res.map(r=>r.feed)}],ymax:110,ylab:'%',w:760,h:230,mb:40,fmt:v=>f(v,0)+'%'});
+  legend($('#xLeg3'),[['var(--s1)','Grasshoppers surviving'],['var(--s3)','Time spent eating']]);
+  // partition: total effect on grass = hunting - none; fear part = glued - none; eating part = remainder
+  const tot=res[1].g-base.g,fear=res[2].g-base.g,eat=tot-fear,svg=$('#xC2'),D=dk(),txt=D?'#e7ecf2':'#10202e';
+  const mx=Math.max(5,Math.abs(tot),Math.abs(fear),Math.abs(eat))*1.15,X0=230,sc=180/mx;
+  const row=(y,v,c,l)=>`<text x="10" y="${y+15}" font-size="13" fill="${txt}">${l}</text><rect x="${v>=0?X0:X0+v*sc}" y="${y}" width="${Math.abs(v)*sc}" height="22" rx="4" fill="${c}"/><text x="${X0+v*sc+(v>=0?6:-6)}" y="${y+16}" font-size="13" font-weight="700" fill="${txt}" text-anchor="${v>=0?'start':'end'}">${v>=0?'+':''}${f(v,1)}</text>`;
+  svg.setAttribute('viewBox','0 0 460 200');svg.innerHTML=`<line x1="${X0}" x2="${X0}" y1="10" y2="170" stroke="${D?'#5b6672':'#aab4c0'}"/>`+row(20,tot,'#8a5a3a','Total (hunting spiders)')+row(70,fear,'#d9532c','From fear alone')+row(120,eat,'#1f6fbf','From grasshoppers eaten')+`<text x="${X0}" y="192" font-size="11" fill="${D?'#aab4c0':'#5b6672'}" text-anchor="middle">change in grass size (percentage points) vs. no spiders</text>`;
+  svg.setAttribute('aria-label',`Effect of hunting spiders on grass: total ${f(tot,1)} points, of which fear ${f(fear,1)} and eating ${f(eat,1)}.`);
+  $('#xNote2').textContent=xRes?`Average of ${val('xRep')+1} seasons. Fear alone = glued-spider cage minus no-spider cage. The rest of the hunting-spider effect comes from grasshoppers actually being eaten.`:'Live values for the cages above. Run the full season for averages.';
+  $('#xC1').setAttribute('aria-label','Plant size at the end as a percent of the no-spider cage: '+res.map((r,i)=>`${TR[i][1]}: grass ${f(pct(r.g,base.g),0)}%, goldenrod ${f(pct(r.s,base.s),0)}%`).join('; '));
+  $('#xC3').setAttribute('aria-label','Grasshopper survival and time spent eating: '+res.map((r,i)=>`${TR[i][1]}: ${f(r.surv,0)}% survived, ${f(r.feed,0)}% eating`).join('; '));
+  const share=tot!==0?fear/tot*100:0;
+  $('#xMsg').innerHTML=!xRes?'All four cages start identical. Press <b>Run the season</b>.':
+    `Hunting spiders changed grass by ${tot>=0?'+':''}${f(tot,1)} points. Spiders that could not kill changed it by ${fear>=0?'+':''}${f(fear,1)} points, so about <b>${f(Math.max(0,Math.min(150,share)),0)}%</b> of the cascade came from fear rather than from eating. Roaming spiders, which create no fixed danger zone, killed grasshoppers but caused little change in their behavior. Schmitz found that the fear effect could be as large as the effect of predators actually eating prey.`}
+function frame2(dtR){if(!X)return;if(xRunning){const days=dtR*2.4,n=Math.ceil(days/0.005),P=xP();for(let i=0;i<n;i++)X.forEach(c=>c.step(days/n,P));
+    if(X[0].day>=val('xDays')){xRunning=false;$('#xRun').textContent=$('#xRun2').textContent='Averaging…';setTimeout(xReplicates,30)}}
+  drawX(false)}
+function xReplicates(){const P=xP(),reps=val('xRep'),T=val('xDays'),all=[summarize(X)];
+  for(let k=0;k<reps;k++){const cs=xMake((Math.random()*1e9)|0);for(let t=0;t<T;t+=0.01)cs.forEach(c=>c.step(0.01,P));all.push(summarize(cs))}
+  xRes=TR.map((_,i)=>{const o={};['g','s','surv','feed'].forEach(k=>o[k]=all.reduce((a,r)=>a+r[i][k],0)/all.length);return o});$('#xRun').textContent=$('#xRun2').textContent='Run another season';drawX(true)}
+$('#xRun').onclick=()=>{if(xRunning)return;if(X[0].day>=val('xDays')-0.01||xRes){X=xMake((Math.random()*1e9)|0);xRes=null}xRunning=true;$('#xRun').textContent=$('#xRun2').textContent='Running…'};
+$('#xReset').onclick=xReset;$('#xRun2').onclick=()=>$('#xRun').click();
+$$('#t2 input').forEach(i=>i.addEventListener('change',()=>{if(['xGh','xSp'].includes(i.id))xReset();else{xRes=null;drawX(true)}}));
+
+initTabs({t1:()=>draw1(true),t2:()=>drawX(true)});
+newSeason(false);xReset();requestAnimationFrame(t=>{lastF=t;frame(t)});
+window.addEventListener('resize',()=>draw1(true));
+})();
+</script>
+<script>
+window.A11Y = {
+  tabsLabel: 'Simulation views',
+  css: '@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav.tabs button.on, :root:not([data-theme="light"]) button.primary, :root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}',
+  live: ['#msg','#xMsg']
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
+
