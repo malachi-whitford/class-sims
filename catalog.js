@@ -12,7 +12,7 @@
      title  : card title
      where  : list of "topic/section" places the card appears, e.g.
               ["ecology/populations"], or two places to show it in two tabs:
-              ["ecology/populations", "field/techniques"]
+              ["ecology/populations"]
               (cards appear in the order they are listed in this file)
      type   : "sim"  = an HTML simulation stored in this repo (sims/<folder>/index.html)
               "app"  = a web app hosted somewhere else (Google Apps Script, etc.)
@@ -39,22 +39,22 @@ const TOPICS = [
     sections: [
       { id: "water",     label: "Soil water" },
       { id: "chemistry", label: "Soil chemistry" } ] },
-  { id: "ecology", label: "Ecology",
-    blurb: "From single populations to whole ecosystems.",
+  { id: "ecology", label: "Ecology & Conservation",
+    blurb: "From single populations to whole ecosystems, and how science informs conservation.",
     sections: [
       { id: "populations",  label: "Populations",                blurb: "How populations grow, and how we count and project them." },
       { id: "interactions", label: "Species interactions",       blurb: "Predators, prey, competitors, and contests." },
-      { id: "ecosystems",   label: "Communities and ecosystems", blurb: "Diversity, energy flow, and change over time." } ] },
-  { id: "field", label: "Field & Conservation",
-    blurb: "Tools field biologists use, and how science informs conservation.",
+      { id: "ecosystems",   label: "Communities and ecosystems", blurb: "Diversity, energy flow, and change over time." },
+      { id: "conservation", label: "Conservation and environmental policy", blurb: "Laws, shared resources, and managing land." } ] },
+  { id: "fieldbio", label: "Field Biology Review",
+    blurb: "Species ID practice for BIOL 7 field trips.",
     sections: [
-      { id: "techniques",   label: "Field techniques" },
-      { id: "conservation", label: "Conservation and environmental policy" } ] }
+      { id: "species", label: "Species identification" } ] }
 ];
 
 // Old page addresses (e.g. .../#population) still open the matching new tab.
 const TOPIC_ALIASES = { plants: "cells", population: "ecology", community: "ecology",
-  ecosystems: "ecology", behavior: "ecology", environment: "field" };
+  ecosystems: "ecology", behavior: "ecology", environment: "ecology", field: "ecology" };
 
 const ITEMS = [
   {
@@ -123,7 +123,7 @@ const ITEMS = [
   },
   {
     title: "Mark–Recapture",
-    where: ["ecology/populations", "field/techniques"],
+    where: ["ecology/populations"],
     type: "sim",
     url: "sims/mark-recapture/",
     desc: "Net, tag, and release fish in a murky pond, then recapture and estimate the population with Lincoln–Petersen and Chapman. Break the method's assumptions and see how estimates go wrong.",
@@ -131,7 +131,7 @@ const ITEMS = [
   },
   {
     title: "Which Life Stage Matters Most? (Sea Turtles)",
-    where: ["ecology/populations", "field/conservation"],
+    where: ["ecology/populations"],
     type: "sim",
     url: "sims/stage-sensitivity/",
     desc: "Protect different life stages of loggerhead sea turtles and see which raises the population growth rate most, with a stage-based matrix model, projections, and elasticity analysis.",
@@ -163,7 +163,7 @@ const ITEMS = [
   },
   {
     title: "Species Diversity Calculator",
-    where: ["ecology/ecosystems", "field/techniques"],
+    where: ["ecology/ecosystems"],
     type: "sim",
     url: "sims/species-diversity/",
     desc: "Enter species counts from several sites (or use an example data set) to calculate richness, Simpson's and Shannon's indices, and alpha, beta, and gamma diversity, with charts, step-by-step math, and a check-your-work tool.",
@@ -179,7 +179,7 @@ const ITEMS = [
   },
   {
     title: "Succession and Fire in the Sierra Nevada",
-    where: ["ecology/ecosystems", "field/conservation"],
+    where: ["ecology/ecosystems"],
     type: "sim",
     url: "sims/succession/",
     desc: "Watch bare granite and an abandoned pasture grow into Sierra forest, with soil and sunlight meters that show why species replace each other. Then see how fire suppression builds fuel and sets up megafires.",
@@ -187,7 +187,7 @@ const ITEMS = [
   },
   {
     title: "Field Biology Species Review",
-    where: ["field/techniques"],
+    where: ["fieldbio/species"],
     type: "sim",
     url: "sims/field_bio_review/",
     desc: "Flashcard study tools for the species from each semester's BIOL 7 field trips. Pick your semester and practice your IDs.",
@@ -195,7 +195,7 @@ const ITEMS = [
   },
   {
     title: "Environmental Laws in the Field",
-    where: ["field/conservation"],
+    where: ["ecology/conservation"],
     type: "sim",
     url: "sims/environmental-laws/",
     desc: "Learn environmental laws from the perspective of a consulting or agency biologist: what triggers each law, what you survey for, and what goes in your report.",
@@ -203,7 +203,7 @@ const ITEMS = [
   },
   {
     title: "Tragedy of the Commons",
-    where: ["field/conservation"],
+    where: ["ecology/conservation"],
     type: "sim",
     url: "sims/tragedy-commons/",
     desc: "Run a herd on a shared pasture with four other herders. See why everyone adding cows ruins the grass, then try community limits and private plots.",
@@ -213,7 +213,7 @@ const ITEMS = [
   // ---------- Example web app (delete the two slashes at the start of each line to use) ----------
   // ,{
   //   title: "Trail Camera Reviewer",
-  //   where: ["field/techniques"],
+  //   where: ["fieldbio/species"],
   //   type: "app",
   //   url: "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec",
   //   desc: "Review trail camera images and record species detections. Sign in with your college Google account.",
