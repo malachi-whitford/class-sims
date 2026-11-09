@@ -3,14 +3,17 @@
    =====================================================================
 
    TOPICS become the tabs on the home page, in the order listed here.
-     id    : short code used in the page address (e.g. .../#soils)
-     label : the text shown on the tab
-     blurb : one line shown under the tabs when that topic is open
+     id       : short code used in the page address (e.g. .../#soils)
+     label    : the text shown on the tab
+     blurb    : one line shown under the tabs when that topic is open
+     sections : headings inside the tab: { id, label, blurb (optional) }
 
    ITEMS are the cards. Each item needs:
      title  : card title
-     topic  : one of the topic ids below, or a list to show the card
-              under more than one tab, e.g. ["community", "field"]
+     where  : list of "topic/section" places the card appears, e.g.
+              ["ecology/populations"], or two places to show it in two tabs:
+              ["ecology/populations", "field/techniques"]
+              (cards appear in the order they are listed in this file)
      type   : "sim"  = an HTML simulation stored in this repo (sims/<folder>/index.html)
               "app"  = a web app hosted somewhere else (Google Apps Script, etc.)
               "link" = any other outside resource (a Google Doc, video, website)
@@ -26,22 +29,37 @@
    ===================================================================== */
 
 const TOPICS = [
-  { id: "cells",  label: "Cells & Membranes",       blurb: "Diffusion, osmosis, and how cells respond to their surroundings." },
-  { id: "plants", label: "Plant Science",           blurb: "How plants capture carbon and move water." },
-  { id: "soils",  label: "Soil Science",            blurb: "Soil water, soil chemistry, and the exchange of nutrients." },
-  { id: "population", label: "Population Ecology",  blurb: "How populations grow, which life stages matter, and how to count animals you can't see." },
-  { id: "community", label: "Community Ecology",    blurb: "How species interact, coexist, and assemble into communities." },
-  { id: "ecosystems", label: "Ecosystems",          blurb: "How energy flows through food chains and how communities rebuild after disturbance." },
-  { id: "behavior", label: "Behavioral Ecology",    blurb: "Why animals behave the way they do, using game theory and evolution." },
-  { id: "environment", label: "Environmental Science", blurb: "People, shared resources, and sustainability." },
-  { id: "field",  label: "Field Methods & Conservation", blurb: "Tools and background for working as a field biologist." }
+  { id: "cells", label: "Cells & Plants",
+    blurb: "How water moves into and out of cells, and how plants capture carbon and move water.",
+    sections: [
+      { id: "membranes", label: "Cells and membranes" },
+      { id: "plants",    label: "Plant physiology" } ] },
+  { id: "soils", label: "Soils",
+    blurb: "How soils hold water and nutrients.",
+    sections: [
+      { id: "water",     label: "Soil water" },
+      { id: "chemistry", label: "Soil chemistry" } ] },
+  { id: "ecology", label: "Ecology",
+    blurb: "From single populations to whole ecosystems.",
+    sections: [
+      { id: "populations",  label: "Populations",                blurb: "How populations grow, and how we count and project them." },
+      { id: "interactions", label: "Species interactions",       blurb: "Predators, prey, competitors, and contests." },
+      { id: "ecosystems",   label: "Communities and ecosystems", blurb: "Diversity, energy flow, and change over time." } ] },
+  { id: "field", label: "Field & Conservation",
+    blurb: "Tools field biologists use, and how science informs conservation.",
+    sections: [
+      { id: "techniques",   label: "Field techniques" },
+      { id: "conservation", label: "Conservation and environmental policy" } ] }
 ];
 
+// Old page addresses (e.g. .../#population) still open the matching new tab.
+const TOPIC_ALIASES = { plants: "cells", population: "ecology", community: "ecology",
+  ecosystems: "ecology", behavior: "ecology", environment: "field" };
+
 const ITEMS = [
-  // ---------- Cells & Membranes ----------
   {
     title: "Osmosis",
-    topic: "cells",
+    where: ["cells/membranes"],
     type: "sim",
     url: "sims/osmosis/",
     desc: "Two chambers separated by a membrane that lets water through but not solutes. Change the solute on each side and watch the water level shift.",
@@ -49,17 +67,15 @@ const ITEMS = [
   },
   {
     title: "Osmolarity & Tonicity: Plant Cells",
-    topic: "cells",
+    where: ["cells/membranes"],
     type: "sim",
     url: "sims/plant-cell-tonicity/",
     desc: "Compare three plant cells in hypotonic, isotonic, and hypertonic solutions. See turgor pressure, plasmolysis, and water potential (Ψ = Ψs + Ψp).",
     tags: ["tonicity", "plasmolysis", "turgor", "water potential"]
   },
-
-  // ---------- Plant Science ----------
   {
     title: "Photosynthesis: C₃, C₄, CAM & Photorespiration",
-    topic: "plants",
+    where: ["cells/plants"],
     type: "sim",
     url: "sims/photosynthesis-pathways/",
     desc: "Adjust light, CO₂, and temperature to see what limits photosynthesis, watch Rubisco choose between CO₂ and O₂, and compare C₃, C₄, and CAM plants across habitats.",
@@ -67,17 +83,15 @@ const ITEMS = [
   },
   {
     title: "Water Potential in Plants",
-    topic: "plants",
+    where: ["cells/plants", "soils/water"],
     type: "sim",
     url: "sims/plant-water-potential/",
     desc: "Follow water from the soil into the root, up the xylem, and out through transpiration, using the water potential equation at each step.",
     tags: ["water potential", "xylem", "transpiration"]
   },
-
-  // ---------- Soil Science ----------
   {
     title: "Soil Water",
-    topic: "soils",
+    where: ["soils/water"],
     type: "sim",
     url: "sims/soil-water/",
     desc: "Explore soil water potential, soil water content, infiltration and permeability, and what happens to redox chemistry when soils flood.",
@@ -85,7 +99,7 @@ const ITEMS = [
   },
   {
     title: "Soil Cation Exchange Lab",
-    topic: "soils",
+    where: ["soils/chemistry"],
     type: "sim",
     url: "sims/soil-cation-exchange/",
     desc: "See why some cations are held more tightly than others, build soils with different CEC and base saturation, and watch roots trade H⁺ for nutrients.",
@@ -93,61 +107,71 @@ const ITEMS = [
   },
   {
     title: "Soil pH: Hydrogen Adsorption & Desorption",
-    topic: "soils",
+    where: ["soils/chemistry"],
     type: "sim",
     url: "sims/soil-ph/",
     desc: "Compare two soils side by side as pH changes. Add acid or lime and see how H⁺ and Al³⁺ displace base cations and how buffering differs between sandy and clay soils.",
     tags: ["pH", "buffering", "lime", "CEC"]
   },
-
-  // ---------- Population Ecology ----------
   {
     title: "Population Growth: Exponential, Logistic & Chaos",
-    topic: "population",
+    where: ["ecology/populations"],
     type: "sim",
     url: "sims/population-growth/",
     desc: "Release rabbits on an island and compare exponential (r), geometric (λ), and logistic (K) growth, then push a population into cycles and chaos with a cobweb plot and bifurcation diagram.",
     tags: ["N", "r", "λ", "K", "logistic", "chaos"]
   },
   {
-    title: "Which Life Stage Matters Most? (Sea Turtles)",
-    topic: ["population", "field"],
-    type: "sim",
-    url: "sims/stage-sensitivity/",
-    desc: "Protect different life stages of loggerhead sea turtles and see which raises the population growth rate most, with a stage-based matrix model, projections, and elasticity analysis.",
-    tags: ["stage matrix", "sensitivity", "elasticity", "λ", "Crouse"]
-  },
-  {
     title: "Mark–Recapture",
-    topic: ["population", "field"],
+    where: ["ecology/populations", "field/techniques"],
     type: "sim",
     url: "sims/mark-recapture/",
     desc: "Net, tag, and release fish in a murky pond, then recapture and estimate the population with Lincoln–Petersen and Chapman. Break the method's assumptions and see how estimates go wrong.",
     tags: ["Lincoln–Petersen", "Chapman", "population estimate", "field methods"]
   },
   {
+    title: "Which Life Stage Matters Most? (Sea Turtles)",
+    where: ["ecology/populations", "field/conservation"],
+    type: "sim",
+    url: "sims/stage-sensitivity/",
+    desc: "Protect different life stages of loggerhead sea turtles and see which raises the population growth rate most, with a stage-based matrix model, projections, and elasticity analysis.",
+    tags: ["stage matrix", "sensitivity", "elasticity", "λ", "Crouse"]
+  },
+  {
     title: "Lotka–Volterra: Predators, Prey & Competitors",
-    topic: ["population", "community"],
+    where: ["ecology/interactions"],
     type: "sim",
     url: "sims/lotka-volterra/",
     desc: "Watch hares and lynx cycle and trace their path on a phase plot, then pit two Paramecium species against each other and use isoclines to predict exclusion or coexistence.",
     tags: ["Lotka–Volterra", "predator–prey", "competition", "isoclines", "phase plot"]
   },
-
-  // ---------- Community Ecology ----------
   {
     title: "Trophic Cascade: Spiders, Grasshoppers & Grass",
-    topic: "community",
+    where: ["ecology/interactions"],
     type: "sim",
     url: "sims/trophic-cascade/",
     desc: "Three identical cages of grass, goldenrod, and grasshoppers: no spiders, hunting spiders, and glued spiders that can only scare. Watch grasshoppers switch to goldenrod for cover, and separate eating (consumptive) from fear (non-consumptive) effects.",
     tags: ["trophic cascade", "non-consumptive effects", "predation risk", "Schmitz", "indirect effects"]
   },
-
-  // ---------- Ecosystems ----------
+  {
+    title: "Hawks and Doves: Game Theory",
+    where: ["ecology/interactions"],
+    type: "sim",
+    url: "sims/hawk-dove/",
+    desc: "Birds that always fight (hawks) or only display (doves) compete over food. Change the value of food and the cost of fighting and watch the population evolve to an evolutionarily stable mix.",
+    tags: ["game theory", "ESS", "hawk–dove", "evolution"]
+  },
+  {
+    title: "Species Diversity Calculator",
+    where: ["ecology/ecosystems", "field/techniques"],
+    type: "sim",
+    url: "sims/species-diversity/",
+    desc: "Enter species counts from several sites (or use an example data set) to calculate richness, Simpson's and Shannon's indices, and alpha, beta, and gamma diversity, with charts, step-by-step math, and a check-your-work tool.",
+    tags: ["biodiversity", "Simpson", "Shannon", "beta diversity", "Jaccard"]
+  },
   {
     title: "The Energy Pyramid",
-    topic: "ecosystems",
+    where: ["ecology/ecosystems"],
     type: "sim",
     url: "sims/energy-flow/",
     desc: "A live energy pyramid from grass to hawks: each level is drawn as wide as its energy, with glowing energy dots, losses to heat and decomposers, and why eating lower on the food chain feeds more people.",
@@ -155,63 +179,41 @@ const ITEMS = [
   },
   {
     title: "Succession and Fire in the Sierra Nevada",
-    topic: ["ecosystems", "community"],
+    where: ["ecology/ecosystems", "field/conservation"],
     type: "sim",
     url: "sims/succession/",
     desc: "Watch bare granite and an abandoned pasture grow into Sierra forest, with soil and sunlight meters that show why species replace each other. Then see how fire suppression builds fuel and sets up megafires.",
     tags: ["succession", "Sierra Nevada", "fire suppression", "megafire", "ponderosa pine"]
   },
-
-  // ---------- Behavioral Ecology ----------
-  {
-    title: "Hawks and Doves: Game Theory",
-    topic: "behavior",
-    type: "sim",
-    url: "sims/hawk-dove/",
-    desc: "Birds that always fight (hawks) or only display (doves) compete over food. Change the value of food and the cost of fighting and watch the population evolve to an evolutionarily stable mix.",
-    tags: ["game theory", "ESS", "hawk–dove", "evolution"]
-  },
-
-  // ---------- Environmental Science ----------
-  {
-    title: "Tragedy of the Commons",
-    topic: "environment",
-    type: "sim",
-    url: "sims/tragedy-commons/",
-    desc: "Run a herd on a shared pasture with four other herders. See why everyone adding cows ruins the grass, then try community limits and private plots.",
-    tags: ["commons", "sustainability", "Hardin", "Ostrom", "overgrazing"]
-  },
-
-  // ---------- Field Methods & Conservation ----------
-  {
-    title: "Environmental Laws in the Field",
-    topic: "field",
-    type: "sim",
-    url: "sims/environmental-laws/",
-    desc: "Learn environmental laws from the perspective of a consulting or agency biologist: what triggers each law, what you survey for, and what goes in your report.",
-    tags: ["CEQA", "NEPA", "ESA", "CESA", "Clean Water Act", "quiz"]
-  },
   {
     title: "Field Biology Species Review",
-    topic: "field",
+    where: ["field/techniques"],
     type: "sim",
     url: "sims/field_bio_review/",
     desc: "Flashcard study tools for the species from each semester's BIOL 7 field trips. Pick your semester and practice your IDs.",
     tags: ["BIOL 7", "species ID", "flashcards"]
   },
   {
-    title: "Species Diversity Calculator",
-    topic: ["community", "field"],
+    title: "Environmental Laws in the Field",
+    where: ["field/conservation"],
     type: "sim",
-    url: "sims/species-diversity/",
-    desc: "Enter species counts from several sites (or use an example data set) to calculate richness, Simpson's and Shannon's indices, and alpha, beta, and gamma diversity, with charts, step-by-step math, and a check-your-work tool.",
-    tags: ["biodiversity", "Simpson", "Shannon", "beta diversity", "Jaccard"]
+    url: "sims/environmental-laws/",
+    desc: "Learn environmental laws from the perspective of a consulting or agency biologist: what triggers each law, what you survey for, and what goes in your report.",
+    tags: ["CEQA", "NEPA", "ESA", "CESA", "Clean Water Act", "quiz"]
+  },
+  {
+    title: "Tragedy of the Commons",
+    where: ["field/conservation"],
+    type: "sim",
+    url: "sims/tragedy-commons/",
+    desc: "Run a herd on a shared pasture with four other herders. See why everyone adding cows ruins the grass, then try community limits and private plots.",
+    tags: ["commons", "sustainability", "Hardin", "Ostrom", "overgrazing"]
   }
 
   // ---------- Example web app (delete the two slashes at the start of each line to use) ----------
   // ,{
   //   title: "Trail Camera Reviewer",
-  //   topic: "field",
+  //   where: ["field/techniques"],
   //   type: "app",
   //   url: "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec",
   //   desc: "Review trail camera images and record species detections. Sign in with your college Google account.",
