@@ -38,12 +38,20 @@
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
   .card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;transition:transform .12s, box-shadow .12s, border-color .12s}
   .card:hover,.card:focus-visible{transform:translateY(-2px);box-shadow:0 6px 18px rgba(31,74,40,.12);border-color:var(--green);outline:none}
-  .card h2{font-size:1.08rem;margin:6px 0 6px;color:var(--green-dk)}
+  .card .ct{font-size:1.08rem;margin:6px 0 6px;color:var(--green-dk)}
   .card p{margin:0 0 10px;font-size:.92rem;color:#333;flex:1}
   .type{align-self:flex-start;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px}
   .type.sim{background:var(--green-lt);color:var(--green)}
   .type.app{background:var(--app-lt);color:var(--app)}
   .type.link{background:var(--link-lt);color:var(--link)}
+  .topicgroup{margin:0 0 30px}
+  .th{font-size:1.35rem;margin:6px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--green)}
+  .th a{color:var(--green-dk);text-decoration:none} .th a:hover{text-decoration:underline}
+  .sec{margin:0 0 22px}
+  .sh{font-size:1.05rem;margin:16px 0 4px;color:var(--green-dk);display:flex;align-items:baseline;gap:8px}
+  .sh .n{font-size:.75rem;font-weight:600;color:var(--muted);background:var(--green-lt);border-radius:999px;padding:1px 8px}
+  .sb{margin:0 0 10px;color:var(--muted);font-size:.9rem}
+  .sec .grid{margin-top:8px}
   .topic{font-size:.78rem;color:var(--muted);margin-bottom:6px}
   .tags{display:flex;flex-wrap:wrap;gap:5px}
   .tags span{font-size:.72rem;background:#f0f3ee;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted)}
@@ -81,7 +89,7 @@
   <div class="wrap">
     <p id="blurb"></p>
     <p id="count" class="sr-only" aria-live="polite"></p>
-    <div class="grid" id="grid"></div>
+    <div id="grid"></div>
   </div>
 </main>
 
@@ -101,13 +109,21 @@
   const searchEl = document.getElementById('search');
   const topicById = Object.fromEntries(TOPICS.map(t => [t.id, t]));
   const TYPE_LABEL = { sim: 'Simulation', app: 'Web app', link: 'Resource' };
-  const topicsOf = i => Array.isArray(i.topic) ? i.topic : [i.topic];
+  // Each item lists "topic/section" places. Old-style `topic` still works (goes in the first section).
+  const ALIAS = (typeof TOPIC_ALIASES === 'object' && TOPIC_ALIASES) || {};
+  const placesOf = i => (i.where || [].concat(i.topic || [])).map(p => {
+    let [t, s] = String(p).split('/'); t = ALIAS[t] || t;
+    const top = topicById[t]; if (!top) return null;
+    const secs = top.sections || [];
+    return { t, s: secs.some(x => x.id === s) ? s : (secs[0] ? secs[0].id : '') };
+  }).filter(Boolean);
+  const topicsOf = i => [...new Set(placesOf(i).map(p => p.t))];
   const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
   let current = 'all';
 
   // Build tabs: "All" plus one per topic
-  const tabs = [{ id: 'all', label: 'All', blurb: 'Everything in one place. Pick a topic above to narrow it down.' }, ...TOPICS];
+  const tabs = [{ id: 'all', label: 'All', blurb: 'Everything, grouped by topic. Pick a tab above to see just one topic.' }, ...TOPICS];
   tabsEl.innerHTML = tabs.map(t => {
     const n = t.id === 'all' ? ITEMS.length : ITEMS.filter(i => topicsOf(i).includes(t.id)).length;
     return `<button data-id="${t.id}">${esc(t.label)}<span class="n" aria-label=", ${n} items">${n}</span></button>`;
@@ -118,44 +134,69 @@
   });
 
   function show(id){
+    id = ALIAS[id] || id;
     if (id !== 'all' && !topicById[id]) id = 'all';
     current = id;
     tabsEl.querySelectorAll('button').forEach(b => { const on = b.dataset.id === id; b.classList.toggle('active', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
     render();
   }
 
+  function card(i, h, showTopic){
+    const type = TYPE_LABEL[i.type] ? i.type : 'sim';
+    const external = type !== 'sim';
+    const tags = (i.tags || []).map(t => `<span>${esc(t)}</span>`).join('');
+    return `<a class="card ${type}" href="${esc(i.url)}"${external ? ' target="_blank" rel="noopener"' : ''}>
+      <span class="type ${type}">${TYPE_LABEL[type]}</span>
+      <h${h} class="ct">${esc(i.title)}</h${h}>
+      ${showTopic ? `<div class="topic">${esc(topicsOf(i).map(t => topicById[t].label).join(' · '))}</div>` : ''}
+      <p>${esc(i.desc)}</p>
+      ${tags ? `<div class="tags">${tags}</div>` : ''}
+      <div class="open">${external ? 'Open in new tab ↗' : 'Open simulation →'}</div>
+    </a>`;
+  }
+
+  // Cards for one section. In the All view each card shows only once (its first place).
+  function sectionItems(t, s, firstOnly){
+    return ITEMS.filter(i => {
+      const ps = placesOf(i);
+      return firstOnly ? (ps[0] && ps[0].t === t && ps[0].s === s) : ps.some(p => p.t === t && p.s === s);
+    });
+  }
+  function sectionHTML(top, sec, h, firstOnly){
+    const list = sectionItems(top.id, sec.id, firstOnly);
+    if (!list.length) return '';
+    return `<section class="sec" aria-labelledby="s-${top.id}-${sec.id}">
+      <h${h} class="sh" id="s-${top.id}-${sec.id}">${esc(sec.label)}<span class="n" aria-hidden="true">${list.length}</span><span class="sr-only">, ${list.length} ${list.length === 1 ? 'item' : 'items'}</span></h${h}>
+      ${sec.blurb ? `<p class="sb">${esc(sec.blurb)}</p>` : ''}
+      <div class="grid">${list.map(i => card(i, h + 1, false)).join('')}</div>
+    </section>`;
+  }
+
   function render(){
     const q = searchEl.value.trim().toLowerCase();
     const tab = tabs.find(t => t.id === current);
     blurbEl.textContent = q ? `Search results for “${searchEl.value.trim()}”` : tab.blurb;
+    let shown = 0, html = '';
 
-    const list = ITEMS.filter(i => {
-      if (!q && current !== 'all' && !topicsOf(i).includes(current)) return false;
-      if (!q) return true;
-      const hay = [i.title, i.desc, (i.tags || []).join(' '), topicsOf(i).map(t => topicById[t]?.label || '').join(' ')].join(' ').toLowerCase();
-      return hay.includes(q);
-    });
-
-    document.getElementById('count').textContent = list.length + (list.length === 1 ? ' item' : ' items') + ' shown';
-    if (!list.length){
-      gridEl.innerHTML = `<div class="empty">${q ? 'Nothing matches that search.' : 'Nothing here yet. Check back soon.'}</div>`;
-      return;
+    if (q){
+      const list = ITEMS.filter(i => [i.title, i.desc, (i.tags || []).join(' '), topicsOf(i).map(t => topicById[t].label).join(' ')].join(' ').toLowerCase().includes(q));
+      shown = list.length;
+      html = list.length ? `<div class="grid">${list.map(i => card(i, 2, true)).join('')}</div>` : '';
+    } else if (current === 'all'){
+      html = TOPICS.map(top => {
+        const inner = (top.sections || []).map(sec => sectionHTML(top, sec, 3, true)).join('');
+        if (!inner) return '';
+        return `<section class="topicgroup" aria-labelledby="t-${top.id}">
+          <h2 class="th" id="t-${top.id}"><a href="#${top.id}">${esc(top.label)}</a></h2>${inner}</section>`;
+      }).join('');
+      shown = ITEMS.length;
+    } else {
+      html = (tab.sections || []).map(sec => sectionHTML(tab, sec, 2, false)).join('');
+      shown = ITEMS.filter(i => topicsOf(i).includes(tab.id)).length;
     }
 
-    gridEl.innerHTML = list.map(i => {
-      const type = TYPE_LABEL[i.type] ? i.type : 'sim';
-      const external = type !== 'sim';
-      const tags = (i.tags || []).map(t => `<span>${esc(t)}</span>`).join('');
-      const showTopic = current === 'all' || q;
-      return `<a class="card ${type}" href="${esc(i.url)}"${external ? ' target="_blank" rel="noopener"' : ''}>
-        <span class="type ${type}">${TYPE_LABEL[type]}</span>
-        <h2>${esc(i.title)}</h2>
-        ${showTopic ? `<div class="topic">${esc(topicsOf(i).filter(t => topicById[t]).map(t => topicById[t].label).join(' · '))}</div>` : ''}
-        <p>${esc(i.desc)}</p>
-        ${tags ? `<div class="tags">${tags}</div>` : ''}
-        <div class="open">${external ? 'Open in new tab ↗' : 'Open simulation →'}</div>
-      </a>`;
-    }).join('');
+    document.getElementById('count').textContent = shown + (shown === 1 ? ' item' : ' items') + ' shown';
+    gridEl.innerHTML = html || `<div class="empty">${q ? 'Nothing matches that search.' : 'Nothing here yet. Check back soon.'}</div>`;
   }
 
   searchEl.addEventListener('input', render);
