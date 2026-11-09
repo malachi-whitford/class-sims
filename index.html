@@ -15,20 +15,28 @@
   body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
   a{color:inherit}
 
-  header{background:linear-gradient(120deg,var(--green-dk),var(--green));color:#fff;padding:28px 20px 22px}
+  header{position:relative;overflow:hidden;background:linear-gradient(160deg,#173d22 0%,#2f6b3a 55%,#4f8a46 100%);color:#fff;padding:38px 20px 70px}
+  header .wrap{position:relative;z-index:1}
+  header .eyebrow{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);padding:4px 10px;border-radius:999px;margin-bottom:10px}
+  header .ridge{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:70px;display:block}
+  .stats{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .stats span{font-size:.85rem;background:rgba(0,0,0,.18);border-radius:8px;padding:5px 10px}
+  .stats b{font-size:1rem}
   .wrap{max-width:1100px;margin:0 auto}
-  header h1{margin:0;font-size:1.7rem}
-  header p{margin:6px 0 0;opacity:.9}
+  header h1{margin:0;font-size:2.2rem;letter-spacing:-.01em;line-height:1.15}
+  header p{margin:8px 0 0;opacity:.92;max-width:680px;font-size:1.02rem}
   .home-link{display:inline-block;margin-top:12px;color:#fff;font-weight:600;font-size:.9rem;text-decoration:none;border:1px solid rgba(255,255,255,.7);border-radius:999px;padding:5px 12px}
   .home-link:hover{background:rgba(255,255,255,.15)}
   footer a{color:var(--green);font-weight:600}
 
-  .bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+  .bar{position:sticky;top:0;z-index:5;background:rgba(245,247,243,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
   .bar .wrap{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;padding:10px 20px}
   nav{display:flex;flex-wrap:wrap;gap:6px}
   nav button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
   nav button:hover{border-color:var(--green)}
-  nav button.active{background:var(--green);border-color:var(--green);color:#fff}
+  nav button .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:var(--tc,var(--green))}
+  nav button.active{background:var(--tc,var(--green));border-color:var(--tc,var(--green));color:#fff}
+  nav button.active .dot{background:#fff}
   nav button .n{font-weight:400;opacity:.85;margin-left:4px;font-size:.8rem}
   #search{font:inherit;font-size:.9rem;padding:8px 12px;border-radius:999px;border:1px solid var(--line);min-width:220px;background:#fff}
   #search:focus{outline:2px solid var(--green);outline-offset:1px}
@@ -36,35 +44,43 @@
   main{padding:18px 20px 40px}
   #blurb{color:var(--muted);margin:0 0 14px;min-height:1.5em}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
-  .card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;text-decoration:none;transition:transform .12s, box-shadow .12s, border-color .12s}
-  .card:hover,.card:focus-visible{transform:translateY(-2px);box-shadow:0 6px 18px rgba(31,74,40,.12);border-color:var(--green);outline:none}
-  .card .ct{font-size:1.08rem;margin:6px 0 6px;color:var(--green-dk)}
+  .card{--tc:var(--green);display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 16px 16px;overflow:hidden;text-decoration:none;transition:transform .12s, box-shadow .12s, border-color .12s}
+  .card:hover,.card:focus-visible{transform:translateY(-3px);box-shadow:0 10px 24px rgba(31,74,40,.16);border-color:var(--tc);outline:none}
+  .card:focus-visible{outline:3px solid #1557b0;outline-offset:2px}
+  .thumb{position:relative;margin:0 -16px 12px;height:120px;background:var(--tl);border-bottom:3px solid var(--tc);display:flex;align-items:center;justify-content:center}
+  .thumb::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(0,0,0,.06) 1px,transparent 1.4px);background-size:12px 12px}
+  .thumb svg{position:relative;height:100px;width:auto;max-width:90%;transition:transform .25s}
+  .card:hover .thumb svg{transform:scale(1.06)}
+  .thumb .type{position:absolute;top:10px;left:12px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .card .ct{font-size:1.1rem;margin:0 0 6px;color:var(--ink);line-height:1.3}
   .card p{margin:0 0 10px;font-size:.92rem;color:#333;flex:1}
   .type{align-self:flex-start;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px}
-  .type.sim{background:var(--green-lt);color:var(--green)}
+  .type.sim{background:#fff;color:var(--green-dk)}
   .type.app{background:var(--app-lt);color:var(--app)}
   .type.link{background:var(--link-lt);color:var(--link)}
   .topicgroup{margin:0 0 30px}
-  .th{font-size:1.35rem;margin:6px 0 4px;padding-bottom:6px;border-bottom:2px solid var(--green)}
-  .th a{color:var(--green-dk);text-decoration:none} .th a:hover{text-decoration:underline}
+  .th{font-size:1.5rem;margin:10px 0 4px;padding-bottom:8px;border-bottom:3px solid var(--tc);display:flex;align-items:center;gap:10px}
+  .th::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--tc)}
+  .th a{color:var(--ink);text-decoration:none} .th a:hover{text-decoration:underline}
   .sec{margin:0 0 22px}
-  .sh{font-size:1.05rem;margin:16px 0 4px;color:var(--green-dk);display:flex;align-items:baseline;gap:8px}
-  .sh .n{font-size:.75rem;font-weight:600;color:var(--muted);background:var(--green-lt);border-radius:999px;padding:1px 8px}
-  .sb{margin:0 0 10px;color:var(--muted);font-size:.9rem}
+  .sh{font-size:1.12rem;margin:20px 0 4px;color:var(--td);display:flex;align-items:baseline;gap:8px;padding-left:10px;border-left:4px solid var(--tc)}
+  .sh .n{font-size:.75rem;font-weight:600;color:var(--td);background:var(--tl);border-radius:999px;padding:1px 8px}
+  .sb{margin:0 0 10px 14px;color:var(--muted);font-size:.9rem}
   .sec .grid{margin-top:8px}
   .topic{font-size:.78rem;color:var(--muted);margin-bottom:6px}
   .tags{display:flex;flex-wrap:wrap;gap:5px}
   .tags span{font-size:.72rem;background:#f0f3ee;border:1px solid var(--line);border-radius:6px;padding:1px 7px;color:var(--muted)}
-  .open{margin-top:12px;font-size:.85rem;font-weight:700;color:var(--green)}
+  .open{margin-top:12px;font-size:.88rem;font-weight:700;color:var(--td)}
+  .card:hover .open{text-decoration:underline}
   .card.app .open{color:var(--app)} .card.link .open{color:var(--link)}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
   :focus-visible{outline:3px solid #1557b0;outline-offset:2px}
-  @media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover,.card:focus-visible{transform:none}}
+  @media (prefers-reduced-motion:reduce){.card{transition:none}.card:hover,.card:focus-visible{transform:none}.thumb svg,.card:hover .thumb svg{transition:none;transform:none}}
   .empty{padding:30px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:12px}
 
   footer{border-top:1px solid var(--line);padding:18px 20px 30px;font-size:.82rem;color:var(--muted)}
   footer p{margin:4px 0}
-  @media(max-width:600px){header h1{font-size:1.35rem} #search{min-width:0;width:100%} .bar{position:static}}
+  @media(max-width:600px){header h1{font-size:1.6rem} header{padding:28px 20px 56px} #search{min-width:0;width:100%} .bar{position:static}}
 </style>
 <!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
 </head>
@@ -72,10 +88,16 @@
 
 <header>
   <div class="wrap">
+    <span class="eyebrow">Clovis Community College</span>
     <h1>Dr. Whitford's Class Simulations</h1>
-    <p>Interactive simulations and tools for biology, plant science, soil science, community ecology, and field methods. Clovis Community College.</p>
-    <a class="home-link" href="https://malachi-whitford.github.io/">← Dr. Whitford's main website</a>
+    <p>Hands-on, interactive simulations for biology, plant and soil science, ecology, and conservation. Change the conditions, run the model, and see the idea for yourself.</p>
+    <div class="stats" id="stats"></div>
+    <a class="home-link" style="margin-top:14px" href="https://malachi-whitford.github.io/">← Dr. Whitford's main website</a>
   </div>
+  <svg class="ridge" viewBox="0 0 1200 70" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <path d="M0 50 L80 30 L150 44 L230 14 L300 38 L360 26 L440 46 L520 10 L600 40 L680 22 L760 44 L840 18 L920 36 L1000 12 L1080 40 L1140 28 L1200 42 V70 H0Z" fill="#fff" opacity=".12"/>
+    <path d="M0 58 L60 48 L120 56 L200 40 L270 54 L340 44 L420 58 L500 42 L580 56 L660 46 L740 58 L820 44 L900 56 L980 46 L1060 58 L1140 48 L1200 54 V70 H0Z" fill="#f5f7f3"/>
+  </svg>
 </header>
 
 <div class="bar">
@@ -101,6 +123,7 @@
 </footer>
 
 <script src="catalog.js"></script>
+<script src="thumbs.js"></script>
 <script>
 (function(){
   const tabsEl = document.getElementById('tabs');
@@ -108,6 +131,9 @@
   const blurbEl = document.getElementById('blurb');
   const searchEl = document.getElementById('search');
   const topicById = Object.fromEntries(TOPICS.map(t => [t.id, t]));
+  const TC = { cells:['#0f766e','#d9f0ec','#0b5a54'], soils:['#9a6324','#f4e7d4','#7a4c18'], ecology:['#2f6b3a','#e2efdc','#1f4a28'], fieldbio:['#6b3fa0','#ece3f6','#552f80'] };
+  const tcVars = id => { const c = TC[id] || TC.ecology; return `--tc:${c[0]};--tl:${c[1]};--td:${c[2]}`; };
+  const thumbOf = i => (typeof THUMBS === 'object' && THUMBS[i.url]) || '<circle cx="80" cy="45" r="26" fill="var(--tc)" opacity=".25"/><circle cx="80" cy="45" r="12" fill="var(--tc)" opacity=".5"/>';
   const TYPE_LABEL = { sim: 'Simulation', app: 'Web app', link: 'Resource' };
   // Each item lists "topic/section" places. Old-style `topic` still works (goes in the first section).
   const ALIAS = (typeof TOPIC_ALIASES === 'object' && TOPIC_ALIASES) || {};
@@ -126,12 +152,15 @@
   const tabs = [{ id: 'all', label: 'All', blurb: 'Everything, grouped by topic. Pick a tab above to see just one topic.' }, ...TOPICS];
   tabsEl.innerHTML = tabs.map(t => {
     const n = t.id === 'all' ? ITEMS.length : ITEMS.filter(i => topicsOf(i).includes(t.id)).length;
-    return `<button data-id="${t.id}">${esc(t.label)}<span class="n" aria-label=", ${n} items">${n}</span></button>`;
+    return `<button data-id="${t.id}" style="${t.id === 'all' ? '' : tcVars(t.id)}">${t.id === 'all' ? '' : '<span class="dot" aria-hidden="true"></span>'}${esc(t.label)}<span class="n" aria-label=", ${n} items">${n}</span></button>`;
   }).join('');
   tabsEl.querySelectorAll('button').forEach(b => b.onclick = () => {
     location.hash = b.dataset.id === 'all' ? '' : b.dataset.id;
     show(b.dataset.id);
   });
+
+  const nSims = ITEMS.filter(i => i.type === 'sim').length;
+  document.getElementById('stats').innerHTML = `<span><b>${nSims}</b> interactive simulations</span><span><b>${TOPICS.length}</b> topics</span><span>Free, no login, works on phones</span>`;
 
   function show(id){
     id = ALIAS[id] || id;
@@ -145,8 +174,9 @@
     const type = TYPE_LABEL[i.type] ? i.type : 'sim';
     const external = type !== 'sim';
     const tags = (i.tags || []).map(t => `<span>${esc(t)}</span>`).join('');
-    return `<a class="card ${type}" href="${esc(i.url)}"${external ? ' target="_blank" rel="noopener"' : ''}>
-      <span class="type ${type}">${TYPE_LABEL[type]}</span>
+    const home = (placesOf(i)[0] || {}).t;
+    return `<a class="card ${type}" style="${tcVars(home)}" href="${esc(i.url)}"${external ? ' target="_blank" rel="noopener"' : ''}>
+      <div class="thumb"><svg viewBox="0 0 160 90" aria-hidden="true" focusable="false">${thumbOf(i)}</svg><span class="type ${type}">${TYPE_LABEL[type]}</span></div>
       <h${h} class="ct">${esc(i.title)}</h${h}>
       ${showTopic ? `<div class="topic">${esc(topicsOf(i).map(t => topicById[t].label).join(' · '))}</div>` : ''}
       <p>${esc(i.desc)}</p>
@@ -186,12 +216,12 @@
       html = TOPICS.map(top => {
         const inner = (top.sections || []).map(sec => sectionHTML(top, sec, 3, true)).join('');
         if (!inner) return '';
-        return `<section class="topicgroup" aria-labelledby="t-${top.id}">
+        return `<section class="topicgroup" style="${tcVars(top.id)}" aria-labelledby="t-${top.id}">
           <h2 class="th" id="t-${top.id}"><a href="#${top.id}">${esc(top.label)}</a></h2>${inner}</section>`;
       }).join('');
       shown = ITEMS.length;
     } else {
-      html = (tab.sections || []).map(sec => sectionHTML(tab, sec, 2, false)).join('');
+      html = `<div style="${tcVars(tab.id)}">` + (tab.sections || []).map(sec => sectionHTML(tab, sec, 2, false)).join('') + '</div>';
       shown = ITEMS.filter(i => topicsOf(i).includes(tab.id)).length;
     }
 
