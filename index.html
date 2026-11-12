@@ -131,7 +131,7 @@
   const blurbEl = document.getElementById('blurb');
   const searchEl = document.getElementById('search');
   const topicById = Object.fromEntries(TOPICS.map(t => [t.id, t]));
-  const TC = { cells:['#0f766e','#d9f0ec','#0b5a54'], soils:['#9a6324','#f4e7d4','#7a4c18'], ecology:['#2f6b3a','#e2efdc','#1f4a28'], fieldbio:['#6b3fa0','#ece3f6','#552f80'] };
+  const TC = { cells:['#0f766e','#d9f0ec','#0b5a54'], soils:['#9a6324','#f4e7d4','#7a4c18'], ecology:['#2f6b3a','#e2efdc','#1f4a28'], fieldbio:['#6b3fa0','#ece3f6','#552f80'], atmosphere:['#1d5f9e','#dde9f6','#164a7c'] };
   const tcVars = id => { const c = TC[id] || TC.ecology; return `--tc:${c[0]};--tl:${c[1]};--td:${c[2]}`; };
   const thumbOf = i => (typeof THUMBS === 'object' && THUMBS[i.url]) || '<circle cx="80" cy="45" r="26" fill="var(--tc)" opacity=".25"/><circle cx="80" cy="45" r="12" fill="var(--tc)" opacity=".5"/>';
   const TYPE_LABEL = { sim: 'Simulation', app: 'Web app', link: 'Resource' };

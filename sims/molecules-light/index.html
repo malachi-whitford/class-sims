@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Molecules and Light: What Makes a Greenhouse Gas?</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:14px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem;max-width:880px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:12px;align-items:start}
+.layout>*{min-width:0}
+.layout>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;min-height:34px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl .hint{font-size:.78rem;color:var(--muted);margin:4px 0 2px}
+.ctrl h3:first-child{margin-top:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.ctrl label.check{justify-content:flex-start;align-items:center;margin:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.seg button{flex:1 1 auto;font-size:.85rem;padding:6px 10px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:.78rem;color:var(--muted)}
+.tile .v{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .s{font-size:.78rem;color:var(--muted)}
+.msg{font-size:.92rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:9px 12px;margin-top:10px}
+details summary{cursor:pointer;font-weight:600;font-size:.92rem}
+details li{font-size:.9rem;margin:4px 0}
+canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:manipulation}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart .ax{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
+.chart .lab{fill:var(--text);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.82rem;color:var(--muted);margin:8px 0 0}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;flex:none}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}.layout>.ctrl{order:2}}
+@media(max-width:520px){body{padding:10px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) nav.tabs button.on,:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
+
+#cv1{aspect-ratio:760/380;background:#0f1b2d}
+#cv2{aspect-ratio:760/460}
+.mols button{flex:0 0 calc(25% - 5px);font-weight:600}
+#light button{flex:0 0 calc(50% - 3px)}
+.ghg{border-radius:10px;padding:10px 12px;font-size:.88rem;margin-top:12px;border:2px solid var(--line);background:var(--soft)}
+.ghg.yes{border-color:#c0392b}
+.ghg b{display:block;margin-bottom:2px}
+#spec{display:block;width:100%;height:auto;margin:2px 0 4px}
+#spec text{font-family:system-ui,Arial,sans-serif}
+.counts{font-size:.82rem;color:var(--muted);margin-top:6px}
+.tile.temp .v{font-size:1.6rem}
+</style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>Molecules and Light: What Makes a Greenhouse Gas?</h1>
+<p class="sub">Shine different kinds of light on the gases in our air. Some light passes straight through. Some makes a molecule spin, vibrate, glow, or break apart. <b>Greenhouse gases</b> are the molecules that absorb <b>infrared</b> (heat) radiation and then give it off again in a random direction, often back toward the ground.</p>
+
+<nav class="tabs"><button data-tab="one" class="on">1. Light meets a molecule</button><button data-tab="atm">2. Greenhouse gases in the atmosphere</button></nav>
+
+<section class="panel on" id="one">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Light source</h3>
+    <div class="seg" id="light" aria-label="Light source"><button data-v="mw">Microwave</button><button data-v="ir" class="on">Infrared</button><button data-v="vis">Visible</button><button data-v="uv">Ultraviolet</button></div>
+    <svg id="spec" viewBox="0 0 280 46" aria-hidden="true"></svg>
+    <h3>Molecule</h3>
+    <div class="seg mols" id="mol" aria-label="Molecule"><button data-v="N2">N₂</button><button data-v="O2">O₂</button><button data-v="CO2" class="on">CO₂</button><button data-v="H2O">H₂O</button><button data-v="CH4">CH₄</button><button data-v="CO">CO</button><button data-v="NO2">NO₂</button><button data-v="O3">O₃</button></div>
+    <p class="hint" id="molname"></p>
+    <div class="row"><button class="primary" id="fire">Fire one photon</button><label class="check"><input type="checkbox" id="stream" checked> Steady stream</label></div>
+    <div class="row" style="margin-top:0"><button id="pause1">Pause</button><button id="reset1">Reset molecule</button></div>
+    <div class="ghg" id="ghg" aria-live="polite"></div>
+  </div>
+  <div class="card">
+    <canvas id="cv1"></canvas>
+    <div class="counts" id="counts1"></div>
+    <div class="msg" id="msg1"></div>
+  </div>
+</div>
+</section>
+
+<section class="panel" id="atm">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Greenhouse gases in the air</h3>
+    <label for="co2">Carbon dioxide (CO₂) <span class="val" id="co2V"></span></label>
+    <input type="range" id="co2" min="0" max="30" step="1" value="8" data-suf=" molecules">
+    <label for="h2o">Water vapor (H₂O) <span class="val" id="h2oV"></span></label>
+    <input type="range" id="h2o" min="0" max="30" step="1" value="15" data-suf=" molecules">
+    <p class="hint">Nitrogen (N₂) and oxygen (O₂) make up 99% of the air, but infrared passes right through them. They stay in the picture at a fixed number.</p>
+    <h3>Quick settings</h3>
+    <div class="row" style="margin-top:4px"><button data-p="0,0">No greenhouse gases</button><button data-p="8,15">Earth today</button><button data-p="16,15">Double the CO₂</button></div>
+    <h3>Speed</h3>
+    <div class="seg" id="spd" aria-label="Speed"><button data-v="1" class="on">Slow</button><button data-v="3">Fast</button></div>
+    <div class="row"><button class="primary" id="pause2">Pause</button></div>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile temp"><div class="k">Average ground temperature</div><div class="v" id="tT"></div><div class="s" id="tF"></div></div>
+      <div class="tile"><div class="k">Infrared sent back down</div><div class="v" id="tR"></div><div class="s">of the infrared the ground gives off</div></div>
+      <div class="tile"><div class="k">Infrared escaping to space</div><div class="v" id="tE"></div><div class="s">photons per second</div></div>
+    </div>
+    <div class="card">
+      <canvas id="cv2"></canvas>
+      <div class="legend" id="leg2"></div>
+    </div>
+    <div class="card chart"><h2>Ground temperature over time</h2><svg id="tchart" viewBox="0 0 560 230"></svg></div>
+    <div class="msg" id="msg2"></div>
+  </div>
+</div>
+<details class="card" style="margin-top:12px"><summary>What this model leaves out</summary>
+<ul>
+  <li>Real greenhouse gases each absorb only certain infrared wavelengths. Here every CO₂ and H₂O molecule absorbs every infrared photon that hits it.</li>
+  <li>Real air has far more molecules, and CO₂ is only about 0.04% of them. The molecules are spread out here so you can follow single photons.</li>
+  <li>Clouds, ice, and oceans reflect, store, and move heat. They are left out. The temperature uses a simple energy balance: the ground warms until the infrared it gives off balances the sunlight plus the infrared sent back to it.</li>
+  <li>Without any greenhouse gases, Earth's average temperature would be about −18 °C (0 °F). Today it is about 15 °C (59 °F).</li>
+</ul></details>
+</section>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function ctx2d(cv,W,H){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round((r.width||W)*dpr)),h=Math.max(1,Math.round((r.width||W)*H/W*dpr));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(w/W,0,0,h/H,0,0);return x}
+function seg(el,cb){const bs=$$('button',el),sync=()=>bs.forEach(x=>x.setAttribute('aria-pressed',x.classList.contains('on')?'true':'false'));el.setAttribute('role','group');bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle('on',x===b));sync();cb(b.dataset.v,b)});sync()}
+function setSeg(el,v){$$('button',el).forEach(b=>{b.classList.toggle('on',b.dataset.v===v);b.setAttribute('aria-pressed',b.dataset.v===v?'true':'false')})}
+function showVals(){$$('input[type=range]').forEach(r=>{const o=$('#'+r.id+'V');if(o)o.textContent=r.value+(r.dataset.suf||'')})}
+let curTab='one';
+$$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));curTab=b.dataset.tab;try{history.replaceState(null,'','#'+curTab)}catch(e){}});
+{const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();}
+
+/* ---------- molecules ---------- */
+const EL={C:{r:15,c:'#4b525c',hi:'#8a929e',s:'#1f2329'},O:{r:14,c:'#d9412b',hi:'#f59a87',s:'#7d1f12'},N:{r:14,c:'#3b6fd8',hi:'#93b4f2',s:'#1b3a80'},H:{r:9,c:'#e9ecef',hi:'#ffffff',s:'#6b7280'}};
+const MOL={
+  N2:{f:'N₂',name:'Nitrogen',atoms:[['N',-15,0],['N',15,0]],bonds:[[0,1,3]],vib:[[-5,0],[5,0]]},
+  O2:{f:'O₂',name:'Oxygen',atoms:[['O',-15,0],['O',15,0]],bonds:[[0,1,2]],vib:[[-5,0],[5,0]],frag:[[0],[1]],frf:['O','O']},
+  CO2:{f:'CO₂',name:'Carbon dioxide',atoms:[['O',-31,0],['C',0,0],['O',31,0]],bonds:[[0,1,2],[1,2,2]],vib:[[1,4],[0,-8],[-1,4]]},
+  H2O:{f:'H₂O',name:'Water vapor',atoms:[['O',0,-5],['H',-21,11],['H',21,11]],bonds:[[0,1,1],[0,2,1]],vib:[[0,1.5],[6,-4],[-6,-4]]},
+  CH4:{f:'CH₄',name:'Methane',atoms:[['C',0,0],['H',-20,-18],['H',20,-18],['H',-20,18],['H',20,18]],bonds:[[0,1,1],[0,2,1],[0,3,1],[0,4,1]],vib:[[0,1],[4,-4],[-4,-4],[5,0],[-5,0]]},
+  CO:{f:'CO',name:'Carbon monoxide',atoms:[['C',-15,0],['O',15,0]],bonds:[[0,1,3]],vib:[[-5,0],[5,0]]},
+  NO2:{f:'NO₂',name:'Nitrogen dioxide',atoms:[['N',0,-7],['O',-25,9],['O',25,9]],bonds:[[0,1,2],[0,2,1]],vib:[[0,2],[6,-4],[-6,-4]],frag:[[0,1],[2]],frf:['NO','O']},
+  O3:{f:'O₃',name:'Ozone',atoms:[['O',0,-8],['O',-24,8],['O',24,8]],bonds:[[0,1,2],[0,2,1]],vib:[[0,2],[6,-4],[-6,-4]],frag:[[0,1],[2]],frf:['O₂','O']}
+};
+const OUT={
+  N2:{mw:'pass',ir:'pass',vis:'pass',uv:'pass'}, O2:{mw:'pass',ir:'pass',vis:'pass',uv:'break'},
+  CO2:{mw:'pass',ir:'vib',vis:'pass',uv:'pass'}, H2O:{mw:'rot',ir:'vib',vis:'pass',uv:'pass'},
+  CH4:{mw:'pass',ir:'vib',vis:'pass',uv:'pass'}, CO:{mw:'rot',ir:'vib',vis:'pass',uv:'pass'},
+  NO2:{mw:'rot',ir:'vib',vis:'glow',uv:'break'}, O3:{mw:'rot',ir:'vib',vis:'pass',uv:'break'}};
+const LIGHT={mw:{name:'Microwave',wl:26,c:'#9aa6b4',amp:6},ir:{name:'Infrared',wl:13,c:'#ff5a4a',amp:6},vis:{name:'Visible',wl:7.5,c:'#ffd23f',amp:5},uv:{name:'Ultraviolet',wl:4.2,c:'#b38cff',amp:5}};
+
+function drawMol(x,key,cx,cy,sc,rot,disp,o={}){
+  const M=MOL[key],c=Math.cos(rot),s=Math.sin(rot);
+  const P=M.atoms.map((a,i)=>{const d=disp?disp(i):[0,0];const ax=a[1]+d[0],ay=a[2]+d[1];return[cx+(ax*c-ay*s)*sc,cy+(ax*s+ay*c)*sc]});
+  x.save();x.globalAlpha=o.alpha==null?1:o.alpha;
+  if(o.glow>0){const g=x.createRadialGradient(cx,cy,0,cx,cy,60*sc);g.addColorStop(0,`rgba(${o.glowC||'255,90,74'},${0.55*o.glow})`);g.addColorStop(1,`rgba(${o.glowC||'255,90,74'},0)`);x.fillStyle=g;x.beginPath();x.arc(cx,cy,60*sc,0,7);x.fill()}
+  x.strokeStyle='#9aa3ad';x.lineCap='round';
+  M.bonds.forEach(([a,b,n])=>{if(o.fragOf&&o.fragOf[a]!==o.fragOf[b])return;const[x1,y1]=P[a],[x2,y2]=P[b];const L=Math.hypot(x2-x1,y2-y1)||1,nx=-(y2-y1)/L,ny=(x2-x1)/L;x.lineWidth=2.6*sc;
+    for(let k=0;k<n;k++){const off=(k-(n-1)/2)*5*sc;x.beginPath();x.moveTo(x1+nx*off,y1+ny*off);x.lineTo(x2+nx*off,y2+ny*off);x.stroke()}});
+  M.atoms.forEach((a,i)=>{const e=EL[a[0]],[px,py]=P[i],r=e.r*sc;const g=x.createRadialGradient(px-r*0.35,py-r*0.4,r*0.1,px,py,r);g.addColorStop(0,e.hi);g.addColorStop(1,e.c);
+    x.fillStyle=g;x.strokeStyle=e.s;x.lineWidth=1.2*sc;x.beginPath();x.arc(px,py,r,0,7);x.fill();x.stroke();
+    if(o.labels&&sc>=1){x.fillStyle=a[0]==='H'?'#333':'#fff';x.font=`700 ${Math.round(r*0.95)}px system-ui,Arial`;x.textAlign='center';x.textBaseline='middle';x.fillText(a[0],px,py+0.5)}});
+  x.restore();
+}
+function drawPhoton(x,p,L,amp,lw){const T=LIGHT[p.t],sp=Math.hypot(p.vx,p.vy)||1,ux=p.vx/sp,uy=p.vy/sp,nx=-uy,ny=ux;
+  x.save();x.strokeStyle=T.c;x.lineWidth=lw;x.lineCap='round';x.shadowColor=T.c;x.shadowBlur=6;x.beginPath();
+  for(let k=0;k<=40;k++){const s=-L/2+L*k/40,env=Math.pow(Math.cos(Math.PI*s/L),2),w=Math.sin(2*Math.PI*(s+(p.d||0))/T.wl*(L>40?1:0.75))*amp*env;const px=p.x+ux*s+nx*w,py=p.y+uy*s+ny*w;k?x.lineTo(px,py):x.moveTo(px,py)}
+  x.stroke();x.restore()}
+
+/* ===================== TAB 1: one molecule ===================== */
+(function(){
+const W=760,H=380,MX=480,MY=190,LX=70,SPD=150,R=30;
+let light='ir',mol='CO2',stream=true,running=true,ph=[],st={mode:'idle',t:0},nAbs=0,nPass=0,streamT=1.2,resetT=0;
+const cv=$('#cv1');
+function outcome(){return OUT[mol][light]}
+const DUR={rot:2.6,vib:2.4,glow:2.2};
+function fire(){ph.push({t:light,x:LX+48,y:MY+(Math.random()-0.5)*6,vx:SPD,vy:0,d:0,fresh:true})}
+function absorb(p){const o=outcome();nAbs++;
+  if(o==='break'){const M=MOL[mol];st={mode:'broken',t:0,fr:M.frag.map((g,i)=>{const a=(i?1:-1)*(0.6+Math.random()*0.5)+(Math.random()<0.5?0:Math.PI);return{vx:Math.cos(a)*55,vy:Math.sin(a)*55,spin:(Math.random()-0.5)*3}})};resetT=4.5}
+  else st={mode:o,t:0,lt:p.t}}
+function resetMol(){st={mode:'idle',t:0};resetT=0}
+function step(dt){
+  if(stream){streamT-=dt;if(streamT<=0){streamT=1.8;fire()}}
+  st.t+=dt;
+  if(st.mode in DUR&&st.t>=DUR[st.mode]){const a=Math.random()*Math.PI*2;ph.push({t:st.lt||light,x:MX+Math.cos(a)*R,y:MY+Math.sin(a)*R,vx:Math.cos(a)*SPD,vy:Math.sin(a)*SPD,d:0,emit:true});st={mode:'idle',t:0}}
+  if(st.mode==='broken'){resetT-=dt;if(resetT<=0)resetMol()}
+  ph.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.d+=SPD*dt;
+    if(p.fresh&&p.x>=MX-R){p.fresh=false;if(st.mode==='idle'&&p.t===light&&outcome()!=='pass'){p.dead=true;absorb(p)}}});
+  ph=ph.filter(p=>!p.dead&&p.x>-60&&p.x<W+60&&p.y>-60&&p.y<H+60);
+}
+function draw(){const x=ctx2d(cv,W,H);
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0f1b2d');g.addColorStop(1,'#16263d');x.fillStyle=g;x.fillRect(0,0,W,H);
+  // lamp
+  const T=LIGHT[light];x.fillStyle='#2c3a4f';x.strokeStyle='#6b7a90';x.lineWidth=2;x.beginPath();x.roundRect(LX-48,MY-34,90,68,10);x.fill();x.stroke();
+  x.fillStyle=T.c;x.beginPath();x.ellipse(LX+44,MY,8,24,0,0,7);x.fill();
+  x.fillStyle='#e7ecf2';x.font='600 13px system-ui,Arial';x.textAlign='center';x.fillText(T.name,LX-3,MY+4);
+  // molecule
+  const M=MOL[mol];let rot=0,disp=null,o={labels:true};
+  if(st.mode==='rot'){const u=Math.min(1,st.t/DUR.rot);rot=Math.PI*4*(u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2)}
+  if(st.mode==='vib'){const env=Math.sin(Math.PI*Math.min(1,st.t/DUR.vib)),w=Math.sin(2*Math.PI*2.6*st.t)*env;disp=i=>[M.vib[i][0]*w*1.3,M.vib[i][1]*w*1.3];o.glow=env*0.8}
+  if(st.mode==='glow'){const env=Math.sin(Math.PI*Math.min(1,st.t/DUR.glow));o.glow=env*(0.8+0.2*Math.sin(st.t*12));o.glowC='255,210,63'}
+  if(st.mode==='broken'){const fo={};M.frag.forEach((g,k)=>g.forEach(i=>fo[i]=k));o.fragOf=fo;const tt=st.t;disp=i=>{const f=st.fr[fo[i]];return[f.vx*tt/1.6,f.vy*tt/1.6]};o.alpha=resetT<0.8?Math.max(0,resetT/0.8):1}
+  drawMol(x,mol,MX,MY,1.6,rot,disp,o);
+  if(st.mode==='broken'&&st.t>0.5){x.fillStyle='#e7ecf2';x.font='600 14px system-ui,Arial';x.textAlign='center';x.globalAlpha=o.alpha;x.fillText(`${M.f} split into ${M.frf.join(' + ')}`,MX,H-24);x.globalAlpha=1}
+  if(st.mode==='idle'&&resetT===0&&!ph.length){}
+  x.fillStyle='#c9d3df';x.font='600 15px system-ui,Arial';x.textAlign='center';x.fillText(`${M.name} (${M.f})`,MX,40);
+  ph.forEach(p=>drawPhoton(x,p,54,T===LIGHT[p.t]?LIGHT[p.t].amp:5,2.6));
+}
+const LNAME={mw:'microwave',ir:'infrared',vis:'visible',uv:'ultraviolet'};
+function explain(){const M=MOL[mol],o=outcome(),f=M.f;
+  if(o==='rot')return`<b>Microwaves make ${f} spin.</b> Microwaves carry little energy, just enough to make a molecule rotate. Only molecules with a lopsided (polar) charge can be spun this way. The molecule soon gives the energy back as a new microwave photon. This is how a microwave oven heats the water in food.`;
+  if(o==='vib')return`<b>Infrared makes the bonds in ${f} bend and stretch.</b> The molecule holds the energy for a moment, then gives off a new infrared photon in a <i>random direction</i>, sometimes back the way it came. In the atmosphere, that means some of the heat leaving Earth's surface gets sent back down. That is the greenhouse effect.`;
+  if(o==='glow')return`<b>Visible light excites ${f}.</b> NO₂ absorbs blue-green light, which bumps an electron up to a higher energy level. That missing blue-green is why NO₂ looks brown in smoggy air. The electron drops back down and a visible photon is given off.`;
+  if(o==='break'){if(mol==='O2')return`<b>Ultraviolet light breaks O₂ apart.</b> High-energy UV has enough energy to break the double bond, making two free oxygen atoms. This is the first step in making the ozone layer (see the Chapman Cycle simulation).`;
+    if(mol==='O3')return`<b>Ozone absorbs ultraviolet light and splits</b> into O₂ and a free O atom. Up in the stratosphere this is how the ozone layer stops harmful UV from reaching the ground. The pieces usually rejoin to make ozone again.`;
+    return`<b>Ultraviolet light splits NO₂</b> into NO and a free O atom. Near the ground, that O atom can join O₂ to make ozone, a main ingredient of smog.`}
+  // passes
+  if(light==='ir'&&(mol==='N2'||mol==='O2'))return`<b>Infrared passes straight through ${f}.</b> ${f} is two identical atoms. When it stretches, its charge stays perfectly balanced, so infrared has nothing to grab onto. That is why nitrogen and oxygen, 99% of the air, are <i>not</i> greenhouse gases.`;
+  if(light==='mw')return`<b>Microwaves pass through ${f}.</b> ${mol==='CO2'||mol==='CH4'?f+' is symmetric, so its charge is balanced all the way around':f+' has a balanced charge'}. With no lopsided charge to push on, microwaves cannot make it spin.`;
+  if(light==='vis')return`<b>Visible light passes through ${f}.</b> Nearly all gases in the air let visible light through. That is why the air looks clear and sunlight can reach and warm the ground.`;
+  if(light==='uv')return`<b>This ultraviolet light passes through ${f}.</b> Its bonds are strong enough that this UV cannot break them. (It only absorbs even higher-energy UV, high in the atmosphere.)`;
+  return`<b>${LIGHT[light].name} light passes through ${f}.</b>`}
+function ui(){const M=MOL[mol];$('#molname').textContent=`${M.name} (${M.f})`;
+  const yes=OUT[mol].ir==='vib';const gh=$('#ghg');gh.className='ghg'+(yes?' yes':'');
+  gh.innerHTML=yes?`<b>${M.name} is a greenhouse gas.</b>It absorbs infrared and gives it back off in random directions. Try Infrared to see it.`:`<b>${M.name} is not a greenhouse gas.</b>Infrared passes right through it.`;
+  $('#msg1').innerHTML=explain();
+  // spectrum strip
+  const segs=[['mw','Microwave'],['ir','Infrared'],['vis','Visible'],['uv','UV']],cs={mw:'#7a8796',ir:'#c62828',vis:'#d4a000',uv:'#7c3aed'};
+  let s='';segs.forEach(([k,l],i)=>{const x0=i*70;const on=k===light;s+=`<rect x="${x0+1}" y="${on?2:6}" width="68" height="${on?22:16}" rx="4" fill="${cs[k]}" opacity="${on?1:.35}"/><text x="${x0+35}" y="${on?17:18}" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">${l}</text>`});
+  s+=`<text x="0" y="40" font-size="10" fill="currentColor" opacity=".75">lower energy</text><text x="280" y="40" font-size="10" text-anchor="end" fill="currentColor" opacity=".75">higher energy</text><path d="M70 37 H205" stroke="currentColor" stroke-opacity=".5" stroke-width="1.2" marker-end="url(#ah)"/><defs><marker id="ah" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0 0 L6 3 L0 6Z" fill="currentColor" fill-opacity=".5"/></marker></defs>`;
+  $('#spec').innerHTML=s;
+  $('#counts1').textContent=`Photons absorbed: ${nAbs}`;
+  const v=st.mode==='rot'?'spinning':st.mode==='vib'?'vibrating':st.mode==='glow'?'glowing (excited)':st.mode==='broken'?'broken apart':'at rest';
+  cv.setAttribute('aria-label',`A lamp on the left shoots ${LIGHT[light].name.toLowerCase()} photons at a ${M.name} molecule (${M.f}). The molecule is ${v}. ${OUT[mol][light]==='pass'?'The photons pass straight through.':'It absorbs photons that hit it.'}`)}
+seg($('#light'),v=>{light=v;ph=ph.filter(p=>!p.fresh);if(st.mode!=='broken')st={mode:'idle',t:0};streamT=0.3;ui()});
+seg($('#mol'),v=>{mol=v;ph=[];resetMol();nAbs=0;streamT=0.3;ui()});
+$('#fire').onclick=()=>{fire()};
+$('#stream').onchange=e=>{stream=e.target.checked;streamT=0.4};
+$('#reset1').onclick=()=>{resetMol();ph=[]};
+$('#pause1').onclick=()=>{running=!running;$('#pause1').textContent=running?'Pause':'Play'};
+let lastUI=0;
+window.TAB1={tick(dt,now){if(running)step(dt);draw();if(now-lastUI>300){lastUI=now;$('#counts1').textContent=`Photons absorbed: ${nAbs}`;ui._v!==st.mode&&(ui._v=st.mode,ui())}}};
+ui();
+})();
+
+/* ===================== TAB 2: the atmosphere ===================== */
+/*PHYS-START*/
+function makeAtm(rand){
+  const W=760,H=460,GROUND=404,SKY=56;
+  const S={W,H,GROUND,SKY,mols:[],ph:[],accSun:0,accIR:0,SUN:4,TAU:14,SPD:110,R:22,HOLD:0.9,
+    em:0,ret:0,esc:0,T:255,Tdisp:255,t:0};
+  S.Hh=S.TAU*S.SUN; // start in balance with no greenhouse gases
+  function addMol(k){const a=rand()*6.283;S.mols.push({k,x:rand()*W,y:SKY+24+rand()*(GROUND-SKY-60),vx:Math.cos(a)*8,vy:Math.sin(a)*6,busy:0,rot:rand()*6.283,vr:(rand()-0.5)*0.6,ph:rand()*6})}
+  S.setCounts=function(nCO2,nH2O){
+    const want={CO2:nCO2,H2O:nH2O,N2:13,O2:4};
+    Object.keys(want).forEach(k=>{let mine=S.mols.filter(m=>m.k===k);
+      while(mine.length>want[k]){const m=mine.pop();S.mols.splice(S.mols.indexOf(m),1)}
+      while(mine.length<want[k]){addMol(k);mine.push(S.mols[S.mols.length-1])}})};
+  const GHG=k=>k==='CO2'||k==='H2O';
+  function emitFrom(x,y,src){const a=rand()*6.283;S.ph.push({t:'ir',x,y,vx:Math.cos(a)*S.SPD,vy:Math.sin(a)*S.SPD,skip:src})}
+  S.step=function(dt){
+    S.t+=dt;
+    S.accSun+=S.SUN*dt;
+    while(S.accSun>=1){S.accSun--;S.ph.push({t:'sun',x:rand()*W,y:-8,vx:-18,vy:S.SPD})}
+    S.accIR+=S.Hh/S.TAU*dt;
+    while(S.accIR>=1){S.accIR--;S.Hh--;const a=(rand()-0.5)*2.2;S.ph.push({t:'ir',x:rand()*W,y:GROUND-3,vx:Math.sin(a)*S.SPD,vy:-Math.cos(a)*S.SPD});S.em++}
+    S.mols.forEach(m=>{m.x+=m.vx*dt;m.y+=m.vy*dt;m.rot+=m.vr*dt;
+      if(m.x<0)m.x+=W;if(m.x>W)m.x-=W;
+      if(m.y<SKY+20){m.y=SKY+20;m.vy=Math.abs(m.vy)}if(m.y>GROUND-30){m.y=GROUND-30;m.vy=-Math.abs(m.vy)}
+      if(rand()<dt*0.3){const a=rand()*6.283;m.vx=Math.cos(a)*8;m.vy=Math.sin(a)*6}
+      if(m.busy>0){m.busy-=dt;if(m.busy<=0){m.busy=0;emitFrom(m.x,m.y,m)}}});
+    const keep=[];
+    for(const p of S.ph){p.x+=p.vx*dt;p.y+=p.vy*dt;if(p.x<0)p.x+=W;if(p.x>W)p.x-=W;
+      if(p.t==='sun'){if(p.y>=GROUND){S.Hh++;continue}keep.push(p);continue}
+      if(p.skip&&Math.hypot(p.skip.x-p.x,p.skip.y-p.y)>S.R+4)p.skip=null;
+      let hit=null;
+      for(const m of S.mols){if(!GHG(m.k)||m.busy>0||m===p.skip)continue;if(Math.abs(m.x-p.x)<S.R&&Math.abs(m.y-p.y)<S.R&&Math.hypot(m.x-p.x,m.y-p.y)<S.R){hit=m;break}}
+      if(hit){hit.busy=S.HOLD;continue}
+      if(p.y<-12){S.esc++;continue}
+      if(p.y>GROUND){S.ret++;S.Hh++;continue}
+      keep.push(p)}
+    S.ph=keep;
+    const d=Math.exp(-dt/30);S.em*=d;S.ret*=d;S.esc*=d;
+    S.T=255*Math.pow(Math.max(1,S.Hh)/(S.TAU*S.SUN),0.25);
+    S.Tdisp+=(S.T-S.Tdisp)*(1-Math.exp(-dt/3));
+  };
+  S.setCounts(0,0);
+  return S;
+}
+/*PHYS-END*/
+(function(){
+const S=makeAtm(Math.random);const W=S.W,H=S.H,G=S.GROUND;
+let running=true,speed=1,hist=[],histT=0;
+const cv=$('#cv2');
+function setCounts(){S.setCounts(+$('#co2').value,+$('#h2o').value);showVals()}
+setCounts();
+// start the ground already in balance with the starting gases
+for(let i=0;i<30*90;i++)S.step(1/30);
+S.Tdisp=S.T;for(let i=0;i<120;i++)hist.push(S.Tdisp);
+function draw(){const x=ctx2d(cv,W,H);
+  const g=x.createLinearGradient(0,0,0,G);g.addColorStop(0,'#071226');g.addColorStop(0.14,'#0f2547');g.addColorStop(0.5,'#2d5d93');g.addColorStop(1,'#7fb0dc');x.fillStyle=g;x.fillRect(0,0,W,G);
+  // ground color warms with temperature
+  const tc=Math.max(0,Math.min(1,(S.Tdisp-255)/60));const lerp=(a,b)=>Math.round(a+(b-a)*tc);
+  x.fillStyle=`rgb(${lerp(70,176)},${lerp(110,96)},${lerp(60,40)})`;x.fillRect(0,G,W,H-G);
+  x.fillStyle='rgba(0,0,0,.18)';x.fillRect(0,G,W,4);
+  // sun
+  const sg=x.createRadialGradient(W-60,-10,4,W-60,-10,70);sg.addColorStop(0,'#fff6c2');sg.addColorStop(0.4,'#ffd23f');sg.addColorStop(1,'rgba(255,210,63,0)');x.fillStyle=sg;x.beginPath();x.arc(W-60,-10,70,0,7);x.fill();
+  x.font='600 13px system-ui,Arial';x.textAlign='left';x.fillStyle='#c9d6e8';x.fillText('Space',12,22);
+  x.fillStyle='#fff';x.fillText('Ground',12,H-20);
+  x.setLineDash([4,5]);x.strokeStyle='rgba(255,255,255,.25)';x.beginPath();x.moveTo(0,S.SKY);x.lineTo(W,S.SKY);x.stroke();x.setLineDash([]);
+  x.fillStyle='rgba(255,255,255,.75)';x.textAlign='right';x.fillText('Top of the atmosphere',W-12,S.SKY-8);
+  S.mols.forEach(m=>{let disp=null,o={};if(m.busy>0){const u=1-m.busy/S.HOLD,env=Math.sin(Math.PI*u),w=Math.sin(2*Math.PI*3*u*S.HOLD)*env;const M=MOL[m.k];disp=i=>[M.vib[i][0]*w*1.6,M.vib[i][1]*w*1.6];o.glow=env}
+    const bg=m.k==='N2'||m.k==='O2';if(bg)o.alpha=0.45;drawMol(x,m.k,m.x,m.y,bg?0.55:0.7,m.rot,disp,o)});
+  S.ph.forEach(p=>{p.d=(p.d||0);drawPhoton(x,{t:p.t==='sun'?'vis':'ir',x:p.x,y:p.y,vx:p.vx,vy:p.vy,d:0},24,3.5,2.2)});
+}
+function chart(){const svg=$('#tchart'),w=560,h=230,m={l:46,r:12,t:10,b:34},pw=w-m.l-m.r,ph=h-m.t-m.b,lo=-30,hi=45;
+  const X=i=>m.l+i/(hist.length-1||1)*pw,Y=c=>m.t+ph-(c-lo)/(hi-lo)*ph;let s='';
+  [-30,-15,0,15,30,45].forEach(v=>{s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${m.l-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`});
+  s+=`<line x1="${m.l}" x2="${m.l+pw}" y1="${Y(15)}" y2="${Y(15)}" stroke="#1d7a3a" stroke-width="1.5" stroke-dasharray="6 4"/><text x="${m.l+6}" y="${Y(15)-5}" style="fill:var(--good)">Earth today, 15 °C</text>`;
+  s+=`<line x1="${m.l}" x2="${m.l+pw}" y1="${Y(-18)}" y2="${Y(-18)}" stroke="#1f6fbf" stroke-width="1.5" stroke-dasharray="6 4"/><text x="${m.l+6}" y="${Y(-18)-5}" style="fill:var(--accent)">No greenhouse gases, −18 °C</text>`;
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  s+=`<path d="${hist.map((t,i)=>(i?'L':'M')+X(i).toFixed(1)+' '+Y(t-273.15).toFixed(1)).join('')}" fill="none" stroke="#d4561f" stroke-width="2.6" stroke-linejoin="round"/>`;
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Last 2 minutes of model time</text><text class="lab" transform="translate(13 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">°C</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label',`Line graph of ground temperature over the last two minutes. It is now ${(S.Tdisp-273.15).toFixed(0)} degrees Celsius. Reference lines mark 15 degrees (Earth today) and minus 18 degrees (no greenhouse gases).`)}
+function tiles(){const C=S.Tdisp-273.15,F=C*9/5+32,r=S.em>0.5?S.ret/S.em:0;
+  $('#tT').textContent=`${C.toFixed(0)} °C`;$('#tF').textContent=`${F.toFixed(0)} °F`;
+  $('#tR').textContent=`${Math.round(r*100)}%`;$('#tE').textContent=(S.esc/30).toFixed(1);
+  const n=+$('#co2').value+ +$('#h2o').value;
+  $('#msg2').innerHTML=n===0?`With no greenhouse gases, every infrared photon from the ground (red waves) escapes straight to space. The ground only has to warm to about <b>−18 °C</b> to give off as much energy as it gets from the sun (yellow waves). Add some CO₂ or water vapor and watch what happens.`
+   :`About <b>${Math.round(r*10)} of every 10</b> infrared photons leaving the ground get absorbed by a greenhouse gas and sent back down. The sun's input hasn't changed, so the ground has to warm up until it gives off enough extra infrared to make up for what keeps coming back. More greenhouse gas → more infrared returned → a warmer surface.`;
+  cv.setAttribute('aria-label',`Side view of the atmosphere. Yellow sunlight comes down and warms the ground. The ground gives off red infrared photons. ${$('#co2').value} CO2 and ${$('#h2o').value} water molecules absorb infrared and re-emit it in random directions; nitrogen and oxygen let it pass. About ${Math.round(r*100)} percent of the infrared comes back down. Ground temperature ${C.toFixed(0)} degrees Celsius.`)}
+$('#leg2').innerHTML=`<span><i class="sw" style="background:#e0a800"></i>Sunlight (visible)</span><span><i class="sw" style="background:#d63b2f"></i>Infrared from the ground</span><span><i class="sw" style="background:#4b525c"></i>CO₂</span><span><i class="sw" style="background:#e9ecef;border:1px solid #6b7280"></i>H₂O</span><span><i class="sw" style="background:#3b6fd8;opacity:.5"></i><i class="sw" style="background:#d9412b;opacity:.5"></i>N₂ and O₂, faded (not greenhouse gases)</span>`;
+$$('#co2,#h2o').forEach(i=>i.addEventListener('input',setCounts));
+$$('button[data-p]').forEach(b=>b.onclick=()=>{const[a,c]=b.dataset.p.split(',');$('#co2').value=a;$('#h2o').value=c;setCounts()});
+seg($('#spd'),v=>{speed=+v});
+$('#pause2').onclick=()=>{running=!running;$('#pause2').textContent=running?'Pause':'Play'};
+let lastUI=0;
+window.TAB2={tick(dt,now){if(running){const n=speed;for(let k=0;k<n;k++)S.step(dt);histT+=dt*n;while(histT>=1){histT-=1;hist.push(S.Tdisp);if(hist.length>120)hist.shift()}}
+  draw();if(now-lastUI>500){lastUI=now;tiles();chart()}}};
+tiles();chart();
+})();
+
+/* ---------- main loop ---------- */
+let lt=0;
+function frame(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;if(curTab==='one')TAB1.tick(dt,ts);else TAB2.tick(dt,ts);requestAnimationFrame(frame)}
+requestAnimationFrame(ts=>{lt=ts;frame(ts)});
+window.addEventListener('resize',()=>{});
+</script>
+<script>window.A11Y={tabsLabel:'Views',live:['#msg1','#msg2']};</script>
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
+
+

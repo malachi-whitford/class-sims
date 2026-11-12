@@ -117,5 +117,20 @@ const THUMBS = {
   <rect x="96" y="40" width="64" height="50" fill="#c9b27c"/>
   <g fill="#fff" stroke="#3b3b3b" stroke-width="1.5"><rect x="22" y="56" width="22" height="12" rx="5"/><rect x="66" y="64" width="22" height="12" rx="5"/><rect x="104" y="52" width="22" height="12" rx="5"/><rect x="128" y="70" width="22" height="12" rx="5"/></g>
   <g fill="#3b3b3b"><circle cx="45" cy="58" r="4"/><circle cx="89" cy="66" r="4"/><circle cx="127" cy="54" r="4"/><circle cx="151" cy="72" r="4"/></g>
-  <circle cx="130" cy="18" r="10" fill="#f4b62a"/>`
+  <circle cx="130" cy="18" r="10" fill="#f4b62a"/>`,
+"sims/molecules-light/": `
+  <rect x="0" y="0" width="160" height="90" fill="#13243b"/>
+  <rect x="8" y="34" width="30" height="22" rx="4" fill="#2c3a4f" stroke="#6b7a90" stroke-width="1.5"/><ellipse cx="38" cy="45" rx="3" ry="8" fill="#ff5a4a"/>
+  <path d="M46 45 q4 -6 8 0 t8 0 t8 0" stroke="#ff5a4a" stroke-width="2.5" fill="none"/>
+  <circle cx="114" cy="45" r="26" fill="#ff5a4a" opacity=".18"/>
+  <path d="M96 48 L114 40 L132 48" stroke="#9aa3ad" stroke-width="3" fill="none"/>
+  <circle cx="96" cy="49" r="8" fill="#d9412b"/><circle cx="114" cy="40" r="9" fill="#4b525c"/><circle cx="132" cy="49" r="8" fill="#d9412b"/>
+  <path d="M120 70 q4 6 8 0 t8 0" stroke="#ff5a4a" stroke-width="2.5" fill="none"/>`,
+"sims/chapman-cycle/": `
+  <rect x="0" y="0" width="160" height="90" fill="#13254a"/><rect x="0" y="0" width="160" height="14" fill="#f4c95a" opacity=".35"/>
+  <rect x="0" y="78" width="160" height="12" fill="#4f7a3a"/>
+  <path d="M30 14 q-4 4 0 8 t0 8 t0 8" stroke="#c4a3ff" stroke-width="2.5" fill="none"/>
+  <circle cx="74" cy="46" r="16" fill="#5aa0ff" opacity=".35"/>
+  <g fill="#d9412b"><circle cx="74" cy="40" r="6"/><circle cx="65" cy="50" r="6"/><circle cx="83" cy="50" r="6"/><circle cx="118" cy="34" r="6"/><circle cx="129" cy="34" r="6"/><circle cx="122" cy="62" r="6"/></g>
+  <circle cx="122" cy="62" r="10" fill="none" stroke="#ffeeb0" stroke-width="1.5"/>`
 };

@@ -24,6 +24,8 @@ class-sims/
     ├── predator-prey/index.html
     ├── island-biogeography/index.html
     ├── disturbance-succession/index.html
+    ├── molecules-light/index.html
+    ├── chapman-cycle/index.html
     ├── environmental-laws/index.html
     ├── field_bio_review/index.html
     └── species-diversity/index.html
@@ -56,6 +58,7 @@ Add the topic id after a `#`:
 - https://malachi-whitford.github.io/class-sims/#plants
 - https://malachi-whitford.github.io/class-sims/#cells
 - https://malachi-whitford.github.io/class-sims/#field
+- https://malachi-whitford.github.io/class-sims/#atmosphere
 
 ## Embedding in Google Sites or Canvas
 

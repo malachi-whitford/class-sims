@@ -46,6 +46,11 @@ const TOPICS = [
       { id: "interactions", label: "Species interactions",       blurb: "Predators, prey, competitors, and contests." },
       { id: "ecosystems",   label: "Communities and ecosystems", blurb: "Diversity, energy flow, and change over time." },
       { id: "conservation", label: "Conservation and environmental policy", blurb: "Laws, shared resources, and managing land." } ] },
+  { id: "atmosphere", label: "Atmosphere & Climate",
+    blurb: "How gases in the air interact with light: the greenhouse effect and the ozone layer.",
+    sections: [
+      { id: "climate", label: "Greenhouse effect and climate" },
+      { id: "ozone",   label: "The ozone layer" } ] },
   { id: "fieldbio", label: "Field Biology Review",
     blurb: "Species ID practice for BIOL 7 field trips.",
     sections: [
@@ -208,6 +213,22 @@ const ITEMS = [
     url: "sims/tragedy-commons/",
     desc: "Run a herd on a shared pasture with four other herders. See why everyone adding cows ruins the grass, then try community limits and private plots.",
     tags: ["commons", "sustainability", "Hardin", "Ostrom", "overgrazing"]
+  },
+  {
+    title: "Molecules and Light: What Makes a Greenhouse Gas?",
+    where: ["atmosphere/climate"],
+    type: "sim",
+    url: "sims/molecules-light/",
+    desc: "Shine microwave, infrared, visible, and UV light on N₂, O₂, CO₂, H₂O, CH₄, and more, and watch molecules spin, vibrate, glow, or break apart. Then add CO₂ and water vapor to an atmosphere and see infrared get sent back down and the ground warm.",
+    tags: ["greenhouse effect", "infrared", "CO₂", "climate", "light"]
+  },
+  {
+    title: "The Chapman Cycle: How the Ozone Layer Works",
+    where: ["atmosphere/ozone"],
+    type: "sim",
+    url: "sims/chapman-cycle/",
+    desc: "Watch UV light split O₂ and the pieces build ozone, molecule by molecule, until making and breaking reach a balance. Then add chlorine from CFCs and see ozone drop and more UV-B reach the ground.",
+    tags: ["ozone", "Chapman cycle", "UV", "CFCs", "stratosphere"]
   }
 
   // ---------- Example web app (delete the two slashes at the start of each line to use) ----------
