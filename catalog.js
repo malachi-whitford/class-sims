@@ -47,10 +47,11 @@ const TOPICS = [
       { id: "ecosystems",   label: "Communities and ecosystems", blurb: "Diversity, energy flow, and change over time." },
       { id: "conservation", label: "Conservation and environmental policy", blurb: "Laws, shared resources, and managing land." } ] },
   { id: "atmosphere", label: "Atmosphere & Climate",
-    blurb: "How gases in the air interact with light: the greenhouse effect and the ozone layer.",
+    blurb: "How gases in the air interact with light and weather: the greenhouse effect, the ozone layer, and air quality.",
     sections: [
       { id: "climate", label: "Greenhouse effect and climate" },
-      { id: "ozone",   label: "The ozone layer" } ] },
+      { id: "ozone",   label: "The ozone layer" },
+      { id: "air",     label: "Air quality" } ] },
   { id: "fieldbio", label: "Field Biology Review",
     blurb: "Species ID practice for BIOL 7 field trips.",
     sections: [
@@ -223,12 +224,28 @@ const ITEMS = [
     tags: ["greenhouse effect", "infrared", "CO₂", "climate", "light"]
   },
   {
+    title: "The Greenhouse Effect: A Planet's Energy Balance",
+    where: ["atmosphere/climate"],
+    type: "sim",
+    url: "sims/greenhouse-effect/",
+    desc: "Watch sunlight arrive, reflect, and leave Earth as infrared. Change CO₂ and Earth's reflectivity from the last ice age to 2100, then compare Mercury, Venus, Earth, and Mars to see why Venus is the hottest planet.",
+    tags: ["greenhouse effect", "energy balance", "CO₂", "albedo", "Venus"]
+  },
+  {
     title: "The Chapman Cycle: How the Ozone Layer Works",
     where: ["atmosphere/ozone"],
     type: "sim",
     url: "sims/chapman-cycle/",
     desc: "Watch UV light split O₂ and the pieces build ozone, molecule by molecule, until making and breaking reach a balance. Then add chlorine from CFCs and see ozone drop and more UV-B reach the ground.",
     tags: ["ozone", "Chapman cycle", "UV", "CFCs", "stratosphere"]
+  },
+  {
+    title: "Inversion Layers: Why the Central Valley Traps Air Pollution",
+    where: ["atmosphere/air"],
+    type: "sim",
+    url: "sims/valley-inversion/",
+    desc: "A cross-section of the San Joaquin Valley from the Coast Ranges to the Sierra. Watch pollution from farms, Hwy 99, and Fresno–Clovis rise until it hits a warm-air lid, and track the Air Quality Index through tule fog, summer heat waves, and storms.",
+    tags: ["temperature inversion", "air quality", "AQI", "PM2.5", "Central Valley", "tule fog"]
   }
 
   // ---------- Example web app (delete the two slashes at the start of each line to use) ----------

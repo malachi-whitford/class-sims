@@ -132,5 +132,18 @@ const THUMBS = {
   <path d="M30 14 q-4 4 0 8 t0 8 t0 8" stroke="#c4a3ff" stroke-width="2.5" fill="none"/>
   <circle cx="74" cy="46" r="16" fill="#5aa0ff" opacity=".35"/>
   <g fill="#d9412b"><circle cx="74" cy="40" r="6"/><circle cx="65" cy="50" r="6"/><circle cx="83" cy="50" r="6"/><circle cx="118" cy="34" r="6"/><circle cx="129" cy="34" r="6"/><circle cx="122" cy="62" r="6"/></g>
-  <circle cx="122" cy="62" r="10" fill="none" stroke="#ffeeb0" stroke-width="1.5"/>`
+  <circle cx="122" cy="62" r="10" fill="none" stroke="#ffeeb0" stroke-width="1.5"/>`,
+"sims/greenhouse-effect/": `
+  <rect x="0" y="0" width="160" height="90" fill="#071226"/>
+  <circle cx="-10" cy="45" r="40" fill="#ffcf3f"/>
+  <circle cx="110" cy="45" r="34" fill="#78b4ff" opacity=".25"/><circle cx="110" cy="45" r="28" fill="#3f7fc4"/>
+  <ellipse cx="102" cy="38" rx="10" ry="7" fill="#4f8f45"/><ellipse cx="118" cy="54" rx="8" ry="10" fill="#4f8f45"/>
+  <path d="M40 30 q4 -5 8 0 t8 0 t8 0" stroke="#ffd23f" stroke-width="2.4" fill="none"/>
+  <path d="M138 22 q5 -5 8 2 t8 2" stroke="#ff5a4a" stroke-width="2.4" fill="none"/><path d="M140 62 q4 5 9 1 t8 4" stroke="#ff5a4a" stroke-width="2.4" fill="none"/>`,
+"sims/valley-inversion/": `
+  <rect x="0" y="0" width="160" height="90" fill="#9fb3c6"/>
+  <rect x="0" y="44" width="160" height="10" fill="#f0962a" opacity=".45"/>
+  <g fill="#5f5246" opacity=".7"><circle cx="50" cy="58" r="4"/><circle cx="62" cy="56" r="5"/><circle cx="74" cy="60" r="4"/><circle cx="86" cy="57" r="5"/><circle cx="98" cy="60" r="4"/><circle cx="68" cy="66" r="3.5"/><circle cx="90" cy="67" r="3.5"/></g>
+  <path d="M0 90 L0 74 C10 70 18 40 26 40 C34 40 38 72 46 76 L110 76 C130 70 145 40 160 14 L160 90Z" fill="#7d8f55"/>
+  <g fill="#4a5260"><rect x="80" y="68" width="5" height="8"/><rect x="87" y="64" width="5" height="12"/><rect x="94" y="70" width="5" height="6"/></g>`
 };

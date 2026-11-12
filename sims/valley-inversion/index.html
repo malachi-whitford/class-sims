@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Inversion Layers: Why the Central Valley Traps Air Pollution</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:14px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem;max-width:880px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:12px;align-items:start}
+.layout>*{min-width:0}
+.layout>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;min-height:34px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl .hint{font-size:.78rem;color:var(--muted);margin:4px 0 2px}
+.ctrl h3:first-child{margin-top:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.ctrl label.check{justify-content:flex-start;align-items:center;margin:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.seg button{flex:1 1 auto;font-size:.85rem;padding:6px 10px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:.78rem;color:var(--muted)}
+.tile .v{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .s{font-size:.78rem;color:var(--muted)}
+.msg{font-size:.92rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:9px 12px;margin-top:10px}
+details summary{cursor:pointer;font-weight:600;font-size:.92rem}
+details li{font-size:.9rem;margin:4px 0}
+canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:manipulation}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart .ax{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
+.chart .lab{fill:var(--text);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.82rem;color:var(--muted);margin:8px 0 0}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;flex:none}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}.layout>.ctrl{order:2}}
+@media(max-width:520px){body{padding:10px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) nav.tabs button.on,:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
+
+#cv{aspect-ratio:760/460}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.two>.card{margin-bottom:0}
+@media(max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
+.scen{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.scen button{text-align:left}
+.scen button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .scen button.on{color:#0d1b2a}}
+.aqi{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.8rem;font-weight:700;margin-top:2px}
+</style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>Inversion Layers: Why the Central Valley Traps Air Pollution</h1>
+<p class="sub">Normally air gets colder as you go up, so warm, polluted air near the ground rises and spreads out. During a <b>temperature inversion</b>, a layer of <i>warmer</i> air sits above cooler air like a lid. Pollution rises only until it hits that lid. In the San Joaquin Valley, mountains wall in the other sides, so pollution from traffic, farms, and homes builds up day after day.</p>
+
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Weather</h3>
+    <div class="scen" id="scen" role="group" aria-label="Weather">
+      <button data-v="clear">Breezy spring day (no lid)</button>
+      <button data-v="summer">Summer heat wave (high-pressure lid)</button>
+      <button data-v="winter" class="on">Winter: cold air and tule fog</button>
+      <button data-v="storm">A winter storm moves through</button>
+    </div>
+    <h3>The inversion lid</h3>
+    <label for="dT">How much warmer the lid is <span class="val" id="dTV"></span></label>
+    <input type="range" id="dT" min="0" max="10" step="0.5" value="8" data-suf=" °C">
+    <label for="Hb">Height of the lid <span class="val" id="HbV"></span></label>
+    <input type="range" id="Hb" min="0" max="1500" step="50" value="0" data-suf=" m">
+    <p class="hint">Height above the valley floor. 0 m means the cold air starts right at the ground.</p>
+    <h3>Pollution sources</h3>
+    <div class="seg" id="em" aria-label="Pollution sources"><button data-v="1" class="on">As usual</button><button data-v="0.5">Cut in half</button></div>
+    <h3>Speed</h3>
+    <div class="seg" id="spd" aria-label="Speed"><button data-v="1" class="on">Slow</button><button data-v="4">Fast</button></div>
+    <div class="row"><button class="primary" id="pause">Pause</button><button id="clearAir">Start with clean air</button></div>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Air Quality Index near the ground</div><div class="v" id="tAQI"></div><span class="aqi" id="tCat"></span></div>
+      <div class="tile"><div class="k">How high pollution can rise</div><div class="v" id="tMix"></div><div class="s">above the valley floor</div></div>
+      <div class="tile"><div class="k">Temperature: ground → top of lid</div><div class="v" id="tTemp"></div><div class="s" id="tTempS"></div></div>
+      <div class="tile"><div class="k">Time</div><div class="v" id="tTime"></div><div class="s">since you started</div></div>
+    </div>
+    <div class="card"><canvas id="cv"></canvas><div class="legend" id="leg"></div></div>
+  </div>
+</div>
+<div class="msg" id="msg"></div>
+
+<div class="two" style="margin-top:12px">
+  <div class="card chart"><h2>Temperature with height</h2><svg id="prof" viewBox="0 0 520 360"></svg>
+    <div class="legend"><span><i class="sw" style="background:#c0392b"></i>Air temperature</span><span><i class="sw" style="background:transparent;border:2px dashed #1f6fbf"></i>A rising puff of warm, polluted air</span><span><i class="sw" style="background:rgba(240,150,40,.35)"></i>Inversion layer</span></div></div>
+  <div class="card chart"><h2>Air Quality Index over time</h2><svg id="aqiChart" viewBox="0 0 520 360"></svg></div>
+</div>
+
+<details class="card" style="margin-top:12px"><summary>About the San Joaquin Valley, and what this model leaves out</summary>
+<ul>
+  <li>The valley is a bowl: the Coast Ranges to the west, the Sierra Nevada to the east, and the Tehachapi Mountains to the south. Air that can't rise over the lid has few ways out.</li>
+  <li>In the American Lung Association's "State of the Air" 2026 report, Bakersfield ranked worst in the U.S. for year-round particle pollution, Fresno ranked 4th, and Visalia tied for 5th.</li>
+  <li><b>Winter:</b> long, clear nights cool the ground, and cold, heavy air pools on the valley floor under warmer air. Damp cold air forms tule fog. Wood smoke, diesel exhaust, and ammonia from farms and dairies make fine particles (PM2.5).</li>
+  <li><b>Summer:</b> a high-pressure system makes air high up sink and warm, forming a lid hundreds of meters up. Hot sun turns trapped car and farm emissions into ground-level ozone. This model tracks particles only.</li>
+  <li>Heights are stretched about 20 times compared with distances so you can see the lid. The air "puffs" stand for pollution, not individual molecules. AQI uses the EPA's PM2.5 scale, but its values are scaled for teaching, not forecasting.</li>
+</ul></details>
+</div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function ctx2d(cv,W,H){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round((r.width||W)*dpr)),h=Math.max(1,Math.round((r.width||W)*H/W*dpr));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(w/W,0,0,h/H,0,0);return x}
+function seg(el,cb){const bs=$$('button',el),sync=()=>bs.forEach(x=>x.setAttribute('aria-pressed',x.classList.contains('on')?'true':'false'));el.setAttribute('role','group');bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle('on',x===b));sync();cb(b.dataset.v,b)});sync()}
+function showVals(){$$('input[type=range]').forEach(r=>{const o=$('#'+r.id+'V');if(o)o.textContent=r.value+(r.dataset.suf||'')})}
+/*PHYS-START*/
+function makeValley(rand){
+  const W=760,Z0=100,THICK=250,GAM=9.0,EXC=2.0;
+  const S={W,Z0,THICK,puffs:[],t:0,acc:0,Ts:30,Hb:800,dT:0,wind:35,rain:false,emis:1,E:2.2,DEP:1/200,
+    SRC:[{x:230,name:'Farms & dairies'},{x:372,name:'Hwy 99 traffic'},{x:432,name:'Homes & businesses'}],Hmix:0};
+  S.terrain=function(x){let z=1100*Math.exp(-Math.pow((x-95)/45,2));
+    if(x>45)z=Math.max(z,90+Math.max(0,x-150)*0.08);
+    if(x>470){const u=(x-470)/290;z=Math.max(z,125+3000*Math.pow(u,1.6))}
+    return z};
+  S.lidWarm=h=>S.dT<=0?0:h<S.Hb?0:h<S.Hb+THICK?S.dT*(h-S.Hb)/THICK:S.dT;
+  S.Tenv=h=>S.Ts-GAM*h/1000+S.lidWarm(h);           // h = height above the valley floor (m)
+  S.Tparcel=h=>S.Ts+EXC-9.8*h/1000;                  // a puff rising from the warm ground cools 9.8 C per km
+  S.excess=h=>S.Tparcel(h)-S.Tenv(h);
+  S.calcMix=function(){let h=0;while(h<2900&&S.excess(h)>0)h+=5;S.Hmix=h;return h};
+  S.set=function(o){Object.assign(S,o);S.calcMix()};
+  S.step=function(dt){S.t+=dt;const top=Z0+S.Hmix;
+    S.acc+=S.E*S.emis*dt;
+    while(S.acc>=1){S.acc--;const s=S.SRC[Math.floor(rand()*S.SRC.length)];const x=s.x+(rand()-0.5)*40;S.puffs.push({x,z:S.terrain(x)+8,mode:'rise',vx:0,vz:0,age:0,r:0.8+rand()*0.6})}
+    const dep=S.DEP*(S.rain?6:1);
+    const keep=[];
+    for(const p of S.puffs){p.age+=dt;const g=S.terrain(p.x);
+      if(rand()<dep*dt)continue;
+      if(p.mode==='rise'){const ex=S.excess(p.z-Z0);if(ex<=0||p.z>=top){p.mode='mix';p.vz=0}else{p.z+=(60+140*ex)*dt;p.x+=(rand()-0.5)*20*dt}}
+      else{p.vx+=(rand()-0.5)*90*dt;p.vz+=(rand()-0.5)*(260+0.6*S.Hmix)*dt;p.vx*=Math.exp(-dt*0.6);p.vz*=Math.exp(-dt*0.6);
+        p.x+=p.vx*dt;p.z+=p.vz*dt;
+        if(p.z>top){p.z=top-(p.z-top);p.vz=-Math.abs(p.vz)}}
+      // winds above the Coast Range push air east, toward and over the Sierra
+      if(p.z>1150)p.x+=S.wind*dt;else if(S.wind>40)p.x+=S.wind*0.35*dt;
+      const g2=S.terrain(p.x);
+      if(p.z<g2+10){p.z=g2+10;p.vz=Math.abs(p.vz)}
+      if(g2+10>top+40)continue;           // pushed up and over the mountains
+      if(p.z>2950||p.x<0||p.x>W)continue;
+      keep.push(p)}
+    S.puffs=keep};
+  // fine particle level near the ground over the valley floor (ug/m3, tuned)
+  S.pm=function(){const top=Z0+S.Hmix;let n=0;for(const p of S.puffs){if(p.x<150||p.x>520||p.z>top+20)continue;n++}return 2+n*0.55*Math.min(1,300/Math.max(80,S.Hmix))};
+  S.calcMix();
+  return S;
+}
+function aqiPM(c){const B=[[0,9,0,50],[9.1,35.4,51,100],[35.5,55.4,101,150],[55.5,125.4,151,200],[125.5,225.4,201,300],[225.5,325.4,301,500]];
+  c=Math.max(0,Math.round(c*10)/10);for(const[a,b,i,j]of B)if(c<=b)return Math.round(i+(j-i)*(c-a)/(b-a));return 500}
+/*PHYS-END*/
+(function(){
+const S=makeValley(Math.random);const W=S.W,H=460,Z0=S.Z0;
+const Y=z=>392-z*0.118;
+const SC={clear:{Ts:22,Hb:800,dT:0,wind:35,rain:false},summer:{Ts:38,Hb:700,dT:5,wind:30,rain:false},winter:{Ts:6,Hb:0,dT:8,wind:10,rain:false},storm:{Ts:10,Hb:800,dT:0,wind:60,rain:true}};
+let scen='winter',running=true,speed=1,hist=[],histT=0,MIN_PER_S=5;
+const CAT=[[50,'Good','#00e400','#000'],[100,'Moderate','#ffff00','#000'],[150,'Unhealthy for sensitive groups','#ff7e00','#000'],[200,'Unhealthy','#ff0000','#fff'],[300,'Very unhealthy','#8f3f97','#fff'],[500,'Hazardous','#7e0023','#fff']];
+const cat=a=>CAT.find(c=>a<=c[0])||CAT[5];
+function apply(){S.set({Ts:SC[scen].Ts,wind:SC[scen].wind,rain:SC[scen].rain,dT:+$('#dT').value,Hb:+$('#Hb').value});showVals();ui(true)}
+function pickScen(v){scen=v;$$('#scen button').forEach(b=>{b.classList.toggle('on',b.dataset.v===v);b.setAttribute('aria-pressed',b.dataset.v===v?'true':'false')});$('#dT').value=SC[v].dT;$('#Hb').value=SC[v].Hb;apply()}
+$$('#scen button').forEach(b=>b.onclick=()=>pickScen(b.dataset.v));
+$$('#dT,#Hb').forEach(i=>i.addEventListener('input',apply));
+seg($('#em'),v=>{S.emis=+v});seg($('#spd'),v=>{speed=+v});
+$('#pause').onclick=()=>{running=!running;$('#pause').textContent=running?'Pause':'Play'};
+$('#clearAir').onclick=()=>{S.puffs=[];S.t=0;hist=[];histT=0;ui(true)};
+
+/* ---------- drawing ---------- */
+const TER=[];for(let x=0;x<=W;x+=4)TER.push([x,S.terrain(x)]);
+function draw(){const x=ctx2d($('#cv'),W,H),winter=S.Ts<15,storm=S.rain;
+  const sky=x.createLinearGradient(0,0,0,440);
+  if(storm){sky.addColorStop(0,'#55606b');sky.addColorStop(1,'#a3acb5')}else if(winter){sky.addColorStop(0,'#7f97ad');sky.addColorStop(1,'#dbe2e8')}else{sky.addColorStop(0,'#3f86c8');sky.addColorStop(1,'#d7e9f5')}
+  x.fillStyle=sky;x.fillRect(0,0,W,H);
+  // sun or storm clouds
+  if(storm){x.fillStyle='rgba(70,78,88,.85)';for(let i=0;i<7;i++){x.beginPath();x.ellipse(60+i*115,48+(i%2)*10,85,26,0,0,7);x.fill()}
+    x.strokeStyle='rgba(200,215,230,.6)';x.lineWidth=1.2;for(let i=0;i<70;i++){const rx=(i*53+S.t*90)%W,ry=(i*37+S.t*260)%380+70;x.beginPath();x.moveTo(rx,ry);x.lineTo(rx-4,ry+10);x.stroke()}}
+  else{const sx=winter?640:600,sy=winter?95:55;const sg=x.createRadialGradient(sx,sy,4,sx,sy,40);sg.addColorStop(0,winter?'rgba(255,250,225,.9)':'#fffbe0');sg.addColorStop(0.45,winter?'rgba(255,240,190,.55)':'#ffd84a');sg.addColorStop(1,'rgba(255,220,80,0)');x.fillStyle=sg;x.beginPath();x.arc(sx,sy,40,0,7);x.fill()}
+  // winds aloft
+  if(S.wind>0){x.strokeStyle='rgba(255,255,255,.75)';x.fillStyle='rgba(255,255,255,.75)';x.lineWidth=2;const L=14+S.wind*0.9;
+    for(const [ax,az] of [[150,2200],[330,2500],[480,2150]]){const ay=Y(az),o=(S.t*S.wind*0.6)%40;x.beginPath();x.moveTo(ax+o,ay);x.lineTo(ax+o+L,ay);x.stroke();x.beginPath();x.moveTo(ax+o+L+7,ay);x.lineTo(ax+o+L,ay-4);x.lineTo(ax+o+L,ay+4);x.fill()}
+    x.font='600 12px system-ui,Arial';x.textAlign='left';x.fillStyle='rgba(255,255,255,.9)';x.fillText('Winds aloft',150,Y(2200)-10)}
+  const top=Z0+S.Hmix;
+  // haze of trapped pollution
+  const pm=S.pm(),ha=Math.min(0.5,Math.max(0,(pm-4)/260));
+  if(ha>0.01){x.save();x.beginPath();x.moveTo(0,Y(Math.min(top,2950)));x.lineTo(W,Y(Math.min(top,2950)));x.lineTo(W,H);x.lineTo(0,H);x.closePath();x.clip();
+    const hg=x.createLinearGradient(0,Y(Math.min(top,2950)),0,Y(Z0));hg.addColorStop(0,`rgba(140,110,70,${ha*0.5})`);hg.addColorStop(1,`rgba(140,110,70,${ha})`);x.fillStyle=hg;x.fillRect(0,0,W,H);x.restore()}
+  // inversion lid band
+  if(S.dT>0){const y1=Y(Z0+S.Hb+S.THICK),y2=Y(Z0+S.Hb);x.fillStyle='rgba(240,150,40,.22)';x.fillRect(0,y1,W,y2-y1);x.setLineDash([6,5]);x.strokeStyle='rgba(200,100,20,.8)';x.lineWidth=1.5;
+    x.beginPath();x.moveTo(0,y1);x.lineTo(W,y1);x.moveTo(0,y2);x.lineTo(W,y2);x.stroke();x.setLineDash([]);
+    x.font='700 13px system-ui,Arial';x.textAlign='left';x.fillStyle='#7a3c00';x.fillText(`Inversion: warmer air (+${S.dT} °C)`,160,y1-6)}
+  // puffs
+  for(const p of S.puffs){const a=p.mode==='rise'?0.75:0.5;x.fillStyle=`rgba(95,82,70,${a})`;x.beginPath();x.arc(p.x,Y(p.z),4.5*p.r,0,7);x.fill()}
+  // fog
+  const fog=S.Ts<10&&S.dT>=4&&S.Hb<=150;
+  if(fog){const fy=Y(Z0+Math.max(60,S.Hmix)+50);const fg=x.createLinearGradient(0,fy,0,Y(Z0));fg.addColorStop(0,'rgba(245,247,250,0)');fg.addColorStop(0.35,'rgba(245,247,250,.55)');fg.addColorStop(1,'rgba(245,247,250,.75)');x.fillStyle=fg;x.fillRect(150,fy,330,Y(Z0)-fy+4)}
+  // terrain
+  x.beginPath();x.moveTo(0,H);TER.forEach(([tx,tz])=>x.lineTo(tx,Y(tz)));x.lineTo(W,H);x.closePath();
+  const tg=x.createLinearGradient(0,Y(3000),0,H);tg.addColorStop(0,'#8a8c86');tg.addColorStop(0.35,'#5d7a46');tg.addColorStop(0.85,winter?'#8a9a5a':'#b5a46a');tg.addColorStop(1,'#7a6a44');x.fillStyle=tg;x.fill();
+  x.fillStyle='#3d78b8';x.beginPath();x.moveTo(0,Y(0));TER.filter(t=>t[0]<=34).forEach(([tx,tz])=>x.lineTo(tx,Y(Math.max(0,tz))));x.lineTo(34,H);x.lineTo(0,H);x.fill();
+  if(winter){x.fillStyle='rgba(255,255,255,.9)';x.beginPath();let st=false;TER.forEach(([tx,tz])=>{if(tz>2300){if(!st){x.moveTo(tx,Y(2300));st=true}x.lineTo(tx,Y(tz))}});x.lineTo(W,Y(2300));x.closePath();x.fill()}
+  // valley floor details: sources
+  const gy=X=>Y(S.terrain(X));
+  // farms & dairies
+  x.fillStyle='#7a4a2a';x.fillRect(222,gy(230)-12,14,12);x.fillStyle='#a33';x.beginPath();x.moveTo(220,gy(230)-12);x.lineTo(229,gy(230)-20);x.lineTo(238,gy(230)-12);x.fill();
+  x.fillStyle='#3e6b2c';for(let i=0;i<5;i++)x.fillRect(190+i*8,gy(200)-3,5,3);
+  // highway
+  x.fillStyle='#444';x.fillRect(352,gy(372)-3,42,3);x.fillStyle='#e8e8e8';x.fillRect(360+((S.t*30)%26),gy(372)-7,8,4);x.fillStyle='#d33';x.fillRect(372+((S.t*22)%18),gy(372)-7,8,4);
+  // town
+  x.fillStyle='#5a6270';[[412,16],[422,24],[432,12],[442,20],[452,14]].forEach(([bx,bh])=>x.fillRect(bx,gy(bx)-bh,8,bh));
+  x.font='700 12px system-ui,Arial';x.textAlign='center';x.fillStyle='#1d2530';
+  const lab=(t,lx,lz)=>{x.fillStyle='rgba(255,255,255,.75)';const w=x.measureText(t).width+8;x.fillRect(lx-w/2,Y(lz)-12,w,16);x.fillStyle='#1d2530';x.fillText(t,lx,Y(lz))};
+  lab('Pacific',24,-420);lab('Coast Ranges',100,-420);lab('Farms & dairies',225,-420);lab('Fresno · Clovis',440,-420);lab('Sierra Nevada',660,-420);lab('Hwy 99',373,-220);
+  x.font='600 11px system-ui,Arial';x.textAlign='right';x.fillStyle='rgba(255,255,255,.95)';x.textAlign='left';x.fillStyle='rgba(255,255,255,.95)';x.textAlign='left';x.fillText('Heights exaggerated about 20×',8,16);
+}
+/* ---------- profile chart ---------- */
+function prof(){const svg=$('#prof'),w=520,h=360,m={l:54,r:14,t:12,b:42},pw=w-m.l-m.r,ph=h-m.t-m.b,hmax=2500;
+  const tlo=Math.floor((S.Ts-26)/5)*5,thi=tlo+40;const X=t=>m.l+(t-tlo)/(thi-tlo)*pw,Yh=hh=>m.t+ph-hh/hmax*ph;let s='';
+  for(let t=tlo;t<=thi;t+=10)s+=`<line class="grid" x1="${X(t)}" x2="${X(t)}" y1="${m.t}" y2="${m.t+ph}"/><text x="${X(t)}" y="${m.t+ph+16}" text-anchor="middle">${t}</text>`;
+  for(let hh=0;hh<=hmax;hh+=500)s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Yh(hh)}" y2="${Yh(hh)}"/><text x="${m.l-6}" y="${Yh(hh)+4}" text-anchor="end">${hh}</text>`;
+  if(S.dT>0)s+=`<rect x="${m.l}" y="${Yh(Math.min(hmax,S.Hb+S.THICK))}" width="${pw}" height="${Yh(S.Hb)-Yh(Math.min(hmax,S.Hb+S.THICK))}" fill="rgba(240,150,40,.28)"/>`;
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  let d='';for(let hh=0;hh<=hmax;hh+=10)d+=(hh?'L':'M')+X(S.Tenv(hh)).toFixed(1)+' '+Yh(hh).toFixed(1);s+=`<path d="${d}" fill="none" stroke="#c0392b" stroke-width="3"/>`;
+  const hm=Math.min(S.Hmix,hmax);let d2='';for(let hh=0;hh<=hm;hh+=10)d2+=(hh?'L':'M')+X(S.Tparcel(hh)).toFixed(1)+' '+Yh(hh).toFixed(1);s+=`<path d="${d2}" fill="none" stroke="#1f6fbf" stroke-width="2.6" stroke-dasharray="7 5"/>`;
+  if(S.Hmix<2900){const px=X(S.Tparcel(hm)),py=Yh(hm);s+=`<circle cx="${px}" cy="${py}" r="6" fill="#1f6fbf" stroke="#fff" stroke-width="2"/><text x="${Math.min(px+10,w-200)}" y="${py-16}" style="fill:var(--text);font-weight:600">Puff stops rising: ${Math.round(S.Hmix)} m</text>`}
+  else s+=`<text x="${m.l+8}" y="${m.t+16}" style="fill:var(--text);font-weight:600">Puffs keep rising past ${hmax} m</text>`;
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Temperature (°C)</text><text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">Height above valley floor (m)</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');
+  svg.setAttribute('aria-label',`Graph of temperature against height. Air is ${S.Ts} degrees at the ground${S.dT>0?`, gets ${S.dT} degrees warmer between ${S.Hb} and ${S.Hb+S.THICK} meters (the inversion)`:', and cools steadily with height'}. A rising puff of polluted air ${S.Hmix<2900?'stops at '+Math.round(S.Hmix)+' meters':'keeps rising'}.`)}
+function aqiChart(){const svg=$('#aqiChart'),w=520,h=360,m={l:46,r:12,t:12,b:42},pw=w-m.l-m.r,ph=h-m.t-m.b,N=240,hi=300;
+  const X=i=>m.l+i/(N-1)*pw,Yv=v=>m.t+ph-Math.min(v,hi)/hi*ph;let s='';
+  [[0,50],[50,100],[100,150],[150,200],[200,300]].forEach(([a,b],i)=>{s+=`<rect x="${m.l}" y="${Yv(b)}" width="${pw}" height="${Yv(a)-Yv(b)}" fill="${CAT[i][2]}" opacity=".16"/>`});
+  [0,50,100,150,200,300].forEach(v=>s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Yv(v)}" y2="${Yv(v)}"/><text x="${m.l-6}" y="${Yv(v)+4}" text-anchor="end">${v}</text>`);
+  for(let i=N-1;i>=0;i-=48){const hr=Math.round((N-1-i)*MIN_PER_S/60);s+=`<text x="${X(i)}" y="${m.t+ph+16}" text-anchor="middle">${hr}</text>`}
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  if(hist.length>1)s+=`<path d="${hist.map((v,i)=>(i?'L':'M')+X(i+N-hist.length).toFixed(1)+' '+Yv(v).toFixed(1)).join('')}" fill="none" stroke="#5a4636" stroke-width="2.8" stroke-linejoin="round"/>`;
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Hours ago</text><text class="lab" transform="translate(12 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">AQI (fine particles)</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label',`Air Quality Index over time. Now ${hist.length?hist[hist.length-1]:0}.`)}
+function ui(force){const pm=S.pm(),a=aqiPM(pm),c=cat(a);
+  $('#tAQI').textContent=a;const tc=$('#tCat');tc.textContent=c[1];tc.style.background=c[2];tc.style.color=c[3];
+  $('#tMix').textContent=S.Hmix>=2900?'Up and away':Math.round(S.Hmix)+' m';
+  const tTop=S.Tenv(S.Hb+S.THICK);$('#tTemp').textContent=`${S.Ts}° → ${Math.round(tTop)}°C`;
+  $('#tTempS').textContent=S.dT>0?`at ${S.Hb+S.THICK} m: air is ${tTop>S.Ts?'warmer':'colder'} up high${tTop>S.Ts?' (inverted!)':''}`:`at ${S.Hb+S.THICK} m: colder up high (normal)`;
+  const mins=Math.round(S.t*MIN_PER_S);$('#tTime').textContent=`${Math.floor(mins/60)} h ${String(mins%60).padStart(2,'0')} m`;
+  let m;
+  const lid=S.Hmix<1200;
+  if(S.rain)m=`<b>A storm breaks the lid.</b> Cold, windy weather mixes the air up through thousands of meters and rain washes particles out. This is why Valley air is often cleanest right after a storm.`;
+  else if(!lid)m=`<b>No lid.</b> The air cools steadily with height, so a puff of warm, polluted air from the ground stays warmer than the air around it and keeps rising, up to about ${S.Hmix>=2900?'the top of the picture':Math.round(S.Hmix)+' m'}. Above the Coast Ranges, winds carry it east and over the Sierra. Pollution spreads through a deep layer of air and stays low.`;
+  else{m=`<b>An inversion is trapping pollution.</b> Between ${S.Hb} and ${S.Hb+S.THICK} m the air gets <i>warmer</i> with height. A rising puff runs into air warmer than itself, stops at about <b>${Math.round(S.Hmix)} m</b>, and spreads out under the lid. With the Coast Ranges to the west and the Sierra Nevada to the east, the dirty air has nowhere to go, so it keeps building up.`;
+    if(S.Ts<15&&S.Hb<=150)m+=` On long winter nights the ground loses heat and chills the air touching it. Cold, heavy air pools on the valley floor, and its moisture can form <b>tule fog</b>. The lower the lid, the less air there is to dilute the pollution.`;
+    else if(S.Ts>=30)m+=` In summer, a high-pressure system makes air high above the valley sink and warm up, forming the lid. Hot sun then turns trapped exhaust into ground-level ozone.`;}
+  if(S.emis<1&&lid)m+=` Cutting pollution in half lowers the AQI, but the lid still traps what is left.`;
+  $('#msg').innerHTML=m;
+  $('#cv').setAttribute('aria-label',`Cross-section of the San Joaquin Valley from the Pacific and Coast Ranges on the west to the Sierra Nevada on the east. Pollution puffs rise from farms, Highway 99, and Fresno-Clovis. ${lid?`An inversion lid at ${S.Hb} meters traps them below about ${Math.round(S.Hmix)} meters.`:'There is no lid, so they rise and are carried east.'} Air Quality Index ${a}, ${c[1]}.`);
+  prof();aqiChart()}
+$('#leg').innerHTML=`<span><i class="sw" style="background:rgba(95,82,70,.7);border-radius:50%"></i>Puff of polluted air</span><span><i class="sw" style="background:rgba(240,150,40,.4)"></i>Inversion layer (the lid)</span><span><i class="sw" style="background:rgba(140,110,70,.5)"></i>Haze of trapped pollution</span>`;
+let lastUI=0,lt=0;
+function frame(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;
+  if(running){for(let k=0;k<speed;k++)S.step(dt);histT+=dt*speed;while(histT>=1){histT-=1;hist.push(aqiPM(S.pm()));if(hist.length>240)hist.shift()}}
+  draw();if(ts-lastUI>500){lastUI=ts;ui()}requestAnimationFrame(frame)}
+pickScen('winter');
+requestAnimationFrame(ts=>{lt=ts;frame(ts)});
+})();
+</script>
+<script>window.A11Y={live:['#msg']};</script>
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
+
+
