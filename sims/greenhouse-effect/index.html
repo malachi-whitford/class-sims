@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Greenhouse Effect: A Planet's Energy Balance</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:14px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem;max-width:880px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:12px;align-items:start}
+.layout>*{min-width:0}
+.layout>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;min-height:34px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl .hint{font-size:.78rem;color:var(--muted);margin:4px 0 2px}
+.ctrl h3:first-child{margin-top:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.ctrl label.check{justify-content:flex-start;align-items:center;margin:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.seg button{flex:1 1 auto;font-size:.85rem;padding:6px 10px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:.78rem;color:var(--muted)}
+.tile .v{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .s{font-size:.78rem;color:var(--muted)}
+.msg{font-size:.92rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:9px 12px;margin-top:10px}
+details summary{cursor:pointer;font-weight:600;font-size:.92rem}
+details li{font-size:.9rem;margin:4px 0}
+canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:manipulation}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart .ax{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
+.chart .lab{fill:var(--text);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.82rem;color:var(--muted);margin:8px 0 0}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;flex:none}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}.layout>.ctrl{order:2}}
+@media(max-width:520px){body{padding:10px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) nav.tabs button.on,:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
+
+.scene{aspect-ratio:760/440}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.two>.card{margin-bottom:0}
+@media(max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
+.planets button{flex:0 0 calc(50% - 3px);font-weight:600}
+.presets{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.presets button{text-align:left}
+.tile .v.hot{color:#b3261e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tile .v.hot{color:#ff8a80}}
+</style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>The Greenhouse Effect: A Planet's Energy Balance</h1>
+<p class="sub">A planet's temperature is set by a balance: sunlight comes in, and the planet sends the same amount of energy back to space as infrared (heat). Some sunlight is reflected right away by clouds and ice. Greenhouse gases absorb some of the outgoing infrared and send part of it back down, so the surface has to warm up before the energy coming in and going out balance again.</p>
+
+<nav class="tabs"><button data-tab="earth" class="on">1. Earth's energy balance</button><button data-tab="planets">2. Mercury, Venus, Earth &amp; Mars</button></nav>
+
+<section class="panel on" id="earth">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Earth's atmosphere</h3>
+    <label for="co2">Carbon dioxide (CO₂) <span class="val" id="co2V"></span></label>
+    <input type="range" id="co2" min="150" max="1200" step="5" value="430" data-suf=" ppm">
+    <p class="hint">Parts per million. Before 1850 it was about 280 ppm. In 2026 it is about 430 ppm.</p>
+    <label for="alb">Reflectivity: clouds, ice &amp; snow <span class="val" id="albV"></span></label>
+    <input type="range" id="alb" min="20" max="40" step="0.5" value="30" data-suf="%">
+    <p class="hint">The share of sunlight bounced straight back to space.</p>
+    <label class="check" style="margin-top:10px"><input type="checkbox" id="noGH"> Remove all greenhouse gases</label>
+    <h3>Moments in Earth's history</h3>
+    <div class="presets">
+      <button data-p="185,33">Last ice age (20,000 years ago)</button>
+      <button data-p="280,30">Before 1850</button>
+      <button data-p="430,30">Today (2026)</button>
+      <button data-p="1100,29">Year 2100, very high emissions</button>
+    </div>
+    <div class="row"><button class="primary" id="pauseE">Pause</button></div>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Average surface temperature</div><div class="v" id="eT"></div><div class="s" id="eTF"></div></div>
+      <div class="tile"><div class="k">With no greenhouse effect</div><div class="v" id="eTe"></div><div class="s">same sunlight and reflectivity</div></div>
+      <div class="tile"><div class="k">Warming from the greenhouse effect</div><div class="v" id="eG"></div></div>
+      <div class="tile"><div class="k">Change since before 1850</div><div class="v" id="eD"></div></div>
+    </div>
+    <div class="card"><canvas class="scene" id="cvE"></canvas><div class="legend" id="legE"></div></div>
+  </div>
+</div>
+<div class="msg" id="msgE"></div>
+<div class="card chart" style="margin-top:12px"><h2>Surface temperature at different CO₂ levels</h2><svg id="chartE" viewBox="0 0 760 280"></svg></div>
+</section>
+
+<section class="panel" id="planets">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Pick a planet</h3>
+    <div class="seg planets" id="pl" aria-label="Planet"><button data-v="mercury">Mercury</button><button data-v="venus" class="on">Venus</button><button data-v="earth">Earth</button><button data-v="mars">Mars</button></div>
+    <p class="hint">Planets are not drawn to scale or at their real distances.</p>
+    <label class="check" style="margin-top:10px"><input type="checkbox" id="noGH2"> Remove the greenhouse effect</label>
+    <div class="row"><button class="primary" id="pauseP">Pause</button></div>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Distance from the Sun</div><div class="v" id="pAU"></div><div class="s">Earth = 1</div></div>
+      <div class="tile"><div class="k">Sunlight strength</div><div class="v" id="pS"></div><div class="s">compared with Earth</div></div>
+      <div class="tile"><div class="k">Sunlight reflected</div><div class="v" id="pA"></div></div>
+      <div class="tile"><div class="k">Average surface temperature</div><div class="v" id="pT"></div><div class="s" id="pTe"></div></div>
+    </div>
+    <div class="card"><canvas class="scene" id="cvP"></canvas><div class="legend" id="legP"></div></div>
+  </div>
+</div>
+<div class="msg" id="msgP"></div>
+<div class="card chart" style="margin-top:12px"><h2>Average surface temperature, with and without the greenhouse effect</h2><svg id="chartP" viewBox="0 0 760 300"></svg><div class="legend"><span><i class="sw" style="background:#8fb3d9"></i>Without the greenhouse effect</span><span><i class="sw" style="background:#d4561f"></i>Actual (with the greenhouse effect)</span></div></div>
+</section>
+
+<details class="card" style="margin-top:12px"><summary>How the numbers are calculated (and what's left out)</summary>
+<ul>
+  <li>The temperature without a greenhouse effect comes from balancing absorbed sunlight with infrared given off (the Stefan–Boltzmann law): T = [S(1 − reflectivity) / 4σ]<sup>¼</sup>.</li>
+  <li>The greenhouse effect is added with a simple "gray atmosphere" model, T<sub>surface</sub><sup>4</sup> = T<sup>4</sup>(1 + ¾τ), where τ is how thick the atmosphere is to infrared. For Earth, τ grows with the logarithm of CO₂ and is set so that doubling CO₂ warms Earth about 3 °C. That value includes the extra water vapor a warmer world holds.</li>
+  <li>Temperatures are long-term balance values. Oceans take decades to centuries to catch up, so the real world lags behind them.</li>
+  <li>Reflectivity is set by hand here. In the real world, melting ice and changing clouds also respond to warming.</li>
+  <li>The moving photons show the idea. The temperatures come from the equations above, not from counting photons.</li>
+</ul></details>
+</div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function ctx2d(cv,W,H){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round((r.width||W)*dpr)),h=Math.max(1,Math.round((r.width||W)*H/W*dpr));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(w/W,0,0,h/H,0,0);return x}
+function seg(el,cb){const bs=$$('button',el),sync=()=>bs.forEach(x=>x.setAttribute('aria-pressed',x.classList.contains('on')?'true':'false'));el.setAttribute('role','group');bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle('on',x===b));sync();cb(b.dataset.v,b)});sync()}
+function showVals(){$$('input[type=range]').forEach(r=>{const o=$('#'+r.id+'V');if(o)o.textContent=r.value+(r.dataset.suf||'')})}
+let curTab='earth';
+$$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));curTab=b.dataset.tab;try{history.replaceState(null,'','#'+curTab)}catch(e){}});
+{const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();}
+
+/* ---------- energy-balance model ---------- */
+const SIG=5.670e-8;
+const Te=(S,a)=>Math.pow(S*(1-a)/(4*SIG),0.25);
+const Ts=(S,a,tau)=>Te(S,a)*Math.pow(1+0.75*tau,0.25);
+const TAU0=0.8345,KCO2=0.130;            // tuned: 280 ppm & 30% -> ~14.5 C; 3 C per doubling of CO2
+const tauEarth=c=>Math.max(0,TAU0+KCO2*Math.log(c/280));
+const C=k=>k-273.15, F=k=>(k-273.15)*9/5+32;
+const fC=k=>`${Math.round(C(k))} °C`, sgn=v=>(v>=0?'+':'−')+Math.abs(v).toFixed(1)+' °C';
+
+const PLANETS={
+  mercury:{name:'Mercury',au:0.39,S:9085,a:0.088,tau:0,R:58,atm:0,surf:['#b9b5ae','#77736c'],atmC:null},
+  venus:{name:'Venus',au:0.72,S:2601,a:0.76,tau:141.7,R:104,atm:34,surf:['#e9c98a','#a0743a'],atmC:'235,200,120'},
+  earth:{name:'Earth',au:1.00,S:1361,a:0.30,tau:tauEarth(430),R:108,atm:20,surf:['#5b9bd5','#1f4f8a'],atmC:'120,180,255'},
+  mars:{name:'Mars',au:1.52,S:586,a:0.25,tau:0.05,R:72,atm:7,surf:['#d9824f','#8a3d1c'],atmC:'230,170,140'}};
+
+/* ---------- animated scene (shared by both tabs) ---------- */
+function Scene(cv){
+  const W=760,H=440,CX=505,CY=222,SPD=150;
+  const st={ph:[],fx:[],glow:[],H:0,accS:0,accI:0,P:null,running:true,t:0};
+  function absorbP(){const P=st.P;return Math.min(0.97,1-Math.exp(-P.tau*0.8))}
+  function sunRate(){return 4*Math.min(2.2,Math.sqrt(st.P.S/1361))}
+  st.set=function(P,reset){const first=!st.P||reset;st.P=P;if(first){st.ph=[];st.glow=[]}
+    const eq=8*sunRate()*(1-P.a)/(1-absorbP()/2);if(first)st.H=eq;};
+  st.step=function(dt){const P=st.P,RA=P.R+P.atm;st.t+=dt;
+    st.accS+=sunRate()*dt;while(st.accS>=1){st.accS--;st.ph.push({k:'sun',x:120,y:CY+(Math.random()*2-1)*(RA+6)*0.92,vx:SPD,vy:0,dec:false})}
+    st.accI+=st.H/8*dt;while(st.accI>=1){st.accI--;st.H--;const a=Math.random()*Math.PI*2,b=a+(Math.random()-0.5)*1.6;
+      st.ph.push({k:'ir',x:CX+Math.cos(a)*P.R,y:CY+Math.sin(a)*P.R,vx:Math.cos(b)*SPD,vy:Math.sin(b)*SPD,cross:P.R+P.atm*(0.3+Math.random()*0.5),dec:false,out:true})}
+    const keep=[];
+    for(const p of st.ph){p.x+=p.vx*dt;p.y+=p.vy*dt;const d=Math.hypot(p.x-CX,p.y-CY);
+      if(p.k==='sun'){
+        if(!p.dec&&d<P.R+P.atm*0.45+(P.atm?0:2)){p.dec=true;if(Math.random()<P.a){const nx=(p.x-CX)/d,ny=(p.y-CY)/d,dot=p.vx*nx+p.vy*ny;let rx=p.vx-2*dot*nx,ry=p.vy-2*dot*ny;const j=(Math.random()-0.5)*0.6,c=Math.cos(j),s=Math.sin(j);p.vx=rx*c-ry*s;p.vy=rx*s+ry*c;p.k='refl';st.fx.push({x:p.x,y:p.y,t:0,c:'255,255,255'})}}
+        if(p.k==='sun'&&d<P.R){st.H++;st.fx.push({x:p.x,y:p.y,t:0,c:'255,214,90'});continue}}
+      else if(p.k==='ir'){
+        if(p.out&&!p.dec&&d>p.cross){p.dec=true;if(Math.random()<absorbP()){st.glow.push({x:p.x,y:p.y,t:0,hold:0.55});continue}}
+        if(!p.out&&d<P.R){st.H++;st.fx.push({x:p.x,y:p.y,t:0,c:'255,90,74'});continue}}
+      if(p.x<-40||p.x>W+40||p.y<-40||p.y>H+40)continue;
+      keep.push(p)}
+    st.ph=keep;
+    st.glow=st.glow.filter(g=>{g.t+=dt;if(g.t>=g.hold){const out=Math.random()<0.5,nx=(g.x-CX),ny=(g.y-CY),L=Math.hypot(nx,ny);let a=Math.atan2(ny,nx)+(out?0:Math.PI)+(Math.random()-0.5)*1.4;
+        st.ph.push({k:'ir',x:g.x,y:g.y,vx:Math.cos(a)*SPD,vy:Math.sin(a)*SPD,out,dec:true});return false}return true});
+    st.fx.forEach(f=>f.t+=dt);st.fx=st.fx.filter(f=>f.t<0.6)};
+  function wave(x,p,col,L,wl,amp){const sp=Math.hypot(p.vx,p.vy)||1,ux=p.vx/sp,uy=p.vy/sp,nx=-uy,ny=ux;x.strokeStyle=col;x.lineWidth=2.4;x.shadowColor=col;x.shadowBlur=5;x.beginPath();
+    for(let k=0;k<=28;k++){const s=-L/2+L*k/28,env=Math.pow(Math.cos(Math.PI*s/L),2),w=Math.sin(2*Math.PI*s/wl)*amp*env;const px=p.x+ux*s+nx*w,py=p.y+uy*s+ny*w;k?x.lineTo(px,py):x.moveTo(px,py)}x.stroke();x.shadowBlur=0}
+  st.draw=function(){const x=ctx2d(cv,W,H),P=st.P,RA=P.R+P.atm;
+    x.fillStyle='#050b18';x.fillRect(0,0,W,H);
+    // stars
+    x.fillStyle='rgba(255,255,255,.55)';for(let i=0;i<60;i++){const sx=(i*137.5)%W,sy=(i*71.3)%H;if(sx<130)continue;x.fillRect(sx,sy,1.3,1.3)}
+    // sun
+    const sg=x.createRadialGradient(-60,CY,30,-60,CY,190);sg.addColorStop(0,'#fff7c9');sg.addColorStop(0.55,'#ffcf3f');sg.addColorStop(0.75,'rgba(255,170,40,.45)');sg.addColorStop(1,'rgba(255,170,40,0)');x.fillStyle=sg;x.beginPath();x.arc(-60,CY,190,0,7);x.fill();
+    x.fillStyle='#4a3200';x.font='700 15px system-ui,Arial';x.textAlign='left';x.fillText('Sun',14,CY+5);
+    // atmosphere
+    if(P.atm>0&&P.atmC){const ag=x.createRadialGradient(CX,CY,P.R,CX,CY,RA);const k=Math.min(0.75,0.18+0.14*Math.log10(1+P.tau*6));ag.addColorStop(0,`rgba(${P.atmC},${k})`);ag.addColorStop(1,`rgba(${P.atmC},0)`);x.fillStyle=ag;x.beginPath();x.arc(CX,CY,RA,0,7);x.fill()}
+    // planet
+    const pg=x.createRadialGradient(CX-P.R*0.45,CY-P.R*0.35,P.R*0.1,CX,CY,P.R);pg.addColorStop(0,P.surf[0]);pg.addColorStop(1,P.surf[1]);x.fillStyle=pg;x.beginPath();x.arc(CX,CY,P.R,0,7);x.fill();
+    x.save();x.beginPath();x.arc(CX,CY,P.R,0,7);x.clip();
+    if(P.name==='Earth'){x.fillStyle='#4f8f45';[[-30,-30,34,22],[28,18,30,40],[-46,40,18,14]].forEach(([dx,dy,rx,ry])=>{x.beginPath();x.ellipse(CX+dx,CY+dy,rx,ry,0.4,0,7);x.fill()});
+      const ice=(st.alb||30);x.fillStyle='rgba(255,255,255,.92)';const ih=Math.max(4,(ice-20)*1.6+6);x.fillRect(CX-P.R,CY-P.R,P.R*2,ih);x.fillRect(CX-P.R,CY+P.R-ih,P.R*2,ih);
+      x.fillStyle='rgba(255,255,255,.6)';[[-50,-6,26,7],[10,-40,30,6],[40,50,24,6],[-10,60,20,5]].forEach(([dx,dy,rx,ry])=>{x.beginPath();x.ellipse(CX+dx,CY+dy,rx,ry,0,0,7);x.fill()})}
+    if(P.name==='Venus'){x.fillStyle='rgba(255,240,200,.35)';for(let i=0;i<5;i++){x.beginPath();x.ellipse(CX,CY-P.R+30+i*38,P.R,9,0,0,7);x.fill()}}
+    if(P.name==='Mars'){x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.ellipse(CX,CY-P.R+4,24,8,0,0,7);x.fill();x.fillStyle='rgba(120,40,15,.35)';x.beginPath();x.ellipse(CX+10,CY+8,30,12,0.3,0,7);x.fill()}
+    if(P.name==='Mercury'){x.strokeStyle='rgba(60,58,54,.5)';x.lineWidth=2;[[-20,-15,9],[18,10,12],[-6,28,6],[26,-26,7]].forEach(([dx,dy,r])=>{x.beginPath();x.arc(CX+dx,CY+dy,r,0,7);x.stroke()})}
+    // night side shading
+    const ng=x.createLinearGradient(CX-P.R,0,CX+P.R,0);ng.addColorStop(0,'rgba(0,0,0,0)');ng.addColorStop(0.55,'rgba(0,0,0,.05)');ng.addColorStop(1,'rgba(0,0,10,.5)');x.fillStyle=ng;x.fillRect(CX-P.R,CY-P.R,P.R*2,P.R*2);
+    // warmth glow on surface
+    const warm=Math.max(0,Math.min(1,(st.T-200)/500));if(warm>0.15&&P.name!=='Venus'){x.fillStyle=`rgba(255,80,40,${(warm-0.15)*0.6})`;x.fillRect(CX-P.R,CY-P.R,P.R*2,P.R*2)}
+    x.restore();
+    st.glow.forEach(g=>{const r=x.createRadialGradient(g.x,g.y,0,g.x,g.y,12);r.addColorStop(0,'rgba(255,110,80,.9)');r.addColorStop(1,'rgba(255,110,80,0)');x.fillStyle=r;x.beginPath();x.arc(g.x,g.y,12,0,7);x.fill()});
+    st.fx.forEach(f=>{const a=1-f.t/0.6;x.strokeStyle=`rgba(${f.c},${a})`;x.lineWidth=2;x.beginPath();x.arc(f.x,f.y,3+f.t*16,0,7);x.stroke()});
+    st.ph.forEach(p=>{if(p.k==='sun')wave(x,p,'#ffd23f',22,6,3.5);else if(p.k==='refl')wave(x,p,'#fff1b8',22,6,3.5);else wave(x,p,'#ff5a4a',26,12,4.5)});
+    x.font='700 15px system-ui,Arial';x.textAlign='center';x.fillStyle='#e7ecf2';x.fillText(P.name,CX,CY+RA+22);
+  };
+  return st;
+}
+function legend(el){el.innerHTML=`<span><i class="sw" style="background:#ffd23f"></i>Sunlight</span><span><i class="sw" style="background:#fff1b8;border:1px solid #c9b46a"></i>Sunlight reflected by clouds, ice &amp; ground</span><span><i class="sw" style="background:#ff5a4a"></i>Infrared (heat) from the surface</span><span><i class="sw" style="background:radial-gradient(#ff6e50,transparent)"></i>Greenhouse gases absorbing infrared</span>`}
+legend($('#legE'));legend($('#legP'));
+
+/* ---------- TAB 1: Earth ---------- */
+const SE=Scene($('#cvE'));
+const earthNow=()=>{const c=+$('#co2').value,a=+$('#alb').value/100,no=$('#noGH').checked;return{c,a,no,tau:no?0:tauEarth(c)}};
+const BASE=Ts(1361,0.30,tauEarth(280));
+function updEarth(){showVals();const E=earthNow();const P=Object.assign({},PLANETS.earth,{a:E.a,tau:E.tau});SE.set(P,false);SE.alb=+$('#alb').value;
+  const T=Ts(1361,E.a,E.tau),T0=Te(1361,E.a);SE.T=T;
+  $('#eT').textContent=fC(T);$('#eTF').textContent=`${Math.round(F(T))} °F`;$('#eTe').textContent=fC(T0);$('#eG').textContent=sgn(T-T0);$('#eD').textContent=sgn(T-BASE);
+  $('#eD').classList.toggle('hot',T-BASE>1.5);
+  let m;
+  if(E.no)m=`<b>No greenhouse gases.</b> Every infrared photon leaving the surface escapes straight to space, so Earth only has to reach about <b>${fC(T0)}</b> to send away as much energy as it absorbs. The whole planet would be frozen. Today's greenhouse effect keeps Earth about 33 °C warmer than this.`;
+  else m=`With <b>${E.c} ppm</b> of CO₂ and <b>${$('#alb').value}%</b> of sunlight reflected, Earth balances at about <b>${fC(T)}</b> (${Math.round(F(T))} °F). That is ${sgn(T-T0)} warmer than it would be with no greenhouse effect, and ${sgn(T-BASE)} compared with before 1850. ${E.c>440?'Each doubling of CO₂ adds about 3 °C once the oceans catch up.':E.c<260?'Lower CO₂ and more ice reflecting sunlight helped make the ice ages cold.':''}`;
+  $('#msgE').innerHTML=m;
+  $('#cvE').setAttribute('aria-label',`Earth seen from space with the Sun on the left. Yellow sunlight arrives; ${$('#alb').value} percent is reflected. Red infrared leaves the surface, and greenhouse gases in the atmosphere absorb some and send part back down. Surface temperature ${fC(T)}.`);
+  chartE(E)}
+function chartE(E){const svg=$('#chartE'),w=760,h=280,m={l:52,r:16,t:14,b:40},pw=w-m.l-m.r,ph=h-m.t-m.b,x0=150,x1=1200,y0=8,y1=24;
+  const X=c=>m.l+(c-x0)/(x1-x0)*pw,Y=t=>m.t+ph-(t-y0)/(y1-y0)*ph;let s='';
+  for(let t=y0;t<=y1;t+=4)s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Y(t)}" y2="${Y(t)}"/><text x="${m.l-6}" y="${Y(t)+4}" text-anchor="end">${t}</text>`;
+  for(let c=200;c<=1200;c+=200)s+=`<line class="grid" x1="${X(c)}" x2="${X(c)}" y1="${m.t}" y2="${m.t+ph}"/><text x="${X(c)}" y="${m.t+ph+16}" text-anchor="middle">${c}</text>`;
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  let d='';for(let c=x0;c<=x1;c+=10){const t=C(Ts(1361,E.a,tauEarth(c)));const yy=Math.max(m.t,Math.min(m.t+ph,Y(t)));d+=(c===x0?'M':'L')+X(c).toFixed(1)+' '+yy.toFixed(1)}
+  s+=`<path d="${d}" fill="none" stroke="#d4561f" stroke-width="2.8"/>`;
+  [[280,'1850'],[430,'Today']].forEach(([c,l])=>{const t=C(Ts(1361,E.a,tauEarth(c)));if(t<y0||t>y1)return;s+=`<circle cx="${X(c)}" cy="${Y(t)}" r="4" fill="var(--card)" stroke="#d4561f" stroke-width="2"/><text x="${X(c)+7}" y="${Y(t)+16}" style="fill:var(--text)">${l}</text>`});
+  if(!E.no){const t=C(Ts(1361,E.a,E.tau));if(t>=y0&&t<=y1)s+=`<circle cx="${X(E.c)}" cy="${Y(t)}" r="7" fill="#d4561f" stroke="#fff" stroke-width="2"/>`}
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">CO₂ (ppm)</text><text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">°C</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label',`Line graph: surface temperature rises as CO2 increases, curving more gently at high CO2. At the current reflectivity, 280 ppm gives ${C(Ts(1361,E.a,tauEarth(280))).toFixed(1)} degrees and 560 ppm gives ${C(Ts(1361,E.a,tauEarth(560))).toFixed(1)} degrees.${E.no?' Greenhouse gases are currently removed, which is off the chart at '+Math.round(C(Te(1361,E.a)))+' degrees.':''}`)}
+$$('#co2,#alb').forEach(i=>i.addEventListener('input',updEarth));$('#noGH').onchange=updEarth;
+$$('.presets button').forEach(b=>b.onclick=()=>{const[c,a]=b.dataset.p.split(',');$('#co2').value=c;$('#alb').value=a;$('#noGH').checked=false;updEarth()});
+$('#pauseE').onclick=()=>{SE.running=!SE.running;$('#pauseE').textContent=SE.running?'Pause':'Play'};
+SE.set(Object.assign({},PLANETS.earth),true);updEarth();
+
+/* ---------- TAB 2: planets ---------- */
+const SP=Scene($('#cvP'));let planet='venus';
+const MSG={
+  mercury:`<b>Mercury</b> is closest to the Sun and gets almost 7 times more sunlight than Earth, but it has almost no atmosphere, so there is no greenhouse effect. Heat escapes straight to space. Its sunny side bakes at over 400 °C while its night side drops below −170 °C.`,
+  venus:`<b>Venus</b> is farther from the Sun than Mercury, and its bright clouds reflect about three-quarters of the sunlight. Yet it is the hottest planet, about <b>464 °C</b>, hot enough to melt lead. Its atmosphere is about 96% CO₂ and roughly 90 times thicker than Earth's, so almost no infrared escapes. Try removing its greenhouse effect.`,
+  earth:`<b>Earth</b> has a modest greenhouse effect from water vapor, CO₂, and methane. It keeps the average surface about 33 °C warmer than it would otherwise be, warm enough for liquid water.`,
+  mars:`<b>Mars</b> has an atmosphere that is mostly CO₂, but it is about 100 times thinner than Earth's. With so little gas, its greenhouse effect adds only a few degrees, and it is also farther from the Sun. Its average is about −60 °C.`};
+function updPlanet(){const P0=PLANETS[planet],no=$('#noGH2').checked;const P=Object.assign({},P0,{tau:no?0:P0.tau});SP.set(P,true);
+  const T=Ts(P.S,P.a,P.tau),T0=Te(P.S,P.a);SP.T=T;
+  $('#pAU').textContent=P.au.toFixed(2)+' AU';$('#pS').textContent=(P.S/1361).toFixed(P.S>1361?1:2)+'×';$('#pA').textContent=Math.round(P.a*100)+'%';
+  $('#pT').textContent=fC(T);$('#pT').classList.toggle('hot',C(T)>100);$('#pTe').textContent=no?'greenhouse effect removed':`${fC(T0)} without the greenhouse effect`;
+  $('#msgP').innerHTML=MSG[planet]+(no?` <b>Greenhouse effect removed:</b> ${P.name} would average <b>${fC(T0)}</b>${planet==='venus'?', colder than Earth, because its clouds reflect so much sunlight':''}.`:'');
+  $('#cvP').setAttribute('aria-label',`${P.name} seen from space with the Sun on the left. ${Math.round(P.a*100)} percent of sunlight is reflected. ${P.atm?'Its atmosphere absorbs '+(P.tau>5?'nearly all':P.tau>0.5?'about half':'very little')+' of the outgoing infrared.':'It has no atmosphere, so all infrared escapes.'} Average surface temperature ${fC(T)}.`);
+  chartP()}
+function chartP(){const svg=$('#chartP'),w=760,h=300,m={l:52,r:16,t:16,b:40},pw=w-m.l-m.r,ph=h-m.t-m.b,lo=-100,hi=500;
+  const Y=t=>m.t+ph-(t-lo)/(hi-lo)*ph;let s='';
+  for(let t=lo;t<=hi;t+=100)s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Y(t)}" y2="${Y(t)}"/><text x="${m.l-6}" y="${Y(t)+4}" text-anchor="end">${t}</text>`;
+  s+=`<line x1="${m.l}" x2="${m.l+pw}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--muted)" stroke-width="1.2"/>`;
+  const keys=['mercury','venus','earth','mars'],gw=pw/4,desc=[];
+  keys.forEach((k,i)=>{const P=PLANETS[k],a=C(Te(P.S,P.a)),b=C(Ts(P.S,P.a,P.tau)),cx=m.l+gw*(i+0.5),bw=Math.min(54,gw*0.32);desc.push(`${P.name}: ${Math.round(a)} without, ${Math.round(b)} actual`);
+    [[a,'#8fb3d9',-1],[b,'#d4561f',1]].forEach(([v,c,o])=>{const x0=cx+(o<0?-bw-3:3),y=Math.min(Y(v),Y(0)),hh=Math.abs(Y(v)-Y(0));s+=`<rect x="${x0}" y="${y}" width="${bw}" height="${Math.max(1,hh)}" rx="3" fill="${c}" ${k===planet?'':'opacity=".55"'}/><text x="${x0+bw/2}" y="${v>=0?Y(v)-5:Y(v)+14}" text-anchor="middle" style="fill:var(--text);font-weight:600">${Math.round(v)}°</text>`});
+    s+=`<text x="${cx}" y="${m.t+ph+18}" text-anchor="middle" style="fill:var(--text);font-weight:${k===planet?700:400}">${P.name}</text>`});
+  s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">°C</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label','Bar chart of average surface temperature in degrees Celsius. '+desc.join('. ')+'.')}
+seg($('#pl'),v=>{planet=v;updPlanet()});$('#noGH2').onchange=updPlanet;
+$('#pauseP').onclick=()=>{SP.running=!SP.running;$('#pauseP').textContent=SP.running?'Pause':'Play'};
+updPlanet();
+
+let lt=0;
+function frame(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;const S=curTab==='earth'?SE:SP;if(S.running)S.step(dt);S.draw();requestAnimationFrame(frame)}
+requestAnimationFrame(ts=>{lt=ts;frame(ts)});
+</script>
+<script>window.A11Y={tabsLabel:'Views',live:['#msgE','#msgP']};</script>
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
+
+
