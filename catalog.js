@@ -47,7 +47,7 @@ const TOPICS = [
       { id: "ecosystems",   label: "Communities and ecosystems", blurb: "Diversity, energy flow, and change over time." },
       { id: "conservation", label: "Conservation and environmental policy", blurb: "Laws, shared resources, and managing land." } ] },
   { id: "atmosphere", label: "Atmosphere & Climate",
-    blurb: "How gases in the air interact with light: the greenhouse effect and the ozone layer.",
+    blurb: "How gases in the air interact with light and weather: the greenhouse effect, the ozone layer, and air quality.",
     sections: [
       { id: "climate", label: "Greenhouse effect and climate" },
       { id: "ozone",   label: "The ozone layer" },
