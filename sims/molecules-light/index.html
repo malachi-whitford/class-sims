@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Molecules and Light: What Makes a Greenhouse Gas?</title>
+<title>What Makes a Greenhouse Gas? Light Meets the Air</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -74,16 +74,25 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 #spec text{font-family:system-ui,Arial,sans-serif}
 .counts{font-size:.82rem;color:var(--muted);margin-top:6px}
 .tile.temp .v{font-size:1.6rem}
+.rtab-wrap{overflow-x:auto}
+#rtab{border-collapse:collapse;width:100%;font-size:.84rem}
+#rtab th,#rtab td{border:1px solid var(--line);padding:3px;text-align:center}
+#rtab th{font-weight:700;background:var(--soft)}
+#rtab th.irc{background:rgba(198,40,40,.14)}
+#rtab button{width:100%;min-height:30px;font-size:.8rem;padding:3px 4px;border:none;background:transparent;border-radius:6px}
+#rtab button.cur{outline:2px solid var(--accent)}
+#rtab button.pass{color:var(--muted)}
+#rtab button.hit{font-weight:700}
 </style>
 <!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Molecules and Light: What Makes a Greenhouse Gas?</h1>
+<h1>What Makes a Greenhouse Gas? Light Meets the Air</h1>
 <p class="sub">Shine different kinds of light on the gases in our air. Some light passes straight through. Some makes a molecule spin, vibrate, glow, or break apart. <b>Greenhouse gases</b> are the molecules that absorb <b>infrared</b> (heat) radiation and then give it off again in a random direction, often back toward the ground.</p>
 
-<nav class="tabs"><button data-tab="one" class="on">1. Light meets a molecule</button><button data-tab="atm">2. Greenhouse gases in the atmosphere</button></nav>
+<nav class="tabs"><button data-tab="one" class="on">1. Test one molecule</button><button data-tab="atm">2. Greenhouse gases in the atmosphere</button></nav>
 
 <section class="panel on" id="one">
 <div class="layout">
@@ -102,6 +111,10 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
     <canvas id="cv1"></canvas>
     <div class="counts" id="counts1"></div>
     <div class="msg" id="msg1"></div>
+    <h2 style="margin-top:14px">Your results table</h2>
+    <p class="small muted" style="margin:0 0 6px">Every test you run fills in a box. Click any box to set up that test. When the table is full, look down the <b>Infrared</b> column: which molecules respond?</p>
+    <div class="rtab-wrap"><table id="rtab"></table></div>
+    <p class="small muted" id="rprog" style="margin:6px 0 0"></p>
   </div>
 </div>
 </section>
@@ -173,7 +186,7 @@ const OUT={
   CO2:{mw:'pass',ir:'vib',vis:'pass',uv:'pass'}, H2O:{mw:'rot',ir:'vib',vis:'pass',uv:'pass'},
   CH4:{mw:'pass',ir:'vib',vis:'pass',uv:'pass'}, CO:{mw:'rot',ir:'vib',vis:'pass',uv:'pass'},
   NO2:{mw:'rot',ir:'vib',vis:'glow',uv:'break'}, O3:{mw:'rot',ir:'vib',vis:'pass',uv:'break'}};
-const LIGHT={mw:{name:'Microwave',wl:26,c:'#9aa6b4',amp:6},ir:{name:'Infrared',wl:13,c:'#ff5a4a',amp:6},vis:{name:'Visible',wl:7.5,c:'#ffd23f',amp:5},uv:{name:'Ultraviolet',wl:4.2,c:'#b38cff',amp:5}};
+const LIGHT={mw:{name:'Microwave',wlt:'1 cm',wl:26,c:'#9aa6b4',amp:6},ir:{name:'Infrared',wlt:'10 µm',wl:13,c:'#ff5a4a',amp:6},vis:{name:'Visible',wlt:'0.5 µm',wl:7.5,c:'#ffd23f',amp:5},uv:{name:'Ultraviolet',wlt:'0.2 µm',wl:4.2,c:'#b38cff',amp:5}};
 
 function drawMol(x,key,cx,cy,sc,rot,disp,o={}){
   const M=MOL[key],c=Math.cos(rot),s=Math.sin(rot);
@@ -195,12 +208,12 @@ function drawPhoton(x,p,L,amp,lw){const T=LIGHT[p.t],sp=Math.hypot(p.vx,p.vy)||1
 
 /* ===================== TAB 1: one molecule ===================== */
 (function(){
-const W=760,H=380,MX=480,MY=190,LX=70,SPD=150,R=30;
+const W=760,H=380,MX=380,MY=165,SRCY=338,SPD=150,R=30;
 let light='ir',mol='CO2',stream=true,running=true,ph=[],st={mode:'idle',t:0},nAbs=0,nPass=0,streamT=1.2,resetT=0;
 const cv=$('#cv1');
 function outcome(){return OUT[mol][light]}
 const DUR={rot:2.6,vib:2.4,glow:2.2};
-function fire(){ph.push({t:light,x:LX+48,y:MY+(Math.random()-0.5)*6,vx:SPD,vy:0,d:0,fresh:true})}
+function fire(){ph.push({t:light,x:MX+(Math.random()-0.5)*6,y:SRCY-14,vx:0,vy:-SPD,d:0,fresh:true})}
 function absorb(p){const o=outcome();nAbs++;
   if(o==='break'){const M=MOL[mol];st={mode:'broken',t:0,fr:M.frag.map((g,i)=>{const a=(i?1:-1)*(0.6+Math.random()*0.5)+(Math.random()<0.5?0:Math.PI);return{vx:Math.cos(a)*55,vy:Math.sin(a)*55,spin:(Math.random()-0.5)*3}})};resetT=4.5}
   else st={mode:o,t:0,lt:p.t}}
@@ -211,15 +224,17 @@ function step(dt){
   if(st.mode in DUR&&st.t>=DUR[st.mode]){const a=Math.random()*Math.PI*2;ph.push({t:st.lt||light,x:MX+Math.cos(a)*R,y:MY+Math.sin(a)*R,vx:Math.cos(a)*SPD,vy:Math.sin(a)*SPD,d:0,emit:true});st={mode:'idle',t:0}}
   if(st.mode==='broken'){resetT-=dt;if(resetT<=0)resetMol()}
   ph.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.d+=SPD*dt;
-    if(p.fresh&&p.x>=MX-R){p.fresh=false;if(st.mode==='idle'&&p.t===light&&outcome()!=='pass'){p.dead=true;absorb(p)}}});
+    if(p.fresh&&p.y<=MY+R){p.fresh=false;if(p.t===light)record();if(st.mode==='idle'&&p.t===light&&outcome()!=='pass'){p.dead=true;absorb(p)}}});
   ph=ph.filter(p=>!p.dead&&p.x>-60&&p.x<W+60&&p.y>-60&&p.y<H+60);
 }
 function draw(){const x=ctx2d(cv,W,H);
   const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#0f1b2d');g.addColorStop(1,'#16263d');x.fillStyle=g;x.fillRect(0,0,W,H);
-  // lamp
-  const T=LIGHT[light];x.fillStyle='#2c3a4f';x.strokeStyle='#6b7a90';x.lineWidth=2;x.beginPath();x.roundRect(LX-48,MY-34,90,68,10);x.fill();x.stroke();
-  x.fillStyle=T.c;x.beginPath();x.ellipse(LX+44,MY,8,24,0,0,7);x.fill();
-  x.fillStyle='#e7ecf2';x.font='600 13px system-ui,Arial';x.textAlign='center';x.fillText(T.name,LX-3,MY+4);
+  // light source: a glowing band along the bottom, photons travel upward through the air
+  const T=LIGHT[light];
+  const bg=x.createLinearGradient(0,SRCY-30,0,H);bg.addColorStop(0,'rgba(0,0,0,0)');bg.addColorStop(1,T.c+'55');x.fillStyle=bg;x.fillRect(0,SRCY-30,W,H-SRCY+30);
+  x.fillStyle=T.c;x.fillRect(MX-110,SRCY-4,220,6);
+  x.fillStyle='#e7ecf2';x.font='600 13px system-ui,Arial';x.textAlign='center';x.fillText(`${T.name} source \u00b7 wavelength about ${T.wlt}`,MX,SRCY+24);
+  x.strokeStyle='rgba(201,211,223,.35)';x.setLineDash([4,6]);x.lineWidth=1.2;x.beginPath();x.moveTo(MX,SRCY-8);x.lineTo(MX,MY+R+16);x.stroke();x.setLineDash([]);
   // molecule
   const M=MOL[mol];let rot=0,disp=null,o={labels:true};
   if(st.mode==='rot'){const u=Math.min(1,st.t/DUR.rot);rot=Math.PI*4*(u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2)}
@@ -227,7 +242,7 @@ function draw(){const x=ctx2d(cv,W,H);
   if(st.mode==='glow'){const env=Math.sin(Math.PI*Math.min(1,st.t/DUR.glow));o.glow=env*(0.8+0.2*Math.sin(st.t*12));o.glowC='255,210,63'}
   if(st.mode==='broken'){const fo={};M.frag.forEach((g,k)=>g.forEach(i=>fo[i]=k));o.fragOf=fo;const tt=st.t;disp=i=>{const f=st.fr[fo[i]];return[f.vx*tt/1.6,f.vy*tt/1.6]};o.alpha=resetT<0.8?Math.max(0,resetT/0.8):1}
   drawMol(x,mol,MX,MY,1.6,rot,disp,o);
-  if(st.mode==='broken'&&st.t>0.5){x.fillStyle='#e7ecf2';x.font='600 14px system-ui,Arial';x.textAlign='center';x.globalAlpha=o.alpha;x.fillText(`${M.f} split into ${M.frf.join(' + ')}`,MX,H-24);x.globalAlpha=1}
+  if(st.mode==='broken'&&st.t>0.5){x.fillStyle='#e7ecf2';x.font='600 14px system-ui,Arial';x.textAlign='center';x.globalAlpha=o.alpha;x.fillText(`${M.f} split into ${M.frf.join(' + ')}`,MX,72);x.globalAlpha=1}
   if(st.mode==='idle'&&resetT===0&&!ph.length){}
   x.fillStyle='#c9d3df';x.font='600 15px system-ui,Arial';x.textAlign='center';x.fillText(`${M.name} (${M.f})`,MX,40);
   ph.forEach(p=>drawPhoton(x,p,54,T===LIGHT[p.t]?LIGHT[p.t].amp:5,2.6));
@@ -257,9 +272,22 @@ function ui(){const M=MOL[mol];$('#molname').textContent=`${M.name} (${M.f})`;
   $('#spec').innerHTML=s;
   $('#counts1').textContent=`Photons absorbed: ${nAbs}`;
   const v=st.mode==='rot'?'spinning':st.mode==='vib'?'vibrating':st.mode==='glow'?'glowing (excited)':st.mode==='broken'?'broken apart':'at rest';
-  cv.setAttribute('aria-label',`A lamp on the left shoots ${LIGHT[light].name.toLowerCase()} photons at a ${M.name} molecule (${M.f}). The molecule is ${v}. ${OUT[mol][light]==='pass'?'The photons pass straight through.':'It absorbs photons that hit it.'}`)}
-seg($('#light'),v=>{light=v;ph=ph.filter(p=>!p.fresh);if(st.mode!=='broken')st={mode:'idle',t:0};streamT=0.3;ui()});
-seg($('#mol'),v=>{mol=v;ph=[];resetMol();nAbs=0;streamT=0.3;ui()});
+  cv.setAttribute('aria-label',`A ${LIGHT[light].name.toLowerCase()} light source at the bottom sends photons (wavelength about ${LIGHT[light].wlt}) up toward a ${M.name} molecule (${M.f}). The molecule is ${v}. ${OUT[mol][light]==='pass'?'The photons pass straight through.':'It absorbs photons that hit it.'}`)}
+function setLight(v){light=v;ph=ph.filter(p=>!p.fresh);if(st.mode!=='broken')st={mode:'idle',t:0};streamT=0.3;ui();table()}
+function setMol(v){mol=v;ph=[];resetMol();nAbs=0;streamT=0.3;ui();table()}
+seg($('#light'),setLight);
+seg($('#mol'),setMol);
+const RES={},ONAME={pass:'passes through',rot:'spins',vib:'vibrates',glow:'glows',break:'breaks apart'},LK=['mw','ir','vis','uv'],MK=Object.keys(MOL);
+function record(){const k=mol+'|'+light;if(RES[k])return;RES[k]=outcome();table()}
+function table(){let h='<caption class="small muted" style="caption-side:bottom;text-align:left;padding-top:4px">? = not tested yet</caption><tr><th scope="col">Molecule</th>'+LK.map(l=>`<th scope="col"${l==='ir'?' class="irc"':''}>${LIGHT[l].name}</th>`).join('')+'</tr>';
+  MK.forEach(m=>{h+=`<tr><th scope="row">${MOL[m].f}</th>`+LK.map(l=>{const r=RES[m+'|'+l],cur=m===mol&&l===light;
+    return`<td><button type="button" data-m="${m}" data-l="${l}" class="${r?(r==='pass'?'pass':'hit'):''}${cur?' cur':''}" aria-label="${MOL[m].name} with ${LIGHT[l].name.toLowerCase()} light: ${r?ONAME[r]:'not tested yet'}. Click to set up this test."${cur?' aria-current="true"':''}>${r?ONAME[r]:'?'}</button></td>`}).join('')+'</tr>'});
+  $('#rtab').innerHTML=h;
+  const n=Object.keys(RES).length,tot=MK.length*LK.length;
+  $('#rprog').textContent=n<tot?`${n} of ${tot} tests done.`:'Table complete! Every molecule that vibrates under infrared is a greenhouse gas. N\u2082 and O\u2082, 99% of the air, are not.';}
+$('#rtab').addEventListener('click',e=>{const b=e.target.closest('button[data-m]');if(!b)return;const l=b.dataset.l,m=b.dataset.m;setSeg($('#light'),l);setSeg($('#mol'),m);setLight(l);setMol(m);
+  const nb=$(`#rtab button[data-m="${m}"][data-l="${l}"]`);if(nb)nb.focus()});
+table();
 $('#fire').onclick=()=>{fire()};
 $('#stream').onchange=e=>{stream=e.target.checked;streamT=0.4};
 $('#reset1').onclick=()=>{resetMol();ph=[]};
@@ -387,6 +415,7 @@ html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-p
 <footer class="sim-notice" role="contentinfo" aria-label="About this page">
 <p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
 <p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><b>Sources.</b> The idea of firing different kinds of light at single molecules was inspired by the &ldquo;Molecules and Light&rdquo; simulation by PhET Interactive Simulations, University of Colorado Boulder, licensed under CC BY 4.0 (<a href="https://phet.colorado.edu" target="_blank" rel="noopener">https://phet.colorado.edu</a>). This page is an independent version: its code, graphics, and text were written separately, and it is not made or endorsed by PhET.</p>
 <p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
 </footer>
 <script>
