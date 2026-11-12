@@ -140,6 +140,15 @@ const THUMBS = {
   <ellipse cx="102" cy="38" rx="10" ry="7" fill="#4f8f45"/><ellipse cx="118" cy="54" rx="8" ry="10" fill="#4f8f45"/>
   <path d="M40 30 q4 -5 8 0 t8 0 t8 0" stroke="#ffd23f" stroke-width="2.4" fill="none"/>
   <path d="M138 22 q5 -5 8 2 t8 2" stroke="#ff5a4a" stroke-width="2.4" fill="none"/><path d="M140 62 q4 5 9 1 t8 4" stroke="#ff5a4a" stroke-width="2.4" fill="none"/>`,
+"sims/global-circulation/": `
+  <rect x="0" y="0" width="160" height="90" fill="#0b1426"/>
+  <circle cx="58" cy="45" r="38" fill="#86b46a"/>
+  <rect x="20" y="28" width="76" height="9" fill="#e3c07a"/><rect x="20" y="53" width="76" height="9" fill="#e3c07a"/><rect x="20" y="40" width="76" height="10" fill="#5f9e4f"/>
+  <path d="M58 7 A38 38 0 0 1 58 83" stroke="#9fc4ff" stroke-width="13" fill="none" opacity=".35"/>
+  <g fill="none" stroke="#fff" stroke-width="1.6"><ellipse cx="94" cy="39" rx="5" ry="6"/><ellipse cx="94" cy="51" rx="5" ry="6"/><ellipse cx="85" cy="20" rx="6" ry="5"/><ellipse cx="85" cy="70" rx="6" ry="5"/></g>
+  <circle cx="58" cy="45" r="38" fill="none" stroke="rgba(255,255,255,.4)"/>
+  <path d="M112 28 q10 14 28 18" stroke="#ffd166" stroke-width="2.5" fill="none"/><path d="M136 41 l5 5 l-7 1z" fill="#ffd166"/>
+  <path d="M112 62 q10 -14 28 -18" stroke="#ffd166" stroke-width="2.5" fill="none" opacity=".6"/>`,
 "sims/valley-inversion/": `
   <rect x="0" y="0" width="160" height="90" fill="#9fb3c6"/>
   <rect x="0" y="44" width="160" height="10" fill="#f0962a" opacity=".45"/>
