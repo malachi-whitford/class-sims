@@ -244,8 +244,8 @@ const ITEMS = [
     where: ["atmosphere/air"],
     type: "sim",
     url: "sims/valley-inversion/",
-    desc: "A cross-section of the San Joaquin Valley from the Coast Ranges to the Sierra. Watch pollution from farms, Hwy 99, and Fresno–Clovis rise until it hits a warm-air lid, and track the Air Quality Index through tule fog, summer heat waves, and storms.",
-    tags: ["temperature inversion", "air quality", "AQI", "PM2.5", "Central Valley", "tule fog"]
+    desc: "See how inversions form: run a day–night cycle where the ground chills the air on long, calm winter nights (with tule fog and cold air draining off the foothills), and watch air sinking in the Pacific High warm by compression into a summer lid. Then see how the lid traps pollution from farms, Hwy 99, and Fresno–Clovis and drives up the Air Quality Index.",
+    tags: ["temperature inversion", "radiation inversion", "subsidence", "air quality", "AQI", "Central Valley", "tule fog"]
   }
 
   // ---------- Example web app (delete the two slashes at the start of each line to use) ----------

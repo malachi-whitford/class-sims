@@ -71,6 +71,9 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 .scen button{text-align:left}
 .scen button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .scen button.on{color:#0d1b2a}}
+.tile .v.sm{font-size:1.1rem}
+#cvN{aspect-ratio:760/440}
+#cvS{aspect-ratio:760/440}
 .aqi{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.8rem;font-weight:700;margin-top:2px}
 </style>
 <!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
@@ -79,7 +82,88 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
 <h1>Inversion Layers: Why the Central Valley Traps Air Pollution</h1>
-<p class="sub">Normally air gets colder as you go up, so warm, polluted air near the ground rises and spreads out. During a <b>temperature inversion</b>, a layer of <i>warmer</i> air sits above cooler air like a lid. Pollution rises only until it hits that lid. In the San Joaquin Valley, mountains wall in the other sides, so pollution from traffic, farms, and homes builds up day after day.</p>
+<p class="sub">Normally air gets colder as you go up, so warm, polluted air near the ground rises and spreads out. During a <b>temperature inversion</b>, a layer of <i>warmer</i> air sits above cooler air like a lid. Tab 1 shows <b>how and why inversions form</b>: the ground cooling the air from below on long, calm nights, and sinking air in a high-pressure system warming the air from above. Tab 2 shows what the lid does to pollution in the San Joaquin Valley.</p>
+
+<nav class="tabs"><button data-tab="form" class="on">1. How inversions form</button><button data-tab="pol">2. Pollution under the lid</button></nav>
+
+<section class="panel on" id="form">
+<div class="seg" id="mech" aria-label="Which kind of inversion" style="max-width:720px;margin-bottom:10px"><button data-v="night" class="on">Night cooling (winter nights, tule fog)</button><button data-v="sink">Sinking air (summer, the Pacific High)</button></div>
+
+<div id="mNight">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Season</h3>
+    <div class="seg" id="nSeason" aria-label="Season"><button data-v="winter" class="on">Winter</button><button data-v="summer">Summer</button></div>
+    <h3>Sky</h3>
+    <div class="seg" id="nSky" aria-label="Sky"><button data-v="0" class="on">Clear</button><button data-v="1">Cloudy</button></div>
+    <h3>Wind</h3>
+    <div class="seg" id="nWind" aria-label="Wind"><button data-v="0" class="on">Calm</button><button data-v="1">Breezy</button></div>
+    <h3>Air near the ground</h3>
+    <div class="seg" id="nHum" aria-label="Moisture"><button data-v="1" class="on">Damp (after rain)</button><button data-v="0">Dry</button></div>
+    <h3>Speed</h3>
+    <div class="seg" id="nSpd" aria-label="Speed"><button data-v="0.5" class="on">Slow</button><button data-v="2">Fast</button></div>
+    <p class="hint">Slow: 1 second = 30 minutes. Fast: 1 second = 2 hours.</p>
+    <div class="row"><button class="primary" id="nPause">Pause</button><button id="nReset">Restart at noon</button></div>
+    <div class="row" style="margin-top:0"><button class="link-pol" data-scen="winter">See what this does to pollution →</button></div>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Time</div><div class="v sm" id="nTime"></div><div class="s" id="nTime2"></div></div>
+      <div class="tile"><div class="k">Air at the ground</div><div class="v sm" id="nT0"></div><div class="s" id="nT02"></div></div>
+      <div class="tile"><div class="k">Air 300 m up</div><div class="v sm" id="nT3"></div><div class="s">about the height of the foothills</div></div>
+      <div class="tile"><div class="k">Inversion</div><div class="v sm" id="nInv"></div><div class="s" id="nInv2"></div></div>
+    </div>
+    <div class="card"><canvas id="cvN"></canvas><div class="legend" id="legN"></div></div>
+  </div>
+</div>
+<div class="msg" id="msgN"></div>
+<div class="two" style="margin-top:12px">
+  <div class="card chart"><h2>Temperature with height, right now</h2><svg id="profN" viewBox="0 0 520 340"></svg></div>
+  <div class="card chart"><h2>Ground air vs. air 300 m up</h2><svg id="histN" viewBox="0 0 520 340"></svg>
+    <div class="legend"><span><i class="sw" style="background:#1f6fbf"></i>Air at the ground</span><span><i class="sw" style="background:#c0392b"></i>Air 300 m up</span><span><i class="sw" style="background:rgba(240,150,40,.35)"></i>Inverted: ground air is colder</span></div></div>
+</div>
+</div>
+
+<div id="mSink" hidden>
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Pacific High (sinking air)</h3>
+    <div class="seg" id="sStr" aria-label="Strength of the high"><button data-v="0">None</button><button data-v="1" class="on">Moderate</button><button data-v="2">Strong</button></div>
+    <p class="hint">A stronger high pulls air down from higher up, so it arrives warmer and pushes the lid lower.</p>
+    <h3>Speed</h3>
+    <div class="seg" id="sSpd" aria-label="Speed"><button data-v="0.6" class="on">Slow</button><button data-v="1.6">Fast</button></div>
+    <div class="row"><button class="primary" id="sPause">Pause</button></div>
+    <div class="row" style="margin-top:0"><button class="link-pol" data-scen="summer">See what this does to pollution →</button></div>
+    <p class="hint">The highlighted sinking blob shows its own temperature. Watch it warm up as it comes down.</p>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Height of the lid</div><div class="v sm" id="sH"></div><div class="s">above the valley floor</div></div>
+      <div class="tile"><div class="k">Sinking air reaches the lid at</div><div class="v sm" id="sTs"></div><div class="s" id="sTs2"></div></div>
+      <div class="tile"><div class="k">Valley air just below the lid</div><div class="v sm" id="sTm"></div><div class="s">stirred up by afternoon heating</div></div>
+      <div class="tile"><div class="k">Inversion</div><div class="v sm" id="sInv"></div><div class="s" id="sInv2"></div></div>
+    </div>
+    <div class="card"><canvas id="cvS"></canvas><div class="legend" id="legS"></div></div>
+  </div>
+</div>
+<div class="msg" id="msgS"></div>
+<div class="card chart" style="margin-top:12px;max-width:720px"><h2>Temperature with height</h2><svg id="profS" viewBox="0 0 520 360"></svg>
+  <div class="legend"><span><i class="sw" style="background:#c0392b"></i>Air temperature</span><span><i class="sw" style="background:transparent;border:2px dashed #888"></i>Normal atmosphere (no high)</span><span><i class="sw" style="background:transparent;border:2px dashed #1f6fbf"></i>Path of the sinking air</span></div></div>
+</div>
+
+<details class="card" style="margin-top:12px" open><summary>The big idea: what makes an inversion?</summary>
+<ul>
+  <li><b>Normally, air gets colder with height</b> (about 6.5 °C per km), because the ground is what heats the air, and rising air expands and cools.</li>
+  <li><b>An inversion is any layer where air gets warmer with height.</b> That happens in two main ways: the air near the ground gets <b>cooled from below</b>, or the air higher up gets <b>warmed from above</b>.</li>
+  <li><b>Cooled from below (night cooling, or "radiation inversion"):</b> on long, clear, calm nights the ground radiates heat to space as infrared and cools fast. It chills the air touching it. Cold air is dense, so it stays put at the bottom, and cold air from the foothills drains down and pools on the valley floor. Clouds (a blanket that sends infrared back down) or wind (which stirs warmer air down) prevent it.</li>
+  <li><b>Warmed from above (sinking air, or "subsidence inversion"):</b> in a high-pressure system, air high up sinks slowly. Sinking air gets squeezed by rising pressure and warms about 10 °C for every kilometer it drops. It arrives warmer than the air normally found at that height and settles on top of the cooler valley air like a lid.</li>
+  <li><b>Why the San Joaquin Valley gets both:</b> it's a bowl ringed by mountains that block wind, winter nights are long, and from spring to fall the Pacific High (the sinking branch of the global Hadley cell) sits off California. In winter, a high-pressure ridge can do both at once: sinking air warms the air above while long nights chill the air below, making a strong lid that can last for weeks.</li>
+  <li><b>A third way:</b> a warm air mass can slide in over a pool of cold air that is already sitting in the valley (warm-air advection). The result is the same, warm over cold.</li>
+  <li><b>What breaks an inversion:</b> sunshine heating the ground (strong in summer, weak in winter), wind, or a storm that brings cold air aloft.</li>
+</ul></details>
+</section>
+
+<section class="panel" id="pol">
 
 <div class="layout">
   <div class="card ctrl">
@@ -128,6 +212,7 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
   <li><b>Summer:</b> a high-pressure system makes air high up sink and warm, forming a lid hundreds of meters up. Hot sun turns trapped car and farm emissions into ground-level ozone. This model tracks particles only.</li>
   <li>Heights are stretched about 20 times compared with distances so you can see the lid. The air "puffs" stand for pollution, not individual molecules. AQI uses the EPA's PM2.5 scale, but its values are scaled for teaching, not forecasting.</li>
 </ul></details>
+</section>
 </div>
 
 <script>
@@ -282,13 +367,251 @@ function ui(force){const pm=S.pm(),a=aqiPM(pm),c=cat(a);
 $('#leg').innerHTML=`<span><i class="sw" style="background:rgba(95,82,70,.7);border-radius:50%"></i>Puff of polluted air</span><span><i class="sw" style="background:rgba(240,150,40,.4)"></i>Inversion layer (the lid)</span><span><i class="sw" style="background:rgba(140,110,70,.5)"></i>Haze of trapped pollution</span>`;
 let lastUI=0,lt=0;
 function frame(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;
+  if(curTab!=='pol'){requestAnimationFrame(frame);return}
   if(running){for(let k=0;k<speed;k++)S.step(dt);histT+=dt*speed;while(histT>=1){histT-=1;hist.push(aqiPM(S.pm()));if(hist.length>240)hist.shift()}}
   draw();if(ts-lastUI>500){lastUI=ts;ui()}requestAnimationFrame(frame)}
+window.pickScen=pickScen;
 pickScen('winter');
 requestAnimationFrame(ts=>{lt=ts;frame(ts)});
 })();
 </script>
-<script>window.A11Y={live:['#msg']};</script>
+<script>
+/* ---------- tabs ---------- */
+let curTab='form';
+$$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));curTab=b.dataset.tab;try{history.replaceState(null,'','#'+curTab)}catch(e){}});
+{const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();}
+/*NIGHT-PHYS-START*/
+function makeNight(){
+  const N=40,DZ=25,GAMD=9.8,GAMS=6.5;
+  const SEASON={summer:{rise:5.75,set:20.25,Smax:13,T0:29,Tdeep:31,Td:10},winter:{rise:7.1,set:16.9,Smax:8.5,T0:12,Tdeep:11,Td:5}};
+  const S={IR:5,HG:0.8,GD:0.25,HA:1.6,DR:0.7,FOGSUN:0.6,humid:1,N,DZ,th:new Array(N).fill(0),Tg:0,t:12,day:1,season:'winter',cloud:0,wind:0,fog:false,fogTop:0,drain:0,sun:0,mixTop:0};
+  const z=i=>(i+0.5)*DZ;S.z=z;
+  const P=()=>SEASON[S.season];
+  S.thBg=i=>P().T0-GAMS*z(i)/1000+GAMD*z(i)/1000;
+  S.T=i=>S.th[i]-GAMD*z(i)/1000;
+  S.sunAt=h=>{const p=P();h=((h%24)+24)%24;if(h<=p.rise||h>=p.set)return 0;return Math.sin(Math.PI*(h-p.rise)/(p.set-p.rise))};
+  S.reset=function(){for(let i=0;i<N;i++)S.th[i]=S.thBg(i);S.Tg=P().T0+2;S.t=12;S.fog=false;for(let k=0;k<24*50;k++)S.step(0.02,true);S.t=12;S.day=1};
+  S.step=function(dt){const p=P();S.t+=dt;if(S.t>=24){S.t-=24;S.day++}
+    const sun=S.sunAt(S.t);S.sun=sun;const cl=S.cloud,fg=S.fog?1:0;
+    // ground energy balance (degrees per hour)
+    const heat=p.Smax*sun*(1-S.FOGSUN*fg)*(1-0.6*cl);
+    const ir=S.IR*(1-0.7*cl-0.6*fg*(1-cl));
+    const T0=S.T(0);
+    S.Tg+=dt*(heat-ir-S.HG*(S.Tg-T0)-S.GD*(S.Tg-p.Tdeep));
+    // air touching the ground gains or loses heat by conduction
+    S.th[0]+=dt*S.HA*(S.Tg-T0)*(1-0.5*S.wind);
+    // cold air draining down the foothill slopes on calm, clear nights
+    S.drain=(sun===0)?(1-S.wind)*(1-0.7*cl):0;
+    for(let i=0;i<8;i++)S.th[i]-=dt*S.DR*S.drain*(1-i/8);
+    // mixing: gentle at night, strong when windy
+    const K=(0.4+18*S.wind)*3600,a=K*dt/(DZ*DZ),n=Math.max(1,Math.ceil(a/0.4)),aa=a/n;
+    for(let k=0;k<n;k++){const o=S.th.slice();for(let i=0;i<N;i++){const up=i<N-1?o[i+1]:o[i],dn=i>0?o[i-1]:o[i];S.th[i]=o[i]+aa*(up-2*o[i]+dn)}}
+    // warm, rising bubbles (convection): any layer warmer than the one above mixes upward
+    let top=0;for(let pass=0;pass<N;pass++){let ch=false;for(let i=0;i<N-1;i++){if(S.th[i]>S.th[i+1]+1e-4){let j=i+1;let s=S.th[i]+S.th[j];while(j+1<N&&s/(j-i+1)>S.th[j+1]){j++;s+=S.th[j]}const m=s/(j-i+1);for(let k=i;k<=j;k++)S.th[k]=m;ch=true;top=Math.max(top,j)}}if(!ch)break}
+    S.mixTop=sun>0.05?top:0;
+    // slow pull back toward the regional weather pattern
+    for(let i=0;i<N;i++){const tau=z(i)>600?8:40;S.th[i]+=(S.thBg(i)-S.th[i])*dt/tau}
+    // tule fog: cold, damp air at the ground reaches its dew point
+    const Tn=S.T(0);const Td=S.humid?p.Td:p.Td-12;if(!S.fog&&Tn<=Td&&S.cloud<0.5&&S.wind<0.5)S.fog=true;else if(S.fog&&(Tn>Td+1.2||S.wind>0.5))S.fog=false;
+    S.fogTop=0;if(S.fog){let i=0;while(i<N&&S.T(i)<=Td+0.6)i++;S.fogTop=Math.max(1,i)*DZ}};
+  S.inv=function(){let b=-1;for(let i=0;i<N-1;i++){if(S.T(i+1)>S.T(i)+0.03){b=i;break}}if(b<0)return null;let t=b;while(t<N-1&&S.T(t+1)>S.T(t)-0.01)t++;const d=S.T(t)-S.T(b);if(d<0.6)return null;return{base:b===0?0:z(b),top:z(t),dT:d}};
+  return S}
+/*NIGHT-PHYS-END*/
+
+/* ===================== TAB 1: HOW INVERSIONS FORM ===================== */
+const clampF=(v,a,b)=>Math.max(a,Math.min(b,v));
+function tShade(T,lo,hi,a){const u=clampF((T-lo)/(hi-lo),0,1);const r=Math.round(40+215*u),g=Math.round(110+70*Math.sin(Math.PI*u)),b=Math.round(235-205*u);return `rgba(${r},${g},${b},${a})`}
+function clock(h){const hh=Math.floor(h)%24,mm=Math.floor((h-Math.floor(h))*60/10)*10;const ap=hh<12?'AM':'PM';const h12=hh%12===0?12:hh%12;return `${h12}:${String(mm).padStart(2,'0')} ${ap}`}
+seg($('#mech'),v=>{$('#mNight').hidden=v!=='night';$('#mSink').hidden=v!=='sink';mech=v;if(v==='night')NIGHT.ui();else SINK.ui()});
+let mech='night';
+$$('.link-pol').forEach(b=>b.onclick=()=>{$('nav.tabs button[data-tab="pol"]').click();if(window.pickScen)pickScen(b.dataset.scen);window.scrollTo({top:0,behavior:'smooth'})});
+
+/* ---------- night cooling ---------- */
+const NIGHT=(function(){
+const S=makeNight();const W=760,H=440,Y=z=>390-z*0.3;
+let running=true,speed=0.5,hist=[],histT=0,lastUI=0;
+const cv=$('#cvN');
+const zt=x=>x<140?700*Math.pow((140-x)/140,1.3):x>620?900*Math.pow((x-620)/140,1.3):0;
+let irp=[],bub=[],drn=[],wnd=[],tick=0;
+function lohi(){return S.season==='winter'?[-6,14]:[12,36]}
+function restart(){S.reset();hist=[];histT=0;irp=[];bub=[];ui()}
+function stepVis(dt){tick+=dt;
+  const top=S.fog?Y(S.fogTop):Y(0);
+  // infrared leaving the ground: always, but nothing replaces it at night
+  if(Math.random()<dt*2.6){const x=160+Math.random()*440;irp.push({x,y:top-4,vy:-90,ret:false})}
+  irp.forEach(p=>{p.y+=p.vy*dt;
+    if(!p.ret&&S.cloud&&p.y<84&&p.vy<0){if(Math.random()<0.7){p.vy=90;p.ret=true}}});
+  irp=irp.filter(p=>p.y>70&&p.y<Y(S.fog?S.fogTop:0)+2);
+  // warm bubbles when the sun heats the ground
+  if(S.mixTop>0&&Math.random()<dt*6*S.sun){bub.push({x:170+Math.random()*420,z:5,top:(S.mixTop+1)*S.DZ,r:4+Math.random()*4})}
+  bub.forEach(b=>b.z+=dt*(60+60*S.sun));bub=bub.filter(b=>b.z<b.top);
+  // cold air sliding down the foothills
+  if(S.drain>0.25&&Math.random()<dt*3*S.drain){drn.push({side:Math.random()<0.5?-1:1,u:0})}
+  drn.forEach(d=>d.u+=dt*0.22);drn=drn.filter(d=>d.u<1);
+  if(S.wind>0&&Math.random()<dt*8)wnd.push({x:-40,z:60+Math.random()*900});
+  wnd.forEach(w=>w.x+=dt*220);wnd=wnd.filter(w=>w.x<W+40)}
+function arrowTo(x,x0,y0,x1,y1,col,w){const a=Math.atan2(y1-y0,x1-x0);x.strokeStyle=col;x.fillStyle=col;x.lineWidth=w;x.beginPath();x.moveTo(x0,y0);x.lineTo(x1,y1);x.stroke();x.beginPath();x.moveTo(x1+Math.cos(a)*2,y1+Math.sin(a)*2);x.lineTo(x1+Math.cos(a+2.6)*8,y1+Math.sin(a+2.6)*8);x.lineTo(x1+Math.cos(a-2.6)*8,y1+Math.sin(a-2.6)*8);x.fill()}
+function draw(){const x=ctx2d(cv,W,H),p=S.sun,[lo,hi]=lohi();
+  // sky: day, twilight, night
+  const h=S.t,P=S.season==='winter'?{r:7.1,s:16.9}:{r:5.75,s:20.25};
+  let light=p>0?Math.min(1,0.35+p*1.5):0;const tw=Math.max(0,1-Math.min(Math.abs(h-P.r),Math.abs(h-P.s)));if(p===0)light=Math.max(light,0.3*tw);
+  const mix=(a,b,u)=>a.map((v,i)=>Math.round(v+(b[i]-v)*u));
+  const top=mix([10,18,42],S.cloud?[120,130,142]:[70,140,205],light),bot=mix([24,34,62],S.cloud?[170,178,186]:[190,220,240],light);
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,`rgb(${top})`);g.addColorStop(1,`rgb(${bot})`);x.fillStyle=g;x.fillRect(0,0,W,H);
+  if(light<0.4){x.fillStyle=`rgba(255,255,255,${0.7*(1-light/0.4)})`;for(let i=0;i<60;i++)x.fillRect((i*197.3)%W,(i*37.9)%200,1.4,1.4)}
+  // air temperature, layer by layer (blue = cold, red = warm)
+  let cl=1e9,ch=-1e9;for(let i=0;i<S.N;i++){cl=Math.min(cl,S.T(i));ch=Math.max(ch,S.T(i))}const mid=(cl+ch)/2,sp=Math.max(6,ch-cl+1);
+  for(let i=0;i<S.N;i++){const y0=Y((i+1)*S.DZ),y1=Y(i*S.DZ);x.fillStyle=tShade(S.T(i),mid-sp/2,mid+sp/2,0.55);x.fillRect(0,y0,W,y1-y0+0.5)}
+  // inversion band
+  const inv=S.inv();
+  if(inv){const y1=Y(inv.top),y2=Y(inv.base);x.fillStyle='rgba(240,150,40,.18)';x.fillRect(0,y1,W,y2-y1);x.setLineDash([6,5]);x.strokeStyle='rgba(255,170,60,.95)';x.lineWidth=1.8;x.beginPath();x.moveTo(0,y1);x.lineTo(W,y1);if(inv.base>0){x.moveTo(0,y2);x.lineTo(W,y2)}x.stroke();x.setLineDash([]);
+    x.font='700 13px system-ui,Arial';x.textAlign='left';const t=`Inversion: ${inv.dT.toFixed(1)} °C warmer at ${Math.round(inv.top)} m than ${inv.base>0?'at '+Math.round(inv.base)+' m':'at the ground'}`;const tw2=x.measureText(t).width+12;x.fillStyle='rgba(255,255,255,.88)';x.fillRect(150,y1-24,tw2,19);x.fillStyle='#7a3c00';x.fillText(t,156,y1-10)}
+  // sun / moon
+  if(p>0){const f=(h-P.r)/(P.s-P.r),sx=60+640*f,sy=150-(S.season==='summer'?115:70)*Math.sin(Math.PI*f);const sg=x.createRadialGradient(sx,sy,3,sx,sy,30);sg.addColorStop(0,'#fffbe0');sg.addColorStop(0.5,'#ffd84a');sg.addColorStop(1,'rgba(255,216,74,0)');x.fillStyle=sg;x.beginPath();x.arc(sx,sy,30,0,7);x.fill();
+    const n=Math.round(6*p*(1-0.6*S.cloud)*(S.fog?0.5:1));for(let i=0;i<n;i++){const gx=180+i*(400/Math.max(1,n-1||1)),gy=Y(S.fog?S.fogTop:0);const u=((tick*0.8+i*0.17)%1);const ax=sx+(gx-sx)*u,ay=sy+(gy-sy)*u,bx=sx+(gx-sx)*Math.min(1,u+0.12),by=sy+(gy-sy)*Math.min(1,u+0.12);if(u+0.12<1)arrowTo(x,ax,ay,bx,by,'rgba(255,214,60,.95)',2.4)}}
+  else{x.fillStyle='rgba(240,240,225,.9)';x.beginPath();x.arc(640,60,13,0,7);x.fill();x.fillStyle=`rgb(${top})`;x.beginPath();x.arc(646,56,11,0,7);x.fill()}
+  // clouds
+  if(S.cloud){x.fillStyle='rgba(225,230,236,.92)';for(let i=0;i<9;i++){x.beginPath();x.ellipse(40+i*90,62+(i%2)*8,70,22,0,0,7);x.fill()}}
+  // infrared
+  irp.forEach(q=>{x.strokeStyle=q.ret?'rgba(255,140,120,.95)':'rgba(255,80,60,.95)';x.lineWidth=2.2;x.beginPath();for(let k=0;k<=12;k++){const yy=q.y+(q.vy<0?k:-k)*2.2,xx=q.x+Math.sin(k*1.2+tick*8)*3.5;k?x.lineTo(xx,yy):x.moveTo(xx,yy)}x.stroke()});
+  // bubbles
+  bub.forEach(b=>{x.strokeStyle='rgba(255,120,60,.9)';x.fillStyle='rgba(255,140,80,.35)';x.lineWidth=1.5;x.beginPath();x.arc(b.x,Y(b.z),b.r,0,7);x.fill();x.stroke()});
+  // wind
+  wnd.forEach(w=>{x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=2;x.beginPath();x.moveTo(w.x,Y(w.z));x.lineTo(w.x+30,Y(w.z));x.stroke()});
+  // fog
+  if(S.fog){const fy=Y(S.fogTop);const fg=x.createLinearGradient(0,fy-10,0,Y(0));fg.addColorStop(0,'rgba(240,243,246,0)');fg.addColorStop(0.25,'rgba(240,243,246,.75)');fg.addColorStop(1,'rgba(240,243,246,.9)');x.fillStyle=fg;x.fillRect(0,fy-10,W,Y(0)-fy+10);
+    x.font='700 13px system-ui,Arial';x.textAlign='center';x.fillStyle='#3a4450';x.fillText('Tule fog',380,Math.max(fy+16,Y(0)-8))}
+  // terrain
+  x.beginPath();x.moveTo(0,H);for(let px=0;px<=W;px+=4)x.lineTo(px,Y(zt(px)));x.lineTo(W,H);x.closePath();
+  const day=0.45+0.55*light;const c1=S.season==='winter'?[110,124,80]:[176,158,96];x.fillStyle=`rgb(${c1.map(v=>Math.round(v*day))})`;x.fill();
+  x.fillStyle=`rgba(40,60,30,${0.6*day})`;for(let i=0;i<14;i++){const ox=190+i*28;x.beginPath();x.arc(ox,Y(0)-4,5,0,7);x.fill()}
+  // cold air draining down the slopes
+  drn.forEach(d=>{const x0=d.side<0?20+d.u*110:740-d.u*110,x1=x0-d.side*-10;const xx=d.side<0?x0:x0;const zz=zt(xx)+18;const dir=d.side<0?1:-1;arrowTo(x,xx,Y(zz),xx+dir*16,Y(zt(xx+dir*16)+18),'rgba(120,200,255,.95)',2.6)});
+  // labels
+  x.font='600 12px system-ui,Arial';x.textAlign='left';x.fillStyle='rgba(255,255,255,.95)';x.fillText(`Day ${S.day} · ${clock(S.t)}`,10,20);
+  x.font='600 11px system-ui,Arial';x.fillStyle=light>0.5?'#1d2530':'rgba(255,255,255,.85)';x.textAlign='right';[[0,'0 m'],[300,'300 m'],[600,'600 m'],[900,'900 m']].forEach(([zz,t])=>x.fillText(t,W-6,Y(zz)-3));
+  x.textAlign='center';x.fillStyle='#fff';x.font='700 12px system-ui,Arial';x.fillText('Valley floor',380,Y(0)+30);x.fillText('Coast Range foothills',75,H-12);x.fillText('Sierra foothills',690,H-12);
+}
+function prof(){const svg=$('#profN'),w=520,h=340,m={l:54,r:14,t:12,b:42},pw=w-m.l-m.r,ph=h-m.t-m.b,zmax=1000,[lo,hi]=lohi();
+  const X=t=>m.l+(t-lo)/(hi-lo)*pw,Yz=z=>m.t+ph-z/zmax*ph;let s='';
+  for(let t=lo;t<=hi;t+=4)s+=`<line class="grid" x1="${X(t)}" x2="${X(t)}" y1="${m.t}" y2="${m.t+ph}"/><text x="${X(t)}" y="${m.t+ph+16}" text-anchor="middle">${t}</text>`;
+  for(let z=0;z<=zmax;z+=200)s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Yz(z)}" y2="${Yz(z)}"/><text x="${m.l-6}" y="${Yz(z)+4}" text-anchor="end">${z}</text>`;
+  const inv=S.inv();if(inv)s+=`<rect x="${m.l}" y="${Yz(inv.top)}" width="${pw}" height="${Yz(inv.base)-Yz(inv.top)}" fill="rgba(240,150,40,.28)"/>`;
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  const Ttop=S.T(S.N-1),zt0=S.z(S.N-1);s+=`<path d="M${X(Ttop)} ${Yz(zt0)} L${X(Ttop+6.5*zt0/1000)} ${Yz(0)}" stroke="#888" stroke-width="2" stroke-dasharray="6 5" fill="none"/>`;
+  s+=`<text x="${Math.min(X(Ttop+6.5*zt0/1000)+6,w-150)}" y="${Yz(60)}" style="fill:var(--muted)">normal: colder with height</text>`;
+  let d=`M${X(S.Tg).toFixed(1)} ${Yz(0)}`;for(let i=0;i<S.N;i++)d+=`L${X(S.T(i)).toFixed(1)} ${Yz(S.z(i)).toFixed(1)}`;s+=`<path d="${d}" fill="none" stroke="#c0392b" stroke-width="3"/>`;
+  s+=`<circle cx="${X(S.Tg)}" cy="${Yz(0)}" r="5" fill="#5d4a2e" stroke="#fff" stroke-width="1.5"/><text x="${X(S.Tg)+8}" y="${Yz(0)-6}" style="fill:var(--text);font-weight:600">ground surface ${S.Tg.toFixed(0)}°</text>`;
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Temperature (°C)</text><text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">Height above valley floor (m)</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label',`Temperature with height at ${clock(S.t)}. Ground air ${S.T(0).toFixed(0)} degrees, air at 300 m ${S.T(11).toFixed(0)} degrees, air at 1000 m ${Ttop.toFixed(0)} degrees. ${inv?`Inversion: temperature rises ${inv.dT.toFixed(1)} degrees between ${Math.round(inv.base)} and ${Math.round(inv.top)} m.`:'No inversion: air cools with height.'}`)}
+function histChart(){const svg=$('#histN'),w=520,h=340,m={l:44,r:12,t:12,b:42},pw=w-m.l-m.r,ph=h-m.t-m.b,N=96,[lo,hi]=lohi();
+  const X=i=>m.l+i/(N-1)*pw,Yv=v=>m.t+ph-(clampF(v,lo,hi)-lo)/(hi-lo)*ph;let s='';const off=N-hist.length;
+  hist.forEach((r,i)=>{if(r.night)s+=`<rect x="${X(i+off)-pw/(N-1)/2}" y="${m.t}" width="${pw/(N-1)+0.5}" height="${ph}" fill="rgba(30,40,80,.12)"/>`;if(r.a<r.b-0.2)s+=`<rect x="${X(i+off)-pw/(N-1)/2}" y="${Yv(r.b)}" width="${pw/(N-1)+0.5}" height="${Yv(r.a)-Yv(r.b)}" fill="rgba(240,150,40,.35)"/>`});
+  for(let t=lo;t<=hi;t+=4)s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Yv(t)}" y2="${Yv(t)}"/><text x="${m.l-6}" y="${Yv(t)+4}" text-anchor="end">${t}</text>`;
+  [0,12,24,36,48].forEach(hr=>{const i=N-1-hr*2;s+=`<text x="${X(i)}" y="${m.t+ph+16}" text-anchor="middle">${hr}</text>`});
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  if(hist.length>1){s+=`<path d="${hist.map((r,i)=>(i?'L':'M')+X(i+off).toFixed(1)+' '+Yv(r.b).toFixed(1)).join('')}" fill="none" stroke="#c0392b" stroke-width="2.6"/>`;s+=`<path d="${hist.map((r,i)=>(i?'L':'M')+X(i+off).toFixed(1)+' '+Yv(r.a).toFixed(1)).join('')}" fill="none" stroke="#1f6fbf" stroke-width="2.6"/>`}
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Hours ago (gray = night)</text><text class="lab" transform="translate(12 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">°C</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label','Line graph over the last 48 hours of model time comparing air at the ground with air 300 m up. Where the ground line drops below the upper line, mostly at night, the air is inverted.')}
+function ui(){const inv=S.inv(),T0=S.T(0),T3=S.T(11),p=S.sun,w=S.season==='winter';
+  $('#nTime').textContent=clock(S.t);$('#nTime2').textContent=`Day ${S.day} · ${p>0?'sun up':'night'}`;
+  $('#nT0').textContent=`${T0.toFixed(1)} °C`;$('#nT02').textContent=`ground surface ${S.Tg.toFixed(1)} °C`;
+  $('#nT3').textContent=`${T3.toFixed(1)} °C`;
+  $('#nInv').textContent=inv?`+${inv.dT.toFixed(1)} °C`:'None';$('#nInv2').textContent=inv?`warmer air from ${Math.round(inv.base)} to ${Math.round(inv.top)} m`:'air cools with height (normal)';
+  let m='';const h=S.t;
+  if(S.wind)m=`<b>Wind stops the inversion.</b> At night the ground still cools, but the wind keeps stirring the air, mixing warmer air from above down to the ground. A cold layer can't build up, so the air stays coldest on top, the normal way. Calm nights are what Valley inversions need, and the mountains around the valley keep it calm.`;
+  else if(S.cloud&&!inv)m=`<b>Clouds act like a blanket.</b> The ground is still sending infrared (heat) upward, but the clouds absorb it and send much of it back down (the returning red waves). The ground cools slowly, so the air touching it never gets much colder than the air above. Clear skies make the strongest inversions.`;
+  else if(p>0&&!inv)m=`<b>${clock(h)}: sunshine, normal air.</b> Sunlight heats the ground, and the ground heats the air touching it. Warm air is less dense, so it rises in bubbles (convection), and cooler air sinks to take its place. The air is warmest at the bottom and cools with height, and anything put into the air near the ground gets mixed upward, here to about ${Math.round((S.mixTop+1)*S.DZ)} m.`;
+  else if(p>0&&inv)m=`<b>${clock(h)}: the sun is attacking the inversion from below.</b> Sunlight warms the ground, and rising warm bubbles mix away the cold air from the bottom up, so the base of the inversion lifts (now ${Math.round(inv.base)} m). ${w?`But the winter sun is low and the day is short, so it may not finish the job before sunset. Then the lid survives into the next night and can grow stronger day after day.${S.fog?' The fog makes it worse: it reflects sunlight, so the ground hardly warms at all. This is how tule fog and a lid can last for days.':''}`:'The strong summer sun usually mixes it away by late morning.'}`;
+  else if(inv)m=`<b>${clock(h)}: the inversion is forming from the ground up.</b> With the sun down, the ground keeps sending heat to space as infrared (red waves) and gets nothing back, so it cools fast (${S.Tg.toFixed(0)} °C now). It chills the thin layer of air touching it. Cold air is denser, so it stays at the bottom instead of rising${S.drain>0.25?', and more cold air slides down the foothills and pools on the valley floor (blue arrows)':''}. Air a few hundred meters up never touched the cold ground, so it stays warmer: <b>warm air on top of cold air</b>, ${inv.dT.toFixed(1)} °C warmer at ${Math.round(inv.top)} m. ${S.fog?'The cold, damp air has reached its dew point, so its water vapor condenses into <b>tule fog</b>.':w&&S.humid?'If the damp air near the ground cools to its dew point, tule fog will form.':''}`;
+  else m=`<b>${clock(h)}: evening.</b> The sun is down and the ground is starting to lose heat faster than it gets it. Watch the air near the ground turn blue (colder) while the air above stays warmer.`;
+  $('#msgN').innerHTML=m;
+  cv.setAttribute('aria-label',`Side view of the valley at ${clock(S.t)} on day ${S.day}, ${S.season}. Air colored by temperature, blue cold and red warm. Air at the ground ${T0.toFixed(0)} degrees, air 300 m up ${T3.toFixed(0)} degrees. ${inv?`Inversion: warmer air from ${Math.round(inv.base)} to ${Math.round(inv.top)} m.`:'No inversion.'} ${S.fog?'Tule fog covers the valley floor.':''}`);
+  prof();histChart()}
+function setOpt(){restart()}
+seg($('#nSeason'),v=>{S.season=v;restart()});seg($('#nSky'),v=>{S.cloud=+v;ui()});seg($('#nWind'),v=>{S.wind=+v;ui()});seg($('#nHum'),v=>{S.humid=+v;ui()});seg($('#nSpd'),v=>{speed=+v});
+$('#nPause').onclick=()=>{running=!running;$('#nPause').textContent=running?'Pause':'Play'};$('#nReset').onclick=restart;
+$('#legN').innerHTML=`<span><i class="sw" style="background:linear-gradient(90deg,#2a6ee6,#ff4a2a)"></i>Air temperature: blue = colder, red = warmer</span><span><i class="sw" style="background:#ffd63c"></i>Sunlight</span><span><i class="sw" style="background:#ff503c"></i>Infrared (heat) leaving the ground</span><span><i class="sw" style="background:#78c8ff"></i>Cold air draining downhill</span><span><i class="sw" style="background:rgba(255,140,80,.6);border-radius:50%"></i>Warm rising bubbles</span>`;
+restart();
+return{tick(dt,now){if(running){const hrs=dt*speed;const n=Math.ceil(hrs/0.02);for(let k=0;k<n;k++)S.step(hrs/n);histT+=hrs;while(histT>=0.5){histT-=0.5;hist.push({a:S.T(0),b:S.T(11),night:S.sun===0});if(hist.length>96)hist.shift()}stepVis(dt)}
+  draw();if(now-lastUI>700){lastUI=now;ui()}},ui};
+})();
+
+/* ---------- sinking air (subsidence) ---------- */
+const SINK=(function(){
+const W=760,H=440,Y=z=>400-z*0.115;const cv=$('#cvS');
+let str=1,running=true,speed=0.6,parcels=[],bub=[],tracked=null,lastUI=0,tick=0;
+const TS=37;                                                  // hot afternoon valley floor, °C
+const Tbg=z=>30-6.5*z/1000;                                   // normal atmosphere
+const CFG=[{h:2150,z0:null},{h:1000,z0:3500},{h:500,z0:4500}];
+const thS=()=>{const z0=CFG[str].z0;return z0?Tbg(z0)+9.8*z0/1000:null};        // potential temperature of the sinking air
+const Tsink=z=>thS()-9.8*z/1000;                               // temperature of sinking air at height z
+const Tml=z=>TS-9.8*z/1000;                                     // well-mixed valley air
+const lid=()=>CFG[str].h,THK=150;
+function T(z){const h=lid();if(!str)return z<h?Tml(z):Tbg(z);if(z<h)return Tml(z);if(z<h+THK)return Tml(h)+(Tsink(h+THK)-Tml(h))*(z-h)/THK;return Tsink(z)}
+function spawn(track){const z0=Math.min(CFG[str].z0,3500);const p={x:90+Math.random()*580,z:3500,mode:'sink',a:1,track};if(track)tracked=p;parcels.push(p)}
+function reset(){parcels=[];bub=[];tracked=null}
+function step(dt){tick+=dt;if(str){if(Math.random()<dt*speed*5)spawn(false);if(!tracked)spawn(true)}
+  const v=(str===2?260:170)*speed;
+  parcels.forEach(p=>{if(p.mode==='sink'){p.z-=v*dt;if(p.z<=lid()+THK){p.z=lid()+THK;p.mode='spread';p.dir=p.x<380?-1:1}}else{p.x+=p.dir*90*speed*dt;p.a-=dt*0.5*speed}});
+  parcels=parcels.filter(p=>p.a>0&&p.x>-20&&p.x<W+20);if(tracked&&!parcels.includes(tracked))tracked=null;
+  if(Math.random()<dt*7*speed)bub.push({x:80+Math.random()*600,z:5,r:4+Math.random()*4});
+  bub.forEach(b=>b.z+=dt*(150+60*Math.random())*speed);bub=bub.filter(b=>b.z<lid()-20)}
+function draw(){const x=ctx2d(cv,W,H),h=lid();
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#3f86c8');g.addColorStop(1,'#d7e9f5');x.fillStyle=g;x.fillRect(0,0,W,H);
+  for(let z=0;z<3500;z+=50){x.fillStyle=tShade(T(z),5,40,0.38);x.fillRect(0,Y(z+50),W,Y(z)-Y(z+50)+0.5)}
+  // haze in the mixed layer
+  x.fillStyle='rgba(150,120,80,.22)';x.fillRect(0,Y(h),W,Y(0)-Y(h));
+  if(str){const y1=Y(h+THK),y2=Y(h);x.fillStyle='rgba(240,150,40,.25)';x.fillRect(0,y1,W,y2-y1);x.setLineDash([6,5]);x.strokeStyle='rgba(200,100,20,.9)';x.lineWidth=1.6;x.beginPath();x.moveTo(0,y1);x.lineTo(W,y1);x.moveTo(0,y2);x.lineTo(W,y2);x.stroke();x.setLineDash([]);
+    x.font='700 13px system-ui,Arial';x.textAlign='left';const t='Lid: warm sinking air sits on the cooler valley air';const tw=x.measureText(t).width+12;x.fillStyle='rgba(255,255,255,.88)';x.fillRect(14,y1-24,tw,19);x.fillStyle='#7a3c00';x.fillText(t,20,y1-10);
+    // the high
+    x.font='800 34px system-ui,Arial';x.textAlign='center';x.lineWidth=4;x.strokeStyle='#fff';x.strokeText('H',380,46);x.fillStyle='#1f4fbf';x.fillText('H',380,46);x.font='700 13px system-ui,Arial';x.fillStyle='#fff';x.fillText(str===2?'Strong Pacific High: air sinking from high up':'Pacific High: air slowly sinking',380,66)}
+  else{x.font='700 13px system-ui,Arial';x.textAlign='center';x.fillStyle='#fff';x.fillText('No high pressure: no sinking air, no lid',380,40)}
+  bub.forEach(b=>{x.strokeStyle='rgba(255,120,60,.9)';x.fillStyle='rgba(255,140,80,.3)';x.lineWidth=1.4;x.beginPath();x.arc(b.x,Y(b.z),b.r,0,7);x.fill();x.stroke()});
+  parcels.forEach(p=>{const t=Tsink(p.z);x.globalAlpha=p.a;x.fillStyle=tShade(t,5,40,0.95);x.strokeStyle=p.track?'#fff':'rgba(255,255,255,.6)';x.lineWidth=p.track?3:1.2;x.beginPath();x.arc(p.x,Y(p.z),p.track?11:7,0,7);x.fill();x.stroke();
+    if(p.mode==='sink'){x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=1.5;x.beginPath();x.moveTo(p.x,Y(p.z)-14);x.lineTo(p.x,Y(p.z)-26);x.stroke()}
+    if(p.track){x.font='700 13px system-ui,Arial';x.textAlign='left';const lab=`${Math.round(t)} °C at ${fmtN(p.z)} m`;const tw=x.measureText(lab).width+10;const lx=p.x>560?p.x-tw-16:p.x+16;x.fillStyle='rgba(255,255,255,.92)';x.fillRect(lx,Y(p.z)-10,tw,19);x.fillStyle='#1d2530';x.fillText(lab,lx+5,Y(p.z)+4)}x.globalAlpha=1});
+  // ground and mountains
+  x.fillStyle='#b5a46a';x.beginPath();x.moveTo(0,H);x.lineTo(0,Y(900));x.lineTo(70,Y(150));x.lineTo(690,Y(150));x.lineTo(W,Y(1800));x.lineTo(W,H);x.closePath();x.fill();
+  x.fillStyle='#a8975c';x.fillRect(0,Y(0),W,H-Y(0));
+  x.font='600 11px system-ui,Arial';x.textAlign='right';x.fillStyle='#1d2530';[[0,'0'],[1000,'1,000 m'],[2000,'2,000 m'],[3000,'3,000 m']].forEach(([zz,t])=>x.fillText(t,W-6,Y(zz)-3));
+  x.textAlign='center';x.font='700 12px system-ui,Arial';x.fillStyle='#1d2530';x.fillText(`Hot valley floor, summer afternoon (${TS} °C)`,380,Y(0)+22);
+}
+const fmtN=n=>Math.round(n/10)*10>=1000?(Math.round(n/10)*10).toLocaleString('en-US'):String(Math.round(n/10)*10);
+function prof(){const svg=$('#profS'),w=520,h=360,m={l:58,r:14,t:12,b:42},pw=w-m.l-m.r,ph=h-m.t-m.b,zmax=3500,lo=5,hi=45;
+  const X=t=>m.l+(t-lo)/(hi-lo)*pw,Yz=z=>m.t+ph-z/zmax*ph;let s='';
+  for(let t=lo;t<=hi;t+=5)s+=`<line class="grid" x1="${X(t)}" x2="${X(t)}" y1="${m.t}" y2="${m.t+ph}"/><text x="${X(t)}" y="${m.t+ph+16}" text-anchor="middle">${t}</text>`;
+  for(let z=0;z<=3500;z+=500)s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Yz(z)}" y2="${Yz(z)}"/><text x="${m.l-6}" y="${Yz(z)+4}" text-anchor="end">${z}</text>`;
+  if(str)s+=`<rect x="${m.l}" y="${Yz(lid()+THK)}" width="${pw}" height="${Yz(lid())-Yz(lid()+THK)}" fill="rgba(240,150,40,.3)"/>`;
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  s+=`<path d="M${X(Tbg(0))} ${Yz(0)} L${X(Tbg(zmax))} ${Yz(zmax)}" stroke="#888" stroke-width="2" stroke-dasharray="6 5" fill="none"/>`;
+  if(str){const z0=CFG[str].z0,zt=Math.min(z0,zmax);s+=`<path d="M${X(Tsink(zt))} ${Yz(zt)} L${X(Tsink(lid()+THK))} ${Yz(lid()+THK)}" stroke="#1f6fbf" stroke-width="2.6" stroke-dasharray="7 5" fill="none"/>`;
+    s+=`<text x="${X(Tsink(lid()+THK))+8}" y="${Yz(lid()+THK)-8}" style="fill:var(--text);font-weight:600">arrives ${Math.round(Tsink(lid()+THK))} °C</text>`;
+    s+=`<text x="${X(Tsink(zt))+8}" y="${Yz(zt)+14}" style="fill:var(--text)">${z0>zmax?'started above 3,500 m':'started at '+fmtN(z0)+' m, '+Math.round(Tsink(z0))+' °C'}</text>`}
+  let d='';for(let z=0;z<=zmax;z+=10)d+=(z?'L':'M')+X(T(z)).toFixed(1)+' '+Yz(z).toFixed(1);s+=`<path d="${d}" fill="none" stroke="#c0392b" stroke-width="3"/>`;
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Temperature (°C)</text><text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">Height above valley floor (m)</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label',str?`Temperature with height. Valley air cools from ${TS} degrees at the ground to ${Math.round(Tml(lid()))} at ${lid()} m, then warms to ${Math.round(Tsink(lid()+THK))} degrees in the lid. Sinking air warmed about 10 degrees per kilometer on the way down.`:'Temperature with height: air cools steadily with height, no lid.')}
+function ui(){const hh=lid();
+  $('#sH').textContent=str?`${fmtN(hh)} m`:'No lid';
+  if(str){const ta=Tsink(hh+THK),tm=Tml(hh);$('#sTs').textContent=`${Math.round(ta)} °C`;$('#sTs2').textContent=`normal air at that height: ${Math.round(Tbg(hh+THK))} °C`;$('#sTm').textContent=`${Math.round(tm)} °C`;$('#sInv').textContent=`+${(ta-tm).toFixed(1)} °C`;$('#sInv2').textContent=`warmer across the lid (${fmtN(hh)}–${fmtN(hh+THK)} m)`}
+  else{$('#sTs').textContent='—';$('#sTs2').textContent='no sinking air';$('#sTm').textContent=`${Math.round(Tml(hh))} °C`;$('#sInv').textContent='None';$('#sInv2').textContent='hot air rises freely'}
+  let m;
+  if(!str)m=`<b>No high pressure, no lid.</b> Hot afternoon air rises from the valley floor in bubbles and keeps rising until it is no warmer than the air around it, here about ${fmtN(hh)} m up. Pollution gets mixed through a deep layer and carried away by winds aloft.`;
+  else{const z0=CFG[str].z0;m=`<b>Sinking air warms by being squeezed.</b> In the Pacific High, air high above California sinks slowly. Air pressure rises as it comes down, so the air is <b>compressed and warms about 10 °C for every kilometer it drops</b>, with no heater involved. The highlighted blob started near ${fmtN(z0)} m at about ${Math.round(Tsink(z0))} °C and reaches ${fmtN(hh+THK)} m at <b>${Math.round(Tsink(hh+THK))} °C</b>, warmer than the air normally found that high (${Math.round(Tbg(hh+THK))} °C).
+    The valley's own air, stirred by afternoon heating, is only ${Math.round(Tml(hh))} °C at ${fmtN(hh)} m. Rising bubbles of valley air hit the warmer sinking air and stop, so the sinking air spreads out on top like a <b>lid at about ${fmtN(hh)} m</b>. ${str===2?'A stronger high brings air down from higher up, so it arrives even warmer and pushes the lid lower: less room for pollution, and more ozone on hot days.':'A stronger high would push the lid lower and make it stronger.'} This sinking air is the same downward branch of the global Hadley cell that makes deserts near 30°N.`}
+  $('#msgS').innerHTML=m;
+  cv.setAttribute('aria-label',str?`Side view of a summer afternoon. Air sinks from the Pacific High at the top, warming as it comes down, and spreads out at a lid ${hh} m above the valley floor. Below, warm bubbles from the hot ground rise only to the lid.`:'Side view of a summer afternoon with no high pressure. Warm bubbles rise from the ground to about 2,000 m. No lid.');prof()}
+seg($('#sStr'),v=>{str=+v;reset();ui()});seg($('#sSpd'),v=>{speed=+v});
+$('#sPause').onclick=()=>{running=!running;$('#sPause').textContent=running?'Pause':'Play'};
+$('#legS').innerHTML=`<span><i class="sw" style="background:linear-gradient(90deg,#2a6ee6,#ff4a2a)"></i>Air temperature: blue cool, red hot</span><span><i class="sw" style="background:#ff7a50;border-radius:50%"></i>Sinking air (color = its temperature)</span><span><i class="sw" style="background:rgba(255,140,80,.5);border-radius:50%"></i>Rising bubbles of valley air</span><span><i class="sw" style="background:rgba(240,150,40,.4)"></i>Lid (inversion)</span>`;
+ui();
+return{tick(dt,now){if(running)step(dt);draw();if(now-lastUI>1500){lastUI=now;if(tracked)ui()}},ui};
+})();
+
+/* ---------- loop for tab 1 ---------- */
+(function(){let lt=0;function f(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;if(curTab==='form'){if(mech==='night')NIGHT.tick(dt,ts);else SINK.tick(dt,ts)}requestAnimationFrame(f)}requestAnimationFrame(ts=>{lt=ts;f(ts)})})();
+</script>
+<script>window.A11Y={tabsLabel:'Views',live:['#msg','#msgN','#msgS']};</script>
 <!--SIM-NOTICE-->
 <style>
 .sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
@@ -303,6 +626,7 @@ html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-p
 <footer class="sim-notice" role="contentinfo" aria-label="About this page">
 <p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
 <p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><b>Sources.</b> The night-cooling model is a simplified one-column energy balance (sunlight, infrared loss, conduction, mixing, and cold-air drainage) tuned to typical San Joaquin Valley winter and summer conditions for teaching; it is not a forecast. Sinking air warms at the dry adiabatic rate (9.8 &deg;C per km), and the normal atmosphere cools 6.5 &deg;C per km (standard atmosphere). AQI uses the U.S. EPA PM2.5 breakpoints.</p>
 <p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
 </footer>
 <script>
