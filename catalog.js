@@ -216,7 +216,7 @@ const ITEMS = [
     tags: ["commons", "sustainability", "Hardin", "Ostrom", "overgrazing"]
   },
   {
-    title: "Molecules and Light: What Makes a Greenhouse Gas?",
+    title: "What Makes a Greenhouse Gas? Light Meets the Air",
     where: ["atmosphere/climate"],
     type: "sim",
     url: "sims/molecules-light/",
@@ -224,7 +224,7 @@ const ITEMS = [
     tags: ["greenhouse effect", "infrared", "CO₂", "climate", "light"]
   },
   {
-    title: "The Greenhouse Effect: A Planet's Energy Balance",
+    title: "A Planet's Energy Balance: How the Greenhouse Effect Sets Temperature",
     where: ["atmosphere/climate"],
     type: "sim",
     url: "sims/greenhouse-effect/",
