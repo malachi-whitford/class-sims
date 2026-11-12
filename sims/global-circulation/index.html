@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Global Air Circulation: Three Cells, Deserts, and Spinning Winds</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:14px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem;max-width:880px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:12px;align-items:start}
+.layout>*{min-width:0}
+.layout>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;min-height:34px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl .hint{font-size:.78rem;color:var(--muted);margin:4px 0 2px}
+.ctrl h3:first-child{margin-top:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.ctrl label.check{justify-content:flex-start;align-items:center;margin:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.seg button{flex:1 1 auto;font-size:.85rem;padding:6px 10px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:.78rem;color:var(--muted)}
+.tile .v{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .s{font-size:.78rem;color:var(--muted)}
+.msg{font-size:.92rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:9px 12px;margin-top:10px}
+details summary{cursor:pointer;font-weight:600;font-size:.92rem}
+details li{font-size:.9rem;margin:4px 0}
+canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:manipulation}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart .ax{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
+.chart .lab{fill:var(--text);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.82rem;color:var(--muted);margin:8px 0 0}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;flex:none}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}.layout>.ctrl{order:2}}
+@media(max-width:520px){body{padding:10px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) nav.tabs button.on,:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
+
+#cv1{aspect-ratio:760/540;background:#0b1426}
+#cv2{aspect-ratio:760/300;background:#0f1b2d}
+#cv3{aspect-ratio:760/520;background:#070d1a}
+.tiles.six{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
+.tile .v.sm{font-size:1.05rem}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.quick button{flex:1 1 auto;font-size:.8rem;padding:5px 8px}
+#spin.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.key{font-size:.88rem}
+.key li{margin:4px 0}
+#spdchart{display:block;width:100%;max-width:760px;height:auto}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #spin.on{color:#0d1b2a}}
+</style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>Global Air Circulation: Three Cells, Deserts, and Spinning Winds</h1>
+<p class="sub">The sun heats the equator far more than the poles. Warm air rises, cools, and drops its water as rain; elsewhere air sinks, warms, and dries out the land below. On Earth this sorts the air into <b>three big loops (cells)</b> in each hemisphere, which is why rainforests, deserts, and storm belts sit at the latitudes they do. Earth's spin then bends the winds sideways: the <b>Coriolis effect</b>.</p>
+
+<nav class="tabs"><button data-tab="one" class="on">1. The three cells</button><button data-tab="two">2. Spinning Earth &amp; the Coriolis effect</button></nav>
+
+<section class="panel on" id="one">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Pick a latitude</h3>
+    <label for="lat">Latitude <span class="val" id="latV"></span></label>
+    <input type="range" id="lat" min="-90" max="90" step="1" value="0">
+    <p class="hint">Or click anywhere on the globe.</p>
+    <div class="quick" id="qlat" aria-label="Jump to a latitude"><button data-v="0">Equator</button><button data-v="30">30°N</button><button data-v="37">Fresno 37°N</button><button data-v="60">60°N</button><button data-v="90">North Pole</button></div>
+    <h3>Show</h3>
+    <div class="row" style="margin:4px 0"><label class="check"><input type="checkbox" id="showFlow" checked>&nbsp;Moving air</label></div>
+    <div class="row" style="margin:4px 0"><label class="check"><input type="checkbox" id="showRain" checked>&nbsp;Clouds &amp; rain</label></div>
+    <div class="row" style="margin:4px 0"><label class="check"><input type="checkbox" id="showLab" checked>&nbsp;Labels</label></div>
+    <h3>Speed</h3>
+    <div class="seg" id="spd1" aria-label="Speed"><button data-v="0.5" class="on">Slow</button><button data-v="1.2">Fast</button></div>
+    <div class="row"><button class="primary" id="pause1">Pause</button></div>
+    <p class="hint">Dot color shows air temperature: <span style="color:#c62828;font-weight:700">red = warm</span>, <span style="color:#1f6fbf;font-weight:700">blue = cold</span>. The atmosphere is drawn about 25 times thicker than it really is so you can see the loops.</p>
+  </div>
+  <div>
+    <div class="tiles six">
+      <div class="tile"><div class="k">Air pressure at the surface</div><div class="v sm" id="tP"></div><div class="s" id="tP2"></div></div>
+      <div class="tile"><div class="k">The air here is</div><div class="v sm" id="tM"></div><div class="s" id="tM2"></div></div>
+      <div class="tile"><div class="k">Average temperature</div><div class="v sm" id="tT"></div><div class="s" id="tT2"></div></div>
+      <div class="tile"><div class="k">Water the air can hold</div><div class="v sm" id="tW"></div><div class="s">grams per kg of air, at the surface</div></div>
+      <div class="tile"><div class="k">Typical yearly rain &amp; snow</div><div class="v sm" id="tR"></div><div class="s" id="tR2"></div></div>
+      <div class="tile"><div class="k">Climate on land</div><div class="v sm" id="tC"></div><div class="s" id="tC2"></div></div>
+    </div>
+    <div class="card"><canvas id="cv1"></canvas></div>
+    <div class="msg" id="msg1"></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px">
+  <h2>Follow one air parcel around its cell</h2>
+  <p class="small muted" style="margin:0 0 6px">An air parcel is a blob of air about the size of a house. Watch what happens to its pressure, volume, temperature, and water as it travels the loop in the Northern Hemisphere.</p>
+  <div class="seg" id="cellSel" aria-label="Which cell" style="max-width:520px"><button data-v="0" class="on">Hadley cell (0–30°)</button><button data-v="1">Ferrel cell (30–60°)</button><button data-v="2">Polar cell (60–90°)</button></div>
+  <canvas id="cv2"></canvas>
+  <div class="msg" id="msg2"></div>
+</div>
+
+<details class="card" style="margin-top:12px"><summary>Key ideas: pressure, volume, temperature, and water</summary>
+<ul class="key">
+  <li><b>Rising air expands and cools.</b> Air pressure drops with height (about half at 5.5 km). A rising parcel has less air pressing on it, so it expands, and expanding air cools. Sinking air is squeezed by rising pressure, shrinks, and warms.</li>
+  <li><b>Warm air can hold much more water vapor than cold air,</b> roughly twice as much for every 10 °C of warming. When rising air cools until it is holding all the water it can (100% relative humidity), the extra vapor condenses into clouds and falls as rain or snow.</li>
+  <li><b>Sinking air dries things out.</b> It already dropped its water when it rose, and as it sinks it warms, so it can hold far more than it carries. Relative humidity falls, clouds evaporate, and rain is rare. That is why the world's big deserts sit near 30°N and 30°S, and why the poles are cold deserts.</li>
+  <li><b>Pressure at the ground:</b> where air rises, it leaves <b>low pressure</b> (L) at the surface. Where air piles up and sinks, it makes <b>high pressure</b> (H). Surface winds blow from highs toward lows.</li>
+  <li><b>The Ferrel cell is the odd one.</b> The Hadley and polar cells are driven by heating and cooling. The Ferrel cell is mostly turned by its two neighbors like a gear between them, and in real life it is messy, full of the storms that bring rain to places like Northern California and Oregon.</li>
+  <li><b>The pattern shifts with the seasons.</b> The whole set of belts slides north in the Northern Hemisphere's summer and south in winter. California sits near 35–40°N: in summer the subtropical high moves over it (dry summers), and in winter it moves south and lets westerly storms through (wet winters). That is a Mediterranean climate.</li>
+</ul></details>
+</section>
+
+<section class="panel" id="two">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Earth's spin</h3>
+    <div class="row" style="margin-top:4px"><button id="spin" aria-pressed="false">Start spinning</button></div>
+    <p class="hint">Here 1 second = 1 hour, so one full turn takes 24 seconds.</p>
+    <div class="row" style="margin:4px 0"><label class="check"><input type="checkbox" id="showWind" checked>&nbsp;Surface winds</label></div>
+    <div class="row" style="margin:4px 0"><label class="check"><input type="checkbox" id="showSpd" checked>&nbsp;Ground speed arrows</label></div>
+    <h3>Coriolis test</h3>
+    <p class="hint" style="margin-top:0">Send a blob of air straight north or south and watch its path along the ground.</p>
+    <div class="quick" style="flex-direction:column"><button data-shot="30,-1">From 30°N toward the equator</button><button data-shot="30,1">From 30°N toward 60°N</button><button data-shot="-30,1">From 30°S toward the equator</button></div>
+  </div>
+  <div>
+    <div class="card"><canvas id="cv3"></canvas></div>
+    <div class="msg" id="msg3"></div>
+  </div>
+</div>
+<div class="card" style="margin-top:12px">
+  <h2>How fast is the ground moving east?</h2>
+  <p class="small muted" style="margin:0 0 6px">Every point on Earth goes around once a day. The equator has the longest circle to cover (about 40,000 km), so it moves fastest. Circles get smaller toward the poles, and the poles just turn in place.</p>
+  <svg id="spdchart" viewBox="0 0 700 250"></svg>
+</div>
+<details class="card" style="margin-top:12px"><summary>Why the Coriolis effect happens, and why there are three cells</summary>
+<ul class="key">
+  <li><b>Air keeps the eastward speed it started with.</b> Air at 30°N is carried east by the ground at about 1,450 km/h. If it moves toward the equator, the ground beneath it is moving faster (up to 1,670 km/h), so the ground gets ahead and the air falls behind to the <b>west</b>. Seen from the ground, the air curves to its right. That is why the trade winds blow from the northeast.</li>
+  <li>Air moving toward the poles has <b>more</b> eastward speed than the slower ground beneath it, so it pulls ahead to the <b>east</b>: again a turn to the right. That gives the westerlies.</li>
+  <li><b>Northern Hemisphere: winds curve to the right. Southern Hemisphere: to the left.</b> The effect is zero at the equator and strongest near the poles.</li>
+  <li>Winds are named for where they come <b>from</b>: a west wind (westerly) blows from west to east.</li>
+  <li><b>No spin, one cell.</b> On a planet that didn't spin, warm air could rise at the equator and flow all the way to the pole in one big loop per hemisphere. On Earth, the Coriolis effect turns the high-altitude poleward flow sharply east by about 30°, where the air piles up, cools, and sinks. That breaks the circulation into three cells.</li>
+  <li>Real winds are much slower than this simple "keep your speed" picture suggests, because friction with the ground and pressure differences also push on the air.</li>
+</ul></details>
+</section>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function ctx2d(cv,W,H){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round((r.width||W)*dpr)),h=Math.max(1,Math.round((r.width||W)*H/W*dpr));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(w/W,0,0,h/H,0,0);return x}
+function seg(el,cb){const bs=$$('button',el),sync=()=>bs.forEach(x=>x.setAttribute('aria-pressed',x.classList.contains('on')?'true':'false'));el.setAttribute('role','group');bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle('on',x===b));sync();cb(b.dataset.v,b)});sync()}
+let curTab='one';
+$$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));curTab=b.dataset.tab;try{history.replaceState(null,'','#'+curTab)}catch(e){}});
+{const h=location.hash.slice(1);const b=h&&$(`nav.tabs button[data-tab="${h}"]`);if(b)b.click();}
+const D2R=Math.PI/180, clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+
+/* ---------- climate tables (rounded east–west averages, for teaching) ---------- */
+function interp(tab,a){a=Math.abs(a);for(let i=1;i<tab.length;i++){if(a<=tab[i][0]){const[x0,y0]=tab[i-1],[x1,y1]=tab[i];return y0+(y1-y0)*(a-x0)/(x1-x0)}}return tab[tab.length-1][1]}
+const TS=[[0,27],[10,26],[20,23],[30,19],[40,12],[50,5],[60,-1],[70,-10],[80,-18],[90,-25]];      // surface air temp, °C
+const PS=[[0,1010],[10,1012],[20,1016],[30,1020],[40,1015],[50,1004],[60,996],[70,1004],[80,1012],[90,1018]]; // sea-level pressure, hPa
+const RAIN=[[0,2000],[10,1700],[20,900],[30,550],[40,900],[50,1050],[60,900],[70,450],[80,250],[90,150]];   // precipitation, mm/yr
+const Ts=lat=>interp(TS,lat), Psl=lat=>interp(PS,lat), Rain=lat=>interp(RAIN,lat);
+const es=T=>6.112*Math.exp(17.67*T/(T+243.5));                 // saturation vapor pressure, hPa (Bolton 1980)
+const ws=(T,p)=>{const e=Math.min(es(T),p*0.5);return 622*e/(p-e)};   // most water vapor air can hold, g per kg
+const pAt=z=>1013*Math.exp(-z/8);                               // pressure at height z km (scale height 8 km)
+const Tair=(lat,z)=>Ts(lat)-6.5*z;                              // temperature falls ~6.5 °C per km
+const TOP=lat=>16-7*Math.pow(Math.abs(lat)/90,1.2);             // tropopause height, km
+function tcol(T,a=1){const u=clamp((T+60)/90,0,1);const r=Math.round(40+215*u),g=Math.round(110+60*Math.sin(Math.PI*u)),b=Math.round(235-205*u);return `rgba(${r},${g},${b},${a})`}
+function band(a){a=Math.abs(a);
+  if(a<10)return{n:'Tropical rainforest',d:'Hot and wet all year',c:'#5f9e4f'};
+  if(a<20)return{n:'Tropical savanna',d:'Wet season and dry season',c:'#b9c96a'};
+  if(a<35)return{n:'Hot desert',d:'Sahara, Arabian, Australian, Sonoran',c:'#e3c07a'};
+  if(a<45)return{n:'Mediterranean & temperate',d:'Dry summers, wet winters (California)',c:'#c7c48a'};
+  if(a<65)return{n:'Temperate & boreal forest',d:'Wet, stormy, cool',c:'#86b46a'};
+  return{n:'Tundra & ice',d:'A cold desert: very little snowfall',c:'#e6edf2'}}
+function zone(a){a=Math.abs(a);
+  if(a<8)return{k:'up',m:'Rising',p:'Low',name:'the Intertropical Convergence Zone (ITCZ)'};
+  if(a<22)return{k:'side',m:'Moving toward the equator',p:'Between',wind:'trade winds'};
+  if(a<38)return{k:'down',m:'Sinking',p:'High',name:'the subtropical high'};
+  if(a<52)return{k:'side',m:'Moving toward the pole',p:'Between',wind:'westerlies'};
+  if(a<68)return{k:'up',m:'Rising',p:'Low',name:'the subpolar low (polar front)'};
+  if(a<82)return{k:'side',m:'Moving toward the equator',p:'Between',wind:'polar easterlies'};
+  return{k:'down',m:'Sinking',p:'High',name:'the polar high'}}
+
+/* ---------- the three cells: loops in (latitude, height) space ---------- */
+// up = latitude where the cell's air rises, dn = where it sinks, top = height of the loop (km)
+const CELLS=[{name:'Hadley cell',up:0,dn:30,top:14},{name:'Ferrel cell',up:60,dn:30,top:10},{name:'Polar cell',up:60,dn:90,top:8}];
+const SQ=0.32;
+function loopPt(c,t,k=1){ // t: 0 = middle of rising side, increases in the direction the air flows
+  const ct=Math.cos(t),st=Math.sin(t);const xh=Math.sign(ct)*Math.pow(Math.abs(ct),SQ)*k,zh=Math.sign(st)*Math.pow(Math.abs(st),SQ)*k;
+  const a=c.up+(c.up<c.dn?3:-3),b=c.dn+(c.up<c.dn?-3:3);   // keep loops slightly apart
+  const lat=b+(a-b)*(xh+1)/2, z0=1, z1=c.top;return{lat,z:z0+(z1-z0)*(zh+1)/2}}
+function legOf(t){t=((t%(2*Math.PI))+2*Math.PI)%(2*Math.PI);if(t<Math.PI/4||t>=7*Math.PI/4)return'rise';if(t<3*Math.PI/4)return'top';if(t<5*Math.PI/4)return'sink';return'bottom'}
+
+/* ===================== TAB 1: cross-section globe ===================== */
+(function(){
+const W=760,H=540,CX=300,CY=270,R=200,KZ=4.6;
+const cv=$('#cv1');let lat=0,running=true,speed=0.5;
+const parts=[];CELLS.forEach((c,ci)=>[1,-1].forEach(h=>{for(let i=0;i<26;i++)parts.push({ci,h,t:Math.random()*Math.PI*2,k:0.45+0.55*Math.random()})}));
+const drops=[];let rainAcc=0;
+function scr(la,z){const r=R+z*KZ;return[CX+r*Math.cos(la*D2R),CY-r*Math.sin(la*D2R)]}
+function step(dt){parts.forEach(p=>{const c=CELLS[p.ci];p.t+=dt*speed*(2*Math.PI/14)*(c.top/12)})
+  if($('#showRain').checked){rainAcc+=dt*speed*60;while(rainAcc>=1){rainAcc--;const zoneLat=[0,0,60,-60][Math.floor(Math.random()*4)];const la=zoneLat+(Math.random()-0.5)*(zoneLat?10:12);drops.push({la,z:zoneLat?4:7,vz:-(2.5+Math.random())})}}
+  drops.forEach(d=>d.z+=d.vz*dt*speed*4);for(let i=drops.length-1;i>=0;i--)if(drops[i].z<=0)drops.splice(i,1)}
+function cloud(x,la,z0,z1,w){for(let z=z0;z<=z1;z+=1.2)for(let d=-w;d<=w;d+=w/2){const[px,py]=scr(la+d*(1-(z-z0)/(z1-z0+3)*0.5),z);x.beginPath();x.arc(px,py,7.5,0,7);x.fill()}}
+function draw(){const x=ctx2d(cv,W,H);
+  x.fillStyle='#0b1426';x.fillRect(0,0,W,H);
+  // atmosphere shell (right side) with tropopause
+  x.beginPath();for(let la=-90;la<=90;la+=2){const[px,py]=scr(la,TOP(la));la===-90?x.moveTo(px,py):x.lineTo(px,py)}x.arc(CX,CY,R,Math.PI/2,-Math.PI/2,true);x.closePath();
+  const ag=x.createRadialGradient(CX,CY,R,CX,CY,R+80);ag.addColorStop(0,'rgba(120,180,255,.35)');ag.addColorStop(1,'rgba(120,180,255,.06)');x.fillStyle=ag;x.fill();
+  x.setLineDash([4,5]);x.strokeStyle='rgba(200,220,255,.45)';x.lineWidth=1.2;x.beginPath();for(let la=-90;la<=90;la+=2){const[px,py]=scr(la,TOP(la));la===-90?x.moveTo(px,py):x.lineTo(px,py)}x.stroke();x.setLineDash([]);
+  // globe face: climate bands on land by latitude
+  x.save();x.beginPath();x.arc(CX,CY,R,0,7);x.clip();
+  for(let la=-90;la<90;la+=1){x.fillStyle=band(la+0.5).c;const y0=CY-R*Math.sin((la+1)*D2R),y1=CY-R*Math.sin(la*D2R);x.fillRect(CX-R,y0,2*R,y1-y0+0.6)}
+  const sh=x.createRadialGradient(CX-R*0.35,CY-R*0.3,R*0.2,CX,CY,R);sh.addColorStop(0,'rgba(255,255,255,0)');sh.addColorStop(1,'rgba(0,0,0,.28)');x.fillStyle=sh;x.fillRect(CX-R,CY-R,2*R,2*R);
+  [-60,-30,0,30,60].forEach(la=>{const y=CY-R*Math.sin(la*D2R);x.strokeStyle=la?'rgba(0,0,0,.25)':'rgba(0,0,0,.45)';x.lineWidth=la?1:1.6;x.beginPath();x.moveTo(CX-R,y);x.lineTo(CX+R,y);x.stroke()});
+  if($('#showLab').checked){x.font='600 12px system-ui,Arial';x.textAlign='center';x.fillStyle='#14210f';
+    [[5,'Rainforest',-90],[25,'Desert',-90],[-25,'Desert',-90],[50,'Temperate forest',-80],[-50,'Temperate forest',-80],[71,'Tundra & ice',-25],[-71,'Ice',-25]].forEach(([la,t,dx])=>{x.fillText(t,CX+dx,CY-R*Math.sin(la*D2R)+4)})}
+  x.restore();
+  x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=1;x.beginPath();x.arc(CX,CY,R,0,7);x.stroke();
+  // latitude labels
+  x.font='600 12px system-ui,Arial';x.textAlign='right';x.fillStyle='#c9d3df';
+  [[60,'60°N'],[30,'30°N'],[0,'0°'],[-30,'30°S'],[-60,'60°S']].forEach(([la,t])=>{const y=CY-R*Math.sin(la*D2R);x.fillText(t,CX-R*Math.cos(la*D2R)-8,y+4)});x.fillText('90°N',CX-10,CY-R-8);x.fillText('90°S',CX-10,CY+R+18);
+  // cell outlines + arrows
+  CELLS.forEach(c=>[1,-1].forEach(h=>{x.strokeStyle='rgba(255,255,255,.28)';x.lineWidth=1.4;x.beginPath();for(let i=0;i<=120;i++){const q=loopPt(c,i/120*2*Math.PI);const[px,py]=scr(h*q.lat,q.z);i?x.lineTo(px,py):x.moveTo(px,py)}x.closePath();x.stroke();
+    [0,Math.PI/2,Math.PI,3*Math.PI/2].forEach(t=>{const a=loopPt(c,t),b=loopPt(c,t+0.05);const[ax,ay]=scr(h*a.lat,a.z),[bx,by]=scr(h*b.lat,b.z);const an=Math.atan2(by-ay,bx-ax);x.fillStyle='rgba(255,255,255,.75)';x.beginPath();x.moveTo(ax+Math.cos(an)*7,ay+Math.sin(an)*7);x.lineTo(ax+Math.cos(an+2.5)*6,ay+Math.sin(an+2.5)*6);x.lineTo(ax+Math.cos(an-2.5)*6,ay+Math.sin(an-2.5)*6);x.fill()})}));
+  // clouds and rain where air rises
+  if($('#showRain').checked){x.fillStyle='rgba(235,240,248,.85)';cloud(x,0,2,12,5);cloud(x,60,2,7,5);cloud(x,-60,2,7,5);
+    x.strokeStyle='rgba(110,170,255,.9)';x.lineWidth=1.6;drops.forEach(d=>{const[ax,ay]=scr(d.la,d.z),[bx,by]=scr(d.la,d.z+0.8);x.beginPath();x.moveTo(ax,ay);x.lineTo(bx,by);x.stroke()});
+    // sun over the deserts
+    [30,-30].forEach(la=>{const[px,py]=scr(la,3);x.fillStyle='rgba(255,210,63,.95)';x.beginPath();x.arc(px+18,py,6,0,7);x.fill()})}
+  // moving air
+  if($('#showFlow').checked)parts.forEach(p=>{const q=loopPt(CELLS[p.ci],p.t,p.k);const[px,py]=scr(p.h*q.lat,q.z);x.fillStyle=tcol(Tair(q.lat,q.z));x.beginPath();x.arc(px,py,2.8,0,7);x.fill()});
+  // H and L at the surface
+  [[0,'L'],[30,'H'],[-30,'H'],[60,'L'],[-60,'L']].forEach(([la,t])=>{const px=CX+R*Math.cos(la*D2R)-20,py=CY-R*Math.sin(la*D2R)+6;x.font='800 20px system-ui,Arial';x.textAlign='center';x.lineWidth=3;x.strokeStyle='rgba(255,255,255,.9)';x.strokeText(t,px,py);x.fillStyle=t==='H'?'#1f4fbf':'#b3261e';x.fillText(t,px,py)});
+  [[1,'H'],[-1,'H']].forEach(([h,t])=>{const px=CX+16,py=CY-h*(R-22)+6;x.font='800 20px system-ui,Arial';x.textAlign='center';x.lineWidth=3;x.strokeStyle='rgba(255,255,255,.9)';x.strokeText(t,px,py);x.fillStyle='#1f4fbf';x.fillText(t,px,py)});
+  // cell names
+  if($('#showLab').checked){x.font='700 13px system-ui,Arial';x.textAlign='left';x.fillStyle='#e7ecf2';
+    [[15,'Hadley cell'],[45,'Ferrel cell'],[75,'Polar cell']].forEach(([la,t])=>[1,-1].forEach(h=>{const[px,py]=scr(h*la,TOP(la)+3);x.fillText(t,px+4,py+4)}));
+    x.font='600 11px system-ui,Arial';x.fillStyle='#aab7c7';const[tx,ty]=scr(8,16.5);x.fillText('top of the weather layer',tx+4,ty-4)}
+  // latitude probe
+  const y=CY-R*Math.sin(lat*D2R),xl=CX-R*Math.cos(lat*D2R);x.setLineDash([5,4]);x.strokeStyle='#fff';x.lineWidth=1.6;x.beginPath();x.moveTo(xl,y);const[ex,ey]=scr(lat,TOP(lat));x.lineTo(CX+R*Math.cos(lat*D2R),y);x.lineTo(ex,ey);x.stroke();x.setLineDash([]);
+  const[sx,sy]=scr(lat,0);x.fillStyle='#fff';x.strokeStyle='#0b1426';x.lineWidth=2;x.beginPath();x.arc(sx,sy,6,0,7);x.fill();x.stroke();
+  const lab=latName(lat);x.font='700 13px system-ui,Arial';const tw=x.measureText(lab).width+14;const bx=Math.min(W-tw-6,ex+8),by=clamp(ey-12,6,H-26);x.fillStyle='rgba(255,255,255,.95)';x.beginPath();x.roundRect(bx,by,tw,22,6);x.fill();x.fillStyle='#0b1426';x.textAlign='left';x.fillText(lab,bx+7,by+15);
+}
+function latName(l){return l===0?'Equator 0°':`${Math.abs(l)}°${l>0?'N':'S'}`}
+function ui(){$('#latV').textContent=latName(lat);
+  const a=Math.abs(lat),z=zone(lat),b=band(lat),T=Ts(lat),P=Psl(lat),w=ws(T,P),r=Rain(lat);
+  $('#tP').textContent=`${fmt(P)} hPa`;$('#tP2').textContent=z.p==='Low'?'Low pressure (L)':z.p==='High'?'High pressure (H)':'Between a high and a low';
+  $('#tM').textContent=z.m;$('#tM2').textContent=z.k==='side'?`along the ground (${z.wind})`:z.k==='up'?'expands and cools as it goes up':'squeezed and warmed as it comes down';
+  $('#tT').textContent=`${Math.round(T)} °C`;$('#tT2').textContent=`${Math.round(T*9/5+32)} °F, yearly average`;
+  $('#tW').textContent=`${w.toFixed(w<2?1:0)} g/kg`;
+  $('#tR').textContent=`≈ ${fmt(Math.round(r/50)*50)} mm`;$('#tR2').textContent=`${Math.round(r/25.4)} inches; averaged around the globe`;
+  $('#tC').textContent=b.n;$('#tC2').textContent=b.d;
+  let m='';
+  if(z.k==='up'&&a<8)m=`<b>${latName(lat)}: rising air, low pressure, heavy rain.</b> The sun is nearly overhead, so the ground and the air above it are hot (${Math.round(T)} °C). Warm air expands and becomes less dense, so it rises, leaving <b>low pressure</b> at the surface. As it rises, the pressure around it drops, so it expands even more and <b>cools</b>. Cool air can't hold much water (this air can hold ${w.toFixed(0)} g/kg at the surface but almost none at the top), so the vapor condenses into towering clouds and heavy rain. That's ${z.name}, home of the tropical rainforests.`;
+  else if(z.k==='up')m=`<b>${latName(lat)}: rising air, low pressure, stormy.</b> Warmer air flowing in from the Ferrel cell meets cold air flowing out from the poles (the <b>polar front</b>). The warmer air is pushed up, expands, and cools, so its water condenses into clouds, rain, and snow. This is ${z.name}, a stormy belt with wet forests on land.`;
+  else if(z.k==='down'&&a<38)m=`<b>${latName(lat)}: sinking air, high pressure, deserts.</b> Air that already dropped its rain over the equator comes down here. As it sinks, the pressure around it rises, so it gets squeezed into a smaller volume and <b>warms</b>. Warmer air can hold more water, but this air is carrying very little, so its relative humidity falls and clouds evaporate. Skies stay clear, rain is rare, and the surface has <b>high pressure</b>. Most of the world's hot deserts are near 30°N and 30°S.${lat>33&&lat<41?' Fresno sits near the edge of this belt: the high moves over California in summer (dry) and slips south in winter (rainy season).':''}`;
+  else if(z.k==='down')m=`<b>${latName(lat)}: sinking air, high pressure, a cold desert.</b> Very cold, dense air sinks over the pole and spreads out along the ground. Air this cold can hold almost no water (${w.toFixed(1)} g/kg), so even though there is ice everywhere, very little new snow falls. Much of Antarctica gets less precipitation than the Sahara.`;
+  else m=`<b>${latName(lat)}: air moving sideways along the ground.</b> Here the surface air is flowing from a high toward a low: these are the <b>${z.wind}</b>. ${z.wind==='trade winds'?'They pick up water as they blow over warm ocean, carrying it toward the equator, where it rises and rains out.':z.wind==='westerlies'?'They carry warm, moist air toward the poles and steer the storms that cross North America and Europe.':'They carry very cold air away from the pole.'} Switch to tab 2 to see how Earth's spin bends them sideways.`;
+  $('#msg1').innerHTML=m;
+  cv.setAttribute('aria-label',`Side view of Earth with the atmosphere drawn on the right edge. Three loops of moving air in each hemisphere: the Hadley cell from the equator to 30 degrees, the Ferrel cell from 30 to 60 degrees, and the polar cell from 60 to 90 degrees. Air rises with clouds and rain at the equator and 60 degrees, and sinks over deserts at 30 degrees and over the poles. Selected latitude: ${latName(lat)}, ${z.m.toLowerCase()} air, ${z.p.toLowerCase()} pressure, ${b.n.toLowerCase()}.`)}
+function setLat(v){lat=Math.round(clamp(v,-90,90));$('#lat').value=lat;ui()}
+$('#lat').addEventListener('input',e=>setLat(+e.target.value));
+$$('#qlat button').forEach(b=>b.onclick=()=>setLat(+b.dataset.v));
+function pick(e){const r=cv.getBoundingClientRect(),py=(e.clientY-r.top)*H/r.height;setLat(Math.asin(clamp((CY-py)/R,-1,1))/D2R)}
+let drag=false;cv.addEventListener('pointerdown',e=>{drag=true;pick(e)});cv.addEventListener('pointermove',e=>{if(drag)pick(e)});window.addEventListener('pointerup',()=>drag=false);
+seg($('#spd1'),v=>{speed=+v});
+$('#pause1').onclick=()=>{running=!running;$('#pause1').textContent=running?'Pause':'Play'};
+window.TAB1={tick(dt){if(running)step(dt);draw()},speed:()=>running?speed:0};
+ui();
+})();
+
+/* ===================== Parcel panel ===================== */
+(function(){
+const W=760,H=300;const cv=$('#cv2');let ci=0,t=-0.2,q=0,rain=0,lastLeg='',drops=[];
+const DX=lat=>30+lat/90*280, DY=z=>250-z/16*205;
+function reset(){t=-0.2;const s=loopPt(CELLS[ci],t);q=0.8*ws(Tair(s.lat,s.z),pAt(s.z));rain=0;drops=[]}
+function state(){const s=loopPt(CELLS[ci],t),T=Tair(s.lat,s.z),p=pAt(s.z),cap=ws(T,p),V=((T+273.15)/288.15)*(1013/p);return{...s,T,p,cap,V,leg:legOf(t)}}
+function step(dt,sp){if(sp<=0)return;const c=CELLS[ci];t+=dt*sp*(2*Math.PI/14)*(c.top/12);
+  const s=state();
+  if(s.leg==='bottom'){q+=(0.8*s.cap-q)*(1-Math.exp(-dt*sp*1.6))}                     // evaporation from the surface
+  if(s.leg==='sink'&&s.z<3){q+=(0.2*s.cap-q)*(1-Math.exp(-dt*sp*0.3))}                  // a little mixing near the ground
+  if(q>s.cap){const d=q-s.cap;rain+=d;q=s.cap;if(Math.random()<Math.min(1,d*40+0.3))drops.push({x:0,y:0,vy:30+Math.random()*30,ox:(Math.random()-.5)*30})}
+  if(s.leg==='bottom'&&lastLeg!=='bottom')rain=0;lastLeg=s.leg;
+  drops.forEach(d=>d.y+=d.vy*dt);drops=drops.filter(d=>d.y<60)}
+function bar(x,yy,label,val,frac,col,extra){x.fillStyle='#c9d3df';x.font='600 12px system-ui,Arial';x.textAlign='left';x.fillText(label,520,yy);x.textAlign='right';x.fillStyle='#fff';x.fillText(val,742,yy);
+  x.fillStyle='rgba(255,255,255,.12)';x.fillRect(520,yy+6,222,10);x.fillStyle=col;x.fillRect(520,yy+6,222*clamp(frac,0,1),10);if(extra)extra()}
+function draw(){const x=ctx2d(cv,W,H),s=state(),c=CELLS[ci];
+  x.fillStyle='#0f1b2d';x.fillRect(0,0,W,H);
+  // mini cross-section, 0–90°N
+  for(let la=0;la<90;la++){x.fillStyle=band(la+0.5).c;x.fillRect(DX(la),250,DX(la+1)-DX(la)+0.5,12)}
+  x.strokeStyle='rgba(255,255,255,.3)';x.strokeRect(30,45,280,217);
+  x.setLineDash([4,4]);x.strokeStyle='rgba(200,220,255,.4)';x.beginPath();for(let la=0;la<=90;la+=3){const X=DX(la),Y=DY(TOP(la));la?x.lineTo(X,Y):x.moveTo(X,Y)}x.stroke();x.setLineDash([]);
+  CELLS.forEach((cc,i)=>{x.strokeStyle=i===ci?'rgba(255,255,255,.95)':'rgba(255,255,255,.22)';x.lineWidth=i===ci?2.2:1.2;x.beginPath();for(let k=0;k<=100;k++){const p=loopPt(cc,k/100*2*Math.PI);const X=DX(p.lat),Y=DY(p.z);k?x.lineTo(X,Y):x.moveTo(X,Y)}x.closePath();x.stroke()});
+  x.fillStyle='rgba(235,240,248,.55)';[[2,3,11],[60,3,6]].forEach(([la,z0,zt])=>{const P=[[-.6,0,1],[.6,.15,1],[0,.45,1.15],[-.4,.8,.95],[.5,.95,.85],[0,1,1.1]];P.forEach(([dx,dz,s])=>{x.beginPath();x.ellipse(DX(la)+dx*14,DY(z0+dz*(zt-z0)),13*s,9*s,0,0,7);x.fill()})});
+  x.font='800 15px system-ui,Arial';x.textAlign='center';[[0,'L'],[30,'H'],[60,'L'],[90,'H']].forEach(([la,t])=>{x.fillStyle=t==='H'?'#7fb0ff':'#ff8a80';x.fillText(t,DX(la)+(la===0?9:la===90?-9:0),244)});
+  x.font='600 11px system-ui,Arial';x.fillStyle='#c9d3df';[0,30,60,90].forEach(la=>x.fillText(`${la}°`,DX(la),278));x.fillText('Latitude (Northern Hemisphere)',170,294);
+  x.save();x.translate(14,150);x.rotate(-Math.PI/2);x.fillText('Height',0,0);x.restore();
+  x.textAlign='left';x.fillStyle='#e7ecf2';x.font='700 13px system-ui,Arial';x.fillText(c.name,36,36);
+  // the parcel dot
+  x.fillStyle=tcol(s.T);x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.arc(DX(s.lat),DY(s.z),7,0,7);x.fill();x.stroke();
+  // balloon
+  const bx=410,by=125,r=24*Math.cbrt(s.V);
+  x.fillStyle=tcol(s.T,.85);x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.arc(bx,by,r,0,7);x.fill();x.stroke();
+  const nd=Math.round(clamp(q,0,24));for(let i=0;i<nd;i++){const a=i*2.39996,rr=r*0.75*Math.sqrt((i+0.5)/24);x.fillStyle='#e3f2fd';x.beginPath();x.arc(bx+Math.cos(a)*rr,by+Math.sin(a)*rr,2.4,0,7);x.fill()}
+  const rh=s.cap>0?q/s.cap:0;if(rh>0.995){x.fillStyle='rgba(255,255,255,.35)';x.beginPath();x.arc(bx,by,r,0,7);x.fill()}
+  x.strokeStyle='rgba(110,170,255,.95)';x.lineWidth=2;drops.forEach(d=>{x.beginPath();x.moveTo(bx+d.ox,by+r+d.y);x.lineTo(bx+d.ox,by+r+d.y+8);x.stroke()});
+  x.textAlign='center';x.fillStyle='#fff';x.font='700 13px system-ui,Arial';x.fillText(`Volume ${s.V.toFixed(1)}×`,bx,by-r-12);
+  x.font='600 11px system-ui,Arial';x.fillStyle='#c9d3df';x.fillText('compared with sea level at 15 °C',bx,H-34);x.fillText('White dots = water vapor',bx,H-18);
+  // gauges
+  bar(x,24,'Height',`${s.z.toFixed(1)} km`,s.z/16,'#9aa6b4');
+  bar(x,66,'Air pressure',`${fmt(s.p)} hPa`,s.p/1013,'#7fb0ff');
+  bar(x,108,'Temperature',`${Math.round(s.T)} °C`,(s.T+70)/105,tcol(s.T));
+  bar(x,150,'Water vapor',`${q.toFixed(q<1?2:1)} / ${s.cap.toFixed(s.cap<1?2:1)} g/kg`,q/25,'#e3f2fd',()=>{x.strokeStyle='#ffd23f';x.lineWidth=2;const cx=520+222*clamp(s.cap/25,0,1);x.beginPath();x.moveTo(cx,153);x.lineTo(cx,169);x.stroke()});
+  bar(x,192,'Relative humidity',`${Math.round(clamp(rh,0,1)*100)}%`,rh,rh>0.99?'#ffffff':'#64b5f6');
+  bar(x,234,'Rain made this loop',`${rain.toFixed(1)} g/kg`,rain/20,'#42a5f5');
+  x.fillStyle='#ffd23f';x.font='600 11px system-ui,Arial';x.textAlign='left';x.fillText('Yellow mark = the most it can hold',520,272);
+}
+function words(){const s=state(),c=CELLS[ci],rh=s.cap>0?q/s.cap:0;let m='';
+  if(s.leg==='rise')m=`<b>Rising at ${Math.round(s.lat)}°N.</b> ${ci===1||ci===2?'Air from the two cells meets at the polar front and is forced up.':'Air warmed by the hot surface is less dense, so it floats up.'} Higher up there is less air pressing on the parcel (${fmt(s.p)} hPa), so it <b>expands</b> (${s.V.toFixed(1)}× its sea-level volume) and <b>cools</b> (${Math.round(s.T)} °C). ${rh>0.99?'It has cooled so much that it is holding all the water it can: the extra vapor condenses into cloud droplets and falls as <b>rain</b>.':'It hasn\'t cooled enough to make clouds yet.'}`;
+  else if(s.leg==='top')m=`<b>Flowing ${c.up<c.dn?'toward the pole':'toward the equator'} high up.</b> The parcel is cold (${Math.round(s.T)} °C), expanded, and has already lost most of its water as rain (${q.toFixed(2)} g/kg left). It spreads out along the top of the weather layer.`;
+  else if(s.leg==='sink')m=`<b>Sinking at ${Math.round(s.lat)}°N.</b> As it comes down, the pressure around it rises (${fmt(s.p)} hPa), so the parcel is <b>squeezed smaller</b> and <b>warms</b> as it goes (now ${Math.round(s.T)} °C). At this temperature it could hold ${s.cap.toFixed(s.cap<1?2:1)} g/kg, but it's carrying only ${q.toFixed(q<1?2:1)}, so its relative humidity is just ${Math.round(rh*100)}%. No clouds, no rain: ${s.lat>80?'a cold polar desert':'the desert belt'} and <b>high pressure</b> at the ground.`;
+  else m=`<b>Moving along the ground toward ${Math.round(c.up)}°${c.up?'N':''}.</b> ${ci===0?'These are the trade winds. Blowing over warm ocean, the parcel picks up water by evaporation':ci===1?'These are the westerlies. Over the ocean the parcel picks up water by evaporation':'These are the polar easterlies. Over ice there is little water to pick up, and cold air can\'t hold much anyway'} (${q.toFixed(1)} g/kg now, ${Math.round(rh*100)}% relative humidity). It is flowing from high pressure toward the low where it will rise.`;
+  $('#msg2').innerHTML=m;
+  cv.setAttribute('aria-label',`Air parcel in the ${c.name}, at ${Math.round(s.lat)} degrees north and ${s.z.toFixed(1)} km high. Pressure ${fmt(s.p)} hPa, temperature ${Math.round(s.T)} degrees C, volume ${s.V.toFixed(1)} times its sea-level volume, carrying ${q.toFixed(1)} of a possible ${s.cap.toFixed(1)} grams of water per kg, relative humidity ${Math.round(rh*100)} percent.`)}
+seg($('#cellSel'),v=>{ci=+v;reset();words()});
+reset();let lastW=0;
+window.PARCEL={tick(dt,now,sp){step(dt,sp);draw();if(now-lastW>700){lastW=now;words()}}};
+words();
+})();
+
+/* ===================== TAB 2: spinning globe ===================== */
+(function(){
+const W=760,H=520,CX=300,CY=262,R=210,TILT=20*D2R,OMEGA=15;   // OMEGA: degrees per second (1 s = 1 h)
+const cv=$('#cv3');let spin=false,rot=0,cor=0,ride=false,shot=null,fade=0;
+const FRESNO=[36.7,-119.8];
+function proj(la,lo){const p=la*D2R,l=(lo+rot)*D2R;const x=Math.cos(p)*Math.sin(l),y=Math.cos(TILT)*Math.sin(p)-Math.sin(TILT)*Math.cos(p)*Math.cos(l),zz=Math.sin(TILT)*Math.sin(p)+Math.cos(TILT)*Math.cos(p)*Math.cos(l);return[CX+R*x,CY-R*y,zz>0]}
+// surface wind field (east, north components), blended from "no spin" to "with Coriolis"
+function wind(la){const a=Math.abs(la),h=Math.sign(la)||1;let v0,u0,tp;
+  if(a<30){tp=Math.sin(Math.PI*a/30);v0=-1;u0=-1}else if(a<60){tp=Math.sin(Math.PI*(a-30)/30);v0=1;u0=1}else{tp=Math.sin(Math.PI*(a-60)/30);v0=-1;u0=-0.8}
+  return[cor*0.95*u0*tp,h*v0*tp*(1-0.55*cor)]}
+const parts=[];function spawn(p){const h=Math.random()<0.5?1:-1;p.la=h*(3+Math.random()*84);p.lo=Math.random()*360-180;p.age=0;p.life=3+Math.random()*3;p.tr=[]}
+for(let i=0;i<460;i++){const p={};spawn(p);p.age=Math.random()*p.life;parts.push(p)}
+function step(dt){cor+=((spin?1:0)-cor)*(1-Math.exp(-dt*1.2));
+  if(spin&&!ride)rot+=OMEGA*dt;
+  parts.forEach(p=>{const[u,v]=wind(p.la);p.tr.push([p.la,p.lo]);if(p.tr.length>12)p.tr.shift();p.la+=v*10*dt;p.lo+=u*10*dt/Math.max(0.2,Math.cos(p.la*D2R));p.age+=dt;
+    const a=Math.abs(p.la);if(p.age>p.life||a<1.5||a>88.5)spawn(p)});
+  if(shot&&shot.t<shot.T){shot.t=Math.min(shot.T,shot.t+dt);const la=shot.la0+shot.dir*30*(shot.t/shot.T);if(spin)shot.lo+=OMEGA*(Math.cos(shot.la0*D2R)-Math.cos(la*D2R))/Math.cos(la*D2R)*dt;shot.la=la;shot.trail.push([la,shot.lo]);if(shot.t>=shot.T){ride=false;fade=6;words(true)}}
+  else if(fade>0){fade-=dt;if(fade<=0)shot=null}}
+function line(x,pts,col,w,dash){x.strokeStyle=col;x.lineWidth=w;x.setLineDash(dash||[]);let on=false;x.beginPath();pts.forEach(([la,lo])=>{const[px,py,v]=proj(la,lo);if(v){on?x.lineTo(px,py):x.moveTo(px,py);on=true}else on=false});x.stroke();x.setLineDash([])}
+function arrow(x,x0,y0,x1,y1,col,w){const a=Math.atan2(y1-y0,x1-x0);x.strokeStyle=col;x.fillStyle=col;x.lineWidth=w;x.beginPath();x.moveTo(x0,y0);x.lineTo(x1,y1);x.stroke();x.beginPath();x.moveTo(x1+Math.cos(a)*2,y1+Math.sin(a)*2);x.lineTo(x1+Math.cos(a+2.6)*9,y1+Math.sin(a+2.6)*9);x.lineTo(x1+Math.cos(a-2.6)*9,y1+Math.sin(a-2.6)*9);x.fill()}
+function draw(){const x=ctx2d(cv,W,H);x.fillStyle='#070d1a';x.fillRect(0,0,W,H);
+  for(let i=0;i<70;i++){x.fillStyle='rgba(255,255,255,.45)';x.fillRect((i*197.3)%W,(i*83.7)%H,1.3,1.3)}
+  // spin axis
+  const[nx,ny]=proj(90,0),[sx,sy]=proj(-90,0);x.strokeStyle='rgba(255,255,255,.5)';x.lineWidth=2;x.beginPath();x.moveTo(nx+(nx-CX)*0.25,ny+(ny-CY)*0.25);x.lineTo(nx,ny);x.stroke();x.beginPath();x.moveTo(sx,sy);x.lineTo(sx+(sx-CX)*0.2,sy+(sy-CY)*0.2);x.stroke();
+  // globe
+  const g=x.createRadialGradient(CX-R*0.35,CY-R*0.4,R*0.1,CX,CY,R);g.addColorStop(0,'#3f86c8');g.addColorStop(1,'#123b6b');x.fillStyle=g;x.beginPath();x.arc(CX,CY,R,0,7);x.fill();
+  // belts of the three cells (faint)
+  x.save();x.beginPath();x.arc(CX,CY,R,0,7);x.clip();
+  [[-90,-60,'rgba(255,255,255,.07)'],[-60,-30,'rgba(155,246,255,.06)'],[-30,30,'rgba(255,209,102,.07)'],[30,60,'rgba(155,246,255,.06)'],[60,90,'rgba(255,255,255,.07)']].forEach(([a,b,c])=>{x.fillStyle=c;x.beginPath();let first=true;for(let lo=-180;lo<=180;lo+=4){const[px,py,v]=proj(a,lo);if(!v)continue;first?x.moveTo(px,py):x.lineTo(px,py);first=false}for(let lo=180;lo>=-180;lo-=4){const[px,py,v]=proj(b,lo);if(!v)continue;x.lineTo(px,py)}x.closePath();x.fill()});
+  x.restore();
+  // grid: parallels fixed, meridians turn with the Earth
+  [-60,-30,30,60].forEach(la=>{const pts=[];for(let lo=-180;lo<=180;lo+=3)pts.push([la,lo]);line(x,pts,'rgba(255,255,255,.28)',1)});
+  {const pts=[];for(let lo=-180;lo<=180;lo+=3)pts.push([0,lo]);line(x,pts,'rgba(255,255,255,.55)',1.6)}
+  for(let lo=-180;lo<180;lo+=30){const pts=[];for(let la=-90;la<=90;la+=3)pts.push([la,lo]);line(x,pts,lo===0?'rgba(255,255,255,.45)':'rgba(255,255,255,.2)',lo===0?1.5:1)}
+  x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=1;x.beginPath();x.arc(CX,CY,R,0,7);x.stroke();
+  // winds
+  if($('#showWind').checked)parts.forEach(p=>{if(p.tr.length<2)return;const a=Math.abs(p.la);const col=a<30?'255,209,102':a<60?'155,246,255':'255,255,255';const al=Math.min(1,p.age/0.6,(p.life-p.age)/0.6);line(x,p.tr,`rgba(${col},${0.9*al})`,2.2);const[hx,hy,hv]=proj(p.la,p.lo);if(hv){x.fillStyle=`rgba(${col},${al})`;x.beginPath();x.arc(hx,hy,2.4,0,7);x.fill()}});
+  // Fresno
+  {const[px,py,v]=proj(FRESNO[0],FRESNO[1]);if(v){x.fillStyle='#ff5a8a';x.strokeStyle='#fff';x.lineWidth=1.5;x.beginPath();x.arc(px,py,5,0,7);x.fill();x.stroke();x.font='700 12px system-ui,Arial';x.textAlign='left';x.fillStyle='#fff';x.fillText('Fresno',px+8,py+4)}}
+  // Coriolis test path
+  if(shot){const aim=[];for(let k=0;k<=30;k++)aim.push([shot.la0+shot.dir*k,shot.lo0]);line(x,aim,'rgba(255,255,255,.8)',1.6,[5,5]);
+    line(x,shot.trail,'#ff7a1a',3.5);const[px,py,v]=proj(shot.la,shot.lo);if(v){x.fillStyle='#ff7a1a';x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.arc(px,py,7,0,7);x.fill();x.stroke()}}
+  // ground-speed arrows, on the side facing us
+  if($('#showSpd').checked){x.font='700 12px system-ui,Arial';x.textAlign='left';
+    [90,60,30,0].forEach(la=>{const[px,py]=proj(la,-rot);const L=spin?110*Math.cos(la*D2R):0;
+      if(la===90){x.fillStyle='#fff';x.fillText(spin?'North Pole: 0 km/h (just turns)':'',px+22,py-8);return}
+      if(spin)arrow(x,px,py,px+L,py,'#ffd23f',3);x.fillStyle='#ffd23f';x.fillText(spin?`${fmt(1670*Math.cos(la*D2R))} km/h`:'',px+L+6,py-6)});
+    if(spin){x.fillStyle='#ffd23f';x.font='600 11px system-ui,Arial';const[px,py]=proj(-30,-rot);x.fillText('arrows: how fast the ground moves east',px-60,py+30)}}
+  // labels for wind belts
+  x.font='700 12px system-ui,Arial';x.textAlign='left';
+  const lbl=cor>0.5?[[75,'Polar easterlies'],[45,'Westerlies'],[15,'NE trade winds'],[-15,'SE trade winds'],[-45,'Westerlies'],[-75,'Polar easterlies']]:[[75,'Toward the equator'],[45,'Toward the pole'],[15,'Toward the equator'],[-15,'Toward the equator'],[-45,'Toward the pole'],[-75,'Toward the equator']];
+  lbl.forEach(([la,t])=>{const y=CY-R*(Math.cos(TILT)*Math.sin(la*D2R)-Math.sin(TILT)*Math.cos(la*D2R));const a=Math.abs(la);x.fillStyle=a<30?'#ffd166':a<60?'#9bf6ff':'#ffffff';x.fillText(t,CX+R+16,y+4);x.strokeStyle='rgba(255,255,255,.25)';x.lineWidth=1;x.beginPath();x.moveTo(CX+R+12,y);x.lineTo(CX+Math.sqrt(Math.max(0,R*R-(y-CY)*(y-CY)))*0.97,y);x.stroke()});
+  x.font='600 12px system-ui,Arial';x.fillStyle='#c9d3df';x.fillText(spin?(ride?'Camera is riding along with the spinning Earth':'Earth is spinning toward the east (left to right)'):'Earth is not spinning',16,24);
+  x.textAlign='right';x.fillText('N',nx-8,ny-8);
+}
+function words(done){let m='';
+  if(shot){const a0=Math.abs(shot.la0),a1=Math.abs(shot.la0+shot.dir*30),v0=1670*Math.cos(a0*D2R),v1=1670*Math.cos(a1*D2R),hemi=shot.la0>0?'N':'S';
+    const drift=shot.lo-shot.lo0,toward=a1<a0?'the equator':'60°'+hemi;
+    if(!spin)m=`<b>No spin, no curve.</b> The air was aimed straight toward ${toward} and it went straight there (dashed line). Press <b>Start spinning</b> and try again.`;
+    else if(!done)m=`<b>Watch the orange path.</b> The air starts at ${a0}°${hemi}, where the ground moves east at ${fmt(v0)} km/h, and keeps that eastward speed as it heads toward ${toward}, where the ground moves ${fmt(v1)} km/h.`;
+    else m=`<b>It curved to the ${drift<0?'west':'east'}, which is to the air's ${(shot.la0>0)?'right':'left'}.</b> The air kept the eastward speed of ${a0}°${hemi} (${fmt(v0)} km/h), but the ground at ${toward} moves ${fmt(v1)} km/h. ${v1>v0?'The faster ground got ahead, so the air fell behind to the west':'The air was faster than the ground under it, so it pulled ahead to the east'} (about ${Math.abs(Math.round(drift))}° of longitude). In the ${shot.la0>0?'Northern':'Southern'} Hemisphere, moving air always curves to the <b>${shot.la0>0?'right':'left'}</b>. ${a1<a0?(shot.la0>0?'That is why the trade winds blow from the northeast.':'That is why the southern trade winds blow from the southeast.'):'That is why the westerlies blow from the west.'}`}
+  else if(!spin)m=`<b>Earth isn't spinning.</b> Surface air simply flows from highs toward lows: toward the equator in the trade wind belts and toward the poles in the westerly belts. Press <b>Start spinning</b>.`;
+  else m=`<b>Earth is spinning.</b> The equator moves east at 1,670 km/h, Fresno (37°N) at about ${fmt(1670*Math.cos(36.7*D2R))} km/h, and the poles just turn in place. Moving air keeps the eastward speed it started with, so as it travels north or south it gets ahead of or falls behind the ground. In the Northern Hemisphere the winds curve to the right; in the Southern Hemisphere, to the left. Try a Coriolis test.`;
+  $('#msg3').innerHTML=m;
+  cv.setAttribute('aria-label',`Globe ${spin?'spinning toward the east':'not spinning'}. ${$('#showWind').checked?`Surface winds: ${cor>0.5?'northeast trade winds and southeast trade winds near the equator, westerlies at mid-latitudes, polar easterlies near the poles.':'air flowing straight toward the equator or poles.'}`:''} ${spin&&$('#showSpd').checked?'Arrows show the ground moving east fastest at the equator, 1670 km per hour, and not at all at the poles.':''}`)}
+$('#spin').onclick=()=>{spin=!spin;$('#spin').classList.toggle('on',spin);$('#spin').setAttribute('aria-pressed',spin?'true':'false');$('#spin').textContent=spin?'Stop spinning':'Start spinning';if(!spin)ride=false;words(shot&&shot.t>=shot.T)};
+$$('#showWind,#showSpd').forEach(c=>c.onchange=()=>words(shot&&shot.t>=shot.T));
+$$('button[data-shot]').forEach(b=>b.onclick=()=>{const[la0,dir]=b.dataset.shot.split(',').map(Number);const toEq=Math.abs(la0+dir*30)<Math.abs(la0);const lo0=(toEq?10:-45)-rot;
+  shot={la0,dir,lo0,lo:lo0,la:la0,t:0,T:12,trail:[[la0,lo0]]};fade=0;ride=spin;words(false)});
+// speed chart
+(function(){const svg=$('#spdchart');const rows=[[0,'Equator 0°'],[15,'15°'],[30,'30°'],[36.7,'Fresno 37°N'],[45,'45°'],[60,'60°'],[75,'75°'],[90,'Pole 90°']];
+  const l=110,w=420,rh=27;let s='';rows.forEach(([la,t],i)=>{const v=1670*Math.cos(la*D2R),y=10+i*rh;const fr=la===36.7;
+    s+=`<text x="${l-8}" y="${y+15}" text-anchor="end" font-size="13" fill="currentColor" font-weight="${fr?700:400}">${t}</text><rect x="${l}" y="${y+3}" width="${Math.max(1,w*v/1670)}" height="16" rx="3" fill="${fr?'#d6336c':'#e0a800'}"/><text x="${l+w*v/1670+8}" y="${y+15}" font-size="13" fill="currentColor">${fmt(v)} km/h (${fmt(v*0.6214)} mph)</text>`});
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label','Bar chart of how fast the ground moves east: 1670 km per hour at the equator, 1613 at 15 degrees, 1446 at 30 degrees, about 1339 at Fresno, 1181 at 45 degrees, 835 at 60 degrees, 432 at 75 degrees, and 0 at the poles.')})();
+let lastW=0;
+window.TAB2={tick(dt,now){step(dt);draw();if(now-lastW>1500&&!(shot&&shot.t<shot.T)){lastW=now;words(shot&&shot.t>=shot.T)}}};
+words();
+})();
+
+/* ---------- main loop ---------- */
+let lt=0;
+function frame(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;if(curTab==='one'){TAB1.tick(dt,ts);PARCEL.tick(dt,ts,TAB1.speed())}else TAB2.tick(dt,ts);requestAnimationFrame(frame)}
+requestAnimationFrame(ts=>{lt=ts;frame(ts)});
+</script>
+<script>window.A11Y={tabsLabel:'Views',live:['#msg1','#msg3']};</script>
+
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><b>Sources.</b> Temperature, pressure, and rainfall values are rounded east&ndash;west (zonal) averages for teaching, not measurements from one dataset. Water-holding capacity uses the saturation vapor pressure formula of Bolton, D. (1980), The computation of equivalent potential temperature, <i>Monthly Weather Review</i> 108: 1046&ndash;1053. Pressure with height uses an 8 km scale height, and temperature falls 6.5 &deg;C per km (standard atmosphere). Ground speeds use Earth&rsquo;s equatorial speed of about 1,670 km/h.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
+
+
