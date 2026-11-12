@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Chapman Cycle: How the Ozone Layer Works</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:14px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem;max-width:880px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:12px;align-items:start}
+.layout>*{min-width:0}
+.layout>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;min-height:34px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl .hint{font-size:.78rem;color:var(--muted);margin:4px 0 2px}
+.ctrl h3:first-child{margin-top:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.ctrl label.check{justify-content:flex-start;align-items:center;margin:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.seg button{flex:1 1 auto;font-size:.85rem;padding:6px 10px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:.78rem;color:var(--muted)}
+.tile .v{font-size:1.35rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .s{font-size:.78rem;color:var(--muted)}
+.msg{font-size:.92rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:9px 12px;margin-top:10px}
+details summary{cursor:pointer;font-weight:600;font-size:.92rem}
+details li{font-size:.9rem;margin:4px 0}
+canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:manipulation}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart .ax{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
+.chart .lab{fill:var(--text);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.82rem;color:var(--muted);margin:8px 0 0}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;flex:none}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}.layout>.ctrl{order:2}}
+@media(max-width:520px){body{padding:10px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) nav.tabs button.on,:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
+
+#cv{aspect-ratio:760/470}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.two>.card{margin-bottom:0}
+@media(max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
+.rx{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:4px 10px;align-items:start;padding:8px 8px;border-radius:8px;border-top:1px solid var(--line);transition:background-color .5s}
+.rx:first-of-type{border-top:none}
+.rx .n{width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:.82rem;display:flex;align-items:center;justify-content:center;margin-top:2px}
+.rx .eq{font-weight:700;font-size:.98rem}
+.rx .d{grid-column:2/4;font-size:.84rem;color:var(--muted)}
+.rx .c{font-variant-numeric:tabular-nums;font-size:.8rem;color:var(--muted);white-space:nowrap;margin-top:3px}
+.rx.flash{background:color-mix(in srgb,#f4b62a 30%,var(--card));transition:none}
+.rx.cl .n{background:#2e8b3e}
+.rx.off{opacity:.45}
+.grp{font-size:.8rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 2px}
+.uvc{color:#7c3aed;font-weight:700}.uvb{color:#c0268f;font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .uvc{color:#b38cff}:root:not([data-theme="light"]) .uvb{color:#ff7ad9}:root:not([data-theme="light"]) .rx .n{color:#0d1b2a}}
+</style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>The Chapman Cycle: How the Ozone Layer Works</h1>
+<p class="sub">High in the stratosphere, ultraviolet (UV) light from the sun splits oxygen molecules, and the pieces build ozone (O₃). Ozone then absorbs the UV-B light that would otherwise reach the ground. Four reactions, first described by Sydney Chapman in 1930, keep making and breaking ozone in a steady balance. Watch them happen one molecule at a time.</p>
+
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Sunlight</h3>
+    <label for="uv">Ultraviolet light from the sun <span class="val" id="uvV"></span></label>
+    <input type="range" id="uv" min="0" max="100" step="10" value="60" data-suf="%">
+    <p class="hint">0% is night. The sun sends two kinds here: <span class="uvc">UV-C</span> (highest energy) and <span class="uvb">UV-B</span> (causes sunburn).</p>
+    <h3>Chlorine from CFCs</h3>
+    <div class="seg" id="cl" aria-label="Chlorine from CFCs"><button data-v="0" class="on">None</button><button data-v="4">Some</button><button data-v="10">Lots</button></div>
+    <p class="hint">CFCs from old refrigerators and spray cans drift up to the stratosphere, where UV frees their chlorine (Cl) atoms.</p>
+    <h3>Speed</h3>
+    <div class="seg" id="spd" aria-label="Speed"><button data-v="1" class="on">Slow</button><button data-v="3">Fast</button></div>
+    <div class="row"><button class="primary" id="pause">Pause</button><button id="restart">Start over</button></div>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Ozone (O₃) molecules</div><div class="v" id="tO3"></div></div>
+      <div class="tile"><div class="k">Free oxygen atoms (O)</div><div class="v" id="tO"></div></div>
+      <div class="tile"><div class="k">UV-B reaching the ground</div><div class="v" id="tB"></div><div class="s">of the UV-B the sun sends</div></div>
+    </div>
+    <div class="card"><canvas id="cv"></canvas><div class="legend" id="leg"></div></div>
+  </div>
+</div>
+
+<div class="msg" id="msg"></div>
+
+<div class="two" style="margin-top:12px">
+  <div class="card" id="rxcard">
+    <h2>The reactions</h2>
+    <p class="small muted" style="margin:0">Each card lights up when its reaction happens in the model. The counts show how many times.</p>
+    <div class="grp">The Chapman cycle</div>
+    <div class="rx" data-i="0"><span class="n">1</span><span class="eq">O₂ + <span class="uvc">UV-C</span> → O + O</span><span class="c" id="c0"></span><span class="d">UV-C light splits an oxygen molecule into two free oxygen atoms.</span></div>
+    <div class="rx" data-i="1"><span class="n">2</span><span class="eq">O + O₂ → O₃ + heat</span><span class="c" id="c1"></span><span class="d">A free atom joins an O₂ to make ozone. A third molecule (usually N₂) carries off the extra energy as heat. That heat is why the stratosphere gets warmer with height.</span></div>
+    <div class="rx" data-i="2"><span class="n">3</span><span class="eq">O₃ + <span class="uvb">UV</span> → O₂ + O</span><span class="c" id="c2"></span><span class="d">Ozone absorbs UV-B or UV-C and splits. The O atom usually rejoins an O₂ right away (reaction 2), so ozone keeps soaking up UV without being used up.</span></div>
+    <div class="rx" data-i="3"><span class="n">4</span><span class="eq">O + O₃ → O₂ + O₂</span><span class="c" id="c3"></span><span class="d">Once in a while a free atom hits an ozone instead. Both are lost as ordinary O₂. This slowly removes ozone and balances reaction 1.</span></div>
+    <div class="grp">Chlorine from CFCs</div>
+    <div class="rx cl" data-i="4"><span class="n">5</span><span class="eq">Cl + O₃ → ClO + O₂</span><span class="c" id="c4"></span><span class="d">A chlorine atom steals an oxygen from ozone.</span></div>
+    <div class="rx cl" data-i="5"><span class="n">6</span><span class="eq">ClO + O → Cl + O₂</span><span class="c" id="c5"></span><span class="d">ClO gives the oxygen to a free O atom and the chlorine is freed again. It is a catalyst: one chlorine atom can destroy thousands of ozone molecules.</span></div>
+  </div>
+  <div class="card chart">
+    <h2>Molecules over time</h2>
+    <svg id="chart" viewBox="0 0 560 300"></svg>
+    <div class="legend" id="cleg"></div>
+  </div>
+</div>
+
+<details class="card" style="margin-top:12px"><summary>What this model leaves out</summary>
+<ul>
+  <li>Real ozone is rare: even in the ozone layer, fewer than 10 of every million molecules are O₃. Here there is much more ozone so you can watch it.</li>
+  <li>Most of the stratosphere is nitrogen (N₂). It is left out except as the "third molecule" that carries away heat in reaction 2.</li>
+  <li>Real UV-C is absorbed almost completely. Here a few photons slip through because the molecules are spread out.</li>
+  <li>Nitrogen oxides, bromine, and polar clouds also destroy ozone. The Antarctic ozone hole forms when polar clouds in the cold, dark winter free large amounts of chlorine.</li>
+  <li>The 1987 Montreal Protocol phased out CFCs, and the ozone layer is slowly recovering.</li>
+</ul></details>
+</div>
+
+<script>
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function ctx2d(cv,W,H){const r=cv.getBoundingClientRect(),dpr=Math.min(2,window.devicePixelRatio||1);const w=Math.max(1,Math.round((r.width||W)*dpr)),h=Math.max(1,Math.round((r.width||W)*H/W*dpr));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h}const x=cv.getContext('2d');x.setTransform(w/W,0,0,h/H,0,0);return x}
+function seg(el,cb){const bs=$$('button',el),sync=()=>bs.forEach(x=>x.setAttribute('aria-pressed',x.classList.contains('on')?'true':'false'));el.setAttribute('role','group');bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle('on',x===b));sync();cb(b.dataset.v,b)});sync()}
+function showVals(){$$('input[type=range]').forEach(r=>{const o=$('#'+r.id+'V');if(o)o.textContent=r.value+(r.dataset.suf||'')})}
+/*PHYS-START*/
+function makeChap(rand){
+  const W=760,H=470,TOP=50,BOT=416;
+  const S={W,H,TOP,BOT,parts:[],ph:[],fx:[],ev:[],t:0,uv:0.6,nCl:0,nid:1,acc:0,
+    cnt:[0,0,0,0,0,0],B:{em:0,gr:0},C:{em:0,gr:0},
+    N0:48,SPD:40,PHS:190,PMAX:3,RRX:22,RCL:40,RPH:20,
+    K:{OO2:8,OO3:2,ClO3:8,ClOO:20},PABS:{O2:0.7,O3C:0.7,O3B:0.7}};
+  const spd=()=>S.SPD*(0.7+0.6*rand());
+  function add(k,x,y,vx,vy){const a=rand()*6.283,s=spd();
+    const p={id:S.nid++,k,x,y,vx:vx===undefined?Math.cos(a)*s:vx,vy:vy===undefined?Math.sin(a)*s:vy,rot:rand()*6.283,vr:(rand()-0.5)*1.4,born:S.t};
+    S.parts.push(p);return p}
+  S.add=add;
+  S.reset=function(){S.parts=[];S.ph=[];S.fx=[];S.ev=[];S.cnt=[0,0,0,0,0,0];S.t=0;S.B={em:0,gr:0};S.C={em:0,gr:0};
+    for(let i=0;i<S.N0;i++)add('O2',24+rand()*(W-48),TOP+24+rand()*(BOT-TOP-48));const n=S.nCl;S.nCl=0;S.setCl(n)};
+  S.setCl=function(n){let cur=S.parts.filter(p=>p.k==='Cl'||p.k==='ClO');
+    while(cur.length>n){const p=cur.pop();S.parts.splice(S.parts.indexOf(p),1);if(p.k==='ClO')add('O',p.x,p.y)}
+    while(cur.length<n){cur.push(add('Cl',24+rand()*(W-48),TOP+24+rand()*(BOT-TOP-48)))}
+    S.nCl=n};
+  function kill(p){const i=S.parts.indexOf(p);if(i>=0)S.parts.splice(i,1);p.dead=true}
+  function spawnApart(kinds,x,y,vx,vy){const a=rand()*6.283;
+    kinds.forEach((k,i)=>{const s=spd(),aa=a+i*Math.PI;add(k,x+Math.cos(aa)*6,y+Math.sin(aa)*6,vx*0.3+Math.cos(aa)*s*1.3,vy*0.3+Math.sin(aa)*s*1.3)})}
+  function event(i,x,y,kind){S.cnt[i]++;S.ev.push(i);S.fx.push({kind,x,y,t:0})}
+  const RX=[['O','O2','OO2',['O3'],1,'heat'],['O','O3','OO3',['O2','O2'],3,'rx'],['Cl','O3','ClO3',['ClO','O2'],4,'rx'],['ClO','O','ClOO',['Cl','O2'],5,'rx']];
+  S.step=function(dt){
+    S.t+=dt;
+    // photons from the sun
+    S.acc+=S.uv*S.PMAX*dt;
+    while(S.acc>=1){S.acc--;const t=rand()<0.5?'C':'B';S[t].em++;S.ph.push({t,x:12+rand()*(W-24),y:TOP-34,tried:new Set()})}
+    const keep=[];
+    for(const p of S.ph){p.y+=S.PHS*dt;let gone=false;
+      if(p.y>TOP-4){for(const q of S.parts){if(q.dead||p.tried.has(q.id))continue;if(Math.abs(q.x-p.x)>S.RPH||Math.abs(q.y-p.y)>S.RPH)continue;
+        p.tried.add(q.id);
+        let pr=0;if(q.k==='O3')pr=p.t==='C'?S.PABS.O3C:S.PABS.O3B;else if(q.k==='O2'&&p.t==='C')pr=S.PABS.O2;
+        if(pr&&rand()<pr){kill(q);
+          if(q.k==='O2'){spawnApart(['O','O'],q.x,q.y,q.vx,q.vy);event(0,q.x,q.y,'split')}
+          else{spawnApart(['O2','O'],q.x,q.y,q.vx,q.vy);event(2,q.x,q.y,'split')}
+          gone=true;break}}}
+      if(gone)continue;
+      if(p.y>=BOT){S[p.t].gr++;S.fx.push({kind:'ground',x:p.x,y:BOT+6,t:0,uv:p.t});continue}
+      keep.push(p)}
+    S.ph=keep;
+    // move particles
+    for(const p of S.parts){p.x+=p.vx*dt;p.y+=p.vy*dt;p.rot+=p.vr*dt;
+      if(p.x<12){p.x=12;p.vx=Math.abs(p.vx)}if(p.x>W-12){p.x=W-12;p.vx=-Math.abs(p.vx)}
+      if(p.y<TOP+12){p.y=TOP+12;p.vy=Math.abs(p.vy)}if(p.y>BOT-12){p.y=BOT-12;p.vy=-Math.abs(p.vy)}
+      // ease speed back toward thermal speed
+      const s=Math.hypot(p.vx,p.vy)||1,tgt=S.SPD;const f=1+(tgt/s-1)*Math.min(1,dt*0.8);p.vx*=f;p.vy*=f}
+    // reactions on contact
+    const P=S.parts.slice();
+    for(let i=0;i<P.length;i++){const a=P[i];if(a.dead)continue;
+      for(let j=i+1;j<P.length;j++){const b=P[j];if(b.dead)continue;
+        const dx=Math.abs(a.x-b.x),dy=Math.abs(a.y-b.y);if(dx>S.RCL||dy>S.RCL)continue;const d2=dx*dx+dy*dy;
+        for(const r of RX){let A=null,B=null;if(a.k===r[0]&&b.k===r[1]){A=a;B=b}else if(b.k===r[0]&&a.k===r[1]){A=b;B=a}
+          if(!A)continue;
+          const rr=r[2]==='ClOO'?S.RCL:S.RRX;if(d2>rr*rr)break;
+          if(rand()<1-Math.exp(-S.K[r[2]]*dt)){const x=(A.x+B.x)/2,y=(A.y+B.y)/2,vx=(A.vx+B.vx)/2,vy=(A.vy+B.vy)/2;kill(A);kill(B);
+            if(r[3].length===1)add(r[3][0],x,y,vx,vy);else spawnApart(r[3],x,y,vx,vy);
+            event(r[4],x,y,r[5])}
+          break}
+        if(a.dead)break}}
+    for(const f of S.fx)f.t+=dt;S.fx=S.fx.filter(f=>f.t<0.9);
+    const d=Math.exp(-dt/25);S.B.em*=d;S.B.gr*=d;S.C.em*=d;S.C.gr*=d;
+  };
+  S.count=k=>S.parts.reduce((n,p)=>n+(p.k===k),0);
+  S.reset();
+  return S;
+}
+/*PHYS-END*/
+(function(){
+const S=makeChap(Math.random);const W=S.W,H=S.H,TOP=S.TOP,BOT=S.BOT;
+let running=true,speed=1,hist=[],histT=0;
+const cv=$('#cv');
+S.uv=+$('#uv').value/100;showVals();
+
+const COL={O:['#f59a87','#d9412b','#7d1f12'],Cl:['#9fe0a6','#2e9b3e','#14501d']};
+function atom(x,px,py,r,el){const c=COL[el];const g=x.createRadialGradient(px-r*.35,py-r*.4,r*.1,px,py,r);g.addColorStop(0,c[0]);g.addColorStop(1,c[1]);x.fillStyle=g;x.strokeStyle=c[2];x.lineWidth=1;x.beginPath();x.arc(px,py,r,0,7);x.fill();x.stroke()}
+function bond(x,a,b){x.strokeStyle='#c9d3df';x.lineWidth=2.5;x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(b[0],b[1]);x.stroke()}
+function part(x,p){const c=Math.cos(p.rot),s=Math.sin(p.rot);const T=(dx,dy)=>[p.x+dx*c-dy*s,p.y+dx*s+dy*c];
+  if(p.k==='O'){const pulse=0.5+0.5*Math.sin(S.t*6+p.id);x.strokeStyle=`rgba(255,240,180,${0.35+0.4*pulse})`;x.lineWidth=2;x.beginPath();x.arc(p.x,p.y,11,0,7);x.stroke();atom(x,p.x,p.y,7,'O')}
+  else if(p.k==='O2'){const a=T(-6.5,0),b=T(6.5,0);bond(x,a,b);atom(x,...a,7,'O');atom(x,...b,7,'O')}
+  else if(p.k==='O3'){x.fillStyle='rgba(90,160,255,.28)';x.beginPath();x.arc(p.x,p.y,17,0,7);x.fill();const a=T(0,-5),b=T(-10.5,5),d=T(10.5,5);bond(x,a,b);bond(x,a,d);atom(x,...b,7,'O');atom(x,...d,7,'O');atom(x,...a,7,'O');}
+  else if(p.k==='Cl'){atom(x,p.x,p.y,8.5,'Cl')}
+  else if(p.k==='ClO'){const a=T(-6,0),b=T(8,0);bond(x,a,b);atom(x,...a,8.5,'Cl');atom(x,...b,7,'O')}}
+function photon(x,p){const c=p.t==='C'?'#c4a3ff':'#ff7ad9',wl=p.t==='C'?4.5:6.5,L=26;x.save();x.strokeStyle=c;x.lineWidth=2.2;x.shadowColor=c;x.shadowBlur=6;x.beginPath();
+  for(let k=0;k<=30;k++){const s=-L/2+L*k/30,env=Math.pow(Math.cos(Math.PI*s/L),2);const px=p.x+Math.sin(2*Math.PI*s/wl)*4*env,py=p.y+s;k?x.lineTo(px,py):x.moveTo(px,py)}x.stroke();x.restore()}
+function draw(){const x=ctx2d(cv,W,H);
+  const g=x.createLinearGradient(0,0,0,BOT);g.addColorStop(0,'#070f24');g.addColorStop(TOP/BOT,'#0d1c3d');g.addColorStop(1,'#26467a');x.fillStyle=g;x.fillRect(0,0,W,BOT);
+  const sg=x.createLinearGradient(0,0,0,TOP);sg.addColorStop(0,`rgba(255,214,90,${0.15+0.35*S.uv})`);sg.addColorStop(1,'rgba(255,214,90,0)');x.fillStyle=sg;x.fillRect(0,0,W,TOP);
+  x.setLineDash([4,5]);x.strokeStyle='rgba(255,255,255,.22)';x.beginPath();x.moveTo(0,TOP);x.lineTo(W,TOP);x.stroke();x.setLineDash([]);
+  x.font='600 13px system-ui,Arial';x.fillStyle='#ffe8a3';x.textAlign='left';x.fillText(S.uv>0?'Sunlight (UV) from above':'Night: no sunlight',12,22);
+  x.fillStyle='rgba(220,232,255,.8)';x.textAlign='right';x.fillText('Stratosphere',W-12,TOP+20);
+  // ground
+  x.fillStyle='#4f7a3a';x.fillRect(0,BOT,W,H-BOT);x.fillStyle='#3d6430';x.fillRect(0,BOT,W,5);
+  x.fillStyle='#fff';x.textAlign='left';x.fillText('Ground',12,H-18);
+  S.fx.forEach(f=>{const u=f.t/0.9,a=1-u;
+    if(f.kind==='ground'){x.strokeStyle=f.uv==='C'?`rgba(196,163,255,${a})`:`rgba(255,122,217,${a})`;x.lineWidth=2;for(let k=0;k<6;k++){const an=-Math.PI*(k+0.5)/6,r1=4+u*6,r2=10+u*14;x.beginPath();x.moveTo(f.x+Math.cos(an)*r1,f.y+Math.sin(an)*r1);x.lineTo(f.x+Math.cos(an)*r2,f.y+Math.sin(an)*r2);x.stroke()}}
+    else{const col=f.kind==='heat'?'255,150,60':f.kind==='split'?'255,255,255':'255,214,90';x.strokeStyle=`rgba(${col},${a*0.9})`;x.lineWidth=2.5;x.beginPath();x.arc(f.x,f.y,8+u*22,0,7);x.stroke();
+      if(f.kind==='heat'){x.fillStyle=`rgba(255,170,90,${a})`;x.font='700 12px system-ui,Arial';x.textAlign='center';x.fillText('heat',f.x,f.y-16-u*10)}}});
+  S.parts.forEach(p=>part(x,p));
+  S.ph.forEach(p=>photon(x,p));
+}
+const pct=(a,b)=>b>0.3?Math.round(100*a/b)+'%':'—';
+function chart(){const svg=$('#chart'),w=560,h=300,m={l:40,r:12,t:10,b:36},pw=w-m.l-m.r,ph=h-m.t-m.b,hi=50;
+  const X=i=>m.l+i/119*pw,Y=v=>m.t+ph-v/hi*ph;let s='';
+  [0,10,20,30,40,50].forEach(v=>{s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Y(v)}" y2="${Y(v)}"/><text x="${m.l-6}" y="${Y(v)+4}" text-anchor="end">${v}</text>`});
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  const off=120-hist.length;
+  const line=(k,c,d)=>`<path d="${hist.map((r,i)=>(i?'L':'M')+X(i+off).toFixed(1)+' '+Y(r[k]).toFixed(1)).join('')}" fill="none" stroke="${c}" stroke-width="2.6" ${d?'stroke-dasharray="6 4"':''} stroke-linejoin="round"/>`;
+  if(hist.length>1){s+=line('O2','#7a8796',true)+line('O','#d4561f')+line('O3','#2a78d6');if(S.nCl>0)s+=line('ClO','#2e9b3e',true)}
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Last 2 minutes of model time</text><text class="lab" transform="translate(12 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">Number of molecules</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');
+  const L=hist[hist.length-1]||{O3:0,O2:0,O:0};
+  svg.setAttribute('aria-label',`Line graph of molecule counts over the last two minutes. Now: ${L.O3} ozone, ${L.O2} O2, ${L.O} free oxygen atoms.`);
+  $('#cleg').innerHTML=`<span><i class="sw" style="background:#2a78d6"></i>Ozone, O₃</span><span><i class="sw" style="background:transparent;border:2px dashed #7a8796"></i>Oxygen, O₂</span><span><i class="sw" style="background:#d4561f"></i>Free oxygen atoms, O</span>${S.nCl>0?'<span><i class="sw" style="background:transparent;border:2px dashed #2e9b3e"></i>ClO</span>':''}`}
+function tiles(){const o3=S.count('O3'),o=S.count('O'),o2=S.count('O2');
+  $('#tO3').textContent=o3;$('#tO').textContent=o;$('#tB').textContent=S.uv>0?pct(S.B.gr,S.B.em):'—';
+  for(let i=0;i<6;i++)$('#c'+i).textContent='×'+S.cnt[i];
+  $$('.rx.cl').forEach(r=>r.classList.toggle('off',S.nCl===0));
+  let m;
+  if(S.uv===0)m=`<b>Night.</b> With no UV, no new oxygen atoms are made. The free O atoms left over quickly join O₂ to make ozone, and then the ozone just waits for morning. Ozone is only destroyed when there are free O atoms around (or chlorine).`;
+  else if(S.t<12)m=`UV-C light (violet) is splitting O₂ into free oxygen atoms (glowing rings). Each free atom soon bumps into an O₂ and makes ozone. Watch the blue ozone line climb on the graph.`;
+  else m=`Ozone has reached a <b>balance</b>: reactions 1 and 2 build it about as fast as reaction 4${S.nCl?' and chlorine':''} destroy it. Meanwhile ozone absorbs UV and splits (reaction 3) many times, but the O atom almost always rejoins O₂, so the UV energy is turned into <b>heat</b> instead of reaching the ground. About <b>${pct(S.B.gr,S.B.em)}</b> of the UV-B is getting through.`;
+  if(S.nCl>0&&S.t>=12)m+=` <b>Chlorine has destroyed ${S.cnt[4]} ozone molecules</b> and is still going, because every Cl atom is set free again by reaction 6. Compare the ozone count and the UV-B reaching the ground with chlorine set to None.`;
+  $('#msg').innerHTML=m;
+  cv.setAttribute('aria-label',`Particle view of the stratosphere. UV photons fall from the top. There are ${o2} O2 molecules, ${o3} ozone molecules, ${o} free oxygen atoms${S.nCl?`, and ${S.count('Cl')} chlorine atoms and ${S.count('ClO')} ClO`:''}. UV-B reaching the ground: ${pct(S.B.gr,S.B.em)}.`)}
+$('#leg').innerHTML=`<span><i class="sw" style="background:#d9412b;border-radius:50%"></i>Oxygen atom (in O, O₂, O₃)</span><span><i class="sw" style="background:#5aa0ff;opacity:.6;border-radius:50%"></i>Blue glow = ozone (O₃)</span><span><i class="sw" style="background:#2e9b3e;border-radius:50%"></i>Chlorine atom</span><span><i class="sw" style="background:#c4a3ff"></i>UV-C light</span><span><i class="sw" style="background:#ff7ad9"></i>UV-B light</span>`;
+function sample(){hist.push({O3:S.count('O3'),O2:S.count('O2'),O:S.count('O'),ClO:S.count('ClO')});if(hist.length>120)hist.shift()}
+$('#uv').addEventListener('input',()=>{S.uv=+$('#uv').value/100;showVals()});
+seg($('#cl'),v=>{S.setCl(+v)});
+seg($('#spd'),v=>{speed=+v});
+$('#pause').onclick=()=>{running=!running;$('#pause').textContent=running?'Pause':'Play'};
+$('#restart').onclick=()=>{S.reset();hist=[];histT=0;sample();tiles();chart()};
+const cards=$$('.rx');let lastUI=0,lt=0;
+function frame(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;
+  if(running){for(let k=0;k<speed;k++)S.step(dt);histT+=dt*speed;while(histT>=1){histT-=1;sample()}}
+  if(S.ev.length){const seen=new Set(S.ev);S.ev=[];seen.forEach(i=>{const c=cards[i];c.classList.remove('flash');void c.offsetWidth;c.classList.add('flash');clearTimeout(c._t);c._t=setTimeout(()=>c.classList.remove('flash'),350)})}
+  draw();if(ts-lastUI>400){lastUI=ts;tiles();chart()}
+  requestAnimationFrame(frame)}
+sample();tiles();chart();
+requestAnimationFrame(ts=>{lt=ts;frame(ts)});
+})();
+</script>
+<script>window.A11Y={tabsLabel:'Views',live:['#msg']};</script>
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
+
+
