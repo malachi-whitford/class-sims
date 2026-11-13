@@ -53,6 +53,10 @@ const TOPICS = [
       { id: "ozone",   label: "The ozone layer" },
       { id: "air",     label: "Air quality" },
       { id: "circulation", label: "Global winds and climate zones" } ] },
+  { id: "water", label: "Water Treatment",
+    blurb: "How drinking water is made clean and safe, step by step through a treatment plant.",
+    sections: [
+      { id: "coag", label: "Coagulation, flocculation, and settling" } ] },
   { id: "fieldbio", label: "Field Biology Review",
     blurb: "Species ID practice for BIOL 7 field trips.",
     sections: [
@@ -255,6 +259,14 @@ const ITEMS = [
     url: "sims/global-circulation/",
     desc: "Follow air around the Hadley, Ferrel, and polar cells to see how pressure, volume, temperature, and water-holding capacity explain rain belts and deserts. Then spin the Earth to see the Coriolis effect bend the trade winds and westerlies, and compare how fast the ground moves at each latitude.",
     tags: ["air pressure", "Hadley cell", "deserts", "Coriolis effect", "trade winds", "climate zones"]
+  },
+  {
+    title: "The Jar Test: Finding the Right Coagulant Dose",
+    where: ["water/coag"],
+    type: "sim",
+    url: "sims/jar-test/",
+    desc: "Run a six-jar test on average river water, storm runoff, or cold snowmelt: dose alum, rapid mix, slow mix, and settle, then find the best dose and scale it up to pounds per day. A close-up shows how canceling the particles' charge makes them stick, and how too much coagulant makes them repel again.",
+    tags: ["jar test", "coagulation", "flocculation", "alum", "turbidity", "alkalinity", "lb/day"]
   }
 
   // ---------- Example web app (delete the two slashes at the start of each line to use) ----------
