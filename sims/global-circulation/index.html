@@ -63,7 +63,7 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 @media(max-width:520px){body{padding:10px}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) nav.tabs button.on,:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
 
-#cv1{aspect-ratio:760/400;background:#0b1426}
+#cv1{aspect-ratio:760/540;background:#0b1426}
 #cv2{aspect-ratio:760/300;background:#0f1b2d}
 #cv3{aspect-ratio:760/520;background:#070d1a}
 .tiles.six{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
@@ -92,7 +92,7 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
     <h3>Pick a latitude</h3>
     <label for="lat">Latitude <span class="val" id="latV"></span></label>
     <input type="range" id="lat" min="-90" max="90" step="1" value="0">
-    <p class="hint">Or tap anywhere on the picture.</p>
+    <p class="hint">Or click anywhere on the globe.</p>
     <div class="quick" id="qlat" aria-label="Jump to a latitude"><button data-v="0">Equator</button><button data-v="30">30°N</button><button data-v="37">Fresno 37°N</button><button data-v="60">60°N</button><button data-v="90">North Pole</button></div>
     <h3>Show</h3>
     <div class="row" style="margin:4px 0"><label class="check"><input type="checkbox" id="showFlow" checked>&nbsp;Moving air</label></div>
@@ -101,7 +101,7 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
     <h3>Speed</h3>
     <div class="seg" id="spd1" aria-label="Speed"><button data-v="0.5" class="on">Slow</button><button data-v="1.2">Fast</button></div>
     <div class="row"><button class="primary" id="pause1">Pause</button></div>
-    <p class="hint">Dot color shows air temperature: <span style="color:#c62828;font-weight:700">red = warm</span>, <span style="color:#1f6fbf;font-weight:700">blue = cold</span>. This is a side view of Earth unrolled flat, from the South Pole (left) to the North Pole (right). The air is drawn about 25 times taller than it really is so you can see the loops.</p>
+    <p class="hint">Dot color shows air temperature: <span style="color:#c62828;font-weight:700">red = warm</span>, <span style="color:#1f6fbf;font-weight:700">blue = cold</span>. The dashed line is the top of the weather layer (the tropopause). The atmosphere is drawn about 25 times thicker than it really is so you can see the loops.</p>
   </div>
   <div>
     <div class="tiles six">
@@ -221,58 +221,60 @@ function legOf(t){t=((t%(2*Math.PI))+2*Math.PI)%(2*Math.PI);if(t<Math.PI/4||t>=7
 
 /* ===================== TAB 1: cross-section globe ===================== */
 (function(){
-const W=760,H=400,L0=34,R0=W-34,GY=316,KM=16.5;
-const PX=(R0-L0)/180, X=la=>L0+(la+90)*PX, Y=z=>GY-z*KM;   // side view: South Pole on the left, North Pole on the right
+const W=760,H=540,CX=290,CY=270,R=182,KZ=6.2;
+const EX=0.8;function lp(c,t,k=1){const ct=Math.cos(t),st=Math.sin(t);const xh=Math.sign(ct)*Math.pow(Math.abs(ct),EX)*k,zh=Math.sign(st)*Math.pow(Math.abs(st),EX)*k;const s=c.up<c.dn?1:-1,a=c.up+4*s,b=c.dn-4*s;return{lat:b+(a-b)*(xh+1)/2,z:1.2+(c.top-0.4-1.2)*(zh+1)/2}}
+const TINT=['rgba(255,200,120,.16)','rgba(110,205,160,.17)','rgba(130,180,255,.2)'],EDGE=['rgba(255,190,120,.8)','rgba(140,220,180,.75)','rgba(160,200,255,.8)'];
 const cv=$('#cv1');let lat=0,running=true,speed=0.5;
-const EX=0.8, Z0=1.8;
-function loop(c,t,k=1){const ct=Math.cos(t),st=Math.sin(t);const xh=Math.sign(ct)*Math.pow(Math.abs(ct),EX)*k,zh=Math.sign(st)*Math.pow(Math.abs(st),EX)*k;
-  const s=c.up<c.dn?1:-1,a=c.up+4*s,b=c.dn-4*s;return{lat:b+(a-b)*(xh+1)/2,z:Z0+(c.top-0.6-Z0)*(zh+1)/2}}
-const TINT=['rgba(255,200,120,.13)','rgba(110,205,160,.17)','rgba(130,180,255,.20)'],EDGE=['rgba(255,190,120,.75)','rgba(140,220,180,.7)','rgba(160,200,255,.75)'];
 const parts=[];CELLS.forEach((c,ci)=>[1,-1].forEach(h=>{for(let i=0;i<9;i++)parts.push({ci,h,t:i/9*Math.PI*2+Math.random()*0.3,k:0.55+0.4*Math.random()})}));
-const CLOUDS=[{la:0,z0:5.2,z1:11,w:24},{la:60,z0:3.6,z1:6.8,w:17},{la:-60,z0:3.6,z1:6.8,w:17}];
 const drops=[];let rainAcc=0;
-function step(dt){parts.forEach(p=>{const c=CELLS[p.ci];p.t+=dt*speed*(2*Math.PI/16)*(12/c.top)});
-  if($('#showRain').checked){rainAcc+=dt*speed*70;while(rainAcc>=1){rainAcc--;const c=CLOUDS[Math.floor(Math.random()*3)];drops.push({x:X(c.la+(Math.random()-0.5)*c.w*0.8),y:Y(c.z0),v:120+Math.random()*60})}}
-  drops.forEach(d=>d.y+=d.v*dt*speed*2);for(let i=drops.length-1;i>=0;i--)if(drops[i].y>=GY)drops.splice(i,1)}
-function cloud(x,c){const cx=X(c.la),w=c.w*PX/2,base=Y(c.z0),hgt=Y(c.z0)-Y(c.z1);
-  const puffs=[[-0.75,0.28,0.32],[-0.38,0.55,0.42],[0.05,0.78,0.5],[0.45,0.55,0.42],[0.8,0.28,0.3],[-0.2,0.2,0.36],[0.3,0.22,0.36]];
-  x.fillStyle='rgba(205,214,228,.95)';x.beginPath();x.ellipse(cx,base,w*0.95,hgt*0.14+3,0,0,7);x.fill();
-  x.fillStyle='rgba(244,247,252,.97)';puffs.forEach(([dx,dy,r])=>{x.beginPath();x.arc(cx+dx*w,base-dy*hgt,r*Math.min(w,hgt*1.1),0,7);x.fill()});
-  x.fillStyle='rgba(205,214,228,.95)';x.fillRect(cx-w*0.9,base-2,w*1.8,4)}
-function sun(x,cx,cy){x.strokeStyle='rgba(255,210,63,.9)';x.lineWidth=2;for(let i=0;i<8;i++){const a=i*Math.PI/4;x.beginPath();x.moveTo(cx+Math.cos(a)*13,cy+Math.sin(a)*13);x.lineTo(cx+Math.cos(a)*18,cy+Math.sin(a)*18);x.stroke()}
-  x.fillStyle='#ffd23f';x.beginPath();x.arc(cx,cy,9,0,7);x.fill()}
-function badge(x,cx,cy,t){x.beginPath();x.arc(cx,cy,11,0,7);x.fillStyle='rgba(255,255,255,.95)';x.fill();x.font='800 15px system-ui,Arial';x.textAlign='center';x.fillStyle=t==='H'?'#1f4fbf':'#b3261e';x.fillText(t,cx,cy+5.5)}
-function draw(){const x=ctx2d(cv,W,H);const labels=$('#showLab').checked;
-  const sky=x.createLinearGradient(0,0,0,GY);sky.addColorStop(0,'#0b1426');sky.addColorStop(1,'#1d3a63');x.fillStyle=sky;x.fillRect(0,0,W,H);
-  // suns over the deserts (clear, dry skies)
-  [27,-27].forEach(la=>sun(x,X(la),40));
-  // the six loops
-  CELLS.forEach((c,ci)=>[1,-1].forEach(h=>{
-    x.beginPath();for(let i=0;i<=120;i++){const q=loop(c,i/120*2*Math.PI);const px=X(h*q.lat),py=Y(q.z);i?x.lineTo(px,py):x.moveTo(px,py)}x.closePath();
-    x.fillStyle=TINT[ci];x.fill();x.strokeStyle=EDGE[ci];x.lineWidth=1.8;x.stroke();
-    [0,Math.PI/2,Math.PI,3*Math.PI/2].forEach(t=>{const a=loop(c,t),b=loop(c,t+0.05);const ax=X(h*a.lat),ay=Y(a.z),an=Math.atan2(Y(b.z)-ay,X(h*b.lat)-ax);
-      x.fillStyle='rgba(255,255,255,.85)';x.beginPath();x.moveTo(ax+Math.cos(an)*8,ay+Math.sin(an)*8);x.lineTo(ax+Math.cos(an+2.5)*7,ay+Math.sin(an+2.5)*7);x.lineTo(ax+Math.cos(an-2.5)*7,ay+Math.sin(an-2.5)*7);x.fill()})}));
-  // moving air
-  if($('#showFlow').checked)parts.forEach(p=>{const q=loop(CELLS[p.ci],p.t,p.k);x.fillStyle=tcol(Tair(q.lat,q.z));x.beginPath();x.arc(X(p.h*q.lat),Y(q.z),3.4,0,7);x.fill()});
+function scr(la,z){const r=R+z*KZ;return[CX+r*Math.cos(la*D2R),CY-r*Math.sin(la*D2R)]}
+function step(dt){parts.forEach(p=>{const c=CELLS[p.ci];p.t+=dt*speed*(2*Math.PI/16)*(12/c.top)})
+  if($('#showRain').checked){rainAcc+=dt*speed*60;while(rainAcc>=1){rainAcc--;const zoneLat=[0,0,60,-60][Math.floor(Math.random()*4)];const la=zoneLat+(Math.random()-0.5)*(zoneLat?10:12);drops.push({la,z:zoneLat?3.2:4.4,vz:-(2.5+Math.random())})}}
+  drops.forEach(d=>d.z+=d.vz*dt*speed*4);for(let i=drops.length-1;i>=0;i--)if(drops[i].z<=0)drops.splice(i,1)}
+function cloud(x,la,z0,z1,w){for(let z=z0;z<=z1;z+=1.2)for(let d=-w;d<=w;d+=w/2){const[px,py]=scr(la+d*(1-(z-z0)/(z1-z0+3)*0.5),z);x.beginPath();x.arc(px,py,7.5,0,7);x.fill()}}
+function puff(x,la,z,sz){const[cx,cy]=scr(la,z);const P=[[-0.8,0.25,0.36],[-0.4,-0.15,0.5],[0.1,-0.4,0.6],[0.55,-0.1,0.48],[0.85,0.25,0.34],[-0.1,0.3,0.45],[0.4,0.3,0.42]];
+  x.fillStyle='rgba(244,247,252,.97)';P.forEach(([dx,dy,r])=>{x.beginPath();x.arc(cx+dx*sz,cy+dy*sz,r*sz,0,7);x.fill()});
+  x.fillStyle='rgba(205,214,228,.95)';x.beginPath();x.ellipse(cx,cy+0.55*sz,sz*0.95,sz*0.16,0,0,7);x.fill()}
+function sunIcon(x,cx,cy){x.strokeStyle='rgba(255,210,63,.9)';x.lineWidth=2;for(let i=0;i<8;i++){const a=i*Math.PI/4;x.beginPath();x.moveTo(cx+Math.cos(a)*12,cy+Math.sin(a)*12);x.lineTo(cx+Math.cos(a)*17,cy+Math.sin(a)*17);x.stroke()}x.fillStyle='#ffd23f';x.beginPath();x.arc(cx,cy,8,0,7);x.fill()}
+function draw(){const x=ctx2d(cv,W,H);
+  x.fillStyle='#0b1426';x.fillRect(0,0,W,H);
+  // atmosphere shell (right side) with tropopause
+  x.beginPath();for(let la=-90;la<=90;la+=2){const[px,py]=scr(la,TOP(la));la===-90?x.moveTo(px,py):x.lineTo(px,py)}x.arc(CX,CY,R,Math.PI/2,-Math.PI/2,true);x.closePath();
+  const ag=x.createRadialGradient(CX,CY,R,CX,CY,R+80);ag.addColorStop(0,'rgba(120,180,255,.35)');ag.addColorStop(1,'rgba(120,180,255,.06)');x.fillStyle=ag;x.fill();
+  x.setLineDash([4,5]);x.strokeStyle='rgba(200,220,255,.45)';x.lineWidth=1.2;x.beginPath();for(let la=-90;la<=90;la+=2){const[px,py]=scr(la,TOP(la));la===-90?x.moveTo(px,py):x.lineTo(px,py)}x.stroke();x.setLineDash([]);
+  // globe face: climate bands on land by latitude
+  x.save();x.beginPath();x.arc(CX,CY,R,0,7);x.clip();
+  for(let la=-90;la<90;la+=1){x.fillStyle=band(la+0.5).c;const y0=CY-R*Math.sin((la+1)*D2R),y1=CY-R*Math.sin(la*D2R);x.fillRect(CX-R,y0,2*R,y1-y0+0.6)}
+  const sh=x.createRadialGradient(CX-R*0.35,CY-R*0.3,R*0.2,CX,CY,R);sh.addColorStop(0,'rgba(255,255,255,0)');sh.addColorStop(1,'rgba(0,0,0,.28)');x.fillStyle=sh;x.fillRect(CX-R,CY-R,2*R,2*R);
+  [-60,-30,0,30,60].forEach(la=>{const y=CY-R*Math.sin(la*D2R);x.strokeStyle=la?'rgba(0,0,0,.25)':'rgba(0,0,0,.45)';x.lineWidth=la?1:1.6;x.beginPath();x.moveTo(CX-R,y);x.lineTo(CX+R,y);x.stroke()});
+  if($('#showLab').checked){x.font='600 12px system-ui,Arial';x.textAlign='center';x.fillStyle='#14210f';
+    [[5,'Rainforest',-70],[22,'Desert',-70],[-22,'Desert',-70],[47,'Temperate forest',-35],[-47,'Temperate forest',-35]].forEach(([la,t,dx])=>{x.fillText(t,CX+dx,CY-R*Math.sin(la*D2R)+4)})}
+  x.restore();
+  x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=1;x.beginPath();x.arc(CX,CY,R,0,7);x.stroke();
+  // latitude labels
+  x.font='600 12px system-ui,Arial';x.textAlign='right';x.fillStyle='#c9d3df';
+  [[60,'60°N'],[30,'30°N'],[0,'0°'],[-30,'30°S'],[-60,'60°S']].forEach(([la,t])=>{const y=CY-R*Math.sin(la*D2R);x.fillText(t,CX-R*Math.cos(la*D2R)-8,y+4)});x.fillText('90°N',CX-62,CY-R+2);x.fillText('90°S',CX-62,CY+R+8);
+  // cell outlines + arrows
+  CELLS.forEach((c,ci)=>[1,-1].forEach(h=>{x.beginPath();for(let i=0;i<=120;i++){const q=lp(c,i/120*2*Math.PI);const[px,py]=scr(h*q.lat,q.z);i?x.lineTo(px,py):x.moveTo(px,py)}x.closePath();x.fillStyle=TINT[ci];x.fill();x.strokeStyle=EDGE[ci];x.lineWidth=1.8;x.stroke();
+    [0,Math.PI/2,Math.PI,3*Math.PI/2].forEach(t=>{const a=lp(c,t),b=lp(c,t+0.05);const[ax,ay]=scr(h*a.lat,a.z),[bx,by]=scr(h*b.lat,b.z);const an=Math.atan2(by-ay,bx-ax);x.fillStyle='rgba(255,255,255,.9)';x.beginPath();x.moveTo(ax+Math.cos(an)*8,ay+Math.sin(an)*8);x.lineTo(ax+Math.cos(an+2.5)*7,ay+Math.sin(an+2.5)*7);x.lineTo(ax+Math.cos(an-2.5)*7,ay+Math.sin(an-2.5)*7);x.fill()})}));
   // clouds and rain where air rises
-  if($('#showRain').checked){x.strokeStyle='rgba(140,190,255,.85)';x.lineWidth=1.6;drops.forEach(d=>{x.beginPath();x.moveTo(d.x,d.y);x.lineTo(d.x-1.5,d.y+10);x.stroke()});CLOUDS.forEach(c=>cloud(x,c))}
-  // cell names
-  if(labels){x.font='700 16px system-ui,Arial';x.textAlign='center';x.lineJoin='round';
-    CELLS.forEach(c=>[1,-1].forEach(h=>{const la=h*[17,42,79][CELLS.indexOf(c)],py=Y((Z0+c.top)/2)+5;const t=c.name.replace(' cell','');x.lineWidth=4;x.strokeStyle='rgba(11,20,38,.85)';x.strokeText(t,X(la),py);x.fillStyle='#fff';x.fillText(t,X(la),py)}))}
-  // ground: climate bands
-  for(let la=-90;la<90;la+=1){x.fillStyle=band(la+0.5).c;x.fillRect(X(la),GY,PX+0.6,22)}
-  x.fillStyle='rgba(0,0,0,.18)';x.fillRect(L0,GY,R0-L0,2);
-  if(labels){x.font='700 13px system-ui,Arial';x.textAlign='center';x.fillStyle='#1d2a14';[[0,'Rainforest'],[27,'Desert'],[-27,'Desert'],[55,'Forest'],[-55,'Forest'],[78,'Ice'],[-78,'Ice']].forEach(([la,t])=>x.fillText(t,X(la),GY+16))}
+  if($('#showRain').checked){
+    x.strokeStyle='rgba(140,190,255,.9)';x.lineWidth=1.6;drops.forEach(d=>{const[ax,ay]=scr(d.la,d.z),[bx,by]=scr(d.la,d.z+0.9);x.beginPath();x.moveTo(ax,ay);x.lineTo(bx,by);x.stroke()});
+    // sun over the deserts
+    [30,-30].forEach(la=>{const[px,py]=scr(la,17.5);sunIcon(x,px+10,py)})}
+  // moving air
+  if($('#showFlow').checked)parts.forEach(p=>{const q=lp(CELLS[p.ci],p.t,p.k);const[px,py]=scr(p.h*q.lat,q.z);x.fillStyle=tcol(Tair(q.lat,q.z));x.beginPath();x.arc(px,py,3.4,0,7);x.fill()});
+  if($('#showRain').checked){puff(x,0,7.5,26);puff(x,60,5,19);puff(x,-60,5,19)}
   // H and L at the surface
-  [[0,'L'],[30,'H'],[-30,'H'],[60,'L'],[-60,'L'],[86,'H'],[-86,'H']].forEach(([la,t])=>badge(x,X(la),GY-14,t));
-  // latitude scale
-  x.font='600 13px system-ui,Arial';x.fillStyle='#c9d3df';
-  [[-90,'90°S'],[-60,'60°S'],[-30,'30°S'],[0,'0°'],[30,'30°N'],[60,'60°N'],[90,'90°N']].forEach(([la,t])=>{x.textAlign=la===-90?'left':la===90?'right':'center';x.fillText(t,la===-90?L0:la===90?R0:X(la),GY+42);x.fillRect(X(la)-0.5,GY+22,1,5)});
-  x.textAlign='center';x.font='600 12px system-ui,Arial';x.fillStyle='#8fa0b5';x.fillText('South Pole  ←  equator  →  North Pole',W/2,H-10);
-  // selected latitude
-  const sx=X(lat);x.setLineDash([5,4]);x.strokeStyle='rgba(255,255,255,.9)';x.lineWidth=1.6;x.beginPath();x.moveTo(sx,GY);x.lineTo(sx,Y(15));x.stroke();x.setLineDash([]);
-  x.fillStyle='#fff';x.strokeStyle='#0b1426';x.lineWidth=2;x.beginPath();x.arc(sx,GY+11,6,0,7);x.fill();x.stroke();
-  const lab='Selected: '+latName(lat);x.font='700 15px system-ui,Arial';const tw=x.measureText(lab).width+16;x.fillStyle='rgba(255,255,255,.95)';x.beginPath();x.roundRect(10,10,tw,26,7);x.fill();x.fillStyle='#0b1426';x.textAlign='left';x.fillText(lab,18,28);
+  [[0,'L'],[30,'H'],[-30,'H'],[60,'L'],[-60,'L'],[80,'H'],[-80,'H']].forEach(([la,t])=>{const px=CX+(R-20)*Math.cos(la*D2R),py=CY-(R-20)*Math.sin(la*D2R);x.beginPath();x.arc(px,py,11,0,7);x.fillStyle='rgba(255,255,255,.95)';x.fill();x.font='800 15px system-ui,Arial';x.textAlign='center';x.fillStyle=t==='H'?'#1f4fbf':'#b3261e';x.fillText(t,px,py+5.5)});
+  // cell names
+  if($('#showLab').checked){x.font='700 15px system-ui,Arial';x.textAlign='left';x.fillStyle='#e7ecf2';
+    [[17,'Hadley'],[45,'Ferrel'],[75,'Polar']].forEach(([la,t])=>[1,-1].forEach(h=>{const[px,py]=scr(h*la,TOP(la)+2.5);x.fillText(t,px+4,py+5)}));
+  }
+  // latitude probe
+  const y=CY-R*Math.sin(lat*D2R),xl=CX-R*Math.cos(lat*D2R);x.setLineDash([5,4]);x.strokeStyle='#fff';x.lineWidth=1.6;x.beginPath();x.moveTo(xl,y);const[ex,ey]=scr(lat,TOP(lat));x.lineTo(CX+R*Math.cos(lat*D2R),y);x.lineTo(ex,ey);x.stroke();x.setLineDash([]);
+  const[sx,sy]=scr(lat,0);x.fillStyle='#fff';x.strokeStyle='#0b1426';x.lineWidth=2;x.beginPath();x.arc(sx,sy,6,0,7);x.fill();x.stroke();
+  const lab='Selected: '+latName(lat);x.font='700 14px system-ui,Arial';const tw=x.measureText(lab).width+16;x.fillStyle='rgba(255,255,255,.95)';x.beginPath();x.roundRect(10,10,tw,26,7);x.fill();x.fillStyle='#0b1426';x.textAlign='left';x.fillText(lab,18,28);
 }
 function latName(l){return l===0?'Equator 0°':`${Math.abs(l)}°${l>0?'N':'S'}`}
 function ui(){$('#latV').textContent=latName(lat);
@@ -290,11 +292,11 @@ function ui(){$('#latV').textContent=latName(lat);
   else if(z.k==='down')m=`<b>${latName(lat)}: sinking air, high pressure, a cold desert.</b> Very cold, dense air sinks over the pole and spreads out along the ground. Air this cold can hold almost no water (${w.toFixed(1)} g/kg), so even though there is ice everywhere, very little new snow falls. Much of Antarctica gets less precipitation than the Sahara.`;
   else m=`<b>${latName(lat)}: air moving sideways along the ground.</b> Here the surface air is flowing from a high toward a low: these are the <b>${z.wind}</b>. ${z.wind==='trade winds'?'They pick up water as they blow over warm ocean, carrying it toward the equator, where it rises and rains out.':z.wind==='westerlies'?'They carry warm, moist air toward the poles and steer the storms that cross North America and Europe.':'They carry very cold air away from the pole.'} Switch to tab 2 to see how Earth's spin bends them sideways.`;
   $('#msg1').innerHTML=m;
-  cv.setAttribute('aria-label',`Side view of Earth unrolled from the South Pole on the left to the North Pole on the right, with the climate belts along the ground. Three loops of moving air in each hemisphere: the Hadley cell from the equator to 30 degrees, the Ferrel cell from 30 to 60 degrees, and the polar cell from 60 to 90 degrees. Air rises with clouds and rain at the equator and 60 degrees, and sinks over deserts at 30 degrees and over the poles. Selected latitude: ${latName(lat)}, ${z.m.toLowerCase()} air, ${z.p.toLowerCase()} pressure, ${b.n.toLowerCase()}.`)}
+  cv.setAttribute('aria-label',`Side view of Earth with the atmosphere drawn on the right edge. Three loops of moving air in each hemisphere: the Hadley cell from the equator to 30 degrees, the Ferrel cell from 30 to 60 degrees, and the polar cell from 60 to 90 degrees. Air rises with clouds and rain at the equator and 60 degrees, and sinks over deserts at 30 degrees and over the poles. Selected latitude: ${latName(lat)}, ${z.m.toLowerCase()} air, ${z.p.toLowerCase()} pressure, ${b.n.toLowerCase()}.`)}
 function setLat(v){lat=Math.round(clamp(v,-90,90));$('#lat').value=lat;ui()}
 $('#lat').addEventListener('input',e=>setLat(+e.target.value));
 $$('#qlat button').forEach(b=>b.onclick=()=>setLat(+b.dataset.v));
-function pick(e){const r=cv.getBoundingClientRect(),px=(e.clientX-r.left)*W/r.width;setLat((px-L0)/PX-90)}
+function pick(e){const r=cv.getBoundingClientRect(),py=(e.clientY-r.top)*H/r.height;setLat(Math.asin(clamp((CY-py)/R,-1,1))/D2R)}
 let drag=false;cv.addEventListener('pointerdown',e=>{drag=true;pick(e)});cv.addEventListener('pointermove',e=>{if(drag)pick(e)});window.addEventListener('pointerup',()=>drag=false);
 seg($('#spd1'),v=>{speed=+v});
 $('#pause1').onclick=()=>{running=!running;$('#pause1').textContent=running?'Pause':'Play'};
