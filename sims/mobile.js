@@ -41,6 +41,37 @@
     '#simPip button{font:600 13px system-ui,Arial,sans-serif;color:#e7ecf2;background:transparent;border:1px solid rgba(255,255,255,.35);border-radius:6px;min-height:30px;min-width:30px;padding:2px 10px;cursor:pointer}';
   document.head.appendChild(css);
 
+  /* Controls right under the picture on phones. In side-by-side layouts the
+     control card normally drops below everything else on a narrow screen.
+     Move it to sit directly after the first animation; put it back on wide screens. */
+  function arrange(){
+    Array.prototype.forEach.call(document.querySelectorAll('.layout, .grid'), function(L){
+      var st = L.__mob;
+      if (mq.matches){
+        if (st) return;
+        var ctrl = Array.prototype.find.call(L.children, function(c){ return c.classList.contains('ctrl'); });
+        if (!ctrl && L.classList.contains('grid') && L.children.length === 2){
+          var f = L.children[0];
+          if (f.classList.contains('card') && f.querySelector('input,select') && L.children[1].querySelector('canvas')) ctrl = f;
+        }
+        if (!ctrl) return;
+        var c = Array.prototype.find.call(L.querySelectorAll('canvas'), function(x){ return !ctrl.contains(x); });
+        if (!c) return;
+        var a = c.closest('.card'); if (!a || !L.contains(a) || a === ctrl || a.contains(ctrl)) a = c;
+        var ph = document.createComment('controls go here on wide screens');
+        L.insertBefore(ph, ctrl);
+        a.parentNode.insertBefore(ctrl, a.nextSibling);
+        ctrl.classList.add('mob-moved');
+        L.__mob = {ctrl: ctrl, ph: ph};
+      } else if (st){
+        st.ph.parentNode.insertBefore(st.ctrl, st.ph); st.ph.remove(); st.ctrl.classList.remove('mob-moved'); L.__mob = null;
+      }
+    });
+  }
+  css.textContent += '.mob-moved{margin:12px 0!important}';
+  arrange();
+  if (mq.addEventListener) mq.addEventListener('change', arrange); else if (mq.addListener) mq.addListener(arrange);
+
   var pip = document.createElement('div'); pip.id = 'simPip';
   pip.setAttribute('aria-hidden', 'true');   // visual convenience only; screen readers already get text descriptions
   pip.innerHTML = '<div class="bar"><span>Live view (tap to jump back)</span><button type="button" tabindex="-1" aria-label="Hide live view">×</button></div><canvas></canvas>';
