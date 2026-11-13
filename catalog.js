@@ -225,7 +225,7 @@ const ITEMS = [
     where: ["atmosphere/climate"],
     type: "sim",
     url: "sims/molecules-light/",
-    desc: "Shine microwave, infrared, visible, and UV light on N₂, O₂, CO₂, H₂O, CH₄, and more, and watch molecules spin, vibrate, glow, or break apart. Then add CO₂ and water vapor to an atmosphere and see infrared get sent back down and the ground warm.",
+    desc: "See why CO₂ and H₂O trap heat but N₂ and O₂ don't: watch light's electric field push on each molecule's partial charges, and compare the vibrations that make a molecule's charge lopsided. Microwave, visible, and UV light spin, excite, or split some molecules too. Then add CO₂ and water vapor to an atmosphere and see infrared get sent back down and the ground warm.",
     tags: ["greenhouse effect", "infrared", "CO₂", "climate", "light"]
   },
   {
