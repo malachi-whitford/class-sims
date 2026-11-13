@@ -156,5 +156,14 @@ const THUMBS = {
   <rect x="0" y="44" width="160" height="10" fill="#f0962a" opacity=".45"/>
   <g fill="#5f5246" opacity=".7"><circle cx="50" cy="58" r="4"/><circle cx="62" cy="56" r="5"/><circle cx="74" cy="60" r="4"/><circle cx="86" cy="57" r="5"/><circle cx="98" cy="60" r="4"/><circle cx="68" cy="66" r="3.5"/><circle cx="90" cy="67" r="3.5"/></g>
   <path d="M0 90 L0 74 C10 70 18 40 26 40 C34 40 38 72 46 76 L110 76 C130 70 145 40 160 14 L160 90Z" fill="#7d8f55"/>
-  <g fill="#4a5260"><rect x="80" y="68" width="5" height="8"/><rect x="87" y="64" width="5" height="12"/><rect x="94" y="70" width="5" height="6"/></g>`
+  <g fill="#4a5260"><rect x="80" y="68" width="5" height="8"/><rect x="87" y="64" width="5" height="12"/><rect x="94" y="70" width="5" height="6"/></g>`,
+"sims/jar-test/": `
+  <rect x="0" y="0" width="160" height="90" fill="#1f2a37"/>
+  <rect x="6" y="6" width="148" height="9" fill="#4a5767"/>
+  <rect x="6" y="78" width="148" height="6" fill="#f0ecdc"/>
+  <g stroke="#dfe8f2" stroke-width="1.5"><rect x="12" y="26" width="38" height="52" fill="#9e7034" fill-opacity=".8"/><rect x="61" y="26" width="38" height="52" fill="#cde4f2" fill-opacity=".3"/><rect x="110" y="26" width="38" height="52" fill="#9e7034" fill-opacity=".45"/></g>
+  <g stroke="#b7c0cb" stroke-width="2"><line x1="31" y1="15" x2="31" y2="62"/><line x1="80" y1="15" x2="80" y2="62"/><line x1="129" y1="15" x2="129" y2="62"/></g>
+  <g fill="#c9d1db"><rect x="23" y="60" width="16" height="8"/><rect x="72" y="60" width="16" height="8"/><rect x="121" y="60" width="16" height="8"/></g>
+  <g fill="#ece4ce"><circle cx="70" cy="40" r="3"/><circle cx="91" cy="46" r="3.5"/><circle cx="68" cy="54" r="2.6"/><circle cx="92" cy="33" r="2.8"/><circle cx="120" cy="48" r="1.6"/><circle cx="138" cy="40" r="1.6"/></g>
+  <rect x="62" y="73" width="36" height="4" fill="#d6c6a0"/>`
 };

@@ -28,6 +28,7 @@ class-sims/
     ├── chapman-cycle/index.html
     ├── greenhouse-effect/index.html
     ├── valley-inversion/index.html
+    ├── jar-test/index.html
     ├── environmental-laws/index.html
     ├── field_bio_review/index.html
     └── species-diversity/index.html
@@ -61,6 +62,7 @@ Add the topic id after a `#`:
 - https://malachi-whitford.github.io/class-sims/#cells
 - https://malachi-whitford.github.io/class-sims/#field
 - https://malachi-whitford.github.io/class-sims/#atmosphere
+- https://malachi-whitford.github.io/class-sims/#water
 
 ## Embedding in Google Sites or Canvas
 

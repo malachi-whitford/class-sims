@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Jar Test: Finding the Right Coagulant Dose</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1150px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:14px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem;max-width:880px}
+nav.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 12px}
+nav.tabs button{font:inherit;font-size:.9rem;font-weight:600;padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+section.panel{display:none}
+section.panel.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px;align-items:start}
+.layout>*{min-width:0}
+.layout>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;min-height:34px}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
+.ctrl .hint{font-size:.78rem;color:var(--muted);margin:4px 0 2px}
+.ctrl h3:first-child{margin-top:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=range]:disabled{opacity:.5}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px}
+.ctrl label.check{justify-content:flex-start;align-items:center;margin:0}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 6px}
+.seg button{flex:1 1 auto;font-size:.85rem;padding:6px 10px}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.tile .k{font-size:.78rem;color:var(--muted)}
+.tile .v{font-size:1.2rem;font-weight:700;font-variant-numeric:tabular-nums}
+.tile .s{font-size:.78rem;color:var(--muted)}
+.msg{font-size:.92rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:9px 12px;margin-top:10px}
+details summary{cursor:pointer;font-weight:600;font-size:.92rem}
+details li{font-size:.9rem;margin:4px 0}
+canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:manipulation}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.82rem;color:var(--muted);margin:8px 0 0}
+.legend span{display:flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;flex:none}
+@media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}.layout>.ctrl{order:2}}
+@media(max-width:520px){body{padding:10px}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) nav.tabs button.on,:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
+
+#cv1{aspect-ratio:960/450;background:#1b2430}
+#cv2{aspect-ratio:760/440;background:#0f2233}
+.jarsl label{margin:6px 0 0}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 4px}
+.quick button{flex:1 1 auto;font-size:.8rem;padding:5px 8px}
+table.res{width:100%;border-collapse:collapse;font-size:.88rem;font-variant-numeric:tabular-nums}
+table.res th,table.res td{border-bottom:1px solid var(--line);padding:6px 6px;text-align:right}
+table.res th:first-child,table.res td:first-child{text-align:left}
+table.res th{font-size:.78rem;color:var(--muted);font-weight:600}
+table.res tr.best td{background:var(--soft);font-weight:700}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 7px;border-radius:999px;background:var(--good);color:#fff;margin-left:4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tag{color:#0d1b2a}}
+.charts{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin-top:10px}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart .ax{stroke:var(--line)}
+.chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
+.chart .lab{fill:var(--text);font-weight:600}
+.calc{font-size:.95rem;background:var(--soft);border-radius:8px;padding:10px 12px;margin-top:8px;font-variant-numeric:tabular-nums}
+.calc b{font-size:1.05rem}
+.twocol{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+@media(max-width:760px){.twocol{grid-template-columns:minmax(0,1fr)}}
+.key{font-size:.88rem}
+.key li{margin:4px 0}
+</style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>The Jar Test: Finding the Right Coagulant Dose</h1>
+<p class="sub">River water is cloudy because of tiny clay and silt particles that are too small to settle and all carry a <b>negative charge</b>, so they push each other away. A treatment plant adds a <b>coagulant</b> such as alum to cancel that charge so the particles stick together into <b>floc</b> that sinks. Too little does nothing; too much wastes money and can make things worse. Operators find the right dose with a <b>jar test</b>: six jars of raw water, six doses, the same mixing the plant uses, and then see which jar settles clearest.</p>
+
+<nav class="tabs"><button data-tab="one" class="on">1. Run a jar test</button><button data-tab="two">2. Why it works: charge and floc</button></nav>
+
+<!-- =================== TAB 1 =================== -->
+<section class="panel on" id="one">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Raw water</h3>
+    <div class="seg" id="scn" aria-label="Raw water"><button data-v="avg" class="on">Average day</button><button data-v="storm">After a storm</button><button data-v="snow">Cold snowmelt</button></div>
+    <p class="hint" id="scnNote"></p>
+
+    <h3>Alum dose in each jar</h3>
+    <div class="jarsl" id="jarSliders"></div>
+    <p class="hint">Each jar holds 2 L. The stock is 1% alum (10 mg per mL), so <b>1 mL of stock = 5 mg/L</b> in the jar.</p>
+    <div class="quick"><button id="wide">Wide range</button><button id="narrow" disabled>Narrow in around best jar</button></div>
+
+    <h3>Same for every jar</h3>
+    <label for="lime">Extra alkalinity added <span class="val" id="limeV"></span></label>
+    <input type="range" id="lime" min="0" max="40" step="2" value="0">
+    <p class="hint">Plants add lime, soda ash, or caustic soda when the water can&rsquo;t buffer the alum (mg/L as CaCO&#8323;).</p>
+    <div class="row" style="margin:8px 0 4px"><label class="check"><input type="checkbox" id="poly">&nbsp;Add polymer floc aid (0.5 mg/L)</label></div>
+
+    <h3>Speed</h3>
+    <div class="seg" id="spd" aria-label="Speed"><button data-v="1" class="on">Slow</button><button data-v="3">Faster</button></div>
+    <div class="row">
+      <button class="primary" id="run">Add alum &amp; start mixing</button>
+      <button id="pause1" disabled>Pause</button>
+      <button id="skip" disabled>Skip to results</button>
+      <button id="reset">Refill jars</button>
+    </div>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Step</div><div class="v" id="tPh">Ready</div><div class="s" id="tPh2">Set doses, then start</div></div>
+      <div class="tile"><div class="k">Test time</div><div class="v" id="tTime">0:00</div><div class="s">of 51 minutes</div></div>
+      <div class="tile"><div class="k">Raw turbidity</div><div class="v" id="tT0"></div><div class="s">NTU (cloudiness)</div></div>
+      <div class="tile"><div class="k">Raw alkalinity · pH · temp</div><div class="v" id="tChem" style="font-size:1rem"></div><div class="s" id="tChem2"></div></div>
+    </div>
+    <div class="card" style="padding:8px"><canvas id="cv1"></canvas></div>
+    <div class="msg" id="msg1"></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:12px" id="resCard">
+  <h2>Results after 30 minutes of settling</h2>
+  <p class="small muted" id="resNote" style="margin:0 0 6px">Run a test to fill in this table. Results from earlier runs on the same raw water stay on the charts (gray) so you can compare.</p>
+  <div style="overflow-x:auto"><table class="res" id="resTable"></table></div>
+  <div class="charts">
+    <div class="chart"><div class="small" style="font-weight:600;margin-bottom:4px">Settled turbidity vs. alum dose</div><div id="chT"></div></div>
+    <div class="chart"><div class="small" style="font-weight:600;margin-bottom:4px">pH after alum vs. alum dose</div><div id="chP"></div></div>
+  </div>
+  <div class="legend"><span><span class="sw" style="background:var(--accent)"></span>This run</span><span><span class="sw" style="background:#8a96a5"></span>Earlier runs</span><span><span class="sw" style="background:rgba(29,122,58,.25)"></span>Alum works best (pH 6&ndash;7.5)</span></div>
+</div>
+
+<div class="card">
+  <h2>Take your dose to the plant</h2>
+  <div class="twocol">
+    <div class="ctrl">
+      <label for="flow">Plant flow <span class="val" id="flowV"></span></label>
+      <input type="range" id="flow" min="1" max="60" step="1" value="10">
+      <label for="pdose">Alum dose <span class="val" id="pdoseV"></span></label>
+      <input type="range" id="pdose" min="0" max="80" step="1" value="20">
+      <p class="hint">Starts at your best jar after each test. MGD = million gallons per day.</p>
+    </div>
+    <div>
+      <div class="calc" id="calc" aria-live="off"></div>
+      <p class="small muted" style="margin:8px 0 0">The 8.34 converts mg/L to pounds: one gallon of water weighs 8.34 lb, so 1 mg/L in 1 million gallons is 8.34 lb.</p>
+    </div>
+  </div>
+</div>
+
+<details class="card"><summary>Key ideas: reading a jar test</summary>
+<ul class="key">
+  <li><b>The three steps copy the plant.</b> A <b>rapid mix</b> (about 1 minute, fast) spreads the alum through the water in seconds, before it reacts. A <b>slow mix</b> (about 20 minutes, gentle) lets particles bump into each other and grow into floc without tearing it apart. <b>Settling</b> (about 30 minutes, no stirring) shows which floc sinks.</li>
+  <li><b>Good floc</b> looks like big, separate flakes with clear water between them, and it settles fast. <b>Pinpoint floc</b> is tiny specks that stay up and cloud the water.</li>
+  <li><b>Underdose:</b> the particles are still negative and keep pushing each other away, so little floc forms. <b>Overdose:</b> so much positive aluminum sticks to the particles that they turn positive and push each other away again (restabilization). The best dose sits between, where the charge is near zero.</li>
+  <li><b>Alum uses up alkalinity.</b> Each 1 mg/L of alum destroys about 0.5 mg/L of alkalinity (as CaCO&#8323;) and lowers the pH. Alum works best between about pH 6 and 7.5. Water with little alkalinity, like Sierra snowmelt, can crash to pH 5 or lower, so plants add lime, soda ash, or caustic to keep the pH up.</li>
+  <li><b>Clear, cold water is the hardest to treat.</b> With few particles, they rarely bump into each other, and cold water slows everything down. Adding more alum doesn&rsquo;t help: it just overdoses the few particles there are. A polymer floc aid bridges particles together and makes heavier floc.</li>
+  <li><b>Pick the lowest dose that gives clear water.</b> If two jars are about equally clear, the lower dose wins: less chemical cost and less sludge to haul away.</li>
+  <li><b>Why it matters:</b> settled water goes on to the filters. Under the Surface Water Treatment Rules, a conventional plant&rsquo;s filtered water must be 0.3 NTU or less in at least 95% of monthly samples and never above 1 NTU. Particles that cloud the water can also shelter <i>Giardia</i> and <i>Cryptosporidium</i>. Operators rerun jar tests whenever the raw water changes: storms, snowmelt, or lake turnover.</li>
+</ul></details>
+</section>
+
+<!-- =================== TAB 2 =================== -->
+<section class="panel" id="two">
+<div class="layout">
+  <div class="card ctrl">
+    <h3>How much coagulant?</h3>
+    <label for="dose2">Coagulant added <span class="val" id="dose2V"></span></label>
+    <input type="range" id="dose2" min="0" max="200" step="5" value="0">
+    <p class="hint">100% is &ldquo;just right&rdquo;: exactly enough positive aluminum to cancel the particles&rsquo; negative charge.</p>
+    <div class="quick" id="q2"><button data-v="0">None</button><button data-v="45">Too little</button><button data-v="100">Just right</button><button data-v="175">Too much</button></div>
+    <p class="hint">Changing the dose starts over with fresh river water, because you can&rsquo;t take coagulant back out.</p>
+    <h3>Mixing</h3>
+    <div class="row" style="margin:4px 0"><label class="check"><input type="checkbox" id="mix2" checked>&nbsp;Gentle stirring (slow mix)</label></div>
+    <div class="row"><button class="primary" id="pause2">Pause</button><button id="restart2">Start over</button></div>
+    <p class="hint">A real clay particle here is about 1 micrometer across, 100 times thinner than a hair. You are looking at a drop of water far smaller than a pinhead.</p>
+  </div>
+  <div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Particle charge (zeta potential)</div><div class="v" id="z2"></div><div class="s" id="z2s"></div></div>
+      <div class="tile"><div class="k">Chance they stick when they touch</div><div class="v" id="a2"></div><div class="s">per bump</div></div>
+      <div class="tile"><div class="k">Separate clumps</div><div class="v" id="n2"></div><div class="s" id="n2s"></div></div>
+      <div class="tile"><div class="k">Biggest clump</div><div class="v" id="b2"></div><div class="s">particles stuck together</div></div>
+    </div>
+    <div class="card" style="padding:8px"><canvas id="cv2"></canvas>
+      <div class="legend"><span><span class="sw" style="background:#c99a5c"></span>Clay particle</span><span><span class="sw" style="background:rgba(110,170,255,.55)"></span>Negative charge cloud</span><span><span class="sw" style="background:rgba(255,160,80,.6)"></span>Positive charge cloud</span><span><span class="sw" style="background:#f2f2f2;border-radius:50%"></span>Aluminum hydroxide stuck to the surface</span></div>
+    </div>
+    <div class="msg" id="msg2"></div>
+  </div>
+</div>
+<details class="card" style="margin-top:12px"><summary>Key ideas: charge, coagulation, and flocculation</summary>
+<ul class="key">
+  <li><b>Why river water stays cloudy.</b> Clay and silt particles smaller than about 1 micrometer would take days to years to settle. Their surfaces are negatively charged and each one carries a cloud of charge around it, so when two drift close, they push apart before they touch. Water like this is called <b>stable</b>.</li>
+  <li><b>Coagulation</b> means destabilizing the particles. Alum, Al&#8322;(SO&#8324;)&#8323;, releases positive aluminum that forms aluminum hydroxide on the particle surfaces and cancels the negative charge. The charge cloud shrinks, so particles that bump now stick.</li>
+  <li><b>Flocculation</b> is the slow mixing that follows. Gentle stirring makes more particles meet so small clumps (microfloc) grow into visible floc. Stir too hard and the floc breaks apart.</li>
+  <li><b>Zeta potential</b> measures the charge near a particle&rsquo;s surface. Raw river water is often around &minus;20 to &minus;30 mV. Particles stick best near 0 (roughly &minus;5 to +5 mV). Some plants measure it, or a related value called streaming current, to adjust the dose automatically.</li>
+  <li><b>Too much coagulant</b> coats the particles in positive aluminum, the charge flips to positive, and they repel again. That is why the jar test turbidity curve goes down and then back up.</li>
+</ul></details>
+</section>
+
+</div>
+
+<script>
+const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function fmt(v,d){return v.toFixed(d)}
+function mmss(min){const s=Math.round(min*60);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+
+/* ---------- tabs ---------- */
+let curTab='one';
+$$('nav.tabs button').forEach(b=>b.addEventListener('click',()=>{
+  $$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  $$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));
+  curTab=b.dataset.tab;
+}));
+function seg(id,cb){$$('#'+id+' button').forEach(b=>b.addEventListener('click',()=>{if(b.disabled)return;$$('#'+id+' button').forEach(x=>x.classList.toggle('on',x===b));cb(b.dataset.v)}))}
+
+/* =====================================================================
+   TAB 1: JAR TEST MODEL
+   ===================================================================== */
+const SCN={
+  avg:{name:'Average day',T0:12,alk:40,pH:7.4,temp:15,
+    note:'Typical Sierra river water on a normal day: a little clay and silt, moderate alkalinity.'},
+  storm:{name:'After a storm',T0:85,alk:45,pH:7.3,temp:10,
+    note:'Runoff from a winter storm washes clay and silt into the river. Far more particles means far more charge to cancel.'},
+  snow:{name:'Cold snowmelt',T0:3,alk:12,pH:7.0,temp:5,
+    note:'Very clear, very cold, and very low in alkalinity. It looks clean, but it is one of the hardest waters to coagulate.'}
+};
+const PH={rapid:1,floc:20,settle:30};           // minutes of each step
+const RATE={rapid:0.2,floc:1,settle:1.25};      // test minutes per real second at "Slow"
+
+let sc=SCN.avg, scKey='avg';
+let doses=[0,10,20,30,40,50];
+let lime=0, poly=false, speed=1;
+let phase='ready', tmin=0, paused=false;        // tmin = minutes into the current step
+let res=null;                                    // model results per jar for current run
+let hist={avg:[],storm:[],snow:[]};              // earlier runs per raw water
+let bestIdx=-1;
+
+function model(D){
+  const A=sc.alk, T0=sc.T0, L=lime;
+  const co2=(A/50000)/Math.pow(10,sc.pH-6.35)+0.5*D/50000;   // mol/L; alum turns bicarbonate into CO2
+  const alkLeft=A+L-0.5*D;                                    // 1 mg/L alum uses ~0.5 mg/L alkalinity
+  let pH;
+  if(alkLeft>0.2) pH=Math.max(4.5,6.35+Math.log10((alkLeft/50000)/co2));
+  else pH=-Math.log10(3.16e-5+Math.max(0,-alkLeft)/50000);
+  pH=clamp(pH,4.0,8.6);
+  const Ddem=6+3.2*Math.pow(T0,0.55);           // dose that just cancels particle (and organic) charge
+  const r=D/Ddem;
+  const z=r<=1? -25*(1-r) : Math.min(22,18*(r-1));            // zeta potential, mV
+  const fpH=Math.exp(-Math.pow((pH-6.7)/1.0,2));               // alum floc forms best near pH 6-7.5
+  const alpha=Math.exp(-Math.pow(z/10,2))*fpH;                 // sticking efficiency
+  const ft=clamp(0.45+0.55*sc.temp/20,0.4,1.1);               // cold water slows flocculation
+  const K=0.15*alpha*(T0+0.6*D)*ft*(poly?1.6:1);               // collisions x sticking over 20 min
+  const F=1-Math.exp(-K);                                      // fraction of particles in floc
+  const sz=Math.min(1,F*(0.35+0.65*alpha)*(poly?1.25:1));      // floc size index 0..1
+  const tNeed=6+34*(1-sz);                                     // minutes for that floc to settle
+  const eff=poly?0.985:0.965;
+  const pin=0.02*D*(1-fpH);                                    // unsettleable pinpoint floc at bad pH
+  let settled=T0*(1-F)*0.95 + T0*F*((1-eff)+eff*(1-Math.min(1,30/tNeed))) + pin + 0.15;
+  settled=Math.min(settled,T0+pin+0.15);
+  return {D,pH,z,alpha,K,F,sz,tNeed,eff,pin,settled,alkLeft};
+}
+function flocWord(sz){return sz<0.12?'none':sz<0.35?'pinpoint':sz<0.6?'small':sz<0.82?'medium':'large'}
+function chargeWord(z){return z<-12?'strongly −':z<-5?'slightly −':z<=5?'near zero':z<=12?'slightly +':'strongly +'}
+
+/* ---------- controls ---------- */
+const jarBox=$('#jarSliders');
+doses.forEach((d,i)=>{
+  const lab=document.createElement('label');lab.htmlFor='j'+i;
+  lab.innerHTML='Jar '+(i+1)+' <span class="val" id="j'+i+'V"></span>';
+  const inp=document.createElement('input');inp.type='range';inp.id='j'+i;inp.min=0;inp.max=80;inp.step=1;inp.value=d;
+  inp.addEventListener('input',()=>{doses[i]=+inp.value;showDoses();if(phase!=='ready')refill()});
+  jarBox.appendChild(lab);jarBox.appendChild(inp);
+});
+function showDoses(){doses.forEach((d,i)=>{$('#j'+i).value=d;$('#j'+i+'V').textContent=d+' mg/L · '+fmt(d/5,1)+' mL'})}
+function setLocked(on){doses.forEach((d,i)=>$('#j'+i).disabled=on);$('#lime').disabled=on;$('#poly').disabled=on;$('#wide').disabled=on;$('#narrow').disabled=on||bestIdx<0;
+  $$('#scn button').forEach(b=>b.disabled=on)}
+$('#wide').onclick=()=>{doses=scKey==='storm'?[10,25,40,55,70,80]:scKey==='snow'?[0,5,10,15,20,30]:[0,10,20,30,40,50];showDoses();refill()};
+$('#narrow').onclick=()=>{if(bestIdx<0)return;const c=doses[bestIdx];const step=c>=30?4:2;
+  doses=[-3,-2,-1,0,1,2].map(k=>clamp(Math.round(c+k*step),0,80));showDoses();refill()};
+$('#lime').addEventListener('input',()=>{lime=+$('#lime').value;$('#limeV').textContent=lime+' mg/L';refill()});
+$('#poly').addEventListener('change',()=>{poly=$('#poly').checked;refill()});
+seg('scn',v=>{scKey=v;sc=SCN[v];bestIdx=-1;$('#wide').onclick();refillMsg();});
+seg('spd',v=>speed=+v);
+$('#run').onclick=()=>{if(phase!=='ready')return;res=doses.map(model);phase='rapid';tmin=0;paused=false;setLocked(true);
+  $('#run').disabled=true;$('#pause1').disabled=false;$('#skip').disabled=false;$('#pause1').textContent='Pause';stepMsg()};
+$('#pause1').onclick=()=>{paused=!paused;$('#pause1').textContent=paused?'Resume':'Pause'};
+$('#skip').onclick=()=>{if(!res)return;phase='settle';tmin=PH.settle;finish()};
+$('#reset').onclick=()=>refill();
+
+function refill(){phase='ready';tmin=0;res=null;paused=false;setLocked(false);$('#run').disabled=false;$('#pause1').disabled=true;$('#skip').disabled=true;$('#pause1').textContent='Pause';refillMsg();initJars()}
+function refillMsg(){
+  $('#scnNote').textContent=sc.note;
+  $('#tT0').textContent=sc.T0+' NTU';
+  $('#tChem').textContent=sc.alk+' mg/L · '+sc.pH.toFixed(1)+' · '+sc.temp+' °C';
+  $('#tChem2').textContent='alkalinity as CaCO₃'+(lime?' (+'+lime+' added)':'');
+  $('#tPh').textContent='Ready';$('#tPh2').textContent='Set doses, then start';$('#tTime').textContent='0:00';
+  $('#msg1').innerHTML='Six jars of <b>'+sc.name.toLowerCase()+'</b> water ('+sc.T0+' NTU) are on the stirrer. Each gets a different alum dose. Start with a <b>wide range</b> to find roughly where the best dose is, then <b>narrow in</b> around the best jar on a second run.';
+  drawResults();
+}
+function stepMsg(){
+  const m={rapid:'<b>Rapid mix, 100 rpm.</b> Alum goes in and is spread through the jar within seconds. Aluminum starts canceling the negative charge on the clay particles. No floc yet.',
+    floc:'<b>Slow mix, 30 rpm.</b> Gentle stirring makes particles bump into each other. Where the charge is canceled, they stick and grow into floc. Compare the jars: look for big flakes with clear water between them.',
+    settle:'<b>Settling, mixer off.</b> Big, heavy floc sinks fast and leaves clear water. Pinpoint floc and loose particles stay up. Watch which jars clear first.'};
+  $('#msg1').innerHTML=m[phase]||'';
+}
+function finish(){
+  phase='done';tmin=PH.settle;$('#run').disabled=true;$('#pause1').disabled=true;$('#skip').disabled=true;
+  const mn=Math.min(...res.map(r=>r.settled));
+  bestIdx=-1;let bd=1e9;res.forEach((r,i)=>{if(r.settled<=mn*1.12+0.05&&r.D<bd){bd=r.D;bestIdx=i}});
+  hist[scKey].push(res.map(r=>({D:r.D,T:r.settled,pH:r.pH})));
+  setLocked(true);$('#narrow').disabled=false;$('#wide').disabled=false;
+  doses.forEach((d,i)=>$('#j'+i).disabled=false);$('#lime').disabled=false;$('#poly').disabled=false;$$('#scn button').forEach(b=>b.disabled=false);
+  const b=res[bestIdx];
+  $('#pdose').value=b.D;updCalc();
+  let s='<b>Done.</b> Jar '+(bestIdx+1)+' ('+b.D+' mg/L) gave the clearest water for the least alum: <b>'+fmt(b.settled,1)+' NTU</b>, down from '+sc.T0+' NTU ('+Math.round(100*(1-b.settled/sc.T0))+'% removed). ';
+  const lo=res[0], hi=res[5];
+  if(hi.z>8&&hi.settled>b.settled*1.5) s+='The highest-dose jar turned cloudy again: too much alum flipped the particles to positive. ';
+  if(res.some(r=>r.pH<5.8)) s+='Some jars dropped below pH 5.8 because the alum used up the alkalinity, and floc forms poorly there. ';
+  if(scKey==='snow'&&!poly) s+='Even the best jar is still cloudy: with so few particles in cold water, they rarely meet. Try a polymer floc aid, and extra alkalinity to hold the pH. ';
+  if(lo.D>0&&lo.z<-12) s+='The lowest-dose jar was underdosed: the particles were still strongly negative. ';
+  s+='Change the doses to <b>narrow in</b>, or refill and try again.';
+  $('#msg1').innerHTML=s;
+  $('#cv1').setAttribute('aria-label','Six jars after settling. '+res.map((r,i)=>'Jar '+(i+1)+', '+r.D+' milligrams per liter: '+fmt(r.settled,1)+' NTU, '+flocWord(r.sz)+' floc').join('. ')+'. Full numbers are in the results table below.');
+  drawResults();
+}
+
+/* ---------- results table & charts ---------- */
+function drawResults(){
+  const tb=$('#resTable');
+  if(!res||phase!=='done'){tb.innerHTML='';$('#resNote').style.display='';}
+  else{
+    $('#resNote').style.display='none';
+    let h='<thead><tr><th scope="col">Jar</th><th scope="col">Alum (mg/L)</th><th scope="col">Stock (mL)</th><th scope="col">pH</th><th scope="col">Particle charge</th><th scope="col">Floc</th><th scope="col">Settled turbidity (NTU)</th><th scope="col">Removed</th></tr></thead><tbody>';
+    res.forEach((r,i)=>{h+='<tr'+(i===bestIdx?' class="best"':'')+'><td>Jar '+(i+1)+(i===bestIdx?'<span class="tag">best</span>':'')+'</td><td>'+r.D+'</td><td>'+fmt(r.D/5,1)+'</td><td>'+fmt(r.pH,1)+'</td><td>'+chargeWord(r.z)+' ('+(r.z>0?'+':'')+Math.round(r.z)+' mV)</td><td>'+flocWord(r.sz)+'</td><td>'+fmt(r.settled,1)+'</td><td>'+Math.max(0,Math.round(100*(1-r.settled/sc.T0)))+'%</td></tr>'});
+    tb.innerHTML=h+'</tbody>';
+  }
+  const H=hist[scKey];
+  $('#chT').innerHTML=chart(H,'T',0,Math.max(sc.T0*1.05,2),'NTU',null);
+  $('#chP').innerHTML=chart(H,'pH',4,8.5,'pH',[6,7.5]);
+}
+function chart(H,key,y0,y1,yl,band){
+  const W=420,Hh=230,l=44,r=12,t=10,b=36,pw=W-l-r,ph=Hh-t-b;
+  let xmax=80;const X=d=>l+pw*d/xmax,Y=v=>t+ph*(1-(clamp(v,y0,y1)-y0)/(y1-y0));
+  let s='<svg viewBox="0 0 '+W+' '+Hh+'" role="img" aria-label="'+(key==='T'?'Settled turbidity':'pH')+' versus alum dose for '+H.length+' run'+(H.length===1?'':'s')+'. Values are in the results table.">';
+  if(band)s+='<rect x="'+l+'" y="'+Y(band[1])+'" width="'+pw+'" height="'+(Y(band[0])-Y(band[1]))+'" fill="rgba(29,122,58,.18)"/>';
+  for(let k=0;k<=4;k++){const v=y0+(y1-y0)*k/4,y=Y(v);s+='<line class="grid" x1="'+l+'" x2="'+(W-r)+'" y1="'+y+'" y2="'+y+'"/><text x="'+(l-6)+'" y="'+(y+4)+'" text-anchor="end">'+(y1-y0>=10?Math.round(v):v.toFixed(1))+'</text>'}
+  for(let d=0;d<=80;d+=20){s+='<text x="'+X(d)+'" y="'+(t+ph+16)+'" text-anchor="middle">'+d+'</text>'}
+  s+='<line class="ax" x1="'+l+'" x2="'+(W-r)+'" y1="'+(t+ph)+'" y2="'+(t+ph)+'"/><line class="ax" x1="'+l+'" x2="'+l+'" y1="'+t+'" y2="'+(t+ph)+'"/>';
+  s+='<text x="'+(l+pw/2)+'" y="'+(Hh-4)+'" text-anchor="middle" class="lab">Alum dose (mg/L)</text>';
+  s+='<text transform="translate(12 '+(t+ph/2)+') rotate(-90)" text-anchor="middle" class="lab">'+yl+'</text>';
+  H.forEach((run,ri)=>{const last=ri===H.length-1&&phase==='done';const col=last?'var(--accent)':'#8a96a5';
+    const pts=run.slice().sort((a,b)=>a.D-b.D);
+    s+='<polyline fill="none" stroke="'+col+'" stroke-width="'+(last?2.5:1.2)+'" opacity="'+(last?1:.6)+'" points="'+pts.map(p=>X(p.D)+','+Y(p[key])).join(' ')+'"/>';
+    pts.forEach(p=>s+='<circle cx="'+X(p.D)+'" cy="'+Y(p[key])+'" r="'+(last?4.5:3)+'" fill="'+col+'" opacity="'+(last?1:.6)+'"/>')});
+  if(!H.length)s+='<text x="'+(l+pw/2)+'" y="'+(t+ph/2)+'" text-anchor="middle">Run a jar test to plot results</text>';
+  return s+'</svg>';
+}
+
+/* ---------- plant calculator ---------- */
+function updCalc(){
+  const q=+$('#flow').value,d=+$('#pdose').value;$('#flowV').textContent=q+' MGD';$('#pdoseV').textContent=d+' mg/L';
+  const lbs=8.34*q*d;
+  let h='<div>Pounds per day = flow (MGD) × dose (mg/L) × 8.34</div><div style="margin-top:4px">= '+q+' × '+d+' × 8.34 = <b>'+Math.round(lbs).toLocaleString()+' lb of alum per day</b></div>';
+  h+='<div class="small muted" style="margin-top:4px">That is about '+Math.round(lbs/24).toLocaleString()+' lb per hour, or '+fmt(lbs/2000,1)+' tons per day.</div>';
+  if(poly)h+='<div class="small" style="margin-top:4px">Polymer at 0.5 mg/L: '+q+' × 0.5 × 8.34 = '+fmt(q*0.5*8.34,1)+' lb/day</div>';
+  $('#calc').innerHTML=h;
+}
+$('#flow').addEventListener('input',updCalc);$('#pdose').addEventListener('input',updCalc);
+
+/* ---------- jar drawing ---------- */
+const cv=$('#cv1'),g=cv.getContext('2d'),W=960,Hc=450;
+function sizeCanvas(c,ctx,w,h){const dpr=Math.min(2,window.devicePixelRatio||1);c.width=w*dpr;c.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0)}
+sizeCanvas(cv,g,W,Hc);
+const JX=i=>90+i*156, HW=56, JT=118, JB=378, WT=140, PY=318;
+let theta=0, swirl=0, jars=[];
+function rnd(seed){let s=seed;return()=>{s=(s*16807)%2147483647;return(s-1)/2147483646}}
+function initJars(){
+  jars=[];for(let i=0;i<6;i++){const R=rnd(1000+i*77);
+    const sp=[],fl=[];
+    for(let k=0;k<130;k++)sp.push({a:R()*6.283,r:Math.sqrt(R()),y:0.04+R()*0.92,s:0.8+R()*1.1});
+    for(let k=0;k<34;k++)fl.push({a:R()*6.283,r:0.15+0.85*Math.sqrt(R()),y:0.08+R()*0.8,q:0.35+0.65*R(),w:R()*6.283,bx:(R()-0.5)*1.7,sh:R()});
+    jars.push({sp,fl});}
+}
+initJars();
+
+function jarState(i){
+  // returns visual state for jar i
+  const T0=sc.T0;
+  if(!res||phase==='ready')return{F:0,sz:0,fine:T0,unset:0,prog:0,drop:0};
+  const m=res[i];let Fn,szn,prog=0;
+  if(phase==='rapid'){Fn=1-Math.exp(-m.K*0.03*tmin/PH.rapid);}
+  else if(phase==='floc'){Fn=1-Math.exp(-m.K*(0.03+0.97*tmin/PH.floc));}
+  else{Fn=m.F;}
+  szn=m.F>0?m.sz*Fn/m.F:0;
+  const ts=phase==='settle'?tmin:phase==='done'?PH.settle:0;
+  const fine=T0*(1-Fn)*(1-0.05*ts/30)+m.pin*Math.min(1,(phase==='rapid'?tmin:1));
+  const unset=T0*Fn*(1-m.eff);
+  return{F:Fn,sz:szn,fine,unset,ts,m};
+}
+function tint(T){return 0.88*(1-Math.exp(-T/26))}
+
+function drawJars(dt){
+  // background bench
+  const bg=g.createLinearGradient(0,0,0,Hc);bg.addColorStop(0,'#1f2a37');bg.addColorStop(1,'#141b24');g.fillStyle=bg;g.fillRect(0,0,W,Hc);
+  // stirrer frame
+  g.fillStyle='#3a4553';g.fillRect(12,18,W-24,40);g.fillStyle='#4a5767';g.fillRect(12,18,W-24,8);
+  g.strokeStyle='#5d6b7c';g.lineWidth=1;g.strokeRect(12.5,18.5,W-25,39);
+  const rpm=phase==='rapid'?100:phase==='floc'?30:0;
+  g.fillStyle='#e7ecf2';g.font='600 13px system-ui,Arial';g.textAlign='left';
+  g.fillText(rpm?('Mixer: '+rpm+' rpm'):'Mixer: off',22,48);
+  g.textAlign='right';g.fillStyle=rpm?'#7ee08f':'#ff9a8a';g.beginPath();g.arc(W-30,38,6,0,6.283);g.fill();
+  // illuminated base
+  const lg=g.createLinearGradient(0,JB,0,JB+18);lg.addColorStop(0,'#f6f3e6');lg.addColorStop(1,'#c9c4b2');g.fillStyle=lg;g.fillRect(12,JB+2,W-24,16);
+
+  for(let i=0;i<6;i++){
+    const cx=JX(i),st=jarState(i),J=jars[i];
+    // labels
+
+    // water
+    const wh=JB-WT;
+    g.fillStyle='rgba(205,228,242,0.30)';g.fillRect(cx-HW,WT,HW*2,wh);
+    const a=tint(st.fine+st.unset);
+    g.fillStyle='rgba(158,112,52,'+a.toFixed(3)+')';g.fillRect(cx-HW,WT,HW*2,wh);
+    // light glow from base
+    const gl=g.createLinearGradient(0,JB-60,0,JB);gl.addColorStop(0,'rgba(255,250,230,0)');gl.addColorStop(1,'rgba(255,250,230,'+(0.22*(1-a)).toFixed(3)+')');g.fillStyle=gl;g.fillRect(cx-HW,JB-60,HW*2,60);
+    // specks (fine particles)
+    const nSp=Math.round(130*clamp(st.fine/sc.T0,0,1)*clamp(0.3+sc.T0/40,0,1));
+    g.fillStyle='rgba(95,66,34,0.55)';
+    for(let k=0;k<nSp;k++){const p=J.sp[k];const x=cx+p.r*(HW-4)*Math.cos(p.a+theta*(0.6+0.4*p.r));const y=WT+6+p.y*(wh-14)+Math.sin(p.a*3+theta)*2*swirl;
+      g.fillRect(x-p.s/2,y-p.s/2,p.s,p.s)}
+    // sludge on bottom
+    let sl=0;
+    if(st.m&&st.ts>0){const prog=Math.min(1,st.ts/st.m.tNeed);sl=Math.min(13,1.5+(sc.T0*st.F*st.m.eff*prog+0.25*st.m.D*st.F*prog)/9)*Math.min(1,prog*1.4)}
+    if(sl>0){g.fillStyle='rgba(214,198,160,0.95)';g.beginPath();g.moveTo(cx-HW,JB);g.lineTo(cx-HW,JB-sl);
+      for(let x=-HW;x<=HW;x+=8)g.lineTo(cx+x,JB-sl-1.2*Math.sin(x*0.3+i));g.lineTo(cx+HW,JB);g.closePath();g.fill()}
+    // floc
+    if(st.F>0.01&&st.sz>0.02){
+      const n=Math.round(34*clamp(st.F,0,1));const rr=1.1+6.2*st.sz;
+      for(let k=0;k<n;k++){const f=J.fl[k];
+        let x=cx+f.r*(HW-rr-3)*Math.cos(f.a+theta*(0.5+0.5*f.r)),y=WT+8+f.y*(wh-30)+Math.sin(f.w+theta*1.3)*3*swirl;
+        if(st.ts>0){const tn=st.m.tNeed*(0.45+0.9*f.q);const pr=Math.min(1,st.ts/tn);
+          const yb=JB-sl-rr*0.6;y=y+(yb-y)*pr*pr*(3-2*pr);
+          if(pr>=1)continue;}   // landed: now part of sludge
+        drawFloc(x,y,rr,f);
+      }
+    }
+    // paddle & shaft
+    g.strokeStyle='#b7c0cb';g.lineWidth=4;g.beginPath();g.moveTo(cx,58);g.lineTo(cx,PY-14);g.stroke();
+    const pw=34*Math.abs(Math.cos(theta*2.2+i*0.0));g.fillStyle='#c9d1db';g.fillRect(cx-Math.max(3,pw),PY-16,Math.max(6,pw*2),32);
+    g.strokeStyle='#8f9aa7';g.lineWidth=1;g.strokeRect(cx-Math.max(3,pw)+.5,PY-15.5,Math.max(6,pw*2)-1,31);
+    g.fillStyle='rgba(27,36,48,0.92)';g.beginPath();g.roundRect(cx-62,64,124,40,7);g.fill();
+    g.textAlign='center';g.fillStyle='#e7ecf2';g.font='700 14px system-ui,Arial';g.fillText('Jar '+(i+1),cx,81);
+    g.font='13px system-ui,Arial';g.fillStyle='#c3ccd8';g.fillText(doses[i]+' mg/L · '+fmt(doses[i]/5,1)+' mL',cx,98);
+    // drops of alum during the first seconds of rapid mix
+    if(phase==='rapid'&&tmin<0.35&&doses[i]>0){const yy=70+(WT-70)*((tmin*3+i*0.05)%1);g.fillStyle='rgba(240,240,255,.9)';g.beginPath();g.ellipse(cx-34,yy,2.6,4,0,0,6.283);g.fill()}
+    // glass
+    g.strokeStyle='rgba(225,235,245,0.75)';g.lineWidth=2.5;g.beginPath();g.moveTo(cx-HW-3,JT);g.lineTo(cx-HW-3,JB+1);g.lineTo(cx+HW+3,JB+1);g.lineTo(cx+HW+3,JT);g.stroke();
+    g.fillStyle='rgba(255,255,255,0.10)';g.fillRect(cx-HW+4,JT+6,7,JB-JT-14);
+    g.strokeStyle='rgba(225,235,245,0.4)';g.lineWidth=1;g.beginPath();g.moveTo(cx-HW,WT);g.lineTo(cx+HW,WT);g.stroke();
+    // below-jar text
+    g.font='13px system-ui,Arial';g.fillStyle='#c3ccd8';
+    if(phase==='done'){const r=res[i];g.font='700 15px system-ui,Arial';g.fillStyle=i===bestIdx?'#7ee08f':'#e7ecf2';
+      g.fillText(fmt(r.settled,1)+' NTU'+(i===bestIdx?' ★':''),cx,416);g.font='12px system-ui,Arial';g.fillStyle='#c3ccd8';g.fillText('pH '+fmt(r.pH,1)+' · '+flocWord(r.sz)+' floc',cx,436)}
+    else if(phase!=='ready'){g.fillText('Floc: '+flocWord(st.sz),cx,420)}
+    else{g.fillText(sc.T0+' NTU raw',cx,420)}
+  }
+}
+function drawFloc(x,y,r,f){
+  g.fillStyle='rgba(236,228,206,0.93)';g.strokeStyle='rgba(150,125,85,0.8)';g.lineWidth=0.8;
+  g.beginPath();g.arc(x,y,r,0,6.283);g.fill();g.stroke();
+  if(r>2.5){g.beginPath();g.arc(x+r*0.75*Math.cos(f.w),y+r*0.6*Math.sin(f.w),r*0.62,0,6.283);g.fill();g.stroke();
+    g.beginPath();g.arc(x+r*0.7*Math.cos(f.w+2.4),y+r*0.55*Math.sin(f.w+2.4),r*0.5,0,6.283);g.fill();g.stroke();
+    g.fillStyle='rgba(120,90,50,.7)';g.fillRect(x-0.8,y-0.8,1.6,1.6);g.fillRect(x+r*0.5,y+r*0.2,1.5,1.5)}
+}
+
+function tick1(dt){
+  if(!paused&&(phase==='rapid'||phase==='floc'||phase==='settle')){
+    tmin+=dt*RATE[phase]*speed;
+    if(tmin>=PH[phase]){if(phase==='rapid'){phase='floc';tmin=0;stepMsg()}else if(phase==='floc'){phase='settle';tmin=0;stepMsg()}else{finish()}}
+  }
+  const target=paused?0:phase==='rapid'?3.2:phase==='floc'?0.9:0;
+  swirl+=((target>0?1:0)-swirl)*Math.min(1,dt*0.8);
+  const w=paused?0:(phase==='rapid'?3.2:phase==='floc'?0.9:phase==='settle'?0.9*Math.exp(-tmin*0.9):0);
+  theta+=w*dt;
+  // tiles
+  const nm={ready:'Ready',rapid:'Rapid mix',floc:'Slow mix',settle:'Settling',done:'Done'};
+  $('#tPh').textContent=nm[phase];
+  $('#tPh2').textContent=phase==='rapid'?'100 rpm for 1 min':phase==='floc'?'30 rpm for 20 min':phase==='settle'?'mixer off, 30 min':phase==='done'?'read the jars':'Set doses, then start';
+  const el=phase==='rapid'?tmin:phase==='floc'?1+tmin:phase==='settle'?21+tmin:phase==='done'?51:0;
+  $('#tTime').textContent=mmss(el);
+  drawJars(dt);
+}
+
+/* =====================================================================
+   TAB 2: PARTICLE CLOSE-UP
+   ===================================================================== */
+const cv2=$('#cv2'),g2=cv2.getContext('2d'),W2=760,H2=440;
+sizeCanvas(cv2,g2,W2,H2);
+let dose2=0,mix2=true,paused2=false,cl=[],R2=Math.random;
+function zeta2(){const p=dose2/100;return p<=1?-28*(1-p):Math.min(24,22*(p-1))}
+function stick2(){const z=zeta2();return Math.exp(-Math.pow(z/8,2))}
+function reset2(){
+  cl=[];let tries=0;
+  while(cl.length<56&&tries<5000){tries++;const r=6+R2()*4.5,x=20+R2()*(W2-40),y=20+R2()*(H2-40);
+    if(cl.every(c=>Math.hypot(c.x-x,c.y-y)>c.R+r+16))cl.push({x,y,vx:0,vy:0,m:r*r,R:r,mem:[{dx:0,dy:0,r,s:R2()*6.283}]});}
+  upd2();
+}
+function merge(a,b){
+  const all=[];[a,b].forEach(c=>c.mem.forEach(q=>all.push({x:c.x+q.dx,y:c.y+q.dy,r:q.r,s:q.s})));
+  let M=0,X=0,Y=0;all.forEach(q=>{const w=q.r*q.r;M+=w;X+=q.x*w;Y+=q.y*w});X/=M;Y/=M;
+  const vx=(a.vx*a.m+b.vx*b.m)/(a.m+b.m),vy=(a.vy*a.m+b.vy*b.m)/(a.m+b.m);
+  let R=0;const mem=all.map(q=>{const dx=q.x-X,dy=q.y-Y;R=Math.max(R,Math.hypot(dx,dy)+q.r);return{dx,dy,r:q.r,s:q.s}});
+  return{x:X,y:Y,vx,vy,m:M,R,mem};
+}
+function gauss(){return(R2()+R2()+R2()+R2()-2)*1.22}
+function step2(dt){
+  const z=zeta2(),zz=Math.pow(z/25,2),al=stick2(),cx=W2/2,cy=H2/2;
+  for(const c of cl){
+    const sm=Math.sqrt(c.m/64);
+    c.vx+=gauss()*95*Math.sqrt(dt)/sm;c.vy+=gauss()*95*Math.sqrt(dt)/sm;
+    if(mix2){const dx=c.x-cx,dy=c.y-cy,rr=Math.hypot(dx,dy)+1,om=0.75*Math.exp(-rr/260);
+      const tx=-dy*om,ty=dx*om;c.vx+=(tx-c.vx)*0.8*dt;c.vy+=(ty-c.vy)*0.8*dt;}
+    const dr=Math.exp(-1.6*dt);c.vx*=dr;c.vy*=dr;
+  }
+  // repulsion between charge clouds
+  if(zz>0.002){for(let i=0;i<cl.length;i++)for(let j=i+1;j<cl.length;j++){const a=cl[i],b=cl[j];
+    const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||0.01,gap=d-a.R-b.R;if(gap>45)continue;
+    const f=1400*zz*Math.exp(-Math.max(gap,-4)/11)*dt,nx=dx/d,ny=dy/d;
+    a.vx-=nx*f*Math.sqrt(64/a.m);a.vy-=ny*f*Math.sqrt(64/a.m);b.vx+=nx*f*Math.sqrt(64/b.m);b.vy+=ny*f*Math.sqrt(64/b.m);}}
+  for(const c of cl){c.x+=c.vx*dt;c.y+=c.vy*dt;
+    if(c.x<c.R){c.x=c.R;c.vx=Math.abs(c.vx)}if(c.x>W2-c.R){c.x=W2-c.R;c.vx=-Math.abs(c.vx)}
+    if(c.y<c.R){c.y=c.R;c.vy=Math.abs(c.vy)}if(c.y>H2-c.R){c.y=H2-c.R;c.vy=-Math.abs(c.vy)}}
+  // contacts
+  for(let i=0;i<cl.length;i++)for(let j=i+1;j<cl.length;j++){const a=cl[i],b=cl[j];
+    if(Math.hypot(b.x-a.x,b.y-a.y)>a.R+b.R)continue;
+    let hit=null;
+    for(const p of a.mem){for(const q of b.mem){const dx=(b.x+q.dx)-(a.x+p.dx),dy=(b.y+q.dy)-(a.y+p.dy),d=Math.hypot(dx,dy);
+      if(d<p.r+q.r){hit={dx,dy,d,ov:p.r+q.r-d};break}}if(hit)break}
+    if(!hit)continue;
+    if(R2()<al){cl[i]=merge(a,b);cl.splice(j,1);j=i;continue}
+    const d=hit.d||0.01,nx=hit.dx/d,ny=hit.dy/d,tot=a.m+b.m;
+    a.x-=nx*hit.ov*b.m/tot;a.y-=ny*hit.ov*b.m/tot;b.x+=nx*hit.ov*a.m/tot;b.y+=ny*hit.ov*a.m/tot;
+    const rv=(b.vx-a.vx)*nx+(b.vy-a.vy)*ny;if(rv<0){const imp=-1.6*rv/(1/a.m+1/b.m);a.vx-=imp*nx/a.m;a.vy-=imp*ny/a.m;b.vx+=imp*nx/b.m;b.vy+=imp*ny/b.m}
+  }
+}
+function draw2(){
+  const bg=g2.createRadialGradient(W2/2,H2/2,40,W2/2,H2/2,W2*0.65);bg.addColorStop(0,'#173149');bg.addColorStop(1,'#0c1b2a');g2.fillStyle=bg;g2.fillRect(0,0,W2,H2);
+  const z=zeta2(),az=Math.abs(z),neg=z<0;
+  if(az>3){const hr=4+13*az/28;g2.fillStyle=neg?'rgba(110,170,255,0.22)':'rgba(255,150,60,0.30)';
+    for(const c of cl)for(const q of c.mem){g2.beginPath();g2.arc(c.x+q.dx,c.y+q.dy,q.r+hr,0,6.283);g2.fill()}}
+  const nAl=Math.round(Math.min(dose2,200)/33);
+  for(const c of cl)for(const q of c.mem){const x=c.x+q.dx,y=c.y+q.dy;
+    g2.fillStyle='#c99a5c';g2.strokeStyle='#7a5a30';g2.lineWidth=1.2;g2.beginPath();g2.arc(x,y,q.r,0,6.283);g2.fill();g2.stroke();
+    g2.fillStyle='rgba(255,255,255,.18)';g2.beginPath();g2.arc(x-q.r*0.35,y-q.r*0.35,q.r*0.35,0,6.283);g2.fill();
+    g2.fillStyle='#f2f2f2';for(let k=0;k<nAl;k++){const a=q.s+k*6.283/Math.max(nAl,1);g2.beginPath();g2.arc(x+q.r*0.92*Math.cos(a),y+q.r*0.92*Math.sin(a),1.9,0,6.283);g2.fill()}
+    if(az>4){g2.fillStyle=neg?'#cfe3ff':'#ffd9b8';g2.font='700 '+(q.r>8?13:11)+'px system-ui,Arial';g2.textAlign='center';g2.textBaseline='middle';g2.fillText(neg?'−':'+',x,y+0.5)}}
+  g2.textBaseline='alphabetic';
+}
+function upd2(){
+  const z=zeta2(),al=stick2();
+  $('#dose2V').textContent=dose2+'%';
+  $('#z2').textContent=(z>0?'+':z<0?'−':'')+Math.abs(Math.round(z))+' mV';
+  $('#z2s').textContent=chargeWord(z).replace('−','negative').replace('+','positive');
+  $('#a2').textContent=(al<0.01?'<1':Math.round(al*100))+'%';
+  const big=cl.reduce((m,c)=>Math.max(m,c.mem.length),0);
+  $('#n2').textContent=cl.length;$('#n2s').textContent='started with 56 particles';$('#b2').textContent=big;
+}
+let lastMsg2='';
+function msg2(){
+  const z=zeta2();let s;
+  if(dose2===0)s='<b>No coagulant.</b> Every particle is strongly negative and wrapped in a cloud of charge. When two drift close they shove apart before touching. This water could stay cloudy for weeks.';
+  else if(z<-12)s='<b>Too little.</b> Some aluminum has stuck to the surfaces, but the particles are still clearly negative and the clouds still push them apart. Only a few clumps form.';
+  else if(z<-5)s='<b>Getting close.</b> The charge clouds have shrunk. Particles that bump hard enough sometimes stick, so clumps slowly start to form.';
+  else if(z<=5)s='<b>Just right.</b> The negative charge is canceled, the clouds are gone, and nearly every bump sticks. Watch small clumps (microfloc) find each other and grow into floc big enough to settle.';
+  else if(z<=12)s='<b>A little too much.</b> The aluminum has pushed the charge past zero to positive. A positive cloud forms and sticking drops off again. This is the start of the jar test curve rising again.';
+  else s='<b>Way too much.</b> The particles are now coated with positive aluminum and repel each other as strongly as before, just with the opposite sign. The water stays cloudy and you paid for all that alum. This is restabilization.';
+  if(s!==lastMsg2){$('#msg2').innerHTML=s;lastMsg2=s}
+}
+function setDose2(v){dose2=v;$('#dose2').value=v;reset2();msg2()}
+$('#dose2').addEventListener('input',()=>setDose2(+$('#dose2').value));
+$$('#q2 button').forEach(b=>b.addEventListener('click',()=>setDose2(+b.dataset.v)));
+$('#mix2').addEventListener('change',()=>mix2=$('#mix2').checked);
+$('#pause2').onclick=()=>{paused2=!paused2;$('#pause2').textContent=paused2?'Resume':'Pause'};
+$('#restart2').onclick=()=>reset2();
+let cnt2=0;
+function tick2(dt){if(!paused2){step2(dt/2);step2(dt/2)}draw2();if(++cnt2%10===0)upd2()}
+
+/* ---------- start ---------- */
+showDoses();$('#limeV').textContent='0 mg/L';refillMsg();updCalc();reset2();msg2();
+let lt=0;
+function frame(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;if(curTab==='one')tick1(dt);else tick2(dt);requestAnimationFrame(frame)}
+requestAnimationFrame(ts=>{lt=ts;frame(ts)});
+</script>
+<script>window.A11Y={tabsLabel:'Views',live:['#msg1','#msg2'],
+img:[['#cv1','Six square jars of raw river water on a jar-test stirrer, each with a paddle. During the test, floc flakes form and then settle to the bottom. The step, time, and results are shown in the boxes above and the results table below.'],
+['#cv2','Close-up of clay particles drifting in water. Each particle shows its charge sign and a cloud of charge around it; when coagulant cancels the charge, particles that touch stick into clumps. Charge, sticking chance, and clump counts are in the boxes above.']]};</script>
+
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><b>Sources and model notes.</b> Raw-water values are illustrative, not data from a specific plant. Alkalinity use comes from the alum reaction: one mole of Al&#8322;(SO&#8324;)&#8323;&middot;14H&#8322;O (594 g) neutralizes 6 equivalents of alkalinity (300 g as CaCO&#8323;), about 0.5 mg/L per mg/L of alum. pH is estimated from the bicarbonate&ndash;carbon dioxide balance (pK&#8321; = 6.35), assuming the CO&#8322; made stays in the jar. Settled turbidity comes from a simplified collision-and-attachment model, so the curve shapes are realistic but the exact numbers are not. The pounds formula (lb/day = MGD &times; mg/L &times; 8.34) is the standard operator calculation. Turbidity limits are from the U.S. EPA Surface Water Treatment Rules for conventional and direct filtration.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+</body>
+</html>
