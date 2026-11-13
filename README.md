@@ -78,6 +78,8 @@ Every simulation ends with an accessibility block (search the file for `Accessib
 - announces new results to screen readers after a student changes a setting
 - shows a clear focus outline for keyboard users
 
+**Phones:** every simulation loads the shared `sims/mobile.js`. When a student uses a control and the animation has scrolled off screen, a live copy of the animation pins to the top of the screen (tap it to jump back, × to hide). When you add a new simulation, add `<script src="../mobile.js"></script>` just before `</body>`.
+
 Each simulation also has a pause control for continuous animation, and colors were adjusted to meet the 4.5:1 text contrast ratio.
 
 **When you add a new simulation:** copy the block from the bottom of an existing simulation (from `<script>window.A11Y = ...` to the end of the second `</script>`) and paste it just before `</body>`. Then edit the `window.A11Y` settings:

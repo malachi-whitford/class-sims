@@ -417,14 +417,15 @@ function jarState(i){
 function tint(T){return 0.88*(1-Math.exp(-T/26))}
 
 function drawJars(dt){
+  const N=cv.getBoundingClientRect().width<620;   // phone: bigger, shorter labels
   // background bench
   const bg=g.createLinearGradient(0,0,0,Hc);bg.addColorStop(0,'#1f2a37');bg.addColorStop(1,'#141b24');g.fillStyle=bg;g.fillRect(0,0,W,Hc);
   // stirrer frame
   g.fillStyle='#3a4553';g.fillRect(12,18,W-24,40);g.fillStyle='#4a5767';g.fillRect(12,18,W-24,8);
   g.strokeStyle='#5d6b7c';g.lineWidth=1;g.strokeRect(12.5,18.5,W-25,39);
   const rpm=phase==='rapid'?100:phase==='floc'?30:0;
-  g.fillStyle='#e7ecf2';g.font='600 13px system-ui,Arial';g.textAlign='left';
-  g.fillText(rpm?('Mixer: '+rpm+' rpm'):'Mixer: off',22,48);
+  g.fillStyle='#e7ecf2';g.font=N?'700 24px system-ui,Arial':'600 13px system-ui,Arial';g.textAlign='left';
+  g.fillText(rpm?('Mixer: '+rpm+' rpm'):'Mixer: off',22,N?47:48);
   g.textAlign='right';g.fillStyle=rpm?'#7ee08f':'#ff9a8a';g.beginPath();g.arc(W-30,38,6,0,6.283);g.fill();
   // illuminated base
   const lg=g.createLinearGradient(0,JB,0,JB+18);lg.addColorStop(0,'#f6f3e6');lg.addColorStop(1,'#c9c4b2');g.fillStyle=lg;g.fillRect(12,JB+2,W-24,16);
@@ -465,9 +466,9 @@ function drawJars(dt){
     g.strokeStyle='#b7c0cb';g.lineWidth=4;g.beginPath();g.moveTo(cx,58);g.lineTo(cx,PY-14);g.stroke();
     const pw=34*Math.abs(Math.cos(theta*2.2+i*0.0));g.fillStyle='#c9d1db';g.fillRect(cx-Math.max(3,pw),PY-16,Math.max(6,pw*2),32);
     g.strokeStyle='#8f9aa7';g.lineWidth=1;g.strokeRect(cx-Math.max(3,pw)+.5,PY-15.5,Math.max(6,pw*2)-1,31);
-    g.fillStyle='rgba(27,36,48,0.92)';g.beginPath();g.roundRect(cx-62,64,124,40,7);g.fill();
-    g.textAlign='center';g.fillStyle='#e7ecf2';g.font='700 14px system-ui,Arial';g.fillText('Jar '+(i+1),cx,81);
-    g.font='13px system-ui,Arial';g.fillStyle='#c3ccd8';g.fillText(doses[i]+' mg/L · '+fmt(doses[i]/5,1)+' mL',cx,98);
+    g.fillStyle='rgba(27,36,48,0.92)';g.beginPath();g.roundRect(cx-(N?72:62),N?62:64,N?144:124,N?60:40,7);g.fill();
+    g.textAlign='center';g.fillStyle='#e7ecf2';g.font=N?'700 25px system-ui,Arial':'700 14px system-ui,Arial';g.fillText('Jar '+(i+1),cx,N?86:81);
+    g.font=N?'600 23px system-ui,Arial':'13px system-ui,Arial';g.fillStyle='#c3ccd8';g.fillText(N?doses[i]+' mg/L':doses[i]+' mg/L · '+fmt(doses[i]/5,1)+' mL',cx,N?114:98);
     // drops of alum during the first seconds of rapid mix
     if(phase==='rapid'&&tmin<0.35&&doses[i]>0){const yy=70+(WT-70)*((tmin*3+i*0.05)%1);g.fillStyle='rgba(240,240,255,.9)';g.beginPath();g.ellipse(cx-34,yy,2.6,4,0,0,6.283);g.fill()}
     // glass
@@ -476,10 +477,10 @@ function drawJars(dt){
     g.strokeStyle='rgba(225,235,245,0.4)';g.lineWidth=1;g.beginPath();g.moveTo(cx-HW,WT);g.lineTo(cx+HW,WT);g.stroke();
     // below-jar text
     g.font='13px system-ui,Arial';g.fillStyle='#c3ccd8';
-    if(phase==='done'){const r=res[i];g.font='700 15px system-ui,Arial';g.fillStyle=i===bestIdx?'#7ee08f':'#e7ecf2';
-      g.fillText(fmt(r.settled,1)+' NTU'+(i===bestIdx?' ★':''),cx,416);g.font='12px system-ui,Arial';g.fillStyle='#c3ccd8';g.fillText('pH '+fmt(r.pH,1)+' · '+flocWord(r.sz)+' floc',cx,436)}
-    else if(phase!=='ready'){g.fillText('Floc: '+flocWord(st.sz),cx,420)}
-    else{g.fillText(sc.T0+' NTU raw',cx,420)}
+    if(phase==='done'){const r=res[i];g.font=N?'700 27px system-ui,Arial':'700 15px system-ui,Arial';g.fillStyle=i===bestIdx?'#7ee08f':'#e7ecf2';
+      g.fillText(fmt(r.settled,1)+(N?(i===bestIdx?'★':''):' NTU'+(i===bestIdx?' ★':'')),cx,N?428:416);if(!N){g.font='12px system-ui,Arial';g.fillStyle='#c3ccd8';g.fillText('pH '+fmt(r.pH,1)+' · '+flocWord(r.sz)+' floc',cx,436)}}
+    else if(phase!=='ready'){if(N)g.font='600 23px system-ui,Arial';g.fillText(N?flocWord(st.sz):'Floc: '+flocWord(st.sz),cx,N?430:420)}
+    else{if(N)g.font='600 23px system-ui,Arial';g.fillText(N?sc.T0+' NTU':sc.T0+' NTU raw',cx,N?430:420)}
   }
 }
 function drawFloc(x,y,r,f){
@@ -788,5 +789,6 @@ html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-p
   regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
 })();
 </script>
+<script src="../mobile.js"></script>
 </body>
 </html>
