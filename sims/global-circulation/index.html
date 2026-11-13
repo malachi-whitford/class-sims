@@ -101,7 +101,7 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
     <h3>Speed</h3>
     <div class="seg" id="spd1" aria-label="Speed"><button data-v="0.5" class="on">Slow</button><button data-v="1.2">Fast</button></div>
     <div class="row"><button class="primary" id="pause1">Pause</button></div>
-    <p class="hint">Dot color shows air temperature: <span style="color:#c62828;font-weight:700">red = warm</span>, <span style="color:#1f6fbf;font-weight:700">blue = cold</span>. The atmosphere is drawn about 25 times thicker than it really is so you can see the loops.</p>
+    <p class="hint">Dot color shows air temperature: <span style="color:#c62828;font-weight:700">red = warm</span>, <span style="color:#1f6fbf;font-weight:700">blue = cold</span>. The dashed line is the top of the weather layer (the tropopause). The atmosphere is drawn about 25 times thicker than it really is so you can see the loops.</p>
   </div>
   <div>
     <div class="tiles six">
@@ -242,12 +242,12 @@ function draw(){const x=ctx2d(cv,W,H);
   const sh=x.createRadialGradient(CX-R*0.35,CY-R*0.3,R*0.2,CX,CY,R);sh.addColorStop(0,'rgba(255,255,255,0)');sh.addColorStop(1,'rgba(0,0,0,.28)');x.fillStyle=sh;x.fillRect(CX-R,CY-R,2*R,2*R);
   [-60,-30,0,30,60].forEach(la=>{const y=CY-R*Math.sin(la*D2R);x.strokeStyle=la?'rgba(0,0,0,.25)':'rgba(0,0,0,.45)';x.lineWidth=la?1:1.6;x.beginPath();x.moveTo(CX-R,y);x.lineTo(CX+R,y);x.stroke()});
   if($('#showLab').checked){x.font='600 12px system-ui,Arial';x.textAlign='center';x.fillStyle='#14210f';
-    [[5,'Rainforest',-90],[25,'Desert',-90],[-25,'Desert',-90],[50,'Temperate forest',-80],[-50,'Temperate forest',-80],[71,'Tundra & ice',-25],[-71,'Ice',-25]].forEach(([la,t,dx])=>{x.fillText(t,CX+dx,CY-R*Math.sin(la*D2R)+4)})}
+    [[5,'Rainforest',-70],[22,'Desert',-70],[-22,'Desert',-70],[47,'Temperate forest',-55],[-47,'Temperate forest',-55]].forEach(([la,t,dx])=>{x.fillText(t,CX+dx,CY-R*Math.sin(la*D2R)+4)})}
   x.restore();
   x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=1;x.beginPath();x.arc(CX,CY,R,0,7);x.stroke();
   // latitude labels
   x.font='600 12px system-ui,Arial';x.textAlign='right';x.fillStyle='#c9d3df';
-  [[60,'60°N'],[30,'30°N'],[0,'0°'],[-30,'30°S'],[-60,'60°S']].forEach(([la,t])=>{const y=CY-R*Math.sin(la*D2R);x.fillText(t,CX-R*Math.cos(la*D2R)-8,y+4)});x.fillText('90°N',CX-10,CY-R-8);x.fillText('90°S',CX-10,CY+R+18);
+  [[60,'60°N'],[30,'30°N'],[0,'0°'],[-30,'30°S'],[-60,'60°S']].forEach(([la,t])=>{const y=CY-R*Math.sin(la*D2R);x.fillText(t,CX-R*Math.cos(la*D2R)-8,y+4)});x.fillText('90°N',CX-62,CY-R+2);x.fillText('90°S',CX-62,CY+R+8);
   // cell outlines + arrows
   CELLS.forEach(c=>[1,-1].forEach(h=>{x.strokeStyle='rgba(255,255,255,.28)';x.lineWidth=1.4;x.beginPath();for(let i=0;i<=120;i++){const q=loopPt(c,i/120*2*Math.PI);const[px,py]=scr(h*q.lat,q.z);i?x.lineTo(px,py):x.moveTo(px,py)}x.closePath();x.stroke();
     [0,Math.PI/2,Math.PI,3*Math.PI/2].forEach(t=>{const a=loopPt(c,t),b=loopPt(c,t+0.05);const[ax,ay]=scr(h*a.lat,a.z),[bx,by]=scr(h*b.lat,b.z);const an=Math.atan2(by-ay,bx-ax);x.fillStyle='rgba(255,255,255,.75)';x.beginPath();x.moveTo(ax+Math.cos(an)*7,ay+Math.sin(an)*7);x.lineTo(ax+Math.cos(an+2.5)*6,ay+Math.sin(an+2.5)*6);x.lineTo(ax+Math.cos(an-2.5)*6,ay+Math.sin(an-2.5)*6);x.fill()})}));
@@ -260,15 +260,15 @@ function draw(){const x=ctx2d(cv,W,H);
   if($('#showFlow').checked)parts.forEach(p=>{const q=loopPt(CELLS[p.ci],p.t,p.k);const[px,py]=scr(p.h*q.lat,q.z);x.fillStyle=tcol(Tair(q.lat,q.z));x.beginPath();x.arc(px,py,2.8,0,7);x.fill()});
   // H and L at the surface
   [[0,'L'],[30,'H'],[-30,'H'],[60,'L'],[-60,'L']].forEach(([la,t])=>{const px=CX+R*Math.cos(la*D2R)-20,py=CY-R*Math.sin(la*D2R)+6;x.font='800 20px system-ui,Arial';x.textAlign='center';x.lineWidth=3;x.strokeStyle='rgba(255,255,255,.9)';x.strokeText(t,px,py);x.fillStyle=t==='H'?'#1f4fbf':'#b3261e';x.fillText(t,px,py)});
-  [[1,'H'],[-1,'H']].forEach(([h,t])=>{const px=CX+16,py=CY-h*(R-22)+6;x.font='800 20px system-ui,Arial';x.textAlign='center';x.lineWidth=3;x.strokeStyle='rgba(255,255,255,.9)';x.strokeText(t,px,py);x.fillStyle='#1f4fbf';x.fillText(t,px,py)});
+  [[1,'H'],[-1,'H']].forEach(([h,t])=>{const px=CX+R*Math.cos(80*D2R)-14,py=CY-h*R*Math.sin(80*D2R)+(h>0?16:-2);x.font='800 20px system-ui,Arial';x.textAlign='center';x.lineWidth=3;x.strokeStyle='rgba(255,255,255,.9)';x.strokeText(t,px,py);x.fillStyle='#1f4fbf';x.fillText(t,px,py)});
   // cell names
   if($('#showLab').checked){x.font='700 13px system-ui,Arial';x.textAlign='left';x.fillStyle='#e7ecf2';
     [[15,'Hadley cell'],[45,'Ferrel cell'],[75,'Polar cell']].forEach(([la,t])=>[1,-1].forEach(h=>{const[px,py]=scr(h*la,TOP(la)+3);x.fillText(t,px+4,py+4)}));
-    x.font='600 11px system-ui,Arial';x.fillStyle='#aab7c7';const[tx,ty]=scr(8,16.5);x.fillText('top of the weather layer',tx+4,ty-4)}
+  }
   // latitude probe
   const y=CY-R*Math.sin(lat*D2R),xl=CX-R*Math.cos(lat*D2R);x.setLineDash([5,4]);x.strokeStyle='#fff';x.lineWidth=1.6;x.beginPath();x.moveTo(xl,y);const[ex,ey]=scr(lat,TOP(lat));x.lineTo(CX+R*Math.cos(lat*D2R),y);x.lineTo(ex,ey);x.stroke();x.setLineDash([]);
   const[sx,sy]=scr(lat,0);x.fillStyle='#fff';x.strokeStyle='#0b1426';x.lineWidth=2;x.beginPath();x.arc(sx,sy,6,0,7);x.fill();x.stroke();
-  const lab=latName(lat);x.font='700 13px system-ui,Arial';const tw=x.measureText(lab).width+14;const bx=Math.min(W-tw-6,ex+8),by=clamp(ey-12,6,H-26);x.fillStyle='rgba(255,255,255,.95)';x.beginPath();x.roundRect(bx,by,tw,22,6);x.fill();x.fillStyle='#0b1426';x.textAlign='left';x.fillText(lab,bx+7,by+15);
+  const lab='Selected: '+latName(lat);x.font='700 14px system-ui,Arial';const tw=x.measureText(lab).width+16;x.fillStyle='rgba(255,255,255,.95)';x.beginPath();x.roundRect(10,10,tw,26,7);x.fill();x.fillStyle='#0b1426';x.textAlign='left';x.fillText(lab,18,28);
 }
 function latName(l){return l===0?'Equator 0°':`${Math.abs(l)}°${l>0?'N':'S'}`}
 function ui(){$('#latV').textContent=latName(lat);
