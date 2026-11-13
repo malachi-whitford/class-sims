@@ -263,7 +263,7 @@ function draw(){const x=ctx2d(cv,W,H),T=LIGHT[light],o=outcome(),e=env();
   for(let px=12;px<W;px+=22){const v=E(px,t)*A*dim(px);arrow(x,px,MY,px,MY-v,T.c+'aa',2)}
   x.strokeStyle=T.c;x.lineWidth=2;x.beginPath();for(let px=0;px<=W;px+=3){const y=MY-E(px,t)*A*dim(px);px?x.lineTo(px,y):x.moveTo(px,y)}x.stroke();
   x.fillStyle='#e7ecf2';x.font='600 13px system-ui,Arial';x.textAlign='left';x.fillText(`${T.name} light  →`,14,30);
-  x.font='12px system-ui,Arial';x.fillStyle='#b8c3d0';x.fillText(`Arrows = the light's electric field, flipping up and down (shown about ${light==='mw'?'a billion':light==='ir'?'a trillion':'100 trillion'} times slower)`,14,48);
+  x.font='12px system-ui,Arial';x.fillStyle='#b8c3d0';x.fillText(cv.clientWidth<620?'Arrows = electric field (slowed way down)':`Arrows = the light's electric field, flipping up and down (shown about ${light==='mw'?'a billion':light==='ir'?'a trillion':'100 trillion'} times slower)`,14,cv.clientWidth<620?52:48);
   x.fillText(`Real wavelength about ${T.wlt}`,14,H-14);
   // molecule
   const M=MOL[mol],[br,sg]=baseRot();let rot=br,disp=null,mo={labels:true},sc=2.1;
