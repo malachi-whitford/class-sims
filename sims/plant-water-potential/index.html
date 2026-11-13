@@ -385,7 +385,7 @@ function draw1(){
   ctx.fillStyle="#fdf0e6"; rrect(ctx,mid+8,top,mid-24,bot-top,10); ctx.fill();
   // membrane
   ctx.strokeStyle="#5b6b60"; ctx.setLineDash([6,5]); ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(mid,top-6); ctx.lineTo(mid,bot+6); ctx.stroke(); ctx.setLineDash([]);
-  ctx.fillStyle="#5b6b60"; ctx.font="11px sans-serif"; ctx.textAlign="center"; ctx.fillText("selectively permeable membrane",mid,bot+16);
+  ctx.fillStyle="#5b6b60"; ctx.font="11px sans-serif"; if(W<560){ctx.textAlign="right"; ctx.fillText("membrane",W-10,bot+16); ctx.textAlign="center";} else {ctx.textAlign="center"; ctx.fillText("selectively permeable membrane",mid,bot+16);}
   ctx.font="bold 14px sans-serif"; ctx.fillStyle="#1f6fb8"; ctx.fillText("A   Ψ = "+mpa(S1.A.total), mid/2, 24);
   ctx.fillStyle="#b5521b"; ctx.fillText("B   Ψ = "+mpa(S1.B.total), mid+mid/2, 24);
   // gravity indicator & pressure indicator

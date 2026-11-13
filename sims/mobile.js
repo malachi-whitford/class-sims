@@ -9,6 +9,30 @@
 (function(){
   if (window.__simMobile) return; window.__simMobile = true;
   var mq = window.matchMedia('(max-width: 820px)');
+
+  /* Readable canvas text on phones: canvases are drawn at a fixed size and shrunk
+     to fit the screen, so labels can end up 5-6 px tall. On narrow screens, any
+     canvas text that would show smaller than about 9.5 px is enlarged (up to 1.45x). */
+  (function(){
+    var P = window.CanvasRenderingContext2D && CanvasRenderingContext2D.prototype;
+    var D = P && Object.getOwnPropertyDescriptor(P, 'font');
+    if (!D || !D.set) return;
+    var MIN = 9.5;
+    Object.defineProperty(P, 'font', { configurable: true, get: function(){ return D.get.call(this); },
+      set: function(v){
+        try {
+          var c = this.canvas;
+          if (mq.matches && c && c.id !== 'simPipCanvas' && typeof v === 'string'){
+            var m = /(\d+(?:\.\d+)?)px/.exec(v), w = c.clientWidth;
+            if (m && w && c.width){
+              var t = this.getTransform(), s = t.a * w / c.width, f = parseFloat(m[1]);
+              if (s > 0 && f * s < MIN){ var nf = Math.min(f * 1.45, MIN / s); v = v.replace(m[0], nf.toFixed(1) + 'px'); }
+            }
+          }
+        } catch(e){}
+        D.set.call(this, v);
+      } });
+  })();
   var css = document.createElement('style');
   css.textContent =
     '#simPip{position:fixed;left:0;right:0;top:0;z-index:9999;display:none;padding:6px 8px 8px;background:#141a22;box-shadow:0 4px 14px rgba(0,0,0,.35);padding-top:calc(6px + env(safe-area-inset-top,0px))}' +
@@ -21,7 +45,7 @@
   pip.setAttribute('aria-hidden', 'true');   // visual convenience only; screen readers already get text descriptions
   pip.innerHTML = '<div class="bar"><span>Live view (tap to jump back)</span><button type="button" tabindex="-1" aria-label="Hide live view">×</button></div><canvas></canvas>';
   document.body.appendChild(pip);
-  var pc = pip.querySelector('canvas'), px = pc.getContext('2d');
+  var pc = pip.querySelector('canvas'); pc.id = 'simPipCanvas'; var px = pc.getContext('2d');
   var hidden = false, active = null, lastCtl = null, lastAt = 0;
 
   pip.querySelector('button').addEventListener('click', function(e){ e.stopPropagation(); hidden = true; pip.style.display = 'none'; });
@@ -76,4 +100,7 @@
     raf(loop);
   }
   raf(loop);
+  // canvases drawn once before this script loaded: ask the page to redraw with the larger text
+  if (mq.matches) { var kick = function(){ try { window.dispatchEvent(new Event('resize')); } catch(e){} };
+    if (document.readyState === 'complete') setTimeout(kick, 50); else window.addEventListener('load', function(){ setTimeout(kick, 50); }); }
 })();
