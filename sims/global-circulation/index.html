@@ -68,6 +68,9 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 #cv3{aspect-ratio:760/520;background:#070d1a}
 .tiles.six{grid-template-columns:repeat(auto-fit,minmax(140px,1fr))}
 .tile .v.sm{font-size:1.05rem}
+/* fixed-size boxes: every label and value gets room for exactly two lines, so the sim below never moves */
+.tiles.six .tile .k{line-height:1.25;height:2.5em;overflow:hidden}
+.tiles.six .tile .v.sm{line-height:1.25;height:2.5em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .quick{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
 .quick button{flex:1 1 auto;font-size:.8rem;padding:5px 8px}
 #spin.on,#seasonsBtn.on,#seasonsBtn1.on{background:var(--accent);border-color:var(--accent);color:#fff}
