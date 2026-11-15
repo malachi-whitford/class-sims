@@ -100,6 +100,7 @@ input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
     <label class="check"><input type="checkbox" id="showTraits">&nbsp;Show shared traits</label>
     <div id="traitList"></div>
     <label class="check"><input type="checkbox" id="showStatus" checked>&nbsp;Show protection status</label>
+    <label class="check"><input type="checkbox" id="showIntro" checked>&nbsp;Mark introduced (non-native) species</label>
     <p class="hint">FE / FT = federally endangered / threatened. SE / ST = California endangered / threatened. SSC = California Species of Special Concern.</p>
   </div>
   <div class="card" id="treebox">
@@ -119,7 +120,8 @@ input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
   <div class="card topic" id="topic"></div>
   <div class="card" id="quiz">
     <h2>Practice: how closely related?</h2>
-    <div class="seg" id="qtype" aria-label="Question type"><button data-v="mix" class="on">Mixed</button><button data-v="closer">Which is closer?</button><button data-v="mrca">Find the ancestor</button><button data-v="when">When?</button></div>
+    <p class="small muted" style="margin-top:0">Answer by tapping the tree. Species in the question are outlined in blue.</p>
+    <div class="seg" id="qtype" aria-label="Question type"><button data-v="mix" class="on">Mixed</button><button data-v="closer">Closer relative</button><button data-v="sister">Sister species</button><button data-v="mrca">Common ancestor</button><button data-v="clade">Clade</button><button data-v="when">When?</button></div>
     <div class="qtext" id="qtext"></div>
     <div class="choices" id="choices"></div>
     <div class="fb" id="fb" aria-live="polite"></div>
@@ -151,24 +153,43 @@ const N=(t,...c)=>({t,c});
 const N_=(t,o,...c)=>Object.assign({t,c},o);
 
 /* California frogs. Ages are rounded, approximate estimates. */
-const PSEUDO={
-  lump:()=>L('Pseudacris regilla','Pacific chorus frog (one species)',{note:'Lumped: all Pacific chorus frogs as one species.'}),
-  mt:()=>N(1.4,L('Pseudacris regilla','Northern Pacific chorus frog'),N(0.8,L('Pseudacris sierra','Sierran chorus frog'),L('Pseudacris hypochondriaca','Baja California chorus frog'))),
-  gen:()=>N(0.6,L('Pseudacris regilla','Pacific chorus frog (incl. "sierra")'),L('Pseudacris hypochondriaca','Baja California chorus frog'))
-};
-function frogTree(o){return N(200,
+// Pacific chorus frog complex: what each study concluded (tree shape, genus name used)
+const PAPERS=[
+  {id:'trad',btn:'1852–1985',who:'Baird & Girard 1852 through Stebbins 1985',data:'Body form, color, and range',shape:'one',genus:'Hyla',
+   txt:'From its description in 1852 until the 1980s, this frog was one wide-ranging species, <i>Hyla regilla</i>, from British Columbia to Baja California. Jameson et al. (1966) named several subspecies (one of them <i>Hyla regilla sierra</i>), but all were still one species. In 1986 Hedges moved it from <i>Hyla</i> to <i>Pseudacris</i>.'},
+  {id:'rec06',btn:'Recuero 2006',who:'Recuero, Martínez-Solano, Parra-Olea & García-París 2006',data:'Mitochondrial DNA, plus older allozyme (protein) data',shape:'three',genus:'Pseudacris',
+   txt:'Found three mitochondrial clades (northwest, central, and southern) that split roughly 1 million years ago, and proposed treating them as three species. They named the three species in that paper and then corrected two of the names in a corrigendum the same year. The final names are <i>P. regilla</i> (northwest), <i>P. sierra</i> (central California and inland), and <i>P. hypochondriaca</i> (southern California and Baja). The tree shows the branching order later dated by Jadin et al. (2021).'},
+  {id:'bar14',btn:'Barrow 2014',who:'Barrow et al. 2014',data:'27 nuclear loci compared with mitochondrial DNA',shape:'one',genus:'Pseudacris',
+   txt:'Nuclear DNA did <b>not</b> support the mitochondrial split between <i>P. sierra</i> and <i>P. hypochondriaca</i>. Following this, a 2017 Society for the Study of Amphibians and Reptiles (SSAR) names list said the three might again be treated as one species, <i>P. regilla</i>.'},
+  {id:'due16',btn:'Duellman 2016',who:'Duellman, Marion & Hedges 2016',data:'Molecular phylogeny of all treefrogs',shape:'three',genus:'Hyliola',
+   txt:'Kept three species and moved all western chorus frogs (including the California treefrog) into a separate genus, <i>Hyliola</i>, keeping <i>Pseudacris</i> for eastern and Rocky Mountain species. Watch the scientific names change. The tree shape did not change.'},
+  {id:'ban20',btn:'Banker 2020',who:'Banker et al. 2020',data:'Genome-wide nuclear DNA',shape:'one',genus:'Pseudacris',
+   txt:'Argued that <i>Hyliola</i> should not be recognized, because <i>Pseudacris</i> is already a clade and geographic separation alone is not a reason to split a genus. Also concluded that splitting the Pacific chorus frog into three species may have been premature.'},
+  {id:'jad21',btn:'Jadin 2021',who:'Jadin et al. 2021',data:'Mitochondrial DNA species delimitation, with molecular dating',shape:'three',genus:'Pseudacris',
+   txt:'Supported three species again (using mitochondrial DNA only) and dated the splits: about 1.4 million years ago for the northern lineage, then about 0.8 million years ago between <i>P. sierra</i> and <i>P. hypochondriaca</i>. Also found that frogs in Idaho and Montana belong to <i>P. sierra</i>, not <i>P. regilla</i>.'},
+  {id:'gen',btn:'Genomic preprint',who:'Recent genomic study (preprint, not yet peer reviewed)',data:'Thousands of nuclear loci plus call differences',shape:'two',genus:'Pseudacris',
+   txt:'Found that the northern and Sierran lineages split recently and still exchange genes (a "gray zone" of speciation), while <i>P. hypochondriaca</i> split off more than 0.5 million years ago. Proposes <b>two</b> species: <i>P. hypochondriaca</i> and <i>P. regilla</i> (including "sierra"). The closest pair is now different from the mitochondrial tree.'},
+  {id:'han25',btn:'Field guide 2025',who:'Hansen & Shedd 2025, California Amphibians and Reptiles',data:'Review of the evidence (field guide)',shape:'one',genus:'Pseudacris',
+   txt:'Keeps the genus <i>Pseudacris</i> and treats <i>P. hypochondriaca</i>, <i>P. sierra</i>, and <i>P. regilla</i> together as one species, the Pacific chorus frog. The authors call the move to <i>Hyliola</i> "unnecessary and needlessly disruptive."'}];
+function pseudo(o){const P=PAPERS.find(x=>x.id===o.paper)||PAPERS[0],g=P.genus;
+  if(P.shape==='one')return L(g+' regilla',g==='Hyla'?'Pacific treefrog (one species)':'Pacific chorus frog (one species)',{sp:'Pseudacris regilla'});
+  if(P.shape==='two')return N(0.6,L(g+' regilla','Pacific chorus frog (incl. "sierra")',{sp:'Pseudacris regilla'}),L(g+' hypochondriaca','Baja California chorus frog',{sp:'Pseudacris hypochondriaca'}));
+  return N(1.4,L(g+' regilla','Northern Pacific chorus frog',{sp:'Pseudacris regilla'}),N(0.8,L(g+' sierra','Sierran chorus frog',{sp:'Pseudacris sierra'}),L(g+' hypochondriaca','Baja California chorus frog',{sp:'Pseudacris hypochondriaca'})))}
+function frogTree(o){const P=PAPERS.find(x=>x.id===o.paper)||PAPERS[0],g=P.genus;return N(200,
   L('Ascaphus truei','Coastal tailed frog',{st:'SSC'}),
-  N(170,
-    N(35,L('Scaphiopus couchii',"Couch's spadefoot"),L('Spea hammondii','Western spadefoot',{st:'SSC'})),
-    N(140,
-      N(65,
-        N(8,L('Anaxyrus californicus','Arroyo toad',{st:'FE'}),N(1.5,L('Anaxyrus boreas','Western toad'),L('Anaxyrus canorus','Yosemite toad',{st:'FT'}))),
-        N(8,L('Pseudacris cadaverina','California treefrog'),PSEUDO[o.pseudo]())),
-      N(35,
-        L('Lithobates catesbeianus','American bullfrog (introduced)',{intro:1}),
-        N(8,L('Rana boylii','Foothill yellow-legged frog',{st:'FE/FT*'}),
-          N(6,N(2.2,L('Rana muscosa','Southern mountain yellow-legged frog',{st:'FE, SE'}),L('Rana sierrae','Sierra Nevada yellow-legged frog',{st:'FE, ST'})),
-              N(4,L('Rana draytonii','California red-legged frog',{st:'FT'}),N(3,L('Rana aurora','Northern red-legged frog'),L('Rana cascadae','Cascades frog')))))))))}
+  N(185,
+    L('Xenopus laevis','African clawed frog',{intro:1}),
+    N(170,
+      N(35,L('Scaphiopus couchii',"Couch's spadefoot"),L('Spea hammondii','Western spadefoot',{st:'SSC'})),
+      N(140,
+        N(65,
+          N(8,L('Anaxyrus californicus','Arroyo toad',{st:'FE'}),N(1.5,L('Anaxyrus boreas','Western toad'),L('Anaxyrus canorus','Yosemite toad',{st:'FT'}))),
+          N(8,L(g+' cadaverina','California treefrog',{sp:'Pseudacris cadaverina'}),pseudo(o))),
+        N(35,
+          N(20,L('Lithobates catesbeianus','American bullfrog',{intro:1}),L('Lithobates berlandieri','Rio Grande leopard frog',{intro:1})),
+          N(8,L('Rana boylii','Foothill yellow-legged frog',{st:'FE/FT*'}),
+            N(6,N(2.2,L('Rana muscosa','Southern mountain yellow-legged frog',{st:'FE, SE'}),L('Rana sierrae','Sierra Nevada yellow-legged frog',{st:'FE, ST'})),
+                N(4,L('Rana draytonii','California red-legged frog',{st:'FT'}),N(3,L('Rana aurora','Northern red-legged frog'),L('Rana cascadae','Cascades frog'))))))))))}
 
 /* California kangaroo rats (genus Dipodomys). Unresolved nodes are drawn as polytomies. */
 const SSP=0.2;
@@ -179,17 +200,22 @@ function kratTree(o){const s=o.ssp;
     :L('Dipodomys nitratoides','San Joaquin kangaroo rat',{st:'2 ssp. FE'});
   const hee=s?N_(SSP,{unc:1},L('Dipodomys heermanni morroensis','Morro Bay kangaroo rat',{sp:'Dipodomys heermanni',st:'FE, SE',ssp:1}),L('Dipodomys heermanni (8 other ssp.)',"Heermann's kangaroo rat (8 other subspecies)",{sp:'Dipodomys heermanni',ssp:1}))
     :L('Dipodomys heermanni',"Heermann's kangaroo rat",{st:'1 ssp. FE'});
-  return N(12,
+  // Desert kangaroo rat branches first (all studies agree); the rest form two clades.
+  return N(10.5,
     L('Dipodomys deserti','Desert kangaroo rat'),
-    L('Dipodomys ordii',"Ord's kangaroo rat"),
-    N(3,mer,nit),
-    N(6,L('Dipodomys ingens','Giant kangaroo rat',{st:'FE, SE'}),L('Dipodomys stephensi',"Stephens' kangaroo rat",{st:'FT, ST'}),L('Dipodomys panamintinus','Panamint kangaroo rat'),L('Dipodomys microps','Chisel-toothed kangaroo rat'),hee),
-    N(5,L('Dipodomys venustus','Narrow-faced kangaroo rat'),N(1.5,L('Dipodomys agilis','Agile kangaroo rat'),L('Dipodomys simulans','Dulzura kangaroo rat'))))}
+    N(9,
+      N(6,L('Dipodomys ordii',"Ord's kangaroo rat"),N(3,mer,nit)),
+      N(7,
+        N(5,L('Dipodomys ingens','Giant kangaroo rat',{st:'FE, SE'}),
+          N(4,L('Dipodomys stephensi',"Stephens' kangaroo rat",{st:'FT, ST'}),
+            N(2.5,hee,L('Dipodomys panamintinus','Panamint kangaroo rat')))),
+        N(4,L('Dipodomys venustus','Narrow-faced kangaroo rat'),
+          N(0.6,L('Dipodomys agilis','Agile kangaroo rat'),L('Dipodomys simulans','Dulzura kangaroo rat'))))))}
 
 /* California squirrels (family Sciuridae) */
 function sqTree(o){return N(34,
   N(23,L('Glaucomys oregonensis',"Humboldt's flying squirrel",{old:'Glaucomys sabrinus'}),
-       N(16,L('Tamiasciurus douglasii','Douglas squirrel'),L('Sciurus griseus','Western gray squirrel'))),
+       N(16,L('Tamiasciurus douglasii','Douglas squirrel'),N(6,L('Sciurus griseus','Western gray squirrel'),N(3,L('Sciurus niger','Eastern fox squirrel',{intro:1}),L('Sciurus carolinensis','Eastern gray squirrel',{intro:1}))))),
   N(20,L('Neotamias spp.','Chipmunks (about 13 CA species)',{old:'Tamias (Eutamias) spp.'}),
     N(17.5,
       N(2.5,L('Ammospermophilus leucurus','White-tailed antelope squirrel'),L('Ammospermophilus nelsoni','San Joaquin antelope squirrel',{st:'ST'})),
@@ -224,7 +250,7 @@ const TCOL=['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s
 
 /* ---------- state ---------- */
 const S={grp:'frogs',style:'rect',dir:'right',scale:'time',labs:'cn',mode:'rotate',traits:false,traitOn:[],status:true,
-  pseudo:'lump',ssp:false,oldNames:false,hiSperm:false,p:1,sel:null,rot:new Set(),q:null,score:[0,0],qtype:'mix'};
+  paper:'trad',ssp:false,showIntro:true,oldNames:false,hiSperm:false,p:1,sel:null,rot:new Set(),q:null,score:[0,0],qtype:'mix'};
 let T=null;          // current tree: {root,nodes,tips,byKey}
 let cur={};          // animated layout {key:{u,v}}
 let anim=null;
@@ -270,7 +296,7 @@ let G={};   // geometry for this frame
 function geom(){G={};const box=$('#treebox'),W=Math.max(300,box.clientWidth-28),n=T.tips.length;
   const fs=W<520?11:12.5,row=W<520?20:23;
   const nTr=S.traits?T.traits.filter((t,i)=>S.traitOn[i]).length:0,sq=10,gap=3;
-  const badge=nd=>S.status&&nd.st?tw(nd.st,fs-2.5,700)+14:0;
+  const badge=nd=>badges(nd).reduce((a,b)=>a+tw(b.t,fs-2.5,700)+14,0);
   const lw=Math.max(...T.tips.map(t=>tw(label(t),fs,t===selTip()?700:400)+badge(t)))+nTr*(sq+gap)+14;
   const m=14,axis=S.scale==='clado'?0:30;
   let H,area;
@@ -284,6 +310,7 @@ function pos(u,v){const a=G.area;
   if(S.dir==='left')return[a.x0-u*a.D,a.y0+v*a.A];
   if(S.dir==='down')return[a.x0+v*a.A,a.y0+u*a.D];
   return[a.x0+v*a.A,a.y0-u*a.D]}
+function badges(t){const out=[];if(S.status&&t.st)out.push({t:t.st,c:/E/.test(t.st)?'var(--bad)':/T/.test(t.st)?'var(--s4)':'var(--muted)'});if(S.showIntro&&t.intro)out.push({t:'Introduced',c:'var(--s6)'});return out}
 function selTip(){return S.sel&&T.byKey[S.sel]&&!T.byKey[S.sel].c?T.byKey[S.sel]:null}
 function inSel(nd){if(!S.sel)return false;const s=T.byKey[S.sel];return s&&isDesc(nd,s)}
 function spermInfo(){const sp=T.tips.filter(t=>t.sperm);if(!sp.length)return null;const m=mrcaMany(sp);return{m,others:m.tips.filter(x=>!sp.some(s=>s.sci===x)).map(x=>T.byKey['T:'+x])}}
@@ -334,7 +361,7 @@ function draw(){if(!T)return;geom();const svg=$('#tree');const{H,fs}=G,W=G.vw;sv
   if(S.traits)T.traits.forEach((tr,ti)=>{if(S.traitOn[ti]&&tr.origins.includes(T.root)&&S.style!=='circ'){const r=P(T.root),m=pos(r.u-0.018,r.v);mk+=marker(m[0],m[1],ti)}else if(S.traitOn[ti]&&S.traits&&tr.origins.includes(T.root)){const m=pos(0,0);mk+=marker(G.area.cx,G.area.cy-14,ti)}});
   s+=br+mk;
   // nodes (tap targets)
-  let nd='';T.nodes.forEach(n=>{if(!n.c)return;if(!full&&n.t<tcut)return;const p=P(n),[x,y]=pos(p.u,p.v);const isSel=S.sel===n.key;const qA=S.q&&S.q.type==='mrca'&&S.q.done&&S.q.ans===n;
+  let nd='';T.nodes.forEach(n=>{if(!n.c)return;if(!full&&n.t<tcut)return;const p=P(n),[x,y]=pos(p.u,p.v);const isSel=S.sel===n.key;const qA=false;
     nd+=`<g class="node" tabindex="0" role="button" data-k="${esc(n.key)}" aria-label="${esc(nodeAria(n))}"><circle cx="${x}" cy="${y}" r="13" fill="transparent"/><circle class="ring" cx="${x}" cy="${y}" r="${isSel||qA?7:5}" fill="${qA?'var(--good)':isSel?'var(--accent)':'var(--card)'}" stroke="${qA?'var(--good)':'var(--branch)'}" stroke-width="2"/></g>`});
   s+=nd;
   // tips and labels
@@ -348,10 +375,11 @@ function draw(){if(!T)return;geom();const svg=$('#tree');const{H,fs}=G,W=G.vw;sv
     const sg=flip?-1:1;let lx=sg*7,inner='';
     if(S.traits)T.traits.forEach((tr,ti)=>{if(!S.traitOn[ti])return;const has=tipHas(t,tr);const cx=lx+(flip?-G.sq:0);inner+=`<rect x="${cx}" y="${-G.sq/2}" width="${G.sq}" height="${G.sq}" rx="2" fill="${has?TCOL[ti%6]:'none'}" stroke="${has?TCOL[ti%6]:'var(--line)'}" stroke-width="1.2"/>`;lx+=sg*(G.sq+G.gap)});
     const txt=label(t),ital=(S.labs==='sci'||S.oldNames)?' font-style="italic"':'';const w=tw(txt,fs,bold?700:400);
+    const qt=S.q&&!S.q.done&&(S.q.marks||[]).includes(t);if(qt)inner+=`<rect x="${flip?lx-w-5:lx-4}" y="${-fs*0.8}" width="${w+9}" height="${fs*1.6}" rx="5" fill="none" stroke="var(--accent)" stroke-width="2"/>`;
     if(sp||inside)inner+=`<rect x="${flip?lx-w-4:lx-3}" y="${-fs*0.75}" width="${w+7}" height="${fs*1.5}" rx="4" fill="${sp?'var(--hi)':'var(--hi2)'}" opacity=".22"/>`;
     inner+=`<text x="${lx+(flip?-1:1)}" y="${fs*0.36}" font-size="${fs}"${ital} font-weight="${bold?700:400}" text-anchor="${flip?'end':'start'}" fill="var(--text)">${esc(txt)}</text>`;
-    if(S.status&&t.st){const bw=tw(t.st,fs-2.5,700)+10,bx=flip?lx-w-6-bw:lx+w+6;inner+=`<rect x="${bx}" y="${-fs*0.62}" width="${bw}" height="${fs*1.24}" rx="${fs*0.62}" fill="${/E/.test(t.st)?'var(--bad)':/T/.test(t.st)?'var(--s4)':'var(--muted)'}"/><text x="${bx+bw/2}" y="${fs*0.3}" font-size="${fs-2.5}" font-weight="700" text-anchor="middle" fill="#fff">${esc(t.st)}</text>`}
-    lb+=`<g class="tip" data-k="${esc(t.key)}" opacity="${dim?0.25:half?0.6:1}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${ang.toFixed(1)})" style="cursor:pointer">${inner}</g>`;
+    {let off=w+6;badges(t).forEach(bd=>{const bw=tw(bd.t,fs-2.5,700)+10,bx=flip?lx-off-bw:lx+off;inner+=`<rect x="${bx}" y="${-fs*0.62}" width="${bw}" height="${fs*1.24}" rx="${fs*0.62}" fill="${bd.c}"/><text x="${bx+bw/2}" y="${fs*0.3}" font-size="${fs-2.5}" font-weight="700" text-anchor="middle" fill="#fff">${esc(bd.t)}</text>`;off+=bw+4})}
+    lb+=`<g class="tip" tabindex="0" role="button" aria-label="${esc(label(t))}" data-k="${esc(t.key)}" opacity="${dim?0.25:half?0.6:1}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${ang.toFixed(1)})" style="cursor:pointer">${inner}</g>`;
     if(!dim)lb+=`<circle cx="${x}" cy="${y}" r="2.6" fill="${t.intro?'var(--muted)':'var(--branch)'}"/>`});
   s+=lb;
   svg.innerHTML=s;
@@ -370,11 +398,11 @@ function nodeAria(n){const names=n.tips.map(sci=>label(T.byKey['T:'+sci]));retur
 function status(html){$('#stat').innerHTML=html}
 function nodeInfo(n){const names=n.tips.map(sci=>label(T.byKey['T:'+sci]));return`<b>${names.length===T.tips.length?'Root: the common ancestor of every species here':'Clade of '+names.length+' species'}</b> · their most recent common ancestor lived ${fmtT(n.t,n.unc)}${n.c.length>2?' · <b>unresolved</b> (a polytomy: the data cannot yet tell which of these split first)':''}`}
 function onNode(key){const n=T.byKey[key];if(!n)return;
-  if(S.q&&S.q.type==='mrca'&&!S.q.done){answerMrca(n);return}
+  if(pendingTap()){answerNode(n);return}
   if(S.mode==='rotate'){S.rot.has(key)?S.rot.delete(key):S.rot.add(key);S.sel=key;relayout(true);status(`Rotated the node joining ${n.tips.length} species. <b>Nothing about relatedness changed</b>: the same species still share the same ancestors.`)}
   else{S.sel=S.sel===key?null:key;draw();status(S.sel?nodeInfo(n):'')}}
-$('#tree').addEventListener('click',e=>{const g=e.target.closest('.node');if(g){onNode(g.dataset.k);return}const tp=e.target.closest('.tip');if(tp){const t=T.byKey[tp.dataset.k];S.sel=S.sel===t.key?null:t.key;draw();status(S.sel?tipInfo(t):'')}});
-$('#tree').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const g=e.target.closest('.node');if(g){e.preventDefault();onNode(g.dataset.k);setTimeout(()=>{const again=$(`#tree .node[data-k="${CSS.escape(g.dataset.k)}"]`);if(again)again.focus()},480)}});
+$('#tree').addEventListener('click',e=>{const g=e.target.closest('.node');if(g){onNode(g.dataset.k);return}const tp=e.target.closest('.tip');if(tp){const t=T.byKey[tp.dataset.k];if(pendingTap()){answerTip(t);return}S.sel=S.sel===t.key?null:t.key;draw();status(S.sel?tipInfo(t):'')}});
+$('#tree').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const tp=e.target.closest('.tip');if(tp){e.preventDefault();tp.dispatchEvent(new MouseEvent('click',{bubbles:true}));return}const g=e.target.closest('.node');if(g){e.preventDefault();onNode(g.dataset.k);setTimeout(()=>{const again=$(`#tree .node[data-k="${CSS.escape(g.dataset.k)}"]`);if(again)again.focus()},480)}});
 function tipInfo(t){return`<b>${esc(t.cn)}</b> (<i>${esc(S.oldNames&&t.old?t.old:t.sci)}</i>)${t.st?` · status: ${esc(t.st)}`:''}${t.old&&!S.oldNames?` · formerly <i>${esc(t.old)}</i>`:''}${t.intro?' · not native to California':''}`}
 
 seg($('#grp'),v=>setGroup(v));
@@ -387,6 +415,7 @@ $('#shuffle').onclick=()=>{T.nodes.forEach(n=>{if(n.c&&Math.random()<0.5)S.rot.h
 $('#reset').onclick=()=>{S.rot.clear();S.sel=null;S.p=1;$('#time').value=1000;relayout(true);status('')};
 $('#showTraits').onchange=e=>{S.traits=e.target.checked;renderTraits();draw()};
 $('#showStatus').onchange=e=>{S.status=e.target.checked;draw()};
+$('#showIntro').onchange=e=>{S.showIntro=e.target.checked;draw()};
 $('#time').addEventListener('input',e=>{S.p=+e.target.value/1000;stopPlay();draw()});
 let playing=null;
 function stopPlay(){if(playing){cancelAnimationFrame(playing);playing=null;$('#play').textContent='Grow the tree'}}
@@ -395,7 +424,7 @@ $('#play').onclick=()=>{if(playing){stopPlay();return}if(S.p>=0.999)S.p=0;$('#pl
 function renderTraits(){const el=$('#traitList');if(!S.traits){el.innerHTML='';return}
   el.innerHTML=T.traits.map((tr,i)=>`<label class="trait"><input type="checkbox" data-i="${i}" ${S.traitOn[i]?'checked':''}><span class="sw" style="background:${TCOL[i%6]}"></span><span><b>${i+1}.</b> ${esc(tr.name)}</span></label>`).join('')+'<p class="hint">Numbered dots mark the branch where each trait first appeared. Filled squares show which species have it.</p>';
   $$('input',el).forEach(c=>c.onchange=()=>{S.traitOn[+c.dataset.i]=c.checked;draw()})}
-function zoomTip(){const z=$('#zoomtip');const young=S.grp==='frogs'&&S.pseudo!=='lump'||S.grp==='krats'&&S.ssp;
+function zoomTip(){const z=$('#zoomtip');const young=S.grp==='frogs'&&(PAPERS.find(x=>x.id===S.paper)||{}).shape!=='one'||S.grp==='krats'&&S.ssp;
   if(young&&S.scale==='time'){z.style.display='block';z.innerHTML=`The newest splits are less than ${S.grp==='frogs'?'1.5 million':'a few hundred thousand'} years old, too short to see on this time scale. <button id="zl">Use Time (log)</button> <button id="zc">Use Equal</button>`;$('#zl').onclick=()=>{setSeg($('#scale'),'log');S.scale='log';relayout(true);zoomTip()};$('#zc').onclick=()=>{setSeg($('#scale'),'clado');S.scale='clado';relayout(true);zoomTip()}}
   else z.style.display='none'}
 function legend(){$('#leg').innerHTML=`<span><svg width="16" height="12"><circle cx="8" cy="6" r="5" fill="var(--card)" stroke="var(--branch)" stroke-width="2"/></svg>Node = common ancestor (tap it)</span><span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--branch)" stroke-width="2"/></svg>Branch = a lineage through time</span>${S.grp==='krats'&&S.ssp?'<span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--branch)" stroke-width="2" stroke-dasharray="5 4"/></svg>Subspecies (shallow; timing uncertain)</span>':''}`}
@@ -403,18 +432,21 @@ function legend(){$('#leg').innerHTML=`<span><svg width="16" height="12"><circle
 /* ---------- topics ---------- */
 function renderTopic(){const el=$('#topic');let h='';
   if(S.grp==='frogs'){h=`<h2>Pacific chorus frogs: one species, two, or three?</h2>
-    <div class="seg" id="pseudo" aria-label="Pacific chorus frog taxonomy"><button data-v="lump">Lumped: 1</button><button data-v="mt">mtDNA split: 3</button><button data-v="gen">Genomic: 2</button></div>
+    <p class="small muted" style="margin-top:0">Click each study in order. The tree above redraws to show what that study concluded.</p>
+    <div class="seg" id="paper" aria-label="Study">${PAPERS.map(P=>`<button data-v="${P.id}">${P.btn}</button>`).join('')}</div>
     <div id="pText"></div>
     <ul><li>Taxonomists who prefer many narrowly defined species are "splitters"; those who prefer fewer, broader species are "lumpers." Which do you think the evidence supports here?</li>
     <li>Why might mitochondrial DNA (inherited only from the mother) and nuclear DNA tell different stories?</li>
-    <li>Use <b>Time (log)</b>: how does the age of these splits compare with the split between the California red-legged frog and the northern red-legged frog?</li></ul>`;}
+    <li>Use <b>Time (log)</b>: how does the age of these splits compare with the split between the California red-legged frog and the northern red-legged frog?</li>
+    <li>Three introduced frogs live in California (marked "Introduced"). Which native frogs is the American bullfrog most closely related to?</li></ul>`;}
   else if(S.grp==='krats'){h=`<h2>Endangered: whole species or subspecies?</h2>
     <label class="check"><input type="checkbox" id="sspBox" ${S.ssp?'checked':''}>&nbsp;Show subspecies</label>
     <p>The U.S. Endangered Species Act can protect a species, a subspecies, or a distinct population segment. California's listed kangaroo rats include two whole species (giant and Stephens') and four subspecies: Fresno and Tipton (subspecies of the San Joaquin kangaroo rat), Morro Bay (Heermann's), and San Bernardino (Merriam's).</p>
     <ul><li>Turn on subspecies. How deep are the subspecies splits compared with the split between the giant kangaroo rat and Heermann's kangaroo rat?</li>
     <li>Mitochondrial DNA does not sort by the three San Joaquin subspecies, although they do differ in body size and color (Patton et al. 2019). It also showed no genetic structure among all nine Heermann's subspecies, including Morro Bay (Benedict et al. 2019). Should protection follow genetic lineages, body form, or geography?</li>
     <li>Stephens' kangaroo rat was moved from endangered to threatened in 2022 after habitat was conserved. The Morro Bay kangaroo rat has not been confirmed in the wild since the 1980s.</li>
-    <li>Several nodes are <b>unresolved</b> (more than two branches from one node). Which species can you <i>not</i> say are each other's closest relatives?</li></ul>`;}
+    <li>Find the giant kangaroo rat's closest relatives. Is the endangered giant kangaroo rat more closely related to the endangered San Joaquin kangaroo rats or to Heermann's kangaroo rat?</li>
+    <li>No kangaroo rats have been introduced to California; every species on this tree is native to North America.</li></ul>`;}
   else{const si=spermInfo();h=`<h2>When a genus is not a real group: breaking up <i>Spermophilus</i></h2>
     <div class="seg" id="names" aria-label="Names"><button data-v="new">Current names</button><button data-v="old">Names before 2009</button></div>
     <label class="check"><input type="checkbox" id="spermBox" ${S.hiSperm?'checked':''}>&nbsp;Highlight the old genus <i>Spermophilus</i></label>
@@ -423,48 +455,66 @@ function renderTopic(){const el=$('#topic');let h='';
     <ul><li>Is "ground squirrels" (everything with trait 3) a clade? Is "tree squirrels" (trait 2)? Is "striped squirrels" (trait 4)?</li>
     <li>Names keep changing as data improve: the Douglas ground squirrel was split from the California ground squirrel in 2014, and Humboldt's flying squirrel from the northern flying squirrel in 2017.</li>
     <li>Not every node is equally certain: methods using thousands of genes disagree on whether marmots are sister to the golden-mantled and California ground squirrel group (McLean et al. 2019).</li>
-    <li>The San Joaquin antelope squirrel and Mohave ground squirrel are listed as threatened in California.</li></ul>`}
+    <li>The San Joaquin antelope squirrel and Mohave ground squirrel are listed as threatened in California.</li>
+    <li>Two eastern tree squirrels were introduced to California (marked "Introduced"). Which native squirrel are they most closely related to? Does that help explain why they compete with it?</li></ul>`}
   el.innerHTML=h;
-  if(S.grp==='frogs'){seg($('#pseudo'),v=>{S.pseudo=v;rebuild(true);pText();zoomTip()});setSeg($('#pseudo'),S.pseudo);pText()}
+  if(S.grp==='frogs'){seg($('#paper'),v=>{S.paper=v;rebuild(true);pText();zoomTip()});setSeg($('#paper'),S.paper);pText()}
   if(S.grp==='krats'){$('#sspBox').onchange=e=>{S.ssp=e.target.checked;rebuild(true);zoomTip();legend()}}
   if(S.grp==='squirrels'){seg($('#names'),v=>{S.oldNames=v==='old';draw();renderTopic()});setSeg($('#names'),S.oldNames?'old':'new');$('#spermBox').onchange=e=>{S.hiSperm=e.target.checked;draw();renderTopic()}}}
-function pText(){const t={lump:`<p>For most of the 1900s, all Pacific chorus frogs from British Columbia to Baja California were treated as one species, <i>Pseudacris</i> (earlier <i>Hyla</i>) <i>regilla</i>. They look alike and make similar calls. Many field guides and iNaturalist still treat them as one species.</p>`,
-  mt:`<p>Recuero et al. (2006), using mitochondrial DNA plus older protein data, split the complex into three species: <i>P. regilla</i> (northwest), <i>P. sierra</i> (central California and inland), and <i>P. hypochondriaca</i> (southern California and Baja). A 2021 mtDNA study dated the splits to about 1.4 and 0.8 million years ago, with <i>sierra</i> and <i>hypochondriaca</i> as the closest pair.</p>`,
-  gen:`<p>Nuclear DNA tells a different story. Barrow et al. (2014) and Banker et al. (2020) found little support for three species. A recent genomic study using thousands of nuclear loci (a preprint, not yet peer reviewed) found that the northern and Sierran lineages still exchange genes, a "gray zone" of speciation. It proposes two species: <i>P. hypochondriaca</i>, which split off more than 0.5 million years ago, and <i>P. regilla</i>, including "sierra." Notice that the closest pair is now different from the mtDNA tree.</p>`}[S.pseudo];$('#pText').innerHTML=t}
+function pText(){const P=PAPERS.find(x=>x.id===S.paper)||PAPERS[0];const n=P.shape==='one'?1:P.shape==='two'?2:3;
+  $('#pText').innerHTML=`<p style="margin-bottom:2px"><b>${esc(P.who)}</b></p><p class="small" style="margin:0 0 4px"><span class="pill">${n} species</span><span class="pill">genus: ${P.genus}</span><span class="pill">data: ${esc(P.data)}</span></p><p>${P.txt}</p>`}
 
-/* ---------- practice questions ---------- */
+/* ---------- practice questions (answered by tapping the tree) ---------- */
 const nm=t=>label(t);
+function sisterTip(t){const p=t.par;if(!p||p.c.length!==2)return null;const o=p.c.find(x=>x!==t);return o.c?null:o}
 function newQ(first){S.q=null;const tips=T.tips;$('#fb').textContent='';$('#fb').className='fb';
-  const types=first?['closer']:S.qtype==='mix'?['closer','closer','mrca','when','rot']:[S.qtype];
-  for(let tries=0;tries<200;tries++){const ty=pick(types);
+  const types=first?['closer']:S.qtype==='mix'?['closer','sister','mrca','clade','when']:[S.qtype];
+  for(let tries=0;tries<300;tries++){const ty=pick(types);
     if(ty==='closer'){const a=pick(tips),b=pick(tips),c=pick(tips);if(a===b||a===c||b===c)continue;const mb=mrca(a,b),mc2=mrca(a,c);if(mb===mc2||!isDesc(mb,mc2))continue;
-      S.q={type:'closer',a,b,c,mb,mc:mc2,text:`Which is more closely related to the <b>${esc(nm(a))}</b>?`,opts:shuffle([b,c]).map(x=>({label:nm(x),ok:x===b}))};break}
-    if(ty==='mrca'){const a=pick(tips),b=pick(tips);if(a===b)continue;const m=mrca(a,b);if(m===T.root&&Math.random()<0.6)continue;S.q={type:'mrca',a,b,ans:m,text:`Tap the node that is the most recent common ancestor of the <b>${esc(nm(a))}</b> and the <b>${esc(nm(b))}</b>.`,opts:[]};break}
-    if(ty==='when'){const a=pick(tips),b=pick(tips);if(a===b)continue;const m=mrca(a,b);if(m.unc)continue;const times=[...new Set(T.nodes.filter(n=>n.c&&!n.unc).map(n=>n.t))];if(times.length<3)continue;const wrong=shuffle(times.filter(t=>t!==m.t)).slice(0,2);
-      S.q={type:'when',a,b,ans:m,text:`About when did the <b>${esc(nm(a))}</b> and the <b>${esc(nm(b))}</b> last share a common ancestor? (Drag the time slider or tap nodes to check.)`,opts:shuffle([m.t,...wrong]).map(t=>({label:fmtT(t).replace(/^about /,'About '),ok:t===m.t}))};break}
-    if(ty==='rot'){const a=pick(tips),b=pick(tips);if(a===b)continue;const m=mrca(a,b);S.q={type:'rot',a,b,ans:m,text:`If you rotate the node where the <b>${esc(nm(a))}</b> and the <b>${esc(nm(b))}</b> come together, does that change how closely related they are?`,opts:[{label:'Yes: rotating moves them closer together or farther apart',ok:false},{label:'No: rotating only changes how the tree is drawn',ok:true}]};break}}
+      S.q={type:'closer',a,b,c,mb,mc:mc2,marks:[a,b,c],text:`Which is more closely related to the <b>${esc(nm(a))}</b>: the <b>${esc(nm(b))}</b> or the <b>${esc(nm(c))}</b>? Tap that species on the tree.`};break}
+    if(ty==='sister'){const a=pick(tips),sis=sisterTip(a);if(!sis)continue;S.q={type:'sister',a,ans:sis,marks:[a],text:`Tap the sister species (closest living relative) of the <b>${esc(nm(a))}</b>.`};break}
+    if(ty==='mrca'){const a=pick(tips),b=pick(tips);if(a===b)continue;const m=mrca(a,b);if(m===T.root&&Math.random()<0.7)continue;S.q={type:'mrca',a,b,ans:m,marks:[a,b],text:`Tap the node that is the most recent common ancestor of the <b>${esc(nm(a))}</b> and the <b>${esc(nm(b))}</b>.`};break}
+    if(ty==='clade'){const nodes=T.nodes.filter(n=>n.c&&n!==T.root&&n.tips.length>=2&&n.tips.length<=4);if(!nodes.length)continue;const n=pick(nodes);const ts=n.tips.map(x=>T.byKey['T:'+x]);
+      S.q={type:'clade',ans:n,marks:ts,text:`Tap the node whose clade contains <b>exactly</b> these species and no others: ${ts.map(x=>'<b>'+esc(nm(x))+'</b>').join(', ')}.`};break}
+    if(ty==='when'){const a=pick(tips),b=pick(tips);if(a===b)continue;const m=mrca(a,b);if(m.unc||m.t<0.3)continue;
+      S.q={type:'when',a,b,ans:m,marks:[a,b],text:`Drag the time slider back to when the <b>${esc(nm(a))}</b> and the <b>${esc(nm(b))}</b> were still one lineage, just before they split. Then press <b>Check</b>.`};break}}
   renderQ()}
 function renderQ(){const q=S.q;if(!q){$('#qtext').textContent='';$('#choices').innerHTML='';return}
   $('#qtext').innerHTML=q.text;
-  $('#choices').innerHTML=q.opts.map((o,i)=>`<button data-i="${i}">${esc(o.label)}</button>`).join('');
-  $$('#choices button').forEach(b=>b.onclick=()=>answer(+b.dataset.i,b));
-  if(q.type==='mrca'){$('#choices').innerHTML='<p class="note">Tap a node (circle) on the tree.</p>';status(`<b>Practice question:</b> tap the most recent common ancestor of the ${esc(nm(q.a))} and the ${esc(nm(q.b))}.`)}
+  $('#choices').innerHTML=q.type==='when'?'<button class="primary" id="checkWhen">Check</button>':`<p class="note">${q.type==='closer'||q.type==='sister'?'Tap a species name on the tree.':'Tap a node (circle) on the tree.'}</p>`;
+  if(q.type==='when'){$('#checkWhen').onclick=checkWhen;S.p=0;$('#time').value=0;stopPlay()}
+  status(`<b>Practice question:</b> ${q.text.replace(/ Tap that species on the tree\.| Then press <b>Check<\/b>\./,'')}`);
   $('#score').textContent=`Score: ${S.score[0]} / ${S.score[1]}`;draw()}
-function finish(ok,msg){S.score[1]++;if(ok)S.score[0]++;$('#fb').innerHTML=msg;$('#fb').className='fb '+(ok?'good':'bad');$('#score').textContent=`Score: ${S.score[0]} / ${S.score[1]}`}
-function answer(i,btn){const q=S.q;if(!q||q.done)return;q.done=true;const o=q.opts[i];$$('#choices button').forEach((b,j)=>{if(q.opts[j].ok)b.classList.add('right');else if(j===i)b.classList.add('wrong');b.disabled=true});
-  if(q.type==='closer'){S.sel=q.mb.key;draw();finish(o.ok,`${o.ok?'<b>Correct.</b>':'<b>Not quite.</b>'} The ${esc(nm(q.a))} and the ${esc(nm(q.b))} share a common ancestor ${fmtT(q.mb.t,q.mb.unc)} (highlighted). The ${esc(nm(q.c))} joins them only at an older ancestor, ${fmtT(q.mc.t,q.mc.unc)}. Follow the branches back, not the distance between names.`)}
-  else if(q.type==='when'){S.sel=q.ans.key;draw();finish(o.ok,`${o.ok?'<b>Correct.</b>':'<b>Not quite.</b>'} Their most recent common ancestor (highlighted) lived ${fmtT(q.ans.t)}.`)}
-  else if(q.type==='rot'){finish(o.ok,`${o.ok?'<b>Correct.</b>':'<b>Not quite.</b>'} Rotating a node is like spinning a mobile: the branches swap sides, but the same species still share the same ancestors. Try it: tap that node with "Rotate it" on.`);S.sel=q.ans.key;draw()}}
-function answerMrca(n){const q=S.q;q.done=true;status('');const ok=n===q.ans;S.sel=q.ans.key;draw();
-  finish(ok,ok?`<b>Correct.</b> That node, ${fmtT(n.t,n.unc)}, is the most recent ancestor they share. Every older node is also a common ancestor, but not the most recent one.`
-    :`<b>Not quite.</b> ${isDesc(q.a,n)&&isDesc(q.b,n)?'That node is a common ancestor of both, but an older one. The most recent one is highlighted in green.':'Only one of the two species descends from that node. The correct node is highlighted in green.'}`)}
+function finish(ok,msg){S.score[1]++;if(ok)S.score[0]++;$('#fb').innerHTML=msg;$('#fb').className='fb '+(ok?'good':'bad');$('#score').textContent=`Score: ${S.score[0]} / ${S.score[1]}`;status('')}
+function pendingTap(){return S.q&&!S.q.done&&S.q.type!=='when'}
+function answerTip(t){const q=S.q;
+  if(q.type==='closer'){if(t!==q.b&&t!==q.c){status(`Tap either the <b>${esc(nm(q.b))}</b> or the <b>${esc(nm(q.c))}</b>.`);return}
+    q.done=true;const ok=t===q.b;S.sel=q.mb.key;draw();
+    finish(ok,`${ok?'<b>Correct.</b>':'<b>Not quite.</b>'} The ${esc(nm(q.a))} and the ${esc(nm(q.b))} share a common ancestor ${fmtT(q.mb.t,q.mb.unc)} (highlighted). The ${esc(nm(q.c))} joins them only at an older ancestor, ${fmtT(q.mc.t,q.mc.unc)}. Follow the branches back, not the distance between names.`)}
+  else if(q.type==='sister'){if(t===q.a){status('That is the species in the question. Tap its closest relative.');return}
+    q.done=true;const ok=t===q.ans;S.sel=q.a.par.key;draw();
+    finish(ok,ok?`<b>Correct.</b> They split from each other ${fmtT(q.a.par.t,q.a.par.unc)}, and no other species shares that ancestor.`:`<b>Not quite.</b> The sister species is the ${esc(nm(q.ans))}: it is the only species that shares the ${esc(nm(q.a))}'s most recent ancestor (highlighted). Being drawn nearby is not enough.`)}
+  else{status('This question needs a node (circle), not a species. Tap a node.')}}
+function answerNode(n){const q=S.q;
+  if(q.type==='closer'||q.type==='sister'){status('This question needs a species name. Tap a species on the tree.');return}
+  q.done=true;const ok=n===q.ans;S.sel=q.ans.key;draw();
+  if(q.type==='mrca')finish(ok,ok?`<b>Correct.</b> That node, ${fmtT(n.t,n.unc)}, is the most recent ancestor they share. Every older node is also a common ancestor, but not the most recent one.`
+    :`<b>Not quite.</b> ${isDesc(q.a,n)&&isDesc(q.b,n)?'That node is a common ancestor of both, but an older one. The most recent one is highlighted.':'Only one (or neither) of the two species descends from that node. The correct node is highlighted.'}`);
+  else finish(ok,ok?`<b>Correct.</b> A clade is an ancestor plus <b>all</b> of its descendants, and that node's clade holds exactly those species.`
+    :`<b>Not quite.</b> That node's clade holds ${n.tips.length} species${n.tips.length>q.ans.tips.length?', including some that are not on the list':''}. The correct node is highlighted: its clade holds exactly the listed species.`)}
+function checkWhen(){const q=S.q;if(!q||q.done)return;const tc=timeOfP(S.p),m=q.ans;
+  // correct if the slider sits on the branch just before the split: older than the split, younger than the next ancestor back
+  const older=m.par?m.par.t:T.Troot*1.05;const ok=tc>=m.t*0.92&&tc<=older*1.02;
+  q.done=true;S.sel=m.key;S.p=1;$('#time').value=1000;draw();
+  finish(ok,ok?`<b>Correct.</b> They were one lineage until about ${shortT(m.t).replace(' Ma',' million years ago').replace(' ka',' thousand years ago')}, when their common ancestor split (highlighted). You set ${shortT(tc)}.`
+    :`<b>Not quite.</b> You set ${shortT(tc)}. They were one lineage from ${fmtT(older)} until ${fmtT(m.t)}, when their common ancestor (highlighted) split.${tc<m.t?' At your time they had already split.':' At your time their lineage had not yet separated from other species.'}`)}
 seg($('#qtype'),v=>{S.qtype=v;newQ()});
-$('#nextQ').onclick=newQ;
+$('#nextQ').onclick=()=>newQ();
 
 /* ---------- sources ---------- */
-const SRC={frogs:`<p>Ages are rounded estimates for teaching; studies disagree, especially for the oldest splits. Family relationships follow standard anuran phylogenies (the tailed frog is sister to all other living frogs). <i>Rana</i> relationships: Macey et al. 2001 (<i>Mol. Phylogenet. Evol.</i> 19:131–143; yellow-legged frogs not each other's closest relatives; group about 8 million years old) and Shaffer et al. 2004 (<i>Mol. Ecol.</i> 13; northern red-legged and Cascades frogs are sister species). Pacific chorus frogs: Recuero et al. 2006 (<i>Mol. Phylogenet. Evol.</i> 39:293–304); Barrow et al. 2014; Banker et al. 2020; a 2021 mtDNA study in <i>Biol. J. Linn. Soc.</i> 132:612–633; and a genomic preprint, "The tangled history and taxonomy of an iconic chorus frog complex clarified using genomic analyses." *Foothill yellow-legged frog: some populations federally endangered, others threatened (2023).</p>`,
-  krats:`<p>Species groups follow Alexander &amp; Riddle 2005 (<i>J. Mammal.</i> 86:366–379) and Hafner et al. 2007 (<i>J. Mammal.</i> 88:1129–1145): the giant, Stephens', Panamint, chisel-toothed, and Heermann's kangaroo rats form the heermanni group. Genus about 12 million years old and Merriam's/San Joaquin split about 3 million years ago (<i>J. Heredity</i> 2025, Merriam's kangaroo rat genome). Other ages are rough estimates. Subspecies genetics: Patton et al. 2019 (<i>J. Mammal.</i> 100:1546–1563) and Benedict et al. 2019 (<i>J. Mammal.</i> 100). Status: USFWS listings (Stephens' downlisted, 87 FR 8967, 2022) and California Code of Regulations, Title 14, §670.5.</p>`,
-  squirrels:`<p>Tree squirrels and flying squirrels vs. ground-dwelling squirrels: Mercer &amp; Roth 2003 (<i>Science</i> 299:1568–1572); Steppan et al. 2004. Ground squirrels: Harrison et al. 2003 (<i>J. Mammal. Evol.</i> 10:249–276; basal ground squirrel split about 17.5 million years ago, rapid radiation 10–14 million years ago), Helgen et al. 2009 (<i>J. Mammal.</i> 90:270–305), McLean et al. 2019 (<i>Syst. Biol.</i> 68:298). Douglas ground squirrel: Phuong et al. 2014. Humboldt's flying squirrel: Arbogast et al. 2017. Status: California Code of Regulations, Title 14, §670.5. Ages are rounded estimates.</p>`};
+const SRC={frogs:`<p>Ages are rounded estimates for teaching; studies disagree, especially for the oldest splits. Family relationships follow standard anuran phylogenies (the tailed frog is sister to all other living frogs). Introduced species are placed by family and genus. <i>Rana</i> relationships: Macey et al. 2001 (<i>Mol. Phylogenet. Evol.</i> 19:131–143; yellow-legged frogs not each other's closest relatives; group about 8 million years old) and Shaffer et al. 2004 (<i>Mol. Ecol.</i> 13; northern red-legged and Cascades frogs are sister species). Pacific chorus frog studies, as summarized by CaliforniaHerps (P. sierra page) and AmphibiaWeb: Recuero et al. 2006 (<i>Mol. Phylogenet. Evol.</i> 39:293–304, plus corrigendum 41:511); Barrow et al. 2014 (<i>Mol. Phylogenet. Evol.</i> 75:78–90); Duellman, Marion &amp; Hedges 2016 (<i>Zootaxa</i> 4104:1–109); Banker et al. 2020 (<i>Syst. Biol.</i> 69:756–773); Jadin et al. 2021 (<i>Biol. J. Linn. Soc.</i> 132:612–633); Hansen &amp; Shedd 2025 (<i>California Amphibians and Reptiles</i>, Princeton); and a genomic preprint, "The tangled history and taxonomy of an iconic chorus frog complex clarified using genomic analyses." *Foothill yellow-legged frog: some populations federally endangered, others threatened (2023).</p>`,
+  krats:`<p>The desert kangaroo rat is the earliest-branching species in every study (Alexander &amp; Riddle 2005, <i>J. Mammal.</i> 86:366–379; Hafner et al. 2025, <i>J. Mammal.</i> 106:1342–1371). Heermann's and Panamint, and agile and Dulzura, are sister pairs; the agile group includes the narrow-faced kangaroo rat; Heermann's, Panamint, and Stephens' form a group with affinities to the giant kangaroo rat (Alexander &amp; Riddle 2005). Agile and Dulzura split about 0.5–0.75 million years ago, and Stephens' joins them before Merriam's does (<i>Heredity</i> 2025, genomic study of agile and Dulzura kangaroo rats). Merriam's groups with the banner-tailed kangaroo rat (not in California) in that genomic study; placing Ord's kangaroo rat beside Merriam's and San Joaquin is the least certain part of this tree. The chisel-toothed and California kangaroo rats are left out because their placement is less certain. Genus about 10–11 million years old and Merriam's/San Joaquin split about 3 million years ago (<i>J. Heredity</i> 2025, Merriam's kangaroo rat genome). Other ages are rough estimates. Subspecies genetics: Patton et al. 2019 (<i>J. Mammal.</i> 100:1546–1563) and Benedict et al. 2019 (<i>J. Mammal.</i> 100). Status: USFWS listings (Stephens' downlisted, 87 FR 8967, 2022) and California Code of Regulations, Title 14, §670.5.</p>`,
+  squirrels:`<p>Tree squirrels and flying squirrels vs. ground-dwelling squirrels: Mercer &amp; Roth 2003 (<i>Science</i> 299:1568–1572); Steppan et al. 2004. Ground squirrels: Harrison et al. 2003 (<i>J. Mammal. Evol.</i> 10:249–276; basal ground squirrel split about 17.5 million years ago, rapid radiation 10–14 million years ago), Helgen et al. 2009 (<i>J. Mammal.</i> 90:270–305), McLean et al. 2019 (<i>Syst. Biol.</i> 68:298). Douglas ground squirrel: Phuong et al. 2014. Humboldt's flying squirrel: Arbogast et al. 2017. Status: California Code of Regulations, Title 14, §670.5. The eastern fox and eastern gray squirrels are close relatives (Oshida &amp; Masuda 2000); the western gray squirrel's exact position within <i>Sciurus</i> is less certain. North American tree squirrel genera arose 6.2–2.3 million years ago (de Abreu-Jr et al. 2020). Ages are rounded estimates.</p>`};
 
 /* ---------- group switching ---------- */
 function rebuild(animate){buildTree();if(!animate)cur={};relayout(animate);renderTraits();legend();if(S.q&&!S.q.done)newQ()}
