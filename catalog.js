@@ -269,7 +269,7 @@ const ITEMS = [
     where: ["evolution/phylogeny"],
     type: "sim",
     url: "sims/phylogenies/",
-    desc: "Explore evolutionary trees of California frogs, kangaroo rats, and squirrels: switch between bracket, angled, and circular trees, point them any direction, rotate nodes, grow the tree through time, and map shared traits. Then practice reading relatedness, weigh lumping vs. splitting in Pacific chorus frogs, compare endangered species and subspecies of kangaroo rats, and see why the ground squirrel genus Spermophilus was broken up.",
+    desc: "Explore evolutionary trees of California frogs, kangaroo rats, and squirrels, including introduced species: switch between bracket, angled, and circular trees, point them any direction, rotate nodes, grow the tree through time, and map shared traits. Answer relatedness questions by tapping the tree, step through study by study how Pacific chorus frogs were lumped and split, compare endangered species and subspecies of kangaroo rats, and see why the ground squirrel genus Spermophilus was broken up.",
     tags: ["phylogeny", "cladogram", "common ancestor", "clade", "lumping vs splitting", "endangered species", "paraphyly"]
   },
   {
