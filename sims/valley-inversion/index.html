@@ -367,7 +367,7 @@ function ui(force){const pm=S.pm(),a=aqiPM(pm),c=cat(a);
 $('#leg').innerHTML=`<span><i class="sw" style="background:rgba(95,82,70,.7);border-radius:50%"></i>Puff of polluted air</span><span><i class="sw" style="background:rgba(240,150,40,.4)"></i>Inversion layer (the lid)</span><span><i class="sw" style="background:rgba(140,110,70,.5)"></i>Haze of trapped pollution</span>`;
 let lastUI=0,lt=0;
 function frame(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;
-  if(curTab!=='pol'){requestAnimationFrame(frame);return}
+  if(typeof curTab==='undefined'||curTab!=='pol'){requestAnimationFrame(frame);return}   // curTab is set in the next script block
   if(running){for(let k=0;k<speed;k++)S.step(dt);histT+=dt*speed;while(histT>=1){histT-=1;hist.push(aqiPM(S.pm()));if(hist.length>240)hist.shift()}}
   draw();if(ts-lastUI>500){lastUI=ts;ui()}requestAnimationFrame(frame)}
 window.pickScen=pickScen;

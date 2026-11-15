@@ -135,3 +135,44 @@
   if (mq.matches) { var kick = function(){ try { window.dispatchEvent(new Event('resize')); } catch(e){} };
     if (document.readyState === 'complete') setTimeout(kick, 50); else window.addEventListener('load', function(){ setTimeout(kick, 50); }); }
 })();
+
+/* =====================================================================
+   STEADY READOUTS (all screen sizes)
+   Measurement boxes (.tiles) change height when a value wraps to a
+   second line, which made the simulation below them jump up and down.
+   Each box row now keeps the tallest height it has needed, so it can
+   grow but never shrinks back. It resets only if the window width
+   changes (for example, turning a phone sideways).
+   Add data-steady to any other element to give it the same behavior.
+   ===================================================================== */
+(function(){
+  if (window.__simSteady) return; window.__simSteady = true;
+  if (!('ResizeObserver' in window)) return;
+  var SEL = '.tiles, [data-steady]';
+  var seen = typeof WeakSet === 'function' ? new WeakSet() : null, lastW = window.innerWidth;
+  function hold(el){
+    var h = el.getBoundingClientRect().height; if (!(h > 0)) return;   // hidden: ignore
+    var cs = getComputedStyle(el);
+    if (cs.boxSizing !== 'border-box') h -= (parseFloat(cs.paddingTop)||0) + (parseFloat(cs.paddingBottom)||0) + (parseFloat(cs.borderTopWidth)||0) + (parseFloat(cs.borderBottomWidth)||0);
+    var cur = parseFloat(el.style.minHeight) || 0;
+    if (h > cur + 0.5) el.style.minHeight = Math.ceil(h) + 'px';
+  }
+  var ro = new ResizeObserver(function(list){ list.forEach(function(e){ hold(e.target); }); });
+  function scan(){
+    var els = document.querySelectorAll(SEL);
+    for (var i = 0; i < els.length; i++){ var el = els[i];
+      if (seen ? seen.has(el) : el.__steady) continue;
+      if (seen) seen.add(el); else el.__steady = true;
+      ro.observe(el); hold(el); }
+  }
+  window.addEventListener('resize', function(){
+    if (Math.abs(window.innerWidth - lastW) < 30) return;               // ignore phone address-bar resizes
+    lastW = window.innerWidth;
+    var els = document.querySelectorAll(SEL);
+    for (var i = 0; i < els.length; i++){ els[i].style.minHeight = ''; hold(els[i]); }
+  });
+  var queued = false;
+  function soon(){ if (queued) return; queued = true; requestAnimationFrame(function(){ queued = false; scan(); }); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', scan); else scan();
+  if ('MutationObserver' in window) new MutationObserver(soon).observe(document.documentElement, { childList: true, subtree: true });
+})();
