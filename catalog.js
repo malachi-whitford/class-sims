@@ -46,6 +46,10 @@ const TOPICS = [
       { id: "interactions", label: "Species interactions",       blurb: "Predators, prey, competitors, and contests." },
       { id: "ecosystems",   label: "Communities and ecosystems", blurb: "Diversity, energy flow, and change over time." },
       { id: "conservation", label: "Conservation and environmental policy", blurb: "Laws, shared resources, and managing land." } ] },
+  { id: "evolution", label: "Evolution",
+    blurb: "How species are related, and how scientists draw, read, and name the tree of life.",
+    sections: [
+      { id: "phylogeny", label: "Reading phylogenies" } ] },
   { id: "atmosphere", label: "Atmosphere & Climate",
     blurb: "How gases in the air interact with light and weather: the greenhouse effect, the ozone layer, air quality, and global winds.",
     sections: [
@@ -259,6 +263,14 @@ const ITEMS = [
     url: "sims/global-circulation/",
     desc: "Follow air around the Hadley, Ferrel, and polar cells to see how pressure, volume, temperature, and water-holding capacity explain rain belts and deserts. Then spin the Earth to see the Coriolis effect bend the trade winds and westerlies, and compare how fast the ground moves at each latitude.",
     tags: ["air pressure", "Hadley cell", "deserts", "Coriolis effect", "trade winds", "climate zones"]
+  },
+  {
+    title: "Reading Phylogenies: California Frogs, Kangaroo Rats, and Squirrels",
+    where: ["evolution/phylogeny"],
+    type: "sim",
+    url: "sims/phylogenies/",
+    desc: "Explore evolutionary trees of California frogs, kangaroo rats, and squirrels: switch between bracket, angled, and circular trees, point them any direction, rotate nodes, grow the tree through time, and map shared traits. Then practice reading relatedness, weigh lumping vs. splitting in Pacific chorus frogs, compare endangered species and subspecies of kangaroo rats, and see why the ground squirrel genus Spermophilus was broken up.",
+    tags: ["phylogeny", "cladogram", "common ancestor", "clade", "lumping vs splitting", "endangered species", "paraphyly"]
   },
   {
     title: "The Jar Test: Finding the Right Coagulant Dose",

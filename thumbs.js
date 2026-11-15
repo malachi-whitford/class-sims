@@ -165,5 +165,14 @@ const THUMBS = {
   <g stroke="#b7c0cb" stroke-width="2"><line x1="31" y1="15" x2="31" y2="62"/><line x1="80" y1="15" x2="80" y2="62"/><line x1="129" y1="15" x2="129" y2="62"/></g>
   <g fill="#c9d1db"><rect x="23" y="60" width="16" height="8"/><rect x="72" y="60" width="16" height="8"/><rect x="121" y="60" width="16" height="8"/></g>
   <g fill="#ece4ce"><circle cx="70" cy="40" r="3"/><circle cx="91" cy="46" r="3.5"/><circle cx="68" cy="54" r="2.6"/><circle cx="92" cy="33" r="2.8"/><circle cx="120" cy="48" r="1.6"/><circle cx="138" cy="40" r="1.6"/></g>
-  <rect x="62" y="73" width="36" height="4" fill="#d6c6a0"/>`
+  <rect x="62" y="73" width="36" height="4" fill="#d6c6a0"/>`,
+"sims/phylogenies/": `
+  <rect x="0" y="0" width="160" height="90" fill="#f3f7f4"/>
+  <g stroke="#2f5d47" stroke-width="3" fill="none" stroke-linecap="round">
+    <path d="M18 45 H30 M30 22 V68 M30 22 H70 M30 68 H52 M52 54 V80 M52 54 H96 M52 80 H96 M70 12 V32 M70 12 H120 M70 32 H120"/>
+  </g>
+  <g fill="#2f5d47"><circle cx="30" cy="45" r="4"/><circle cx="52" cy="68" r="4"/><circle cx="70" cy="22" r="4"/></g>
+  <g fill="#e07a2e"><circle cx="124" cy="12" r="4"/><circle cx="124" cy="32" r="4"/></g>
+  <g fill="#3a7bd5"><circle cx="100" cy="54" r="4"/><circle cx="100" cy="80" r="4"/></g>
+  <g fill="#7c8a95"><rect x="132" y="9" width="20" height="6" rx="2"/><rect x="132" y="29" width="16" height="6" rx="2"/><rect x="108" y="51" width="22" height="6" rx="2"/><rect x="108" y="77" width="18" height="6" rx="2"/></g>`
 };

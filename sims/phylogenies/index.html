@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading Phylogenies: California Frogs, Kangaroo Rats, and Squirrels</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
+--s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;--hi:#e8730c;--hi2:#7b4fd6;--branch:#3b4655;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;
+--s1:#5a9cf0;--s2:#f07a45;--s3:#2fc08b;--s4:#e0a82a;--s5:#e67aa6;--s6:#9a8cf0;--hi:#ff9d45;--hi2:#a98cf5;--branch:#c3ccd8;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
+.wrap{max-width:1180px;margin:0 auto}
+a{color:var(--accent)}
+.back{font-size:.82rem;text-decoration:none}
+h1{font-size:1.45rem;margin:4px 0 4px}
+h2{font-size:1.05rem;margin:0 0 8px}
+h3{font-size:.95rem;margin:12px 0 6px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
+.layout{display:grid;grid-template-columns:290px minmax(0,1fr);gap:12px;align-items:start}
+.layout>.card{margin-bottom:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px;margin-top:12px}
+.grid2>.card{margin-bottom:0}
+button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer}
+button:hover{border-color:var(--accent)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.seg{display:flex;flex-wrap:wrap;gap:4px}
+.seg button{flex:1 1 auto}
+.seg button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.seg.big button{font-size:.95rem;font-weight:600;padding:9px 14px;border-radius:999px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.muted{color:var(--muted)}
+.small{font-size:.82rem}
+.ctrl h3:first-child{margin-top:0}
+.ctrl .hint{font-size:.75rem;color:var(--muted);margin:4px 0 2px}
+.check{display:flex;gap:6px;align-items:center;font-size:.86rem;margin:6px 0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+.sw{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none}
+#treebox{position:relative}
+#tree{display:block;width:100%;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+#tree text{font-family:system-ui,Arial,sans-serif}
+#tree .node{cursor:pointer}
+#tree .node:focus{outline:none}
+#tree .node:focus-visible circle.ring{stroke:var(--accent);stroke-width:3}
+.timebar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;margin-top:6px}
+.timebar .val{font-weight:700;font-variant-numeric:tabular-nums;font-size:.9rem;min-width:9.5em;text-align:right}
+.status{font-size:.86rem;min-height:1.4em;margin:2px 0 6px;color:var(--muted)}
+.status b{color:var(--text)}
+.qtext{font-size:.98rem;font-weight:600;margin:4px 0 8px}
+.choices{display:flex;flex-direction:column;gap:6px}
+.choices button{text-align:left;font-size:.92rem;padding:8px 12px}
+.choices button.right{border-color:var(--good);background:color-mix(in srgb,var(--good) 14%,var(--card))}
+.choices button.wrong{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,var(--card))}
+.fb{font-size:.9rem;border-left:4px solid var(--line);padding:6px 10px;margin-top:8px;border-radius:6px;background:var(--soft);min-height:1em}
+.fb.good{border-left-color:var(--good)}.fb.bad{border-left-color:var(--bad)}
+.score{font-size:.82rem;color:var(--muted)}
+.topic p{font-size:.9rem;margin:6px 0}
+.topic ul{font-size:.88rem;margin:6px 0;padding-left:20px}
+.topic li{margin:3px 0}
+.pill{display:inline-block;font-size:.72rem;font-weight:700;border-radius:999px;padding:1px 7px;border:1px solid var(--line);margin-right:4px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);margin:4px 0 0}
+.legend span{display:flex;align-items:center;gap:5px}
+.trait{display:flex;gap:7px;align-items:flex-start;font-size:.85rem;margin:5px 0}
+.trait .sw{margin-top:3px}
+.note{font-size:.78rem;color:var(--muted)}
+.zoomtip{display:none;font-size:.82rem;background:var(--soft);border-radius:8px;padding:6px 10px;margin:6px 0}
+@media(max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}.layout>.ctrl{order:2}}
+@media(max-width:520px){body{padding:10px}.grid2{grid-template-columns:minmax(0,1fr)}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) .seg button.on{color:#0d1b2a}}
+</style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">&larr; All class simulations</a>
+<h1>Reading Phylogenies: California Frogs, Kangaroo Rats, and Squirrels</h1>
+<p class="sub">A phylogeny (evolutionary tree) shows how species are related by common ancestry. Species at the tips are living today; each branching point (node) is a common ancestor. Relatedness comes only from the branching pattern: two species are more closely related when they share a <b>more recent</b> common ancestor, no matter how close their names sit on the page.</p>
+
+<div class="seg big" id="grp" aria-label="Choose a group" style="max-width:720px;margin:8px 0 12px"><button data-v="frogs" class="on">California frogs</button><button data-v="krats">Kangaroo rats</button><button data-v="squirrels">Squirrels</button></div>
+
+<div class="layout">
+  <div class="card ctrl">
+    <h3>Tree style</h3>
+    <div class="seg" id="style" aria-label="Tree style"><button data-v="rect" class="on">Brackets</button><button data-v="slant">Angles</button><button data-v="circ">Circle</button></div>
+    <h3>Point the tree</h3>
+    <div class="seg" id="dir" aria-label="Which way the tips point"><button data-v="right" class="on" aria-label="Tips point right">→</button><button data-v="left" aria-label="Tips point left">←</button><button data-v="up" aria-label="Tips point up">↑</button><button data-v="down" aria-label="Tips point down">↓</button></div>
+    <h3>Branch lengths</h3>
+    <div class="seg" id="scale" aria-label="Branch lengths"><button data-v="time" class="on">Time</button><button data-v="log">Time (log)</button><button data-v="clado">Equal</button></div>
+    <p class="hint">Time (log) spreads out recent splits. Equal shows only the branching order.</p>
+    <h3>Labels</h3>
+    <div class="seg" id="labs" aria-label="Labels"><button data-v="cn" class="on">Common names</button><button data-v="sci">Scientific</button></div>
+    <h3>Tap a node to</h3>
+    <div class="seg" id="mode" aria-label="What tapping a node does"><button data-v="rotate" class="on">Rotate it</button><button data-v="select">Select its clade</button></div>
+    <div class="row"><button id="shuffle">Rotate nodes at random</button><button id="reset">Reset</button></div>
+    <h3>Shared traits</h3>
+    <label class="check"><input type="checkbox" id="showTraits">&nbsp;Show shared traits</label>
+    <div id="traitList"></div>
+    <label class="check"><input type="checkbox" id="showStatus" checked>&nbsp;Show protection status</label>
+    <p class="hint">FE / FT = federally endangered / threatened. SE / ST = California endangered / threatened. SSC = California Species of Special Concern.</p>
+  </div>
+  <div class="card" id="treebox">
+    <div class="status" id="stat" aria-live="polite"></div>
+    <div class="zoomtip" id="zoomtip"></div>
+    <svg id="tree" role="group" aria-label="Phylogeny"></svg>
+    <div class="timebar">
+      <button class="primary" id="play">Grow the tree</button>
+      <input type="range" id="time" min="0" max="1000" step="1" value="1000" aria-label="Time: drag to grow the tree from the oldest ancestor to today">
+      <span class="val" id="timeV"></span>
+    </div>
+    <div class="legend" id="leg"></div>
+  </div>
+</div>
+
+<div class="grid2">
+  <div class="card topic" id="topic"></div>
+  <div class="card" id="quiz">
+    <h2>Practice: how closely related?</h2>
+    <div class="seg" id="qtype" aria-label="Question type"><button data-v="mix" class="on">Mixed</button><button data-v="closer">Which is closer?</button><button data-v="mrca">Find the ancestor</button><button data-v="when">When?</button></div>
+    <div class="qtext" id="qtext"></div>
+    <div class="choices" id="choices"></div>
+    <div class="fb" id="fb" aria-live="polite"></div>
+    <div class="row"><button class="primary" id="nextQ">New question</button><span class="score" id="score"></span></div>
+  </div>
+</div>
+
+<details class="card" style="margin-top:12px"><summary><b>Sources and notes on the trees</b></summary>
+<div class="small" id="sources"></div>
+</details>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function seg(el,cb){const bs=$$('button',el),sync=()=>bs.forEach(x=>x.setAttribute('aria-pressed',x.classList.contains('on')?'true':'false'));el.setAttribute('role','group');bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.toggle('on',x===b));sync();cb(b.dataset.v,b)});sync()}
+function setSeg(el,v){$$('button',el).forEach(b=>{b.classList.toggle('on',b.dataset.v===v);b.setAttribute('aria-pressed',b.dataset.v===v?'true':'false')})}
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function fmtT(t,unc){if(unc)return'very recently (timing uncertain)';if(t>=10)return`about ${Math.round(t)} million years ago`;if(t>=1)return`about ${(+t.toFixed(1))} million years ago`;return`about ${(Math.round(t*10)*100).toLocaleString('en-US')},000 years ago`}
+function shortT(t){if(t>=10)return`${Math.round(t)} Ma`;if(t>=1)return`${+t.toFixed(1)} Ma`;if(t>0)return`${Math.round(t*1000).toLocaleString('en-US')} ka`;return'Today'}
+
+/* ---------- tree builders ---------- */
+// L = a tip (living species); N = a node (common ancestor) with its age in millions of years
+const L=(sci,cn,o={})=>Object.assign({sci,cn,sp:sci},o);
+const N=(t,...c)=>({t,c});
+const N_=(t,o,...c)=>Object.assign({t,c},o);
+
+/* California frogs. Ages are rounded, approximate estimates. */
+const PSEUDO={
+  lump:()=>L('Pseudacris regilla','Pacific chorus frog (one species)',{note:'Lumped: all Pacific chorus frogs as one species.'}),
+  mt:()=>N(1.4,L('Pseudacris regilla','Northern Pacific chorus frog'),N(0.8,L('Pseudacris sierra','Sierran chorus frog'),L('Pseudacris hypochondriaca','Baja California chorus frog'))),
+  gen:()=>N(0.6,L('Pseudacris regilla','Pacific chorus frog (incl. "sierra")'),L('Pseudacris hypochondriaca','Baja California chorus frog'))
+};
+function frogTree(o){return N(200,
+  L('Ascaphus truei','Coastal tailed frog',{st:'SSC'}),
+  N(170,
+    N(35,L('Scaphiopus couchii',"Couch's spadefoot"),L('Spea hammondii','Western spadefoot',{st:'SSC'})),
+    N(140,
+      N(65,
+        N(8,L('Anaxyrus californicus','Arroyo toad',{st:'FE'}),N(1.5,L('Anaxyrus boreas','Western toad'),L('Anaxyrus canorus','Yosemite toad',{st:'FT'}))),
+        N(8,L('Pseudacris cadaverina','California treefrog'),PSEUDO[o.pseudo]())),
+      N(35,
+        L('Lithobates catesbeianus','American bullfrog (introduced)',{intro:1}),
+        N(8,L('Rana boylii','Foothill yellow-legged frog',{st:'FE/FT*'}),
+          N(6,N(2.2,L('Rana muscosa','Southern mountain yellow-legged frog',{st:'FE, SE'}),L('Rana sierrae','Sierra Nevada yellow-legged frog',{st:'FE, ST'})),
+              N(4,L('Rana draytonii','California red-legged frog',{st:'FT'}),N(3,L('Rana aurora','Northern red-legged frog'),L('Rana cascadae','Cascades frog')))))))))}
+
+/* California kangaroo rats (genus Dipodomys). Unresolved nodes are drawn as polytomies. */
+const SSP=0.2;
+function kratTree(o){const s=o.ssp;
+  const mer=s?N_(SSP,{unc:1},L('Dipodomys merriami parvus','San Bernardino kangaroo rat',{sp:'Dipodomys merriami',st:'FE, SE',ssp:1}),L('Dipodomys merriami (other ssp.)',"Merriam's kangaroo rat (other subspecies)",{sp:'Dipodomys merriami',ssp:1}))
+    :L('Dipodomys merriami',"Merriam's kangaroo rat",{st:'1 ssp. FE'});
+  const nit=s?N_(SSP,{unc:1},L('Dipodomys nitratoides exilis','Fresno kangaroo rat',{sp:'Dipodomys nitratoides',st:'FE, SE',ssp:1}),L('Dipodomys nitratoides nitratoides','Tipton kangaroo rat',{sp:'Dipodomys nitratoides',st:'FE, SE',ssp:1}),L('Dipodomys nitratoides brevinasus','Short-nosed kangaroo rat',{sp:'Dipodomys nitratoides',st:'SSC',ssp:1}))
+    :L('Dipodomys nitratoides','San Joaquin kangaroo rat',{st:'2 ssp. FE'});
+  const hee=s?N_(SSP,{unc:1},L('Dipodomys heermanni morroensis','Morro Bay kangaroo rat',{sp:'Dipodomys heermanni',st:'FE, SE',ssp:1}),L('Dipodomys heermanni (8 other ssp.)',"Heermann's kangaroo rat (8 other subspecies)",{sp:'Dipodomys heermanni',ssp:1}))
+    :L('Dipodomys heermanni',"Heermann's kangaroo rat",{st:'1 ssp. FE'});
+  return N(12,
+    L('Dipodomys deserti','Desert kangaroo rat'),
+    L('Dipodomys ordii',"Ord's kangaroo rat"),
+    N(3,mer,nit),
+    N(6,L('Dipodomys ingens','Giant kangaroo rat',{st:'FE, SE'}),L('Dipodomys stephensi',"Stephens' kangaroo rat",{st:'FT, ST'}),L('Dipodomys panamintinus','Panamint kangaroo rat'),L('Dipodomys microps','Chisel-toothed kangaroo rat'),hee),
+    N(5,L('Dipodomys venustus','Narrow-faced kangaroo rat'),N(1.5,L('Dipodomys agilis','Agile kangaroo rat'),L('Dipodomys simulans','Dulzura kangaroo rat'))))}
+
+/* California squirrels (family Sciuridae) */
+function sqTree(o){return N(34,
+  N(23,L('Glaucomys oregonensis',"Humboldt's flying squirrel",{old:'Glaucomys sabrinus'}),
+       N(16,L('Tamiasciurus douglasii','Douglas squirrel'),L('Sciurus griseus','Western gray squirrel'))),
+  N(20,L('Neotamias spp.','Chipmunks (about 13 CA species)',{old:'Tamias (Eutamias) spp.'}),
+    N(17.5,
+      N(2.5,L('Ammospermophilus leucurus','White-tailed antelope squirrel'),L('Ammospermophilus nelsoni','San Joaquin antelope squirrel',{st:'ST'})),
+      N(13,
+        N(12,L('Marmota flaviventris','Yellow-bellied marmot'),
+          N(10,L('Callospermophilus lateralis','Golden-mantled ground squirrel',{old:'Spermophilus lateralis',sperm:1}),
+            N(1.5,L('Otospermophilus beecheyi','California ground squirrel',{old:'Spermophilus beecheyi',sperm:1}),L('Otospermophilus douglasii','Douglas ground squirrel',{old:'Spermophilus beecheyi douglasii',sperm:1})))),
+        N(11,L('Urocitellus beldingi',"Belding's ground squirrel",{old:'Spermophilus beldingi',sperm:1}),
+          N(2,L('Xerospermophilus mohavensis','Mohave ground squirrel',{old:'Spermophilus mohavensis',sperm:1,st:'ST'}),L('Xerospermophilus tereticaudus','Round-tailed ground squirrel',{old:'Spermophilus tereticaudus',sperm:1})))))))}
+
+/* traits: each origin is the list of species whose common ancestor first had the trait */
+const GROUPS={
+  frogs:{build:frogTree,traits:[
+    {name:'Tadpole stage in the life cycle',o:[['*']]},
+    {name:'Tail-like mating organ in males',o:[['Ascaphus truei']]},
+    {name:'Hard spade on each hind foot',o:[['Scaphiopus couchii','Spea hammondii']]},
+    {name:'Parotoid (toxin) glands behind the eyes',o:[['Anaxyrus californicus','Anaxyrus boreas','Anaxyrus canorus']]},
+    {name:'Sticky toe pads',o:[['Pseudacris cadaverina','Pseudacris regilla']]},
+    {name:'Yellow under the hind legs (evolved twice)',o:[['Rana boylii'],['Rana muscosa','Rana sierrae']]}]},
+  krats:{build:kratTree,traits:[
+    {name:'Fur-lined cheek pouches',o:[['*']]},
+    {name:'Only 4 toes on each hind foot (lost twice)',o:[['Dipodomys merriami','Dipodomys nitratoides'],['Dipodomys deserti']]},
+    {name:'Large body, over about 100 g (evolved twice)',o:[['Dipodomys ingens'],['Dipodomys deserti']]}]},
+  squirrels:{build:sqTree,traits:[
+    {name:'Gliding membrane between the legs',o:[['Glaucomys oregonensis']]},
+    {name:'Lives mostly in trees',o:[['Glaucomys oregonensis','Tamiasciurus douglasii','Sciurus griseus']]},
+    {name:'Lives on the ground and digs burrows',o:[['Neotamias spp.','Ammospermophilus leucurus','Xerospermophilus tereticaudus']]},
+    {name:'Stripes down the back (evolved three times)',o:[['Neotamias spp.'],['Ammospermophilus leucurus','Ammospermophilus nelsoni'],['Callospermophilus lateralis']]},
+    {name:'Very large body, 2 to 5 kg',o:[['Marmota flaviventris']]}]}
+};
+const TCOL=['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s6)'];
+
+/* ---------- state ---------- */
+const S={grp:'frogs',style:'rect',dir:'right',scale:'time',labs:'cn',mode:'rotate',traits:false,traitOn:[],status:true,
+  pseudo:'lump',ssp:false,oldNames:false,hiSperm:false,p:1,sel:null,rot:new Set(),q:null,score:[0,0],qtype:'mix'};
+let T=null;          // current tree: {root,nodes,tips,byKey}
+let cur={};          // animated layout {key:{u,v}}
+let anim=null;
+
+function buildTree(){
+  const g=GROUPS[S.grp];const root=g.build(S);const nodes=[],tips=[];
+  (function walk(n,par,d){n.par=par;n.d=d;nodes.push(n);if(!n.c){n.t=0;tips.push(n);n.tips=[n.sci];}else{n.c.forEach(c=>walk(c,n,d+1));n.tips=n.c.flatMap(c=>c.tips)}n.key=n.c?'N:'+[...n.tips].sort().join('|'):'T:'+n.sci})(root,null,0);
+  (function h(n){n.h=n.c?1+Math.max(...n.c.map(h)):0;return n.h})(root);
+  const byKey={};nodes.forEach(n=>byKey[n.key]=n);
+  T={root,nodes,tips,byKey,Troot:root.t};
+  // traits: find the origin nodes in this tree
+  T.traits=g.traits.map((tr,i)=>({...tr,i,origins:tr.o.map(list=>{if(list[0]==='*')return root;const ts=tips.filter(t=>list.includes(t.sp));return ts.length?mrcaMany(ts):null}).filter(Boolean)}));
+  if(S.traitOn.length!==T.traits.length)S.traitOn=T.traits.map(()=>true);
+  if(S.sel&&!byKey[S.sel])S.sel=null;
+}
+function anc(n){const a=[];while(n){a.push(n);n=n.par}return a}
+function mrca(a,b){const A=new Set(anc(a));let x=b;while(x&&!A.has(x))x=x.par;return x}
+function mrcaMany(arr){return arr.reduce((m,x)=>mrca(m,x))}
+function isDesc(n,a){while(n){if(n===a)return true;n=n.par}return false}
+const tipHas=(tip,tr)=>tr.origins.some(o=>isDesc(tip,o));
+
+/* ---------- layout ---------- */
+function kids(n){return n.c?(S.rot.has(n.key)?[...n.c].reverse():n.c):[]}
+const EPS=()=>T.Troot/2500;
+function uOfTime(t){const R=T.Troot;if(S.scale==='log'){const e=EPS();return Math.log((R+e)/(t+e))/Math.log((R+e)/e)}return(R-t)/R}
+function timeOfP(p){const R=T.Troot;if(S.scale==='log'){const e=EPS();return Math.max(0,(R+e)*Math.exp(-p*Math.log((R+e)/e))-e)}return R*(1-p)}
+function targets(){const out={};let i=0;const n=T.tips.length;
+  (function v(nd){if(!nd.c){out[nd.key]={v:n>1?i/(n-1):0.5};i++;return}const ks=kids(nd);ks.forEach(v);out[nd.key]={v:(out[ks[0].key].v+out[ks[ks.length-1].key].v)/2}})(T.root);
+  T.nodes.forEach(nd=>{out[nd.key].u=S.scale==='clado'?1-nd.h/T.root.h:uOfTime(nd.t)});
+  return out}
+function relayout(animate){const tg=targets();
+  if(!animate||!Object.keys(cur).length){cur=tg;draw();return}
+  const from={};T.nodes.forEach(nd=>{from[nd.key]=cur[nd.key]?{...cur[nd.key]}:{...tg[nd.key]}});
+  const t0=performance.now(),D=450;cancelAnimationFrame(anim);
+  (function step(now){const k=clamp((now-t0)/D,0,1),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;
+    T.nodes.forEach(nd=>{const a=from[nd.key],b=tg[nd.key];cur[nd.key]={u:a.u+(b.u-a.u)*e,v:a.v+(b.v-a.v)*e}});draw();if(k<1)anim=requestAnimationFrame(step)})(t0)}
+
+/* ---------- drawing ---------- */
+const mc=document.createElement('canvas').getContext('2d');
+function tw(s,fs,w){mc.font=`${w||400} ${fs}px system-ui,Arial,sans-serif`;return mc.measureText(s).width}
+function label(n){if(S.labs==='sci'||S.oldNames)return S.oldNames&&n.old?n.old:n.sci;return n.cn}
+let G={};   // geometry for this frame
+function geom(){G={};const box=$('#treebox'),W=Math.max(300,box.clientWidth-28),n=T.tips.length;
+  const fs=W<520?11:12.5,row=W<520?20:23;
+  const nTr=S.traits?T.traits.filter((t,i)=>S.traitOn[i]).length:0,sq=10,gap=3;
+  const badge=nd=>S.status&&nd.st?tw(nd.st,fs-2.5,700)+14:0;
+  const lw=Math.max(...T.tips.map(t=>tw(label(t),fs,t===selTip()?700:400)+badge(t)))+nTr*(sq+gap)+14;
+  const m=14,axis=S.scale==='clado'?0:30;
+  let H,area;
+  if(S.style==='circ'){const Rmin=W<520?110:190,size=Math.max(W,2*(lw+m)+2*Rmin);H=size;G.vw=size;const R=size/2-m-lw;area={cx:size/2,cy:size/2,R}}
+  else if(S.dir==='right'||S.dir==='left'){const VW=Math.max(W,2*m+12+lw+170);G.vwN=VW;H=Math.max(240,n*row+2*m+axis);const D=VW-2*m-lw-12;area={x0:S.dir==='right'?m+12:VW-m-12,D,y0:m,A:H-2*m-axis}}
+  else{const D=Math.max(220,Math.min(420,W*0.7));H=D+lw+2*m+12;const A=W-2*m-axis-10;area={x0:m+axis+10,A,y0:S.dir==='down'?m+12:H-m-12,D}}
+  G={W,H,fs,row,nTr,sq,gap,lw,area,m,axis,badge,vw:S.style==='circ'?H:(G.vwN&&(S.dir==='right'||S.dir==='left')?G.vwN:W)};return G}
+function pos(u,v){const a=G.area;
+  if(S.style==='circ'){const n=T.tips.length,span=2*Math.PI*(n-1)/n,th0={right:0,down:Math.PI/2,left:Math.PI,up:-Math.PI/2}[S.dir]-span/2;const th=th0+v*span,r=u*a.R;return[a.cx+r*Math.cos(th),a.cy+r*Math.sin(th),th,r]}
+  if(S.dir==='right')return[a.x0+u*a.D,a.y0+v*a.A];
+  if(S.dir==='left')return[a.x0-u*a.D,a.y0+v*a.A];
+  if(S.dir==='down')return[a.x0+v*a.A,a.y0+u*a.D];
+  return[a.x0+v*a.A,a.y0-u*a.D]}
+function selTip(){return S.sel&&T.byKey[S.sel]&&!T.byKey[S.sel].c?T.byKey[S.sel]:null}
+function inSel(nd){if(!S.sel)return false;const s=T.byKey[S.sel];return s&&isDesc(nd,s)}
+function spermInfo(){const sp=T.tips.filter(t=>t.sperm);if(!sp.length)return null;const m=mrcaMany(sp);return{m,others:m.tips.filter(x=>!sp.some(s=>s.sci===x)).map(x=>T.byKey['T:'+x])}}
+
+function draw(){if(!T)return;geom();const svg=$('#tree');const{H,fs}=G,W=G.vw;svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('height',H*G.W/W);
+  const tcut=timeOfP(S.p);const full=S.p>=0.999;
+  const sperm=S.grp==='squirrels'&&S.hiSperm?spermInfo():null;
+  let s='';
+  // time axis or rings
+  if(S.scale!=='clado'){let lastPx=-1e9;const ticks=tickVals().filter(t=>{const q=pos(uOfTime(t),0),c=(S.style==='circ'?uOfTime(t)*G.area.R:(S.dir==='right'||S.dir==='left'?q[0]:q[1]));if(Math.abs(c-lastPx)<38&&t!==0)return false;lastPx=c;return true});
+    ticks.forEach(t=>{const u=uOfTime(t);
+      if(S.style==='circ'){const r=u*G.area.R;s+=`<circle cx="${G.area.cx}" cy="${G.area.cy}" r="${Math.max(0.5,r)}" fill="none" stroke="var(--line)" stroke-dasharray="3 4"/>`;
+        const[px,py]=[G.area.cx+r*Math.cos(gapAngle()),G.area.cy+r*Math.sin(gapAngle())];s+=`<text x="${px}" y="${py}" font-size="${fs-2.5}" fill="var(--muted)" text-anchor="middle" dy="4" paint-order="stroke" stroke="var(--card)" stroke-width="3">${shortT(t)}</text>`}
+      else if(S.dir==='right'||S.dir==='left'){const[x]=pos(u,0),y=H-G.m-6;s+=`<line x1="${x}" x2="${x}" y1="${G.m}" y2="${y-10}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${x}" y="${y}" font-size="${fs-2}" fill="var(--muted)" text-anchor="middle">${shortT(t)}</text>`}
+      else{const[,y]=pos(u,0),x=G.m+G.axis;s+=`<line x1="${x}" x2="${W-G.m}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${x-4}" y="${y+4}" font-size="${fs-2}" fill="var(--muted)" text-anchor="end">${shortT(t)}</text>`}});
+    if(S.style!=='circ'){if(S.dir==='right'||S.dir==='left')s+=`<text x="${S.dir==='right'?G.area.x0:G.area.x0}" y="${H-G.m+8}" font-size="${fs-2.5}" fill="var(--muted)" text-anchor="${S.dir==='right'?'start':'end'}">Ma = million years ago${S.scale==='log'?' (log scale)':''}</text>`}
+    // time cut
+    if(!full){const u=uOfTime(tcut);
+      if(S.style==='circ')s+=`<circle cx="${G.area.cx}" cy="${G.area.cy}" r="${u*G.area.R}" fill="none" stroke="var(--hi)" stroke-width="1.6" stroke-dasharray="6 4"/>`;
+      else{const a=pos(u,-0.02),b=pos(u,1.02);s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="var(--hi)" stroke-width="1.6" stroke-dasharray="6 4"/>`}}}
+  // branches
+  const P=(nd)=>cur[nd.key];
+  let br='',hl='',mk='';
+  const edgeCol=(nd)=>sperm&&isDesc(nd,sperm.m)?'var(--hi)':inSel(nd)?'var(--accent)':'var(--branch)';
+  const edgeW=(nd)=>(sperm&&isDesc(nd,sperm.m))||inSel(nd)?3.2:2;
+  // root stem
+  {const r=P(T.root);if(S.style!=='circ'){const a=pos(r.u-0.035,r.v),b=pos(r.u,r.v);br+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${edgeCol(T.root)}" stroke-width="${edgeW(T.root)}" stroke-linecap="round"/>`}}
+  T.nodes.forEach(nd=>{if(!nd.c)return;if(nd.t<tcut-1e-9&&!full)return;const pp=P(nd),ks=kids(nd);
+    // connector (brackets / circle arc)
+    if(S.style!=='slant'){const v0=P(ks[0]).v,v1=P(ks[ks.length-1]).v;
+      if(S.style==='circ'){const a=pos(pp.u,v0),b=pos(pp.u,v1),r=a[3];if(r>0.5){const large=Math.abs(b[2]-a[2])>Math.PI?1:0;br+=`<path d="M${a[0]} ${a[1]} A${r} ${r} 0 ${large} 1 ${b[0]} ${b[1]}" fill="none" stroke="${edgeCol(nd)}" stroke-width="${edgeW(nd)}"/>`}}
+      else{const a=pos(pp.u,v0),b=pos(pp.u,v1);br+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${edgeCol(nd)}" stroke-width="${edgeW(nd)}" stroke-linecap="round"/>`}}
+    ks.forEach(k=>{const kc=P(k);let uEnd=kc.u,grown=true;
+      if(!full&&k.t<tcut){grown=false;const f=(nd.t-tcut)/(nd.t-k.t);uEnd=S.scale==='clado'?pp.u+(kc.u-pp.u)*f:uOfTime(tcut)}
+      const vStart=S.style==='slant'?pp.v:kc.v,uStart=pp.u;
+      let a,b;
+      if(S.style==='slant'){const f2=(uEnd-pp.u)/((kc.u-pp.u)||1);a=pos(pp.u,pp.v);b=pos(uEnd,pp.v+(kc.v-pp.v)*f2)}
+      else{a=pos(uStart,vStart);b=pos(uEnd,kc.v)}
+      const dash=k.ssp||(k.c&&k.unc)?' stroke-dasharray="5 4"':'';
+      br+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${edgeCol(k)}" stroke-width="${edgeW(k)}" stroke-linecap="round"${dash}/>`;
+      if(!grown)br+=`<circle cx="${b[0]}" cy="${b[1]}" r="3" fill="var(--hi)"/>`;
+      // trait origin markers, halfway along the branch
+      if(S.traits)T.traits.forEach((tr,ti)=>{if(!S.traitOn[ti]||tr.origins[0]===T.root&&false)return;if(!tr.origins.includes(k))return;
+        const um=(pp.u+kc.u)/2;if(!full&&um>uEnd)return;let m;
+        if(S.style==='slant'){const f3=(um-pp.u)/((kc.u-pp.u)||1);m=pos(um,pp.v+(kc.v-pp.v)*f3)}else m=pos(um,kc.v);
+        const off=tr.origins.length>1||true?T.traits.filter((t2,j)=>j<ti&&S.traitOn[j]&&t2.origins.includes(k)).length*15:0;
+        mk+=marker(m[0]+(S.dir==='up'||S.dir==='down'?0:0),m[1]-off*(S.style==='circ'?0:1),ti)})})});
+  if(S.traits)T.traits.forEach((tr,ti)=>{if(S.traitOn[ti]&&tr.origins.includes(T.root)&&S.style!=='circ'){const r=P(T.root),m=pos(r.u-0.018,r.v);mk+=marker(m[0],m[1],ti)}else if(S.traitOn[ti]&&S.traits&&tr.origins.includes(T.root)){const m=pos(0,0);mk+=marker(G.area.cx,G.area.cy-14,ti)}});
+  s+=br+mk;
+  // nodes (tap targets)
+  let nd='';T.nodes.forEach(n=>{if(!n.c)return;if(!full&&n.t<tcut)return;const p=P(n),[x,y]=pos(p.u,p.v);const isSel=S.sel===n.key;const qA=S.q&&S.q.type==='mrca'&&S.q.done&&S.q.ans===n;
+    nd+=`<g class="node" tabindex="0" role="button" data-k="${esc(n.key)}" aria-label="${esc(nodeAria(n))}"><circle cx="${x}" cy="${y}" r="13" fill="transparent"/><circle class="ring" cx="${x}" cy="${y}" r="${isSel||qA?7:5}" fill="${qA?'var(--good)':isSel?'var(--accent)':'var(--card)'}" stroke="${qA?'var(--good)':'var(--branch)'}" stroke-width="2"/></g>`});
+  s+=nd;
+  // tips and labels
+  let lb='';T.tips.forEach(t=>{const p=P(t);const reached=full||true;const[x,y,th]=pos(p.u,p.v);const dim=!full&&t.par&&t.par.t<tcut,half=!full&&!dim;
+    const sp=sperm&&t.sperm,inside=sperm&&!t.sperm&&isDesc(t,sperm.m);const bold=inSel(t)||sp||inside;
+    let ang=0,flip=false;
+    if(S.style==='circ'){ang=th*180/Math.PI;if(Math.cos(th)<0){flip=true;ang+=180}}
+    else if(S.dir==='left'){flip=true}
+    else if(S.dir==='down'){ang=90}
+    else if(S.dir==='up'){ang=-90}
+    const sg=flip?-1:1;let lx=sg*7,inner='';
+    if(S.traits)T.traits.forEach((tr,ti)=>{if(!S.traitOn[ti])return;const has=tipHas(t,tr);const cx=lx+(flip?-G.sq:0);inner+=`<rect x="${cx}" y="${-G.sq/2}" width="${G.sq}" height="${G.sq}" rx="2" fill="${has?TCOL[ti%6]:'none'}" stroke="${has?TCOL[ti%6]:'var(--line)'}" stroke-width="1.2"/>`;lx+=sg*(G.sq+G.gap)});
+    const txt=label(t),ital=(S.labs==='sci'||S.oldNames)?' font-style="italic"':'';const w=tw(txt,fs,bold?700:400);
+    if(sp||inside)inner+=`<rect x="${flip?lx-w-4:lx-3}" y="${-fs*0.75}" width="${w+7}" height="${fs*1.5}" rx="4" fill="${sp?'var(--hi)':'var(--hi2)'}" opacity=".22"/>`;
+    inner+=`<text x="${lx+(flip?-1:1)}" y="${fs*0.36}" font-size="${fs}"${ital} font-weight="${bold?700:400}" text-anchor="${flip?'end':'start'}" fill="var(--text)">${esc(txt)}</text>`;
+    if(S.status&&t.st){const bw=tw(t.st,fs-2.5,700)+10,bx=flip?lx-w-6-bw:lx+w+6;inner+=`<rect x="${bx}" y="${-fs*0.62}" width="${bw}" height="${fs*1.24}" rx="${fs*0.62}" fill="${/E/.test(t.st)?'var(--bad)':/T/.test(t.st)?'var(--s4)':'var(--muted)'}"/><text x="${bx+bw/2}" y="${fs*0.3}" font-size="${fs-2.5}" font-weight="700" text-anchor="middle" fill="#fff">${esc(t.st)}</text>`}
+    lb+=`<g class="tip" data-k="${esc(t.key)}" opacity="${dim?0.25:half?0.6:1}" transform="translate(${x.toFixed(1)} ${y.toFixed(1)}) rotate(${ang.toFixed(1)})" style="cursor:pointer">${inner}</g>`;
+    if(!dim)lb+=`<circle cx="${x}" cy="${y}" r="2.6" fill="${t.intro?'var(--muted)':'var(--branch)'}"/>`});
+  s+=lb;
+  svg.innerHTML=s;
+  svg.setAttribute('aria-label',`Phylogeny of ${T.tips.length} ${S.grp==='frogs'?'California frogs':S.grp==='krats'?'kangaroo rats':'California squirrels'}, drawn with ${S.style==='rect'?'brackets':S.style==='slant'?'angled lines':'a circle'}. Use Tab to move between nodes and Enter to ${S.mode==='rotate'?'rotate':'select'} one.`);
+  // time readout and lineage count
+  const lin=countLineages(tcut);$('#timeV').textContent=full?'Today':`${shortT(tcut)} · ${lin} lineage${lin===1?'':'s'}`;
+}
+function marker(x,y,ti){return`<g><circle cx="${x}" cy="${y}" r="8" fill="${TCOL[ti%6]}" stroke="var(--card)" stroke-width="2"/><text x="${x}" y="${y+3.6}" font-size="10" font-weight="800" text-anchor="middle" fill="#fff">${ti+1}</text></g>`}
+function gapAngle(){return{right:0,down:Math.PI/2,left:Math.PI,up:-Math.PI/2}[S.dir]+Math.PI}
+function tickVals(){const R=T.Troot;if(S.scale==='log'){return[1000,500,200,100,50,20,10,5,2,1,0.5,0.2,0.1,0.05].filter(t=>t<=R*1.001&&t>=EPS()*20).filter((t,i,a)=>a.length<7||[1000,100,10,1,0.1].includes(t)||t===a[0]).concat([0])}
+  const steps=[1,2,5,10,20,25,50,100];const st=steps.find(s=>R/s<=6)||100;const out=[];for(let t=0;t<=R+1e-9;t+=st)out.push(t);if(R-out[out.length-1]>st*0.35)out.push(R);return out}
+function countLineages(tc){if(tc<=1e-9)return T.tips.length;let n=0;T.nodes.forEach(nd=>{const pt=nd.par?nd.par.t:Infinity;if(pt>tc&&nd.t<=tc)n++});return Math.max(1,n)}
+function nodeAria(n){const names=n.tips.map(sci=>label(T.byKey['T:'+sci]));return`Common ancestor of ${names.length} ${names.length===2?'': 'species: '}${names.slice(0,6).join(', ')}${names.length>6?', and others':''}, ${fmtT(n.t,n.unc)}`}
+
+/* ---------- interaction ---------- */
+function status(html){$('#stat').innerHTML=html}
+function nodeInfo(n){const names=n.tips.map(sci=>label(T.byKey['T:'+sci]));return`<b>${names.length===T.tips.length?'Root: the common ancestor of every species here':'Clade of '+names.length+' species'}</b> · their most recent common ancestor lived ${fmtT(n.t,n.unc)}${n.c.length>2?' · <b>unresolved</b> (a polytomy: the data cannot yet tell which of these split first)':''}`}
+function onNode(key){const n=T.byKey[key];if(!n)return;
+  if(S.q&&S.q.type==='mrca'&&!S.q.done){answerMrca(n);return}
+  if(S.mode==='rotate'){S.rot.has(key)?S.rot.delete(key):S.rot.add(key);S.sel=key;relayout(true);status(`Rotated the node joining ${n.tips.length} species. <b>Nothing about relatedness changed</b>: the same species still share the same ancestors.`)}
+  else{S.sel=S.sel===key?null:key;draw();status(S.sel?nodeInfo(n):'')}}
+$('#tree').addEventListener('click',e=>{const g=e.target.closest('.node');if(g){onNode(g.dataset.k);return}const tp=e.target.closest('.tip');if(tp){const t=T.byKey[tp.dataset.k];S.sel=S.sel===t.key?null:t.key;draw();status(S.sel?tipInfo(t):'')}});
+$('#tree').addEventListener('keydown',e=>{if(e.key!=='Enter'&&e.key!==' ')return;const g=e.target.closest('.node');if(g){e.preventDefault();onNode(g.dataset.k);setTimeout(()=>{const again=$(`#tree .node[data-k="${CSS.escape(g.dataset.k)}"]`);if(again)again.focus()},480)}});
+function tipInfo(t){return`<b>${esc(t.cn)}</b> (<i>${esc(S.oldNames&&t.old?t.old:t.sci)}</i>)${t.st?` · status: ${esc(t.st)}`:''}${t.old&&!S.oldNames?` · formerly <i>${esc(t.old)}</i>`:''}${t.intro?' · not native to California':''}`}
+
+seg($('#grp'),v=>setGroup(v));
+seg($('#style'),v=>{S.style=v;relayout(false)});
+seg($('#dir'),v=>{S.dir=v;relayout(false)});
+seg($('#scale'),v=>{S.scale=v;relayout(true);zoomTip()});
+seg($('#labs'),v=>{S.labs=v;if(v==='cn'&&S.oldNames){S.oldNames=false;renderTopic()}draw()});
+seg($('#mode'),v=>{S.mode=v;status(v==='rotate'?'Tap any node (circle) to spin its branches around it.':'Tap any node to highlight everything that descends from it (a clade).')});
+$('#shuffle').onclick=()=>{T.nodes.forEach(n=>{if(n.c&&Math.random()<0.5)S.rot.has(n.key)?S.rot.delete(n.key):S.rot.add(n.key)});relayout(true);status('Every node was rotated at random. The tree <b>looks</b> different, but every relationship is the same: check any pair of species.')};
+$('#reset').onclick=()=>{S.rot.clear();S.sel=null;S.p=1;$('#time').value=1000;relayout(true);status('')};
+$('#showTraits').onchange=e=>{S.traits=e.target.checked;renderTraits();draw()};
+$('#showStatus').onchange=e=>{S.status=e.target.checked;draw()};
+$('#time').addEventListener('input',e=>{S.p=+e.target.value/1000;stopPlay();draw()});
+let playing=null;
+function stopPlay(){if(playing){cancelAnimationFrame(playing);playing=null;$('#play').textContent='Grow the tree'}}
+$('#play').onclick=()=>{if(playing){stopPlay();return}if(S.p>=0.999)S.p=0;$('#play').textContent='Pause';let last=performance.now();
+  (function f(now){S.p=Math.min(1,S.p+(now-last)/9000);last=now;$('#time').value=Math.round(S.p*1000);draw();if(S.p<1)playing=requestAnimationFrame(f);else stopPlay()})(last)};
+function renderTraits(){const el=$('#traitList');if(!S.traits){el.innerHTML='';return}
+  el.innerHTML=T.traits.map((tr,i)=>`<label class="trait"><input type="checkbox" data-i="${i}" ${S.traitOn[i]?'checked':''}><span class="sw" style="background:${TCOL[i%6]}"></span><span><b>${i+1}.</b> ${esc(tr.name)}</span></label>`).join('')+'<p class="hint">Numbered dots mark the branch where each trait first appeared. Filled squares show which species have it.</p>';
+  $$('input',el).forEach(c=>c.onchange=()=>{S.traitOn[+c.dataset.i]=c.checked;draw()})}
+function zoomTip(){const z=$('#zoomtip');const young=S.grp==='frogs'&&S.pseudo!=='lump'||S.grp==='krats'&&S.ssp;
+  if(young&&S.scale==='time'){z.style.display='block';z.innerHTML=`The newest splits are less than ${S.grp==='frogs'?'1.5 million':'a few hundred thousand'} years old, too short to see on this time scale. <button id="zl">Use Time (log)</button> <button id="zc">Use Equal</button>`;$('#zl').onclick=()=>{setSeg($('#scale'),'log');S.scale='log';relayout(true);zoomTip()};$('#zc').onclick=()=>{setSeg($('#scale'),'clado');S.scale='clado';relayout(true);zoomTip()}}
+  else z.style.display='none'}
+function legend(){$('#leg').innerHTML=`<span><svg width="16" height="12"><circle cx="8" cy="6" r="5" fill="var(--card)" stroke="var(--branch)" stroke-width="2"/></svg>Node = common ancestor (tap it)</span><span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--branch)" stroke-width="2"/></svg>Branch = a lineage through time</span>${S.grp==='krats'&&S.ssp?'<span><svg width="22" height="8"><line x1="1" y1="4" x2="21" y2="4" stroke="var(--branch)" stroke-width="2" stroke-dasharray="5 4"/></svg>Subspecies (shallow; timing uncertain)</span>':''}`}
+
+/* ---------- topics ---------- */
+function renderTopic(){const el=$('#topic');let h='';
+  if(S.grp==='frogs'){h=`<h2>Pacific chorus frogs: one species, two, or three?</h2>
+    <div class="seg" id="pseudo" aria-label="Pacific chorus frog taxonomy"><button data-v="lump">Lumped: 1</button><button data-v="mt">mtDNA split: 3</button><button data-v="gen">Genomic: 2</button></div>
+    <div id="pText"></div>
+    <ul><li>Taxonomists who prefer many narrowly defined species are "splitters"; those who prefer fewer, broader species are "lumpers." Which do you think the evidence supports here?</li>
+    <li>Why might mitochondrial DNA (inherited only from the mother) and nuclear DNA tell different stories?</li>
+    <li>Use <b>Time (log)</b>: how does the age of these splits compare with the split between the California red-legged frog and the northern red-legged frog?</li></ul>`;}
+  else if(S.grp==='krats'){h=`<h2>Endangered: whole species or subspecies?</h2>
+    <label class="check"><input type="checkbox" id="sspBox" ${S.ssp?'checked':''}>&nbsp;Show subspecies</label>
+    <p>The U.S. Endangered Species Act can protect a species, a subspecies, or a distinct population segment. California's listed kangaroo rats include two whole species (giant and Stephens') and four subspecies: Fresno and Tipton (subspecies of the San Joaquin kangaroo rat), Morro Bay (Heermann's), and San Bernardino (Merriam's).</p>
+    <ul><li>Turn on subspecies. How deep are the subspecies splits compared with the split between the giant kangaroo rat and Heermann's kangaroo rat?</li>
+    <li>Mitochondrial DNA does not sort by the three San Joaquin subspecies, although they do differ in body size and color (Patton et al. 2019). It also showed no genetic structure among all nine Heermann's subspecies, including Morro Bay (Benedict et al. 2019). Should protection follow genetic lineages, body form, or geography?</li>
+    <li>Stephens' kangaroo rat was moved from endangered to threatened in 2022 after habitat was conserved. The Morro Bay kangaroo rat has not been confirmed in the wild since the 1980s.</li>
+    <li>Several nodes are <b>unresolved</b> (more than two branches from one node). Which species can you <i>not</i> say are each other's closest relatives?</li></ul>`;}
+  else{const si=spermInfo();h=`<h2>When a genus is not a real group: breaking up <i>Spermophilus</i></h2>
+    <div class="seg" id="names" aria-label="Names"><button data-v="new">Current names</button><button data-v="old">Names before 2009</button></div>
+    <label class="check"><input type="checkbox" id="spermBox" ${S.hiSperm?'checked':''}>&nbsp;Highlight the old genus <i>Spermophilus</i></label>
+    <p>Until 2009, most North American ground squirrels were placed in one genus, <i>Spermophilus</i>. DNA showed that marmots (and prairie dogs, which do not live in California) sit <b>inside</b> that group. A group that includes a common ancestor but leaves out some of its descendants is <b>paraphyletic</b>, so Helgen et al. (2009) split <i>Spermophilus</i> into eight genera, each one a clade.</p>
+    ${S.hiSperm&&si?`<p class="small"><span class="pill" style="border-color:var(--hi);color:var(--hi)">old Spermophilus</span> The smallest clade holding all ${T.tips.filter(t=>t.sperm).length} old <i>Spermophilus</i> also holds: <b>${si.others.map(o=>esc(o.cn)).join(', ')||'nothing else'}</b> <span class="pill" style="border-color:var(--hi2);color:var(--hi2)">not Spermophilus</span>.</p>`:''}
+    <ul><li>Is "ground squirrels" (everything with trait 3) a clade? Is "tree squirrels" (trait 2)? Is "striped squirrels" (trait 4)?</li>
+    <li>Names keep changing as data improve: the Douglas ground squirrel was split from the California ground squirrel in 2014, and Humboldt's flying squirrel from the northern flying squirrel in 2017.</li>
+    <li>Not every node is equally certain: methods using thousands of genes disagree on whether marmots are sister to the golden-mantled and California ground squirrel group (McLean et al. 2019).</li>
+    <li>The San Joaquin antelope squirrel and Mohave ground squirrel are listed as threatened in California.</li></ul>`}
+  el.innerHTML=h;
+  if(S.grp==='frogs'){seg($('#pseudo'),v=>{S.pseudo=v;rebuild(true);pText();zoomTip()});setSeg($('#pseudo'),S.pseudo);pText()}
+  if(S.grp==='krats'){$('#sspBox').onchange=e=>{S.ssp=e.target.checked;rebuild(true);zoomTip();legend()}}
+  if(S.grp==='squirrels'){seg($('#names'),v=>{S.oldNames=v==='old';draw();renderTopic()});setSeg($('#names'),S.oldNames?'old':'new');$('#spermBox').onchange=e=>{S.hiSperm=e.target.checked;draw();renderTopic()}}}
+function pText(){const t={lump:`<p>For most of the 1900s, all Pacific chorus frogs from British Columbia to Baja California were treated as one species, <i>Pseudacris</i> (earlier <i>Hyla</i>) <i>regilla</i>. They look alike and make similar calls. Many field guides and iNaturalist still treat them as one species.</p>`,
+  mt:`<p>Recuero et al. (2006), using mitochondrial DNA plus older protein data, split the complex into three species: <i>P. regilla</i> (northwest), <i>P. sierra</i> (central California and inland), and <i>P. hypochondriaca</i> (southern California and Baja). A 2021 mtDNA study dated the splits to about 1.4 and 0.8 million years ago, with <i>sierra</i> and <i>hypochondriaca</i> as the closest pair.</p>`,
+  gen:`<p>Nuclear DNA tells a different story. Barrow et al. (2014) and Banker et al. (2020) found little support for three species. A recent genomic study using thousands of nuclear loci (a preprint, not yet peer reviewed) found that the northern and Sierran lineages still exchange genes, a "gray zone" of speciation. It proposes two species: <i>P. hypochondriaca</i>, which split off more than 0.5 million years ago, and <i>P. regilla</i>, including "sierra." Notice that the closest pair is now different from the mtDNA tree.</p>`}[S.pseudo];$('#pText').innerHTML=t}
+
+/* ---------- practice questions ---------- */
+const nm=t=>label(t);
+function newQ(first){S.q=null;const tips=T.tips;$('#fb').textContent='';$('#fb').className='fb';
+  const types=first?['closer']:S.qtype==='mix'?['closer','closer','mrca','when','rot']:[S.qtype];
+  for(let tries=0;tries<200;tries++){const ty=pick(types);
+    if(ty==='closer'){const a=pick(tips),b=pick(tips),c=pick(tips);if(a===b||a===c||b===c)continue;const mb=mrca(a,b),mc2=mrca(a,c);if(mb===mc2||!isDesc(mb,mc2))continue;
+      S.q={type:'closer',a,b,c,mb,mc:mc2,text:`Which is more closely related to the <b>${esc(nm(a))}</b>?`,opts:shuffle([b,c]).map(x=>({label:nm(x),ok:x===b}))};break}
+    if(ty==='mrca'){const a=pick(tips),b=pick(tips);if(a===b)continue;const m=mrca(a,b);if(m===T.root&&Math.random()<0.6)continue;S.q={type:'mrca',a,b,ans:m,text:`Tap the node that is the most recent common ancestor of the <b>${esc(nm(a))}</b> and the <b>${esc(nm(b))}</b>.`,opts:[]};break}
+    if(ty==='when'){const a=pick(tips),b=pick(tips);if(a===b)continue;const m=mrca(a,b);if(m.unc)continue;const times=[...new Set(T.nodes.filter(n=>n.c&&!n.unc).map(n=>n.t))];if(times.length<3)continue;const wrong=shuffle(times.filter(t=>t!==m.t)).slice(0,2);
+      S.q={type:'when',a,b,ans:m,text:`About when did the <b>${esc(nm(a))}</b> and the <b>${esc(nm(b))}</b> last share a common ancestor? (Drag the time slider or tap nodes to check.)`,opts:shuffle([m.t,...wrong]).map(t=>({label:fmtT(t).replace(/^about /,'About '),ok:t===m.t}))};break}
+    if(ty==='rot'){const a=pick(tips),b=pick(tips);if(a===b)continue;const m=mrca(a,b);S.q={type:'rot',a,b,ans:m,text:`If you rotate the node where the <b>${esc(nm(a))}</b> and the <b>${esc(nm(b))}</b> come together, does that change how closely related they are?`,opts:[{label:'Yes: rotating moves them closer together or farther apart',ok:false},{label:'No: rotating only changes how the tree is drawn',ok:true}]};break}}
+  renderQ()}
+function renderQ(){const q=S.q;if(!q){$('#qtext').textContent='';$('#choices').innerHTML='';return}
+  $('#qtext').innerHTML=q.text;
+  $('#choices').innerHTML=q.opts.map((o,i)=>`<button data-i="${i}">${esc(o.label)}</button>`).join('');
+  $$('#choices button').forEach(b=>b.onclick=()=>answer(+b.dataset.i,b));
+  if(q.type==='mrca'){$('#choices').innerHTML='<p class="note">Tap a node (circle) on the tree.</p>';status(`<b>Practice question:</b> tap the most recent common ancestor of the ${esc(nm(q.a))} and the ${esc(nm(q.b))}.`)}
+  $('#score').textContent=`Score: ${S.score[0]} / ${S.score[1]}`;draw()}
+function finish(ok,msg){S.score[1]++;if(ok)S.score[0]++;$('#fb').innerHTML=msg;$('#fb').className='fb '+(ok?'good':'bad');$('#score').textContent=`Score: ${S.score[0]} / ${S.score[1]}`}
+function answer(i,btn){const q=S.q;if(!q||q.done)return;q.done=true;const o=q.opts[i];$$('#choices button').forEach((b,j)=>{if(q.opts[j].ok)b.classList.add('right');else if(j===i)b.classList.add('wrong');b.disabled=true});
+  if(q.type==='closer'){S.sel=q.mb.key;draw();finish(o.ok,`${o.ok?'<b>Correct.</b>':'<b>Not quite.</b>'} The ${esc(nm(q.a))} and the ${esc(nm(q.b))} share a common ancestor ${fmtT(q.mb.t,q.mb.unc)} (highlighted). The ${esc(nm(q.c))} joins them only at an older ancestor, ${fmtT(q.mc.t,q.mc.unc)}. Follow the branches back, not the distance between names.`)}
+  else if(q.type==='when'){S.sel=q.ans.key;draw();finish(o.ok,`${o.ok?'<b>Correct.</b>':'<b>Not quite.</b>'} Their most recent common ancestor (highlighted) lived ${fmtT(q.ans.t)}.`)}
+  else if(q.type==='rot'){finish(o.ok,`${o.ok?'<b>Correct.</b>':'<b>Not quite.</b>'} Rotating a node is like spinning a mobile: the branches swap sides, but the same species still share the same ancestors. Try it: tap that node with "Rotate it" on.`);S.sel=q.ans.key;draw()}}
+function answerMrca(n){const q=S.q;q.done=true;status('');const ok=n===q.ans;S.sel=q.ans.key;draw();
+  finish(ok,ok?`<b>Correct.</b> That node, ${fmtT(n.t,n.unc)}, is the most recent ancestor they share. Every older node is also a common ancestor, but not the most recent one.`
+    :`<b>Not quite.</b> ${isDesc(q.a,n)&&isDesc(q.b,n)?'That node is a common ancestor of both, but an older one. The most recent one is highlighted in green.':'Only one of the two species descends from that node. The correct node is highlighted in green.'}`)}
+seg($('#qtype'),v=>{S.qtype=v;newQ()});
+$('#nextQ').onclick=newQ;
+
+/* ---------- sources ---------- */
+const SRC={frogs:`<p>Ages are rounded estimates for teaching; studies disagree, especially for the oldest splits. Family relationships follow standard anuran phylogenies (the tailed frog is sister to all other living frogs). <i>Rana</i> relationships: Macey et al. 2001 (<i>Mol. Phylogenet. Evol.</i> 19:131–143; yellow-legged frogs not each other's closest relatives; group about 8 million years old) and Shaffer et al. 2004 (<i>Mol. Ecol.</i> 13; northern red-legged and Cascades frogs are sister species). Pacific chorus frogs: Recuero et al. 2006 (<i>Mol. Phylogenet. Evol.</i> 39:293–304); Barrow et al. 2014; Banker et al. 2020; a 2021 mtDNA study in <i>Biol. J. Linn. Soc.</i> 132:612–633; and a genomic preprint, "The tangled history and taxonomy of an iconic chorus frog complex clarified using genomic analyses." *Foothill yellow-legged frog: some populations federally endangered, others threatened (2023).</p>`,
+  krats:`<p>Species groups follow Alexander &amp; Riddle 2005 (<i>J. Mammal.</i> 86:366–379) and Hafner et al. 2007 (<i>J. Mammal.</i> 88:1129–1145): the giant, Stephens', Panamint, chisel-toothed, and Heermann's kangaroo rats form the heermanni group. Genus about 12 million years old and Merriam's/San Joaquin split about 3 million years ago (<i>J. Heredity</i> 2025, Merriam's kangaroo rat genome). Other ages are rough estimates. Subspecies genetics: Patton et al. 2019 (<i>J. Mammal.</i> 100:1546–1563) and Benedict et al. 2019 (<i>J. Mammal.</i> 100). Status: USFWS listings (Stephens' downlisted, 87 FR 8967, 2022) and California Code of Regulations, Title 14, §670.5.</p>`,
+  squirrels:`<p>Tree squirrels and flying squirrels vs. ground-dwelling squirrels: Mercer &amp; Roth 2003 (<i>Science</i> 299:1568–1572); Steppan et al. 2004. Ground squirrels: Harrison et al. 2003 (<i>J. Mammal. Evol.</i> 10:249–276; basal ground squirrel split about 17.5 million years ago, rapid radiation 10–14 million years ago), Helgen et al. 2009 (<i>J. Mammal.</i> 90:270–305), McLean et al. 2019 (<i>Syst. Biol.</i> 68:298). Douglas ground squirrel: Phuong et al. 2014. Humboldt's flying squirrel: Arbogast et al. 2017. Status: California Code of Regulations, Title 14, §670.5. Ages are rounded estimates.</p>`};
+
+/* ---------- group switching ---------- */
+function rebuild(animate){buildTree();if(!animate)cur={};relayout(animate);renderTraits();legend();if(S.q&&!S.q.done)newQ()}
+function setGroup(g){S.grp=g;S.rot.clear();S.sel=null;S.p=1;$('#time').value=1000;S.traitOn=[];S.oldNames=false;S.hiSperm=false;stopPlay();
+  buildTree();cur={};relayout(false);renderTraits();renderTopic();legend();zoomTip();$('#sources').innerHTML=SRC[g];status(S.mode==='rotate'?'Tap any node (circle) to spin its branches around it.':'');newQ(true);
+  try{history.replaceState(null,'','#'+g)}catch(e){}}
+window.addEventListener('resize',()=>draw());
+{const h=location.hash.slice(1);const ok=['frogs','krats','squirrels'].includes(h)?h:'frogs';setSeg($('#grp'),ok);setGroup(ok)}
+</script>
+<script>window.A11Y={live:['#fb']};</script>
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+<script src="../mobile.js"></script>
+</body>
+</html>
+
