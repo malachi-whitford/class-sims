@@ -92,8 +92,8 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 <div id="mNight">
 <div class="layout">
   <div class="card ctrl">
-    <h3>Season</h3>
-    <div class="seg" id="nSeason" aria-label="Season"><button data-v="winter" class="on">Winter</button><button data-v="summer">Summer</button></div>
+    <h3>Jump to</h3>
+    <div class="quick" id="nJump" aria-label="Jump to a time"><button data-h="13">Afternoon</button><button data-h="17.5">Sunset</button><button data-h="0">Midnight</button><button data-h="7.5">Sunrise</button></div>
     <h3>Sky</h3>
     <div class="seg" id="nSky" aria-label="Sky"><button data-v="0" class="on">Clear</button><button data-v="1">Cloudy</button></div>
     <h3>Wind</h3>
@@ -108,10 +108,10 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
   </div>
   <div>
     <div class="tiles">
-      <div class="tile"><div class="k">Time</div><div class="v sm" id="nTime"></div><div class="s" id="nTime2"></div></div>
-      <div class="tile"><div class="k">Air at the ground</div><div class="v sm" id="nT0"></div><div class="s" id="nT02"></div></div>
-      <div class="tile"><div class="k">Air 300 m up</div><div class="v sm" id="nT3"></div><div class="s">about the height of the foothills</div></div>
-      <div class="tile"><div class="k">Inversion</div><div class="v sm" id="nInv"></div><div class="s" id="nInv2"></div></div>
+      <div class="tile"><div class="k">Time</div><div class="v sm" id="nTime"></div></div>
+      <div class="tile"><div class="k">Air at the ground</div><div class="v sm" id="nT0"></div></div>
+      <div class="tile"><div class="k">Air 300 m up</div><div class="v sm" id="nT3"></div></div>
+      <div class="tile"><div class="k">Inversion</div><div class="v sm" id="nInv"></div></div>
     </div>
     <div class="card"><canvas id="cvN"></canvas><div class="legend" id="legN"></div></div>
   </div>
@@ -437,60 +437,86 @@ function lohi(){return S.season==='winter'?[-6,14]:[12,36]}
 function restart(){S.reset();hist=[];histT=0;irp=[];bub=[];ui()}
 function stepVis(dt){tick+=dt;
   const top=S.fog?Y(S.fogTop):Y(0);
-  // infrared leaving the ground: always, but nothing replaces it at night
-  if(Math.random()<dt*2.6){const x=160+Math.random()*440;irp.push({x,y:top-4,vy:-90,ret:false})}
-  irp.forEach(p=>{p.y+=p.vy*dt;
-    if(!p.ret&&S.cloud&&p.y<84&&p.vy<0){if(Math.random()<0.7){p.vy=90;p.ret=true}}});
-  irp=irp.filter(p=>p.y>70&&p.y<Y(S.fog?S.fogTop:0)+2);
+  // infrared (heat) leaving the ground: always rising from the ground; at night nothing replaces it
+  const rate=(S.sun>0?1.2:3.2)*(S.cloud?0.8:1);
+  if(Math.random()<dt*rate){irp.push({x:175+Math.random()*410,y:top-4,y0:top-4,vy:-70,ret:false})}
+  irp.forEach(p=>{p.y+=p.vy*dt;if(!p.ret&&S.cloud&&p.y<92&&p.vy<0&&Math.random()<0.7){p.vy=70;p.ret=true}});
+  irp=irp.filter(p=>p.y>40&&p.y<Y(S.fog?S.fogTop:0)+2);
   // warm bubbles when the sun heats the ground
   if(S.mixTop>0&&Math.random()<dt*6*S.sun){bub.push({x:170+Math.random()*420,z:5,top:(S.mixTop+1)*S.DZ,r:4+Math.random()*4})}
   bub.forEach(b=>b.z+=dt*(60+60*S.sun));bub=bub.filter(b=>b.z<b.top);
   // cold air sliding down the foothills
-  if(S.drain>0.25&&Math.random()<dt*3*S.drain){drn.push({side:Math.random()<0.5?-1:1,u:0})}
-  drn.forEach(d=>d.u+=dt*0.22);drn=drn.filter(d=>d.u<1);
-  if(S.wind>0&&Math.random()<dt*8)wnd.push({x:-40,z:60+Math.random()*900});
+  if(S.drain>0.25&&Math.random()<dt*2.5*S.drain){drn.push({side:Math.random()<0.5?-1:1,u:0})}
+  drn.forEach(d=>d.u+=dt*0.25);drn=drn.filter(d=>d.u<1);
+  if(S.wind>0&&Math.random()<dt*8)wnd.push({x:-40,z:60+Math.random()*800});
   wnd.forEach(w=>w.x+=dt*220);wnd=wnd.filter(w=>w.x<W+40)}
 function arrowTo(x,x0,y0,x1,y1,col,w){const a=Math.atan2(y1-y0,x1-x0);x.strokeStyle=col;x.fillStyle=col;x.lineWidth=w;x.beginPath();x.moveTo(x0,y0);x.lineTo(x1,y1);x.stroke();x.beginPath();x.moveTo(x1+Math.cos(a)*2,y1+Math.sin(a)*2);x.lineTo(x1+Math.cos(a+2.6)*8,y1+Math.sin(a+2.6)*8);x.lineTo(x1+Math.cos(a-2.6)*8,y1+Math.sin(a-2.6)*8);x.fill()}
-function draw(){const x=ctx2d(cv,W,H),p=S.sun,[lo,hi]=lohi();
+// fixed color scale, so blue always means cold and red always means warm
+const CLO=3,CHI=11;
+function tcolor(T,a){const u=clampF((T-CLO)/(CHI-CLO),0,1);const st=[[0,[40,90,210]],[0.45,[150,200,240]],[0.6,[250,235,200]],[1,[225,70,40]]];
+  for(let i=1;i<st.length;i++)if(u<=st[i][0]){const[a0,c0]=st[i-1],[a1,c1]=st[i],f=(u-a0)/(a1-a0);return`rgba(${c0.map((v,k)=>Math.round(v+(c1[k]-v)*f)).join(',')},${a})`}return`rgba(225,70,40,${a})`}
+function pill(x,t,cx,cy,bg,fg){x.font='700 12px system-ui,Arial';const w=x.measureText(t).width+12;x.fillStyle=bg;x.beginPath();x.roundRect(cx,cy-10,w,20,10);x.fill();x.strokeStyle='rgba(0,0,0,.35)';x.lineWidth=1;x.stroke();x.fillStyle=fg;x.textAlign='left';x.fillText(t,cx+6,cy+4);return w}
+function stage(){const inv=S.inv(),h=S.t;
+  if(S.wind)return'Wind keeps stirring the air, so no cold layer can build up';
+  if(S.sun>0)return inv?'Morning: sunlight warms the ground and starts mixing away the cold layer':'Daytime: sunlight heats the ground; warm air rises and mixes';
+  if(S.cloud)return'Cloudy night: clouds send heat back down, so the ground cools slowly';
+  if(h>=16&&h<19.5)return'Sunset: the ground starts losing more heat than it gets';
+  return S.fog?'Night: cold air pools under warmer air, and tule fog forms':'Night: the ground loses heat to space and chills the air touching it'}
+function draw(){const x=ctx2d(cv,W,H),p=S.sun;
   // sky: day, twilight, night
-  const h=S.t,P=S.season==='winter'?{r:7.1,s:16.9}:{r:5.75,s:20.25};
+  const h=S.t,P={r:7.1,s:16.9};
   let light=p>0?Math.min(1,0.35+p*1.5):0;const tw=Math.max(0,1-Math.min(Math.abs(h-P.r),Math.abs(h-P.s)));if(p===0)light=Math.max(light,0.3*tw);
   const mix=(a,b,u)=>a.map((v,i)=>Math.round(v+(b[i]-v)*u));
   const top=mix([10,18,42],S.cloud?[120,130,142]:[70,140,205],light),bot=mix([24,34,62],S.cloud?[170,178,186]:[190,220,240],light);
   const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,`rgb(${top})`);g.addColorStop(1,`rgb(${bot})`);x.fillStyle=g;x.fillRect(0,0,W,H);
   if(light<0.4){x.fillStyle=`rgba(255,255,255,${0.7*(1-light/0.4)})`;for(let i=0;i<60;i++)x.fillRect((i*197.3)%W,(i*37.9)%200,1.4,1.4)}
-  // air temperature, layer by layer (blue = cold, red = warm)
-  let cl=1e9,ch=-1e9;for(let i=0;i<S.N;i++){cl=Math.min(cl,S.T(i));ch=Math.max(ch,S.T(i))}const mid=(cl+ch)/2,sp=Math.max(6,ch-cl+1);
-  for(let i=0;i<S.N;i++){const y0=Y((i+1)*S.DZ),y1=Y(i*S.DZ);x.fillStyle=tShade(S.T(i),mid-sp/2,mid+sp/2,0.55);x.fillRect(0,y0,W,y1-y0+0.5)}
-  // inversion band
-  const inv=S.inv();
-  if(inv){const y1=Y(inv.top),y2=Y(inv.base);x.fillStyle='rgba(240,150,40,.18)';x.fillRect(0,y1,W,y2-y1);x.setLineDash([6,5]);x.strokeStyle='rgba(255,170,60,.95)';x.lineWidth=1.8;x.beginPath();x.moveTo(0,y1);x.lineTo(W,y1);if(inv.base>0){x.moveTo(0,y2);x.lineTo(W,y2)}x.stroke();x.setLineDash([]);
-    x.font='700 13px system-ui,Arial';x.textAlign='left';const t=`Inversion: ${inv.dT.toFixed(1)} °C warmer at ${Math.round(inv.top)} m than ${inv.base>0?'at '+Math.round(inv.base)+' m':'at the ground'}`;const tw2=x.measureText(t).width+12;x.fillStyle='rgba(255,255,255,.88)';x.fillRect(150,y1-24,tw2,19);x.fillStyle='#7a3c00';x.fillText(t,156,y1-10)}
+  // air temperature: one smooth color column (blue = cold, red = warm)
+  const ztop=S.N*S.DZ,ag=x.createLinearGradient(0,Y(ztop),0,Y(0));
+  for(let i=S.N-1;i>=0;i--)ag.addColorStop(clampF(1-S.z(i)/ztop,0,1),tcolor(S.T(i),i>S.N-5?0.3+0.12*(S.N-1-i):0.8));
+  x.fillStyle=ag;x.fillRect(0,Y(ztop),W,Y(0)-Y(ztop));
   // sun / moon
-  if(p>0){const f=(h-P.r)/(P.s-P.r),sx=60+640*f,sy=150-(S.season==='summer'?115:70)*Math.sin(Math.PI*f);const sg=x.createRadialGradient(sx,sy,3,sx,sy,30);sg.addColorStop(0,'#fffbe0');sg.addColorStop(0.5,'#ffd84a');sg.addColorStop(1,'rgba(255,216,74,0)');x.fillStyle=sg;x.beginPath();x.arc(sx,sy,30,0,7);x.fill();
-    const n=Math.round(6*p*(1-0.6*S.cloud)*(S.fog?0.5:1));for(let i=0;i<n;i++){const gx=180+i*(400/Math.max(1,n-1||1)),gy=Y(S.fog?S.fogTop:0);const u=((tick*0.8+i*0.17)%1);const ax=sx+(gx-sx)*u,ay=sy+(gy-sy)*u,bx=sx+(gx-sx)*Math.min(1,u+0.12),by=sy+(gy-sy)*Math.min(1,u+0.12);if(u+0.12<1)arrowTo(x,ax,ay,bx,by,'rgba(255,214,60,.95)',2.4)}}
-  else{x.fillStyle='rgba(240,240,225,.9)';x.beginPath();x.arc(640,60,13,0,7);x.fill();x.fillStyle=`rgb(${top})`;x.beginPath();x.arc(646,56,11,0,7);x.fill()}
+  if(p>0){const f=(h-P.r)/(P.s-P.r),sx=60+640*f,sy=150-70*Math.sin(Math.PI*f);const sg=x.createRadialGradient(sx,sy,3,sx,sy,30);sg.addColorStop(0,'#fffbe0');sg.addColorStop(0.5,'#ffd84a');sg.addColorStop(1,'rgba(255,216,74,0)');x.fillStyle=sg;x.beginPath();x.arc(sx,sy,30,0,7);x.fill();
+    const n=Math.round(5*p*(1-0.6*S.cloud)*(S.fog?0.5:1));for(let i=0;i<n;i++){const gx=200+i*(360/Math.max(1,n-1||1)),gy=Y(S.fog?S.fogTop:0);const u=((tick*0.8+i*0.17)%1);const ax=sx+(gx-sx)*u,ay=sy+(gy-sy)*u,bx=sx+(gx-sx)*Math.min(1,u+0.12),by=sy+(gy-sy)*Math.min(1,u+0.12);if(u+0.12<1)arrowTo(x,ax,ay,bx,by,'rgba(255,214,60,.95)',2.4)}}
+  else{x.fillStyle='rgba(240,240,225,.9)';x.beginPath();x.arc(680,92,12,0,7);x.fill();x.fillStyle=`rgb(${top})`;x.beginPath();x.arc(686,88,10,0,7);x.fill()}
   // clouds
-  if(S.cloud){x.fillStyle='rgba(225,230,236,.92)';for(let i=0;i<9;i++){x.beginPath();x.ellipse(40+i*90,62+(i%2)*8,70,22,0,0,7);x.fill()}}
-  // infrared
-  irp.forEach(q=>{x.strokeStyle=q.ret?'rgba(255,140,120,.95)':'rgba(255,80,60,.95)';x.lineWidth=2.2;x.beginPath();for(let k=0;k<=12;k++){const yy=q.y+(q.vy<0?k:-k)*2.2,xx=q.x+Math.sin(k*1.2+tick*8)*3.5;k?x.lineTo(xx,yy):x.moveTo(xx,yy)}x.stroke()});
+  if(S.cloud){x.fillStyle='rgba(225,230,236,.92)';for(let i=0;i<9;i++){x.beginPath();x.ellipse(40+i*90,86+(i%2)*8,70,20,0,0,7);x.fill()}}
+  // infrared: wavy arrows rising from the ground, fading as they go
+  irp.forEach(q=>{const fade=q.ret?0.9:clampF(1-(q.y0-q.y)/300,0.15,1);x.globalAlpha=fade;x.strokeStyle=q.ret?'#ff9a80':'#ff4a2a';x.lineWidth=2.2;x.beginPath();for(let k=0;k<=10;k++){const yy=q.y+(q.vy<0?k:-k)*2.4,xx=q.x+Math.sin(k*1.3+tick*6)*3.5;k?x.lineTo(xx,yy):x.moveTo(xx,yy)}x.stroke();
+    x.fillStyle=x.strokeStyle;x.beginPath();const d=q.vy<0?-1:1;x.moveTo(q.x,q.y+d*6);x.lineTo(q.x-4,q.y-d*1);x.lineTo(q.x+4,q.y-d*1);x.fill();x.globalAlpha=1});
   // bubbles
   bub.forEach(b=>{x.strokeStyle='rgba(255,120,60,.9)';x.fillStyle='rgba(255,140,80,.35)';x.lineWidth=1.5;x.beginPath();x.arc(b.x,Y(b.z),b.r,0,7);x.fill();x.stroke()});
   // wind
   wnd.forEach(w=>{x.strokeStyle='rgba(255,255,255,.7)';x.lineWidth=2;x.beginPath();x.moveTo(w.x,Y(w.z));x.lineTo(w.x+30,Y(w.z));x.stroke()});
   // fog
-  if(S.fog){const fy=Y(S.fogTop);const fg=x.createLinearGradient(0,fy-10,0,Y(0));fg.addColorStop(0,'rgba(240,243,246,0)');fg.addColorStop(0.25,'rgba(240,243,246,.75)');fg.addColorStop(1,'rgba(240,243,246,.9)');x.fillStyle=fg;x.fillRect(0,fy-10,W,Y(0)-fy+10);
-    x.font='700 13px system-ui,Arial';x.textAlign='center';x.fillStyle='#3a4450';x.fillText('Tule fog',380,Math.max(fy+16,Y(0)-8))}
+  if(S.fog){const fy=Y(S.fogTop);const fg=x.createLinearGradient(0,fy-10,0,Y(0));fg.addColorStop(0,'rgba(240,243,246,0)');fg.addColorStop(0.3,'rgba(240,243,246,.45)');fg.addColorStop(1,'rgba(240,243,246,.6)');x.fillStyle=fg;x.fillRect(0,fy-10,W,Y(0)-fy+10);
+    x.font='700 13px system-ui,Arial';x.textAlign='center';x.fillStyle='#3a4450';x.fillText('Tule fog',470,Math.max(fy+16,Y(0)-8))}
+  // the inversion: lid line and labels
+  const inv=S.inv();
+  if(inv){const y1=Y(inv.top);x.setLineDash([7,5]);x.strokeStyle='#ff9d2e';x.lineWidth=2.4;x.beginPath();x.moveTo(140,y1);x.lineTo(620,y1);x.stroke();x.setLineDash([]);
+    pill(x,'Warmer air on top',420,y1-16,'rgba(255,236,214,.95)','#8a3b00');
+    const cy=Math.min(Y(inv.base)-14,(y1+Y(0))/2);if(Y(0)-y1>34)pill(x,'Cold air trapped below',420,cy+(S.fog?-6:0),'rgba(214,232,255,.95)','#123f86')}
   // terrain
   x.beginPath();x.moveTo(0,H);for(let px=0;px<=W;px+=4)x.lineTo(px,Y(zt(px)));x.lineTo(W,H);x.closePath();
-  const day=0.45+0.55*light;const c1=S.season==='winter'?[110,124,80]:[176,158,96];x.fillStyle=`rgb(${c1.map(v=>Math.round(v*day))})`;x.fill();
-  x.fillStyle=`rgba(40,60,30,${0.6*day})`;for(let i=0;i<14;i++){const ox=190+i*28;x.beginPath();x.arc(ox,Y(0)-4,5,0,7);x.fill()}
+  const day=0.45+0.55*light;x.fillStyle=`rgb(${[110,124,80].map(v=>Math.round(v*day))})`;x.fill();
+  x.fillStyle=`rgba(40,60,30,${0.6*day})`;for(let i=0;i<14;i++){const ox=330+i*20;x.beginPath();x.arc(ox,Y(0)-4,5,0,7);x.fill()}
   // cold air draining down the slopes
-  drn.forEach(d=>{const x0=d.side<0?20+d.u*110:740-d.u*110,x1=x0-d.side*-10;const xx=d.side<0?x0:x0;const zz=zt(xx)+18;const dir=d.side<0?1:-1;arrowTo(x,xx,Y(zz),xx+dir*16,Y(zt(xx+dir*16)+18),'rgba(120,200,255,.95)',2.6)});
+  drn.forEach(d=>{const xx=d.side<0?20+d.u*110:740-d.u*110,dir=d.side<0?1:-1;arrowTo(x,xx,Y(zt(xx)+18),xx+dir*16,Y(zt(xx+dir*16)+18),'rgba(120,200,255,.95)',2.6)});
+  // weather tower: thermometer readings at several heights
+  const TX=176;x.strokeStyle='rgba(255,255,255,.85)';x.lineWidth=2;x.beginPath();x.moveTo(TX,Y(0));x.lineTo(TX,Y(700));x.stroke();
+  for(let k=0;k<8;k++){x.beginPath();x.moveTo(TX-4,Y(k*100));x.lineTo(TX+4,Y(k*100+50));x.stroke()}
+  [[0,0],[100,4],[200,8],[300,12],[500,20],[700,28]].forEach(([zz,i],k)=>{const T=k===0?S.T(0):S.T(Math.min(S.N-1,Math.round(zz/S.DZ-0.5)));const ty=Y(zz)-(k===0?10:0);
+    x.fillStyle='#fff';x.beginPath();x.arc(TX,ty,3.5,0,7);x.fill();pill(x,`${zz} m: ${T.toFixed(1)} °C`,TX+8,ty,tcolor(T,0.95),'#0d1b2a')});
+  // timeline (noon to noon) and what is happening now
+  const tx0=150,tw0=460,ty0=10,hx=hh=>tx0+(((hh-12)%24+24)%24)/24*tw0;
+  x.fillStyle='rgba(255,236,150,.85)';x.fillRect(tx0,ty0,tw0,12);  x.fillStyle='rgba(20,28,60,.9)';x.fillRect(hx(P.s),ty0,(P.r+24-P.s)/24*tw0,12);
+  x.strokeStyle='rgba(255,255,255,.8)';x.lineWidth=1;x.strokeRect(tx0,ty0,tw0,12);
+  x.font='600 10px system-ui,Arial';x.textAlign='center';x.fillStyle=light>0.5?'#1d2530':'rgba(255,255,255,.9)';[[12,'Noon'],[18,'6 PM'],[0,'Midnight'],[6,'6 AM']].forEach(([hh,t])=>x.fillText(t,hx(hh),ty0+24));x.fillText('Noon',tx0+tw0,ty0+24);
+  const mx=hx(h);x.fillStyle='#ff4a6a';x.beginPath();x.moveTo(mx,ty0+13);x.lineTo(mx-6,ty0+21);x.lineTo(mx+6,ty0+21);x.fill();x.fillRect(mx-1.5,ty0-2,3,16);
+  x.font='600 12px system-ui,Arial';x.textAlign='left';x.fillStyle=light>0.5?'#1d2530':'rgba(255,255,255,.95)';x.fillText(`Day ${S.day} · ${clock(S.t)}`,10,20);
+  const cap=stage();x.font='700 14px system-ui,Arial';const cw=x.measureText(cap).width+20;x.fillStyle='rgba(255,255,255,.93)';x.beginPath();x.roundRect(380-cw/2,44,cw,26,8);x.fill();x.fillStyle='#14202e';x.textAlign='center';x.fillText(cap,380,62);
   // labels
-  x.font='600 12px system-ui,Arial';x.textAlign='left';x.fillStyle='rgba(255,255,255,.95)';x.fillText(`Day ${S.day} · ${clock(S.t)}`,10,20);
-  x.font='600 11px system-ui,Arial';x.fillStyle=light>0.5?'#1d2530':'rgba(255,255,255,.85)';x.textAlign='right';[[0,'0 m'],[300,'300 m'],[600,'600 m'],[900,'900 m']].forEach(([zz,t])=>x.fillText(t,W-6,Y(zz)-3));
-  x.textAlign='center';x.fillStyle='#fff';x.font='700 12px system-ui,Arial';x.fillText('Valley floor',380,Y(0)+30);x.fillText('Coast Range foothills',75,H-12);x.fillText('Sierra foothills',690,H-12);
+  x.font='600 11px system-ui,Arial';x.fillStyle=light>0.5?'#1d2530':'rgba(255,255,255,.85)';x.textAlign='right';[[300,'300 m'],[600,'600 m'],[900,'900 m']].forEach(([zz,t])=>x.fillText(t,W-6,Y(zz)-3));
+  x.textAlign='center';x.fillStyle='#fff';x.font='700 12px system-ui,Arial';x.fillText('Valley floor',470,Y(0)+30);x.fillText('Coast Range foothills',75,H-12);x.fillText('Sierra foothills',690,H-12);
 }
 function prof(){const svg=$('#profN'),w=520,h=340,m={l:54,r:14,t:12,b:42},pw=w-m.l-m.r,ph=h-m.t-m.b,zmax=1000,[lo,hi]=lohi();
   const X=t=>m.l+(t-lo)/(hi-lo)*pw,Yz=z=>m.t+ph-z/zmax*ph;let s='';
@@ -514,10 +540,10 @@ function histChart(){const svg=$('#histN'),w=520,h=340,m={l:44,r:12,t:12,b:42},p
   s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Hours ago (gray = night)</text><text class="lab" transform="translate(12 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">°C</text>`;
   svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label','Line graph over the last 48 hours of model time comparing air at the ground with air 300 m up. Where the ground line drops below the upper line, mostly at night, the air is inverted.')}
 function ui(){const inv=S.inv(),T0=S.T(0),T3=S.T(11),p=S.sun,w=S.season==='winter';
-  $('#nTime').textContent=clock(S.t);$('#nTime2').textContent=`Day ${S.day} · ${p>0?'sun up':'night'}`;
-  $('#nT0').textContent=`${T0.toFixed(1)} °C`;$('#nT02').textContent=`ground surface ${S.Tg.toFixed(1)} °C`;
+  $('#nTime').textContent=clock(S.t);
+  $('#nT0').textContent=`${T0.toFixed(1)} °C`;
   $('#nT3').textContent=`${T3.toFixed(1)} °C`;
-  $('#nInv').textContent=inv?`+${inv.dT.toFixed(1)} °C`:'None';$('#nInv2').textContent=inv?`warmer air from ${Math.round(inv.base)} to ${Math.round(inv.top)} m`:'air cools with height (normal)';
+  $('#nInv').textContent=inv?`+${inv.dT.toFixed(1)} °C warmer above`:'None';
   let m='';const h=S.t;
   if(S.wind)m=`<b>Wind stops the inversion.</b> At night the ground still cools, but the wind keeps stirring the air, mixing warmer air from above down to the ground. A cold layer can't build up, so the air stays coldest on top, the normal way. Calm nights are what Valley inversions need, and the mountains around the valley keep it calm.`;
   else if(S.cloud&&!inv)m=`<b>Clouds act like a blanket.</b> The ground is still sending infrared (heat) upward, but the clouds absorb it and send much of it back down (the returning red waves). The ground cools slowly, so the air touching it never gets much colder than the air above. Clear skies make the strongest inversions.`;
@@ -529,9 +555,11 @@ function ui(){const inv=S.inv(),T0=S.T(0),T3=S.T(11),p=S.sun,w=S.season==='winte
   cv.setAttribute('aria-label',`Side view of the valley at ${clock(S.t)} on day ${S.day}, ${S.season}. Air colored by temperature, blue cold and red warm. Air at the ground ${T0.toFixed(0)} degrees, air 300 m up ${T3.toFixed(0)} degrees. ${inv?`Inversion: warmer air from ${Math.round(inv.base)} to ${Math.round(inv.top)} m.`:'No inversion.'} ${S.fog?'Tule fog covers the valley floor.':''}`);
   prof();histChart()}
 function setOpt(){restart()}
-seg($('#nSeason'),v=>{S.season=v;restart()});seg($('#nSky'),v=>{S.cloud=+v;ui()});seg($('#nWind'),v=>{S.wind=+v;ui()});seg($('#nHum'),v=>{S.humid=+v;ui()});seg($('#nSpd'),v=>{speed=+v});
+seg($('#nSky'),v=>{S.cloud=+v;ui()});seg($('#nWind'),v=>{S.wind=+v;ui()});seg($('#nHum'),v=>{S.humid=+v;ui()});seg($('#nSpd'),v=>{speed=+v});
+function advance(hrs){const n=Math.ceil(hrs/0.02);for(let k=0;k<n;k++){S.step(hrs/n);histT+=hrs/n;while(histT>=0.5){histT-=0.5;hist.push({a:S.T(0),b:S.T(11),night:S.sun===0});if(hist.length>96)hist.shift()}}irp=[];bub=[];drn=[];ui()}
+$$('#nJump button').forEach(b=>b.onclick=()=>{const h=+b.dataset.h;let d=((h-S.t)%24+24)%24;if(d<0.1)d+=24;advance(d)});
 $('#nPause').onclick=()=>{running=!running;$('#nPause').textContent=running?'Pause':'Play'};$('#nReset').onclick=restart;
-$('#legN').innerHTML=`<span><i class="sw" style="background:linear-gradient(90deg,#2a6ee6,#ff4a2a)"></i>Air temperature: blue = colder, red = warmer</span><span><i class="sw" style="background:#ffd63c"></i>Sunlight</span><span><i class="sw" style="background:#ff503c"></i>Infrared (heat) leaving the ground</span><span><i class="sw" style="background:#78c8ff"></i>Cold air draining downhill</span><span><i class="sw" style="background:rgba(255,140,80,.6);border-radius:50%"></i>Warm rising bubbles</span>`;
+$('#legN').innerHTML=`<span><i class="sw" style="background:linear-gradient(90deg,#285ad2,#96c8f0,#fae6c8,#e14628)"></i>Air temperature: blue = cold (3 °C or less), red = warm (11 °C or more)</span><span><i class="sw" style="background:#ffd63c"></i>Sunlight</span><span><i class="sw" style="background:#ff503c"></i>Infrared (heat) leaving the ground</span><span><i class="sw" style="background:#78c8ff"></i>Cold air draining downhill</span><span><i class="sw" style="background:rgba(255,140,80,.6);border-radius:50%"></i>Warm rising bubbles</span>`;
 restart();
 return{tick(dt,now){if(running){const hrs=dt*speed;const n=Math.ceil(hrs/0.02);for(let k=0;k<n;k++)S.step(hrs/n);histT+=hrs;while(histT>=0.5){histT-=0.5;hist.push({a:S.T(0),b:S.T(11),night:S.sun===0});if(hist.length>96)hist.shift()}stepVis(dt)}
   draw();if(now-lastUI>700){lastUI=now;ui()}},ui};
