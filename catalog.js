@@ -29,52 +29,46 @@
    ===================================================================== */
 
 const TOPICS = [
-  { id: "cells", label: "Cells & Plants",
-    blurb: "How water moves into and out of cells, and how plants capture carbon and move water.",
-    sections: [
-      { id: "membranes", label: "Cells and membranes" },
-      { id: "plants",    label: "Plant physiology" } ] },
-  { id: "soils", label: "Soils",
+  { id: "soils", label: "Soil",
     blurb: "How soils hold water and nutrients.",
     sections: [
       { id: "water",     label: "Soil water" },
       { id: "chemistry", label: "Soil chemistry" } ] },
-  { id: "ecology", label: "Ecology & Conservation",
-    blurb: "From single populations to whole ecosystems, and how science informs conservation.",
+  { id: "plants", label: "Plants",
+    blurb: "How water moves into and out of plant cells, and how plants capture carbon and move water.",
+    sections: [
+      { id: "membranes",  label: "Cells and membranes" },
+      { id: "physiology", label: "Plant physiology" } ] },
+  { id: "ecology", label: "Ecology & Environmental Science",
+    blurb: "From single populations to whole ecosystems, the atmosphere and climate, and how science informs conservation.",
     sections: [
       { id: "populations",  label: "Populations",                blurb: "How populations grow, and how we count and project them." },
       { id: "interactions", label: "Species interactions",       blurb: "Predators, prey, competitors, and contests." },
       { id: "ecosystems",   label: "Communities and ecosystems", blurb: "Diversity, energy flow, and change over time." },
-      { id: "conservation", label: "Conservation and environmental policy", blurb: "Laws, shared resources, and managing land." } ] },
+      { id: "conservation", label: "Conservation and environmental policy", blurb: "Laws, shared resources, and managing land." },
+      { id: "climate",      label: "Greenhouse effect and climate" },
+      { id: "ozone",        label: "The ozone layer" },
+      { id: "air",          label: "Air quality" },
+      { id: "circulation",  label: "Global winds and climate zones" } ] },
   { id: "evolution", label: "Evolution",
     blurb: "How species are related, and how scientists draw, read, and name the tree of life.",
     sections: [
       { id: "phylogeny", label: "Reading phylogenies" } ] },
-  { id: "atmosphere", label: "Atmosphere & Climate",
-    blurb: "How gases in the air interact with light and weather: the greenhouse effect, the ozone layer, air quality, and global winds.",
+  { id: "other", label: "Other Sims",
+    blurb: "Water treatment and field biology review.",
     sections: [
-      { id: "climate", label: "Greenhouse effect and climate" },
-      { id: "ozone",   label: "The ozone layer" },
-      { id: "air",     label: "Air quality" },
-      { id: "circulation", label: "Global winds and climate zones" } ] },
-  { id: "water", label: "Water Treatment",
-    blurb: "How drinking water is made clean and safe, step by step through a treatment plant.",
-    sections: [
-      { id: "coag", label: "Coagulation, flocculation, and settling" } ] },
-  { id: "fieldbio", label: "Field Biology Review",
-    blurb: "Species ID practice for BIOL 7 field trips.",
-    sections: [
-      { id: "species", label: "Species identification" } ] }
+      { id: "coag",    label: "Water treatment: coagulation, flocculation, and settling", blurb: "How drinking water is made clean and safe." },
+      { id: "species", label: "Field biology: species identification", blurb: "Species ID practice for BIOL 7 field trips." } ] }
 ];
 
-// Old page addresses (e.g. .../#population) still open the matching new tab.
-const TOPIC_ALIASES = { plants: "cells", population: "ecology", community: "ecology",
-  ecosystems: "ecology", behavior: "ecology", environment: "ecology", field: "ecology" };
+// Old page addresses (e.g. .../#population, .../#atmosphere) still open the matching new tab.
+const TOPIC_ALIASES = { cells: "plants", atmosphere: "ecology", water: "other", fieldbio: "other",
+  population: "ecology", community: "ecology", ecosystems: "ecology", behavior: "ecology", environment: "ecology", field: "ecology" };
 
 const ITEMS = [
   {
     title: "Osmosis",
-    where: ["cells/membranes"],
+    where: ["plants/membranes"],
     type: "sim",
     url: "sims/osmosis/",
     desc: "Two chambers separated by a membrane that lets water through but not solutes. Change the solute on each side and watch the water level shift.",
@@ -82,7 +76,7 @@ const ITEMS = [
   },
   {
     title: "Osmolarity & Tonicity: Plant Cells",
-    where: ["cells/membranes"],
+    where: ["plants/membranes"],
     type: "sim",
     url: "sims/plant-cell-tonicity/",
     desc: "Compare three plant cells in hypotonic, isotonic, and hypertonic solutions. See turgor pressure, plasmolysis, and water potential (Ψ = Ψs + Ψp).",
@@ -90,7 +84,7 @@ const ITEMS = [
   },
   {
     title: "Photosynthesis: C₃, C₄, CAM & Photorespiration",
-    where: ["cells/plants"],
+    where: ["plants/physiology"],
     type: "sim",
     url: "sims/photosynthesis-pathways/",
     desc: "Adjust light, CO₂, and temperature to see what limits photosynthesis, watch Rubisco choose between CO₂ and O₂, and compare C₃, C₄, and CAM plants across habitats.",
@@ -98,7 +92,7 @@ const ITEMS = [
   },
   {
     title: "Water Potential in Plants",
-    where: ["cells/plants", "soils/water"],
+    where: ["plants/physiology", "soils/water"],
     type: "sim",
     url: "sims/plant-water-potential/",
     desc: "Follow water from the soil into the root, up the xylem, and out through transpiration, using the water potential equation at each step.",
@@ -202,7 +196,7 @@ const ITEMS = [
   },
   {
     title: "Field Biology Species Review",
-    where: ["fieldbio/species"],
+    where: ["other/species"],
     type: "sim",
     url: "sims/field_bio_review/",
     desc: "Flashcard study tools for the species from each semester's BIOL 7 field trips. Pick your semester and practice your IDs.",
@@ -226,7 +220,7 @@ const ITEMS = [
   },
   {
     title: "What Makes a Greenhouse Gas? Light Meets the Air",
-    where: ["atmosphere/climate"],
+    where: ["ecology/climate"],
     type: "sim",
     url: "sims/molecules-light/",
     desc: "See why CO₂ and H₂O trap heat but N₂ and O₂ don't: watch light's electric field push on each molecule's partial charges, and compare the vibrations that make a molecule's charge lopsided. Microwave, visible, and UV light spin, excite, or split some molecules too. Then add CO₂ and water vapor to an atmosphere and see infrared get sent back down and the ground warm.",
@@ -234,7 +228,7 @@ const ITEMS = [
   },
   {
     title: "A Planet's Energy Balance: How the Greenhouse Effect Sets Temperature",
-    where: ["atmosphere/climate"],
+    where: ["ecology/climate"],
     type: "sim",
     url: "sims/greenhouse-effect/",
     desc: "Watch sunlight arrive, reflect, and leave Earth as infrared. Change CO₂ and Earth's reflectivity from the last ice age to 2100, then compare Mercury, Venus, Earth, and Mars to see why Venus is the hottest planet.",
@@ -242,7 +236,7 @@ const ITEMS = [
   },
   {
     title: "The Chapman Cycle: How the Ozone Layer Works",
-    where: ["atmosphere/ozone"],
+    where: ["ecology/ozone"],
     type: "sim",
     url: "sims/chapman-cycle/",
     desc: "Watch UV light split O₂ and the pieces build ozone, molecule by molecule, until making and breaking reach a balance. Then add chlorine from CFCs and see ozone drop and more UV-B reach the ground.",
@@ -250,7 +244,7 @@ const ITEMS = [
   },
   {
     title: "Inversion Layers: Why the Central Valley Traps Air Pollution",
-    where: ["atmosphere/air"],
+    where: ["ecology/air"],
     type: "sim",
     url: "sims/valley-inversion/",
     desc: "See how inversions form: run a day–night cycle where the ground chills the air on long, calm winter nights (with tule fog and cold air draining off the foothills), and watch air sinking in the Pacific High warm by compression into a summer lid. Then see how the lid traps pollution from farms, Hwy 99, and Fresno–Clovis and drives up the Air Quality Index.",
@@ -258,7 +252,7 @@ const ITEMS = [
   },
   {
     title: "Global Air Circulation: Three Cells, Deserts, and Spinning Winds",
-    where: ["atmosphere/circulation"],
+    where: ["ecology/circulation"],
     type: "sim",
     url: "sims/global-circulation/",
     desc: "Follow air around the Hadley, Ferrel, and polar cells to see how pressure, volume, temperature, and water-holding capacity explain rain belts and deserts. Then spin the Earth to see the Coriolis effect bend the trade winds and westerlies, and compare how fast the ground moves at each latitude.",
@@ -274,7 +268,7 @@ const ITEMS = [
   },
   {
     title: "The Jar Test: Finding the Right Coagulant Dose",
-    where: ["water/coag"],
+    where: ["other/coag"],
     type: "sim",
     url: "sims/jar-test/",
     desc: "Run a six-jar test on average river water, storm runoff, or cold snowmelt: dose alum, rapid mix, slow mix, and settle, then find the best dose and scale it up to pounds per day. A close-up shows how canceling the particles' charge makes them stick, and how too much coagulant makes them repel again.",
@@ -284,7 +278,7 @@ const ITEMS = [
   // ---------- Example web app (delete the two slashes at the start of each line to use) ----------
   // ,{
   //   title: "Trail Camera Reviewer",
-  //   where: ["fieldbio/species"],
+  //   where: ["other/species"],
   //   type: "app",
   //   url: "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec",
   //   desc: "Review trail camera images and record species detections. Sign in with your college Google account.",
