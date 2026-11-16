@@ -20,6 +20,7 @@ class-sims/
     ├── soil-water/index.html
     ├── soil-cation-exchange/index.html
     ├── soil-ph/index.html
+    ├── nutrient-deficiency/index.html
     ├── competition/index.html
     ├── predator-prey/index.html
     ├── island-biogeography/index.html

@@ -52,6 +52,16 @@ const THUMBS = {
     <circle cx="34" cy="24" r="10" fill="#c0392b"/><text x="34" y="28">H⁺</text>
     <circle cx="66" cy="18" r="10" fill="#c0392b"/><text x="66" y="22">H⁺</text>
     <circle cx="112" cy="26" r="10" fill="#3b4fb8"/><text x="112" y="30">OH</text></g>`,
+"sims/nutrient-deficiency/": `
+  <rect x="0" y="74" width="160" height="16" fill="#8a6542"/>
+  <path d="M80 74 V10" stroke="#4a8638" stroke-width="3.5"/>
+  <path d="M80 62 C66 70 44 68 30 58 C46 48 66 52 80 62Z" fill="#e2d046" stroke="#2f6b3a" stroke-width="1.5"/>
+  <path d="M80 62 L32 58 M66 64 L60 57 M54 63 L50 56 M66 60 L62 66 M54 61 L50 66" stroke="#4e983e" stroke-width="2.2" fill="none"/>
+  <path d="M80 48 C94 56 116 54 128 44 C112 34 94 38 80 48Z" fill="#e2d046" stroke="#2f6b3a" stroke-width="1.5"/>
+  <path d="M80 48 L126 44 M96 50 L100 43 M108 49 L112 43 M96 46 L100 53 M108 46 L112 52" stroke="#4e983e" stroke-width="2.2" fill="none"/>
+  <path d="M80 32 C70 36 56 34 48 26 C58 20 72 22 80 32Z M80 20 C88 22 100 18 104 10 C94 6 84 10 80 20Z" fill="#4e983e" stroke="#2f6b3a" stroke-width="1.5"/>
+  <path d="M142 66 V16 M136 24 L142 14 L148 24" stroke="#0e7c6b" stroke-width="3" fill="none" stroke-linecap="round"/>
+  <g fill="#0e7c6b" stroke="#fff" stroke-width="1"><circle cx="80" cy="58" r="3"/><circle cx="80" cy="40" r="3"/><circle cx="80" cy="26" r="3"/></g>`,
 "sims/population-growth/": `
   <path d="M18 78 H150 M18 78 V10" stroke="#3b4a3d" stroke-width="2"/>
   <line x1="18" y1="24" x2="150" y2="24" stroke="#888" stroke-dasharray="4 3"/>

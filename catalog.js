@@ -123,6 +123,14 @@ const ITEMS = [
     tags: ["pH", "buffering", "lime", "CEC"]
   },
   {
+    title: "Plant Nutrient Deficiencies",
+    where: ["plants/physiology", "soils/chemistry"],
+    type: "sim",
+    url: "sims/nutrient-deficiency/",
+    desc: "Starve a plant of any of the 14 essential mineral nutrients and watch the signs develop. See what each nutrient does, whether the plant can move it from old leaves to new growth, and where to look first.",
+    tags: ["macronutrients", "micronutrients", "mobility", "chlorosis"]
+  },
+  {
     title: "Population Growth: Exponential, Logistic & Chaos",
     where: ["ecology/populations"],
     type: "sim",
