@@ -668,7 +668,7 @@ const ROLE={
   const loose=(1-f)*16,pts=[];
   for(let i=0;i<34;i++){const x=48+i*13.5,y=128+40*Math.sin(i*Math.PI/6)+Math.sin(t*1.6+i*.7)*loose*(.4+hsh(i));pts.push([x,y])}
   g.strokeStyle='#c98a2b';g.lineWidth=2.4;g.beginPath();pts.forEach((p,i)=>g[i?'lineTo':'moveTo'](p[0],p[1]));g.stroke();
-  const pairs=[[3,9],[15,21],[27,33],[9,15]];
+  const pairs=[[1,5],[19,23],[13,17],[7,11]];
   pairs.forEach((p,j)=>{if(j<Math.round(4*f)){const a=pts[p[0]],b=pts[p[1]];g.strokeStyle=n.col;g.lineWidth=3;g.setLineDash([]);g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();
     pill(g,(a[0]+b[0])/2,(a[1]+b[1])/2,'S–S',n.col)}});
   pts.forEach((p,i)=>{const cys=pairs.some(q=>q[0]===i||q[1]===i);ionD(g,p[0],p[1],cys?7:5,cys?n.col:'#e9a23b',cys?'S':'')});
