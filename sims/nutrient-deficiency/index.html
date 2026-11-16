@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Plant Nutrient Deficiencies</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#2f7d3a;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#7cc36a;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px}
+.wrap{max-width:1150px;margin:0 auto}
+h1{font-size:1.4rem;margin:0 0 4px}
+p.sub{margin:0 0 12px;color:var(--muted);font-size:.92rem}
+.simgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"plant ctrl" "plant info";gap:12px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0}
+.plantcard{grid-area:plant;position:sticky;top:8px}
+.ctrlcard{grid-area:ctrl}
+.infocard{grid-area:info}
+@media (max-width:820px){body{padding:10px}.simgrid{grid-template-columns:minmax(0,1fr);grid-template-areas:"plant" "ctrl" "info"}.plantcard{position:static}}
+canvas{width:100%;height:auto;display:block;border-radius:8px}
+.gl{font-size:.74rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:700;margin:2px 0 6px;display:block}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px;margin-bottom:10px}
+.chip{font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:52px;padding:4px 2px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--text);cursor:pointer}
+.chip b{font-size:1.15rem;line-height:1.1}
+.chip small{font-size:.62rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.chip:hover{border-color:var(--c)}
+.chip.on{background:var(--c);border-color:var(--c);color:#fff}
+.chip.on small{color:#fff}
+label{display:flex;justify-content:space-between;align-items:center;font-size:.92rem;margin:6px 0 2px;gap:8px;font-weight:600}
+label span{font-weight:700;color:var(--accent);min-width:6em;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent);margin:4px 0}
+.ticks{display:flex;justify-content:space-between;font-size:.72rem;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+button.tg{font:inherit;font-size:.86rem;padding:7px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;min-height:36px}
+button.tg.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.key{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.78rem;color:var(--muted);margin-top:8px}
+.key i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-2px;box-sizing:border-box}
+.infocard h2{margin:10px 0 4px;font-size:1.15rem;display:flex;align-items:center;gap:10px}
+.badge{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;color:#fff;font-weight:800;font-size:1rem;flex:none}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.tile{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:7px 9px}
+.tile .k{font-size:.68rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:700}
+.tile .v{font-size:.95rem;font-weight:700;margin-top:3px}
+.pill{display:inline-block;padding:1px 9px;border-radius:999px;color:#fff;font-size:.86rem}
+.info h3{font-size:.95rem;margin:14px 0 4px}
+.info p,.info li{font-size:.9rem;line-height:1.45;margin:0 0 4px}
+.info ul{margin:0;padding-left:20px}
+.why{background:var(--bg);border-left:4px solid var(--c,#2f7d3a);border-radius:6px;padding:8px 10px;margin-top:6px}
+</style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
+<style id="reflow-fix">.card,.grid>*,.layout>*{min-width:0}input[type=range]{max-width:100%}label{flex-wrap:wrap}.tablewrap{max-width:100%}</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Plant Nutrient Deficiencies</h1>
+<p class="sub">Plants need 14 mineral nutrients from the soil. Pick one and starve the plant of it to see what the nutrient does, whether the plant can move it to new growth, and where the signs show up first.</p>
+
+<div class="simgrid">
+  <div class="card plantcard">
+    <canvas id="plant" width="560" height="580"></canvas>
+    <div class="key" id="key">
+      <span><i id="k1"></i>Taken up from soil (xylem)</span>
+      <span><i id="k2"></i>Moved out of old leaves (phloem)</span>
+      <span><i id="k3"></i>Nutrient stored in leaf</span>
+    </div>
+  </div>
+
+  <div class="card ctrlcard">
+    <span class="gl" id="gl1">Macronutrients</span>
+    <div class="chips" id="macro" role="group" aria-labelledby="gl1"></div>
+    <span class="gl" id="gl2">Micronutrients</span>
+    <div class="chips" id="micro" role="group" aria-labelledby="gl2"></div>
+    <label for="sev">Deficiency <span id="sevv">Moderate</span></label>
+    <input type="range" id="sev" min="0" max="100" value="65">
+    <div class="ticks" aria-hidden="true"><span>None</span><span>Mild</span><span>Moderate</span><span>Severe</span></div>
+    <div class="row"><button class="tg on" id="flow" type="button">Show nutrient movement</button></div>
+  </div>
+
+  <div class="card infocard">
+    <canvas id="zoom" width="560" height="230"></canvas>
+    <div class="info">
+      <h2 id="infoTitle"><span class="badge" id="badge"></span><span id="nm"></span></h2>
+      <div class="tiles">
+        <div class="tile"><div class="k">Type</div><div class="v" id="tType"></div></div>
+        <div class="tile"><div class="k">Taken up as</div><div class="v" id="tIon"></div></div>
+        <div class="tile"><div class="k">Mobility in plant</div><div class="v" id="tMob"></div></div>
+        <div class="tile"><div class="k">Signs show first on</div><div class="v" id="tFirst"></div></div>
+      </div>
+      <h3>What it does</h3><p id="role"></p>
+      <h3>Signs of deficiency</h3><ul id="signs"></ul>
+      <div class="why" id="whyBox"><p id="why"></p></div>
+      <h3>Often short when</h3><p id="when"></p>
+      <h3>Easy to confuse with</h3><p id="alike"></p>
+    </div>
+  </div>
+</div>
+<p id="srDesc" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+</div>
+
+<script>
+(function(){
+const W=560,H=580,SOIL=482,CX=246,NL=7,ZW=560,ZH=230;
+const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const darkQ=window.matchMedia&&matchMedia('(prefers-color-scheme: dark)');
+const isDark=()=>darkQ&&darkQ.matches&&document.documentElement.getAttribute('data-theme')!=='light';
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+const C={leaf:[78,152,62],dark:[40,92,72],yel:[226,208,70],pale:[246,243,214],brown:[118,76,36],purp:[122,38,112],bronze:[160,104,40],stem:[74,134,56],stemP:[118,52,104],root:[226,206,170]};
+const lerpC=(a,b,t)=>a.map((v,i)=>v+(b[i]-v)*clamp(t,0,1));
+const rgba=(c,a)=>'rgba('+(c[0]|0)+','+(c[1]|0)+','+(c[2]|0)+','+(a==null?1:clamp(a,0,1)).toFixed(3)+')';
+
+/* ---------------- nutrient data ---------------- */
+const NUT=[
+{id:'N',name:'Nitrogen',grp:'macro',col:'#5b4fd8',ion:'NO₃⁻, NH₄⁺',mob:2,first:'Oldest leaves',
+ role:'Nitrogen is built into every amino acid and protein, into chlorophyll, and into DNA, RNA, and ATP. Plants need more of it than any other mineral nutrient, and it drives leafy green growth.',
+ signs:['Older, lower leaves turn pale yellow-green all over, veins included','Yellowing starts at the leaf tip (in corn and grasses it runs down the midrib in a V)','Plant is short and spindly with thin stems','Badly affected lower leaves die and drop early'],
+ when:'Sandy soils, after heavy rain or over-irrigation (nitrate washes below the roots), cold soils, or when fresh woody mulch is tilled in and soil microbes tie up the N.',
+ alike:'Sulfur deficiency looks the same, but on the newest leaves. Molybdenum deficiency can mimic it too, because Mo is needed to use nitrate.',
+ vis:'The oldest, lowest leaves are pale yellow all over, veins included, starting at the leaf tips. The plant is short and spindly. The newest leaves stay green.',
+ comps:[{w:'old',ch:{yel:1,tip:.3,droop:.35},st:{grad:1}}],plant:{stunt:.7}},
+{id:'P',name:'Phosphorus',grp:'macro',col:'#c2366b',ion:'H₂PO₄⁻, HPO₄²⁻',mob:2,first:'Oldest leaves',
+ role:'Phosphorus is the backbone of ATP, the energy currency of every cell, and of DNA, RNA, and the phospholipids in cell membranes. It is especially important for root growth, flowering, and seed formation.',
+ signs:['Leaves turn unusually dark green, sometimes dull blue-green','Older leaves, leaf undersides, and stems turn purple or reddish (anthocyanin pigments)','Stunted plant with a small root system','Delayed flowering and maturity; poor fruit and seed set'],
+ when:'Cold, wet soils early in the season, very acidic soils (P binds to iron and aluminum), and alkaline soils (P binds to calcium). P barely moves in soil, so a small root system struggles to reach it.',
+ alike:'Cold stress and some varieties also turn purple. Purple tints together with dark green leaves and a stunted plant point to P.',
+ vis:'All leaves are dark blue-green, and the older leaves and the stem are tinted purple-red. The plant is stunted with a small root system.',
+ comps:[{w:'old',ch:{purp:1,dark:.4}},{w:'all',ch:{dark:.6}}],plant:{stunt:.6,purpStem:1,rootShort:.75,fruitSmall:.35}},
+{id:'K',name:'Potassium',grp:'macro',col:'#b85f00',ion:'K⁺',mob:2,first:'Oldest leaves',
+ role:'Potassium is the main ion plants use to manage water. Guard cells pump K⁺ in and out to open and close stomata, and K⁺ keeps cells turgid. It also activates dozens of enzymes and helps load sugars into the phloem. It is never built into molecules; it stays dissolved as K⁺.',
+ signs:['Older leaves yellow, then turn brown and dry along the edges and tips (marginal scorch)','Scorch starts at the tip and works back along the margins','Weak stems that bend or fall over (lodging)','Poor drought tolerance and small, poor-quality fruit'],
+ when:'Sandy soils with low CEC, heavily cropped fields (hay and silage remove a lot of K), and soils where large amounts of Ca²⁺ or Mg²⁺ crowd K⁺ off the exchange sites.',
+ alike:'Salt damage and drought also scorch leaf edges. A K shortage starts on the oldest leaves and shows up even when the soil is moist and not salty.',
+ vis:'The edges and tips of the older leaves are yellow, then brown and dead (scorched). The stem is weak and leans over. Newer leaves stay green.',
+ comps:[{w:'old',ch:{marg:1,tip:.25,wave:.15}}],plant:{lean:1,stunt:.15}},
+{id:'Ca',name:'Calcium',grp:'macro',col:'#2368b8',ion:'Ca²⁺',mob:0,first:'Newest leaves and growing tips',
+ role:'Calcium glues plant cells together: calcium pectate forms the middle lamella between cell walls. It also keeps membranes stable, is needed for cell division, and acts as a signal inside cells.',
+ signs:['Newest leaves are hooked, cupped, or crinkled, with brown dead tips and edges','The shoot tip (and root tips) die','Blossom-end rot: a dark, sunken, leathery patch on the bottom of tomato and pepper fruit','Tipburn on the inner leaves of lettuce and cabbage'],
+ when:'Uneven watering, more often than a true lack of Ca in the soil. Ca travels only in the xylem with the transpiration stream, so tissues that transpire little (young leaves, fruit) miss out. Also very acidic, sandy soils.',
+ alike:'Boron deficiency also kills growing tips and distorts new leaves; boron adds many bushy side shoots and thick, brittle leaves.',
+ vis:'The newest leaves are hooked, cupped, and distorted with dead brown tips, and the shoot tip has died. The tomato has a dark sunken patch on its bottom (blossom-end rot). Older leaves look normal.',
+ comps:[{w:'new',ch:{hook:1,tip:.7,wave:.7,narrow:.25,small:.25}}],plant:{apexDead:1,ber:1,rootTipDead:1,stunt:.15}},
+{id:'Mg',name:'Magnesium',grp:'macro',col:'#0e7c6b',ion:'Mg²⁺',mob:2,first:'Oldest leaves',
+ role:'Magnesium sits at the center of every chlorophyll molecule. It also activates many enzymes, pairs with ATP to power cell reactions, and holds ribosomes together for protein synthesis.',
+ signs:['Older leaves turn yellow between the veins while the veins stay green (interveinal chlorosis)','Patches may turn reddish-purple or brown','Affected leaves can become brittle and curl','Older leaves may drop early'],
+ when:'Acidic, sandy, leached soils, and soils given a lot of potassium or ammonium fertilizer, since K⁺ and NH₄⁺ compete with Mg²⁺ for uptake.',
+ alike:'Iron deficiency has the same striped look, but on the newest leaves. Mg shows on old leaves, Fe on new.',
+ vis:'The older leaves are yellow between the veins while the veins stay green (interveinal chlorosis), with some reddish tints. Newer leaves stay green.',
+ comps:[{w:'old',ch:{iv:1,purp:.2,wave:.1},st:{vein:1,fine:0}}],plant:{}},
+{id:'S',name:'Sulfur',grp:'macro',col:'#8a6d00',ion:'SO₄²⁻',mob:0,first:'Newest leaves',
+ role:'Sulfur is part of two amino acids, cysteine and methionine, so it is needed to make proteins. It is also in coenzymes and in the compounds that give onions, garlic, and mustard their strong flavors.',
+ signs:['Newest leaves turn pale yellow all over, veins included','Older leaves stay green','Thin, spindly stems and slow growth','Delayed maturity'],
+ when:'Sandy soils low in organic matter, high-rainfall areas (sulfate leaches), and fields far from industry. Cleaner air means less sulfur falls in rain than it once did.',
+ alike:'Looks just like nitrogen deficiency, but on the opposite end of the plant: N yellows old leaves, S yellows new ones.',
+ vis:'The newest leaves at the top are pale yellow all over, veins included. Older leaves stay green. The plant is somewhat stunted.',
+ comps:[{w:'new',ch:{yel:.9},st:{grad:0}}],plant:{stunt:.4}},
+{id:'Fe',name:'Iron',grp:'micro',col:'#a8452a',ion:'Fe²⁺, Fe³⁺ (often as chelates)',mob:0,first:'Newest leaves',
+ role:'Iron is needed to make chlorophyll; it is not part of the molecule, but the enzymes that build it need iron. It is also in cytochromes and iron-sulfur proteins that carry electrons in photosynthesis and respiration.',
+ signs:['Newest leaves turn yellow between the veins, while even the smallest veins stay sharply green (a fine green net)','Severe: young leaves turn almost white','Older leaves stay green','Brown dead patches may appear on badly affected leaves'],
+ when:'Alkaline, calcareous (high-lime) soils, like many in the San Joaquin Valley. Iron is present, but at high pH it forms insoluble Fe³⁺ compounds roots cannot absorb. This "lime-induced chlorosis" is common in roses, citrus, and blueberries.',
+ alike:'Manganese deficiency also yellows young leaves between the veins, but its green vein bands are wider and fuzzier, often with small dead spots. Magnesium causes the same pattern on old leaves.',
+ vis:'The newest leaves are bright yellow to nearly white between the veins, while a fine net of even the smallest veins stays sharply green. Older leaves stay green.',
+ comps:[{w:'new',ch:{iv:1,pale:.9},st:{vein:.3,fine:1}}],plant:{}},
+{id:'Mn',name:'Manganese',grp:'micro',col:'#7b3f9e',ion:'Mn²⁺',mob:0,first:'Newest leaves',
+ role:'Manganese runs the water-splitting step of photosynthesis in photosystem II, the step that releases oxygen. It also activates many enzymes.',
+ signs:['Newer leaves turn yellow-green between the veins','Wide, fuzzy green bands stay along the veins','Small tan or gray dead spots are scattered across the leaf (speckling)','Older leaves stay green'],
+ when:'High-pH soils and soils high in organic matter, where Mn²⁺ is oxidized to forms roots cannot take up. Also dry, well-aerated sandy soils.',
+ alike:'Iron deficiency shows a sharper, finer green vein net with no speckling. Magnesium shows a similar pattern on old leaves.',
+ vis:'The newer leaves are yellow-green between the veins, with wide, fuzzy green bands along the veins and small tan dead spots. Older leaves stay green.',
+ comps:[{w:'new',ch:{iv:.9,speck:1},st:{vein:2,fine:0}}],plant:{}},
+{id:'Zn',name:'Zinc',grp:'micro',col:'#4e6b85',ion:'Zn²⁺',mob:1,first:'Newest leaves',
+ role:'Zinc activates many enzymes and is needed to make tryptophan, the starting material for the growth hormone auxin. Without enough auxin, stems and leaves stop elongating.',
+ signs:['New leaves are small and narrow ("little leaf")','Short internodes bunch new leaves into a rosette at the shoot tip','Mottled yellowing between the veins of young leaves','In corn: broad pale stripes on young leaves'],
+ when:'Alkaline soils, soils very high in phosphorus, and land where topsoil was removed by leveling or erosion. Common in Central Valley orchards such as almonds, pistachios, and walnuts.',
+ alike:'Herbicide injury can also shrink and distort new leaves; rosetting with small, narrow, mottled leaves points to Zn.',
+ vis:'The newest leaves are small, narrow, and mottled yellow between the veins ("little leaf"). The stem stops lengthening at the top, so new leaves bunch together in a rosette.',
+ comps:[{w:'new',ch:{small:.6,narrow:.55,iv:.55,wave:.15},st:{vein:1.3,fine:0}}],plant:{rosette:1,stunt:.2}},
+{id:'B',name:'Boron',grp:'micro',col:'#00727d',ion:'H₃BO₃ (boric acid)',mob:0,first:'Newest leaves and growing tips',
+ role:'Boron cross-links pectin in cell walls, so it is needed wherever new cells are forming: shoot tips, root tips, flowers, and fruit. It is essential for pollen tube growth and helps move sugars.',
+ signs:['The terminal bud dies and side buds grow into many short shoots (witches\'-broom)','New leaves are small, thick, brittle, and wrinkled','Stems may crack or become hollow; roots are short and stubby','Flowers drop and fruit or seed set is poor'],
+ when:'Sandy, leached soils with little organic matter, dry spells, and high-pH soils. Boron moves with water and washes out easily. The range between too little and toxic is narrow.',
+ alike:'Calcium deficiency also kills growing tips; boron adds the bushy side shoots and thick, brittle leaves.',
+ vis:'The shoot tip has died and short side shoots crowd the top of the plant (witches\'-broom). New leaves are small, thick, dark, and wrinkled. The fruit is small.',
+ comps:[{w:'new',ch:{wave:1,small:.4,dark:.55,tip:.4,hook:-.35}}],plant:{apexDead:1,broom:1,fruitSmall:.6,stunt:.25,rootShort:.4}},
+{id:'Cu',name:'Copper',grp:'micro',col:'#8d4f1c',ion:'Cu²⁺',mob:0,first:'Newest leaves',
+ role:'Copper is part of plastocyanin, which carries electrons in photosynthesis, and of enzymes that build lignin, the compound that stiffens cell walls and stems.',
+ signs:['Young leaves wilt, twist, and curl even when the soil is moist','Leaf tips and shoot tips die back','Young leaves may look dark bluish-green','In grains: limp stems and poorly filled heads'],
+ when:'Peat and muck soils very high in organic matter (organic matter holds Cu tightly) and some sandy soils.',
+ alike:'Drought also causes wilting, but of the whole plant. Copper wilting is limited to new growth while the soil is still moist.',
+ vis:'The young leaves at the top are dark bluish-green, wilted, and twisted, with dead tips. Older leaves look normal.',
+ comps:[{w:'new',ch:{droop:1,twist:1,tip:.55,dark:.45,narrow:.25}}],plant:{apexDead:.5,stunt:.15}},
+{id:'Mo',name:'Molybdenum',grp:'micro',col:'#6d4c41',ion:'MoO₄²⁻ (molybdate)',mob:1,first:'Older and middle leaves',
+ role:'Molybdenum is part of nitrate reductase, the enzyme that turns absorbed nitrate into a form the plant can use, and of nitrogenase, the enzyme that fixes N₂ in legume root nodules. Plants need less Mo than any other nutrient.',
+ signs:['Older and middle leaves turn pale yellow-green, much like N deficiency','Leaf edges scorch, curl, or cup','In broccoli and cauliflower, leaves become narrow and strap-like ("whiptail")','Legumes fix little nitrogen and look N-starved'],
+ when:'Acidic soils. Mo is the only micronutrient that becomes less available as soil gets more acidic, so liming often fixes it.',
+ alike:'Nitrogen deficiency. Because Mo is needed to use nitrate, a Mo-deficient plant can look N-starved even in well-fertilized soil.',
+ vis:'The older and middle leaves are pale yellow-green with scorched, cupped edges, similar to nitrogen deficiency. The newest leaves stay greener.',
+ comps:[{w:'mid',ch:{yel:.75,marg:.55,wave:.45,narrow:.3,hook:-.3},st:{grad:.4}}],plant:{stunt:.3}},
+{id:'Cl',name:'Chlorine',grp:'micro',col:'#3949ab',ion:'Cl⁻ (chloride)',mob:2,first:'Whole plant (leaf tips wilt)',
+ role:'Chloride helps split water in photosystem II and, along with K⁺, balances charges and draws water into guard cells to open stomata.',
+ signs:['Leaf tips wilt, especially in the afternoon','Leaves yellow and take on a bronze color','Short, stubby, highly branched roots','Rare in the field: rain, irrigation water, and fertilizers usually supply plenty'],
+ when:'Almost never in field soils. In the Central Valley, too much chloride (salinity) is the far more common problem.',
+ alike:'Plain drought stress. Excess salt causes leaf scorch and is the more common chloride problem.',
+ vis:'Leaves across the plant are wilting and bronzed with a yellow cast. Roots are short and stubby.',
+ comps:[{w:'all',ch:{droop:.7,bronze:.75,yel:.25,tip:.15}}],plant:{rootShort:.45}},
+{id:'Ni',name:'Nickel',grp:'micro',col:'#5f5f5f',ion:'Ni²⁺',mob:2,first:'Leaf tips; new leaves in some trees',
+ role:'Nickel is part of urease, the enzyme that breaks urea down into ammonia the plant can use. Without it, urea builds up to toxic levels. Nickel was the last nutrient added to the essential list, in 1987.',
+ signs:['Leaf tips turn brown and die where urea builds up','In pecan and river birch, new leaves are small, rounded, and wrinkled ("mouse-ear")','Delayed bud break and weak growth','Very rare; best known from pecan orchards on sandy soils in the southeastern U.S.'],
+ when:'Sandy, acidic soils low in Ni, and soils with excess zinc, copper, or other metals that compete with Ni for uptake.',
+ alike:'Mouse-ear can be mistaken for boron or zinc deficiency or for herbicide injury.',
+ vis:'The tips of the older leaves are brown and dead. New leaves at the top are small, rounded, and wrinkled ("mouse-ear").',
+ comps:[{w:'old',ch:{tip:.75}},{w:'new',ch:{small:.45,wave:.6,narrow:-.35}}],plant:{stunt:.15}}
+];
+const MOB=[{t:'Immobile',c:'#a8352a'},{t:'Partly mobile',c:'#9a6400'},{t:'Mobile',c:'#1f7a4d'}];
+
+/* ---------------- state ---------------- */
+const LCH=['yel','iv','pale','marg','tip','purp','bronze','speck','hook','twist','wave','narrow','small','droop','dark','vein','fine','grad','content'];
+const PCH=['stunt','rosette','apexDead','broom','lean','rootShort','rootTipDead','ber','fruitSmall','purpStem'];
+function blankLeaf(){const o={};LCH.forEach(k=>o[k]=0);o.vein=1;o.content=1;return o}
+function blankPlant(){const o={};PCH.forEach(k=>o[k]=0);return o}
+let cur=0,sev=.65,flowOn=true;
+const leafCur=[],leafTgt=[];for(let i=0;i<NL;i++){leafCur.push(blankLeaf());leafTgt.push(blankLeaf())}
+let plantCur=blankPlant(),plantTgt=blankPlant();
+
+function wt(w,a){if(w==='old')return 1-a;if(w==='new')return a;if(w==='mid')return clamp(1-Math.abs(a-.3)*1.7,0,1);return .82}
+function inten(s,w){return clamp((s*1.25-(1-w)*1.15)/.42,0,1)}
+function computeTargets(){
+  const n=NUT[cur],s=sev;
+  for(let i=0;i<NL;i++){
+    const a=i/(NL-1),t=blankLeaf();
+    n.comps.forEach((c,ci)=>{
+      const I=inten(s,wt(c.w,a));
+      for(const k in c.ch)t[k]+=c.ch[k]*I;
+      if(c.st)for(const k in c.st)t[k]=c.st[k];
+      if(ci===0)t.content=1-I;
+    });
+    leafTgt[i]=t;
+  }
+  const ps=clamp((s-.08)/.8,0,1);
+  plantTgt=blankPlant();
+  for(const k in n.plant)plantTgt[k]=n.plant[k]*ps;
+}
+
+/* ---------------- canvases ---------------- */
+const pcv=document.getElementById('plant'),zcv=document.getElementById('zoom');
+const pg=pcv.getContext('2d'),zg=zcv.getContext('2d');
+function sizeCanvas(cv,g,w,h){const d=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(w*d);cv.height=Math.round(h*d);g.setTransform(d,0,0,d,0,0)}
+sizeCanvas(pcv,pg,W,H);sizeCanvas(zcv,zg,ZW,ZH);
+pcv.setAttribute('role','img');zcv.setAttribute('role','img');
+
+/* ---------------- leaf drawing ---------------- */
+function leafPts(L,Wd,ch,flip,seed){
+  const nf=1-.45*clamp(ch.narrow,-.6,1),hw=Wd*nf/2,N=36,M=[];
+  for(let k=0;k<=N;k++){
+    const t=k/N;
+    const y=flip*(ch.hook*L*.30*t*t*t+ch.twist*L*.09*Math.sin(t*Math.PI*2)+ch.droop*L*.10*t*t);
+    const d=flip*(ch.hook*.90*t*t+ch.twist*.09*2*Math.PI*Math.cos(t*Math.PI*2)+ch.droop*.20*t);
+    const nl=Math.hypot(1,d);
+    let h=hw*Math.pow(Math.sin(Math.PI*t),.75)*(1-.2*t);
+    h*=1+ch.wave*.17*Math.sin(t*34+seed);
+    M.push({x:t*L,y:y,nx:-d/nl,ny:1/nl,h:Math.max(0,h)});
+  }
+  return M;
+}
+function veins(M,fine){
+  const N=M.length-1,main=[M.map(m=>[m.x,m.y])],lat={1:[],'-1':[]},fl=[];
+  for(let j=0;j<6;j++){
+    const t0=.1+.13*j,t1=Math.min(t0+.16,.97);
+    const a=M[Math.round(t0*N)],b=M[Math.round(t1*N)],c=M[Math.round((t0+t1)/2*N)];
+    for(const s of [1,-1]){
+      const p0=[a.x,a.y],pe=[b.x+b.nx*b.h*.86*s,b.y+b.ny*b.h*.86*s],pc=[c.x+c.nx*c.h*.42*s,c.y+c.ny*c.h*.42*s],pts=[];
+      for(let q=0;q<=6;q++){const u=q/6;pts.push([(1-u)*(1-u)*p0[0]+2*(1-u)*u*pc[0]+u*u*pe[0],(1-u)*(1-u)*p0[1]+2*(1-u)*u*pc[1]+u*u*pe[1]])}
+      main.push(pts);lat[s].push(pts);
+    }
+  }
+  if(fine)for(const s of [1,-1])for(let j=0;j<5;j++){const A=lat[s][j],B=lat[s][j+1];fl.push([A[2],B[2]]);fl.push([A[4],B[4]]);fl.push([A[3],B[1]]);fl.push([A[5],B[3]])}
+  return{main:main,fine:fl};
+}
+function strokeV(g,lines,style,w){g.strokeStyle=style;g.lineWidth=w;for(const p of lines){g.beginPath();g.moveTo(p[0][0],p[0][1]);for(let i=1;i<p.length;i++)g.lineTo(p[i][0],p[i][1]);g.stroke()}}
+function rng(seed){let r=Math.floor(seed*9973)%2147483647||7;return()=>{r=(r*16807)%2147483647;return r/2147483647}}
+
+/* g is already translated/rotated so the leaf base is at (0,0) and the leaf points along +x */
+function drawLeaf(g,ch,L,Wd,flip,seed,dotCol){
+  const M=leafPts(L,Wd,ch,flip,seed),N=M.length-1;
+  const path=new Path2D();
+  M.forEach((m,k)=>{const x=m.x+m.nx*m.h,y=m.y+m.ny*m.h;k?path.lineTo(x,y):path.moveTo(x,y)});
+  for(let k=N;k>=0;k--){const m=M[k];path.lineTo(m.x-m.nx*m.h,m.y-m.ny*m.h)}
+  path.closePath();
+  const sc=L/100,base=lerpC(C.leaf,C.dark,ch.dark),hw=Wd*(1-.45*clamp(ch.narrow,-.6,1))/2;
+  g.fillStyle=rgba(base);g.fill(path);
+  g.save();g.clip(path);g.lineCap='round';g.lineJoin='round';
+  const V=veins(M,ch.fine>.05);
+  if(ch.yel>.01){
+    const gr=g.createLinearGradient(0,0,L,0);
+    gr.addColorStop(0,rgba(C.yel,ch.yel*(1-.65*ch.grad)*.92));
+    gr.addColorStop(1,rgba(C.yel,Math.min(1,ch.yel*1.05)));
+    g.fillStyle=gr;g.fill(path);
+  }
+  if(ch.iv>.01){
+    g.fillStyle=rgba(lerpC(C.yel,C.pale,ch.pale),Math.min(1,ch.iv));g.fill(path);
+    const vw=(1+2.5*ch.vein)*sc;
+    strokeV(g,V.main,rgba(base,.45),vw*1.7);
+    strokeV(g,V.main,rgba(base),vw);
+    if(ch.fine>.05)strokeV(g,V.fine,rgba(base,Math.min(1,ch.fine)),Math.max(1,vw*.55));
+  }
+  strokeV(g,V.main,'rgba(228,246,205,.32)',Math.max(.8,1.1*sc));
+  if(ch.purp>.01){const gp=g.createLinearGradient(0,0,L,0);gp.addColorStop(0,rgba(C.purp,ch.purp*.58));gp.addColorStop(1,rgba(C.purp,ch.purp*.34));g.fillStyle=gp;g.fill(path)}
+  if(ch.bronze>.01){g.fillStyle=rgba(C.bronze,ch.bronze*.55);g.fill(path)}
+  if(ch.speck>.02){
+    const r=rng(seed+3),n=Math.round(ch.speck*30);g.fillStyle=rgba([150,118,70],.9);
+    for(let j=0;j<n;j++){const k=Math.round((.15+.72*r())*N),m=M[k],s=r()<.5?-1:1,o=(.3+.55*r())*m.h*s;
+      g.beginPath();g.arc(m.x+m.nx*o,m.y+m.ny*o,(1+1.4*r())*sc,0,7);g.fill()}
+  }
+  if(ch.marg>.01){
+    const gm=g.createLinearGradient(0,0,L,0);gm.addColorStop(0,rgba(C.yel,.3*ch.marg));gm.addColorStop(1,rgba(C.yel,Math.min(1,ch.marg*1.2)));
+    g.strokeStyle=gm;g.lineWidth=ch.marg*hw*1.05;g.stroke(path);
+    const gb=g.createLinearGradient(0,0,L,0);gb.addColorStop(0,rgba(C.brown,.15*ch.marg));gb.addColorStop(.55,rgba(C.brown,.75*ch.marg));gb.addColorStop(1,rgba(C.brown,Math.min(1,ch.marg*1.3)));
+    g.strokeStyle=gb;g.lineWidth=ch.marg*hw*.5;g.stroke(path);
+  }
+  if(ch.tip>.01){
+    const tp=M[N],R=Math.max(1,ch.tip*L*.42),rg=g.createRadialGradient(tp.x,tp.y,0,tp.x,tp.y,R);
+    rg.addColorStop(0,rgba(C.brown,.96));rg.addColorStop(.62,rgba(C.brown,.92));rg.addColorStop(.74,rgba(C.yel,.65));rg.addColorStop(1,rgba(C.yel,0));
+    g.fillStyle=rg;g.fill(path);
+  }
+  g.restore();
+  g.strokeStyle='rgba(28,64,30,.6)';g.lineWidth=1.1;g.stroke(path);
+  if(dotCol){
+    const cnt=Math.round(4*clamp(ch.content,0,1)),P=[[.32,-.2],[.32,.2],[.58,-.17],[.58,.17]];
+    for(let j=0;j<cnt;j++){const m=M[Math.round(P[j][0]*N)],o=P[j][1]*2*m.h;
+      g.beginPath();g.arc(m.x+m.nx*o,m.y+m.ny*o,3,0,7);g.fillStyle=dotCol;g.fill();g.lineWidth=1.2;g.strokeStyle='#fff';g.stroke()}
+  }
+  return M;
+}
+
+/* ---------------- plant geometry ---------------- */
+function qb(B,Cc,T,t){const u=1-t;return{x:u*u*B.x+2*u*t*Cc.x+t*t*T.x,y:u*u*B.y+2*u*t*Cc.y+t*t*T.y}}
+function geom(){
+  const P=plantCur,unit=(372/(NL+1))*(1-.4*P.stunt),lens=[];
+  for(let k=0;k<=NL;k++){let l=k===0?1.15:1;if(k>=NL-2)l*=1-.8*P.rosette;if(k===NL)l*=.8;lens.push(l)}
+  const tot=lens.reduce((a,b)=>a+b,0),Hs=tot*unit;
+  const B={x:CX,y:SOIL},Cc={x:CX+P.lean*22,y:SOIL-Hs*.55},T={x:CX+P.lean*100,y:SOIL-Hs*(1-.24*P.lean)};
+  let acc=0;const ts=[];for(let k=0;k<NL;k++){acc+=lens[k];ts.push(acc/tot)}
+  const leaves=[];
+  for(let i=0;i<NL;i++){
+    const a=i/(NL-1),ch=leafCur[i],side=i%2===0?1:-1,node=qb(B,Cc,T,ts[i]);
+    const th=(10+40*a)*Math.PI/180,dr=clamp(ch.droop,0,1.2)*.9;
+    const dir=side>0?-th+dr:Math.PI+th-dr;
+    const L=(112-56*a)*(1-.5*clamp(ch.small,0,1))*(1-.22*P.stunt),pet=12+10*(1-a);
+    const base={x:node.x+pet*Math.cos(dir),y:node.y+pet*Math.sin(dir)};
+    leaves.push({i:i,a:a,side:side,node:node,t:ts[i],dir:dir,L:L,Wd:L*.46,base:base,flip:side,
+      mid:{x:base.x+.5*L*Math.cos(dir),y:base.y+.5*L*Math.sin(dir)}});
+  }
+  return{B:B,C:Cc,T:T,leaves:leaves,Hs:Hs};
+}
+function stemPts(G,t0,t1){const p=[];for(let q=0;q<=10;q++)p.push(qb(G.B,G.C,G.T,t0+(t1-t0)*q/10));return p}
+
+/* ---------------- particles ---------------- */
+let parts=[],accX=0,accP=0;
+function mkPath(pts){const d=[0];for(let i=1;i<pts.length;i++)d.push(d[i-1]+Math.hypot(pts[i].x-pts[i-1].x,pts[i].y-pts[i-1].y));return{pts:pts,d:d,len:d[d.length-1]}}
+function at(path,s){const d=path.d;let i=1;while(i<d.length-1&&d[i]<s)i++;const f=clamp((s-d[i-1])/((d[i]-d[i-1])||1),0,1),a=path.pts[i-1],b=path.pts[i];return{x:a.x+(b.x-a.x)*f,y:a.y+(b.y-a.y)*f}}
+function pickW(arr,wf){let tot=0;arr.forEach(x=>tot+=wf(x));if(tot<=0)return null;let r=Math.random()*tot;for(const x of arr){r-=wf(x);if(r<=0)return x}return arr[arr.length-1]}
+function spawnX(G){
+  const lf=pickW(G.leaves,l=>l.L*l.L);if(!lf)return;
+  const rl=1-.45*plantCur.rootShort,sx=CX+(Math.random()*2-1)*55*rl,sy=SOIL+18+Math.random()*50*rl;
+  const pts=[{x:sx,y:sy},{x:CX,y:SOIL+6}].concat(stemPts(G,0,lf.t),[lf.base,lf.mid]);
+  parts.push({p:mkPath(pts),s:0,v:52,k:'x'});
+}
+function spawnP(G){
+  const src=pickW(G.leaves.filter(l=>l.a<=.7),l=>Math.max(0,.85-leafCur[l.i].content));if(!src)return;
+  const tops=G.leaves.filter(l=>l.a>=.8);
+  const dst=Math.random()<.3||!tops.length?null:tops[Math.floor(Math.random()*tops.length)];
+  let pts=[src.mid,src.base,src.node].concat(stemPts(G,src.t,dst?dst.t:1));
+  pts=dst?pts.concat([dst.base,dst.mid]):pts;
+  parts.push({p:mkPath(pts),s:0,v:44,k:'p'});
+}
+
+/* ---------------- draw plant ---------------- */
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
+function drawPlant(G){
+  const g=pg,n=NUT[cur],P=plantCur,dk=isDark(),txt=css('--text')||'#1d2530',mut=css('--muted')||'#5d6877';
+  g.clearRect(0,0,W,H);
+  // sky + soil
+  const sk=g.createLinearGradient(0,0,0,SOIL);sk.addColorStop(0,dk?'#1a2633':'#e6f2fb');sk.addColorStop(1,dk?'#1f2a24':'#f4f9ef');
+  g.fillStyle=sk;g.fillRect(0,0,W,SOIL);
+  const so=g.createLinearGradient(0,SOIL,0,H);so.addColorStop(0,dk?'#5a4330':'#8a6542');so.addColorStop(1,dk?'#3e2d20':'#6b4b30');
+  g.fillStyle=so;g.fillRect(0,SOIL,W,H-SOIL);
+  const r=rng(11);g.fillStyle=dk?'rgba(255,255,255,.07)':'rgba(0,0,0,.09)';
+  for(let j=0;j<40;j++){g.beginPath();g.arc(r()*W,SOIL+6+r()*(H-SOIL-8),1+r()*2.2,0,7);g.fill()}
+  g.fillStyle=dk?'#6b5038':'#9b7550';g.fillRect(0,SOIL-2,W,4);
+
+  // "look here first" band
+  const c0=n.comps[0];
+  if(sev>.04&&c0.w!=='all'){
+    const sel=G.leaves.filter(l=>wt(c0.w,l.a)>=.6);
+    if(sel.length){
+      let y0=Math.min.apply(null,sel.map(l=>Math.min(l.node.y,l.base.y+Math.sin(l.dir)*l.L)))-24,
+          y1=Math.max.apply(null,sel.map(l=>Math.max(l.node.y,l.base.y+Math.sin(l.dir)*l.L)))+22;
+      if(c0.w==='new')y0=Math.min(y0,G.T.y-26);
+      y0=clamp(y0,58,SOIL-30);y1=clamp(y1,y0+30,SOIL-4);
+      const al=clamp(sev*3,0,1);
+      rr(g,10,y0,W-70,y1-y0,14);g.fillStyle=dk?'rgba(255,214,90,'+(.10*al)+')':'rgba(255,205,40,'+(.16*al)+')';g.fill();
+      g.setLineDash([6,5]);g.strokeStyle='rgba(205,150,0,'+(.75*al)+')';g.lineWidth=1.6;g.stroke();g.setLineDash([]);
+      g.font='700 12px system-ui,Arial,sans-serif';g.fillStyle=dk?'rgba(255,215,110,'+al+')':'rgba(150,100,0,'+al+')';g.textAlign='left';
+      g.fillText('Look here first',18,y0+16);
+    }
+  }
+
+  // roots
+  const rl=1-.45*P.rootShort;
+  g.strokeStyle=rgba(C.root);g.lineCap='round';
+  g.lineWidth=4;g.beginPath();g.moveTo(CX,SOIL);g.quadraticCurveTo(CX+3,SOIL+40*rl,CX+2,SOIL+78*rl);g.stroke();
+  const tips=[[CX+2,SOIL+78*rl]];
+  for(let j=0;j<6;j++){
+    const s=j%2?-1:1,y=SOIL+8+j*10.5*rl,len=(64-7*j)*rl;
+    g.lineWidth=2.4-j*.2;g.beginPath();g.moveTo(CX+1,y);g.quadraticCurveTo(CX+s*len*.55,y+4,CX+s*len,y+22*rl);g.stroke();
+    tips.push([CX+s*len,y+22*rl]);
+    g.lineWidth=1;g.beginPath();g.moveTo(CX+s*len*.55,y+5);g.lineTo(CX+s*len*.62,y+20*rl);g.stroke();
+  }
+  if(P.rootTipDead>.03){g.fillStyle=rgba(C.brown,P.rootTipDead);tips.forEach(t=>{g.beginPath();g.arc(t[0],t[1],3,0,7);g.fill()})}
+
+  // stem + petioles
+  const stc=lerpC(C.stem,C.stemP,P.purpStem);
+  g.strokeStyle=rgba(stc);g.lineWidth=6*(1-.3*P.stunt);g.beginPath();g.moveTo(G.B.x,G.B.y);g.quadraticCurveTo(G.C.x,G.C.y,G.T.x,G.T.y);g.stroke();
+  g.lineWidth=2.6;G.leaves.forEach(l=>{g.beginPath();g.moveTo(l.node.x,l.node.y);g.lineTo(l.base.x,l.base.y);g.stroke()});
+
+  // witches'-broom side shoots (boron)
+  if(P.broom>.04){
+    [NL-1,NL-2,NL-3].forEach((i,q)=>{const l=G.leaves[i];if(!l)return;const s=-l.side,len=(26-q*4)*P.broom;
+      const tip={x:l.node.x+s*len*.8,y:l.node.y-len};
+      g.strokeStyle=rgba(stc);g.lineWidth=2;g.beginPath();g.moveTo(l.node.x,l.node.y);g.lineTo(tip.x,tip.y);g.stroke();
+      [-1,1].forEach(k=>{g.save();g.translate(tip.x,tip.y);g.rotate(-Math.PI/2+k*.7+s*.2);
+        drawLeaf(g,Object.assign(blankLeaf(),{wave:1,dark:.5}),16*P.broom+4,9*P.broom+2,k,i*3+k,null);g.restore()});
+    });
+  }
+
+  // leaves
+  const dc=flowOn?n.col:null;
+  G.leaves.forEach(l=>{g.save();g.translate(l.base.x,l.base.y);g.rotate(l.dir);drawLeaf(g,leafCur[l.i],l.L,l.Wd,l.flip,l.i*7.3+1,dc);g.restore()});
+
+  // fruit (tomato) hanging from node 2
+  const fl=G.leaves[2];
+  if(fl){
+    const s=-fl.side,fx=fl.node.x+s*26,fy=fl.node.y+30,fr=15*(1-.42*P.fruitSmall);
+    g.strokeStyle=rgba(stc);g.lineWidth=2;g.beginPath();g.moveTo(fl.node.x,fl.node.y);g.quadraticCurveTo(fx,fl.node.y-2,fx,fy-fr);g.stroke();
+    const fg=g.createRadialGradient(fx-fr*.35,fy-fr*.35,1,fx,fy,fr);fg.addColorStop(0,'#f06a50');fg.addColorStop(1,'#c3321f');
+    g.fillStyle=fg;g.beginPath();g.ellipse(fx,fy,fr*1.08,fr,0,0,7);g.fill();
+    if(P.ber>.03){g.fillStyle=rgba([58,38,22],Math.min(1,P.ber*1.1));g.beginPath();g.ellipse(fx,fy+fr*.62,fr*.62*P.ber+1,fr*.36*P.ber+1,0,0,7);g.fill()}
+    g.fillStyle='#3f7a2c';for(let k=0;k<5;k++){const a=-Math.PI/2+k*1.2566;g.beginPath();g.ellipse(fx+Math.cos(a)*4,fy-fr+1+Math.sin(a)*2,5,1.8,a,0,7);g.fill()}
+  }
+
+  // shoot tip
+  const ad=P.apexDead,bc=lerpC([96,170,70],[105,70,40],ad);
+  g.save();g.translate(G.T.x,G.T.y);g.rotate(ad*.9);
+  [-1,1].forEach(k=>{g.save();g.rotate(-Math.PI/2+k*.55);drawLeaf(g,Object.assign(blankLeaf(),{dark:-.1,tip:ad*.9,droop:ad*.6}),22*(1-.3*ad),11*(1-.3*ad),k,k+5,null);g.restore()});
+  g.fillStyle=rgba(bc);g.beginPath();g.ellipse(0,-6*(1-.3*ad),4*(1-.25*ad),8*(1-.35*ad),0,0,7);g.fill();
+  g.restore();
+
+  // particles
+  parts.forEach(p=>{const q=at(p.p,p.s),fa=clamp(Math.min(p.s/14,(p.p.len-p.s)/14),0,1);
+    g.globalAlpha=fa;g.beginPath();g.arc(q.x,q.y,3.6,0,7);
+    if(p.k==='x'){g.fillStyle=n.col;g.fill();g.lineWidth=1.3;g.strokeStyle='#fff';g.stroke()}
+    else{g.fillStyle='#fff';g.fill();g.lineWidth=2.2;g.strokeStyle=n.col;g.stroke()}
+    g.globalAlpha=1});
+
+  // mobility arrow (right side)
+  const ax=W-36,yb=G.leaves[0].node.y,yt=Math.min(G.T.y+6,yb-60);
+  g.font='600 11px system-ui,Arial,sans-serif';g.textAlign='center';g.fillStyle=mut;
+  g.fillText('Newest',ax,yt-10);g.fillText('Oldest',ax,yb+18);
+  g.lineWidth=3;
+  let lab;
+  if(n.mob===2){g.strokeStyle=n.col;g.beginPath();g.moveTo(ax,yb);g.lineTo(ax,yt+4);g.stroke();
+    g.fillStyle=n.col;g.beginPath();g.moveTo(ax,yt-2);g.lineTo(ax-7,yt+10);g.lineTo(ax+7,yt+10);g.closePath();g.fill();
+    lab='Mobile: moves to new leaves';}
+  else if(n.mob===1){g.strokeStyle=n.col;g.setLineDash([7,6]);g.beginPath();g.moveTo(ax,yb);g.lineTo(ax,yt+8);g.stroke();g.setLineDash([]);
+    g.fillStyle=n.col;g.beginPath();g.moveTo(ax,yt+2);g.lineTo(ax-6,yt+12);g.lineTo(ax+6,yt+12);g.closePath();g.fill();
+    lab='Partly mobile';}
+  else{g.strokeStyle=dk?'#6b7685':'#a9b3bf';g.setLineDash([3,6]);g.beginPath();g.moveTo(ax,yb);g.lineTo(ax,yt);g.stroke();g.setLineDash([]);
+    const ym=(yb+yt)/2;g.strokeStyle='#c0392b';g.lineWidth=3.5;g.beginPath();g.moveTo(ax-8,ym-8);g.lineTo(ax+8,ym+8);g.moveTo(ax+8,ym-8);g.lineTo(ax-8,ym+8);g.stroke();
+    lab='Immobile: stays put';}
+  g.save();g.translate(W-12,(yb+yt)/2);g.rotate(-Math.PI/2);g.font='700 11.5px system-ui,Arial,sans-serif';g.fillStyle=txt;g.textAlign='center';g.fillText(lab,0,0);g.restore();
+
+  // header
+  g.fillStyle=n.col;g.beginPath();g.arc(28,30,19,0,7);g.fill();
+  g.fillStyle='#fff';g.font='800 15px system-ui,Arial,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(n.id,28,31);g.textBaseline='alphabetic';
+  g.textAlign='left';g.fillStyle=txt;g.font='700 17px system-ui,Arial,sans-serif';
+  g.fillText(sev<.01?'Healthy plant':n.name+' deficiency',56,27);
+  g.font='12px system-ui,Arial,sans-serif';g.fillStyle=mut;
+  g.fillText(sev<.01?'No deficiency':sevWord()+' deficiency',56,44);
+}
+
+/* ---------------- close-up ---------------- */
+function repIndex(){const w=NUT[cur].comps[0].w;return w==='old'?0:w==='new'?NL-1:w==='mid'?2:3}
+function repName(){const w=NUT[cur].comps[0].w;return w==='old'?'oldest leaf':w==='new'?'newest leaf':w==='mid'?'middle leaf':'typical leaf'}
+function drawZoom(){
+  const g=zg,dk=isDark(),txt=css('--text')||'#1d2530',mut=css('--muted')||'#5d6877';
+  g.clearRect(0,0,ZW,ZH);
+  rr(g,0,0,ZW,ZH,10);g.fillStyle=dk?'#18202a':'#f2f6ee';g.fill();
+  g.strokeStyle=dk?'#38424f':'#d5dccd';g.lineWidth=1;g.beginPath();g.moveTo(ZW/2,16);g.lineTo(ZW/2,ZH-16);g.stroke();
+  const L=200,Wd=L*.46,y=100;
+  g.save();g.translate(ZW/4-L/2,y);drawLeaf(g,blankLeaf(),L,Wd,1,4.2,null);g.restore();
+  const ch=Object.assign({},leafCur[repIndex()]);ch.droop=Math.min(ch.droop,.5);
+  g.save();g.translate(3*ZW/4-L/2,y);drawLeaf(g,ch,L,Wd,1,4.2,null);g.restore();
+  g.textAlign='center';g.font='700 13px system-ui,Arial,sans-serif';g.fillStyle=txt;
+  g.fillText('Healthy leaf',ZW/4,ZH-30);
+  g.fillText(sev<.01?'Same leaf, no deficiency':'Deficient: '+repName(),3*ZW/4,ZH-30);
+  g.font='11.5px system-ui,Arial,sans-serif';g.fillStyle=mut;
+  g.fillText('for comparison',ZW/4,ZH-14);
+  g.fillText(sev<.01?'move the slider to starve the plant':NUT[cur].name+', '+sevWord().toLowerCase(),3*ZW/4,ZH-14);
+  g.textAlign='left';g.font='700 11px system-ui,Arial,sans-serif';g.fillStyle=mut;g.fillText('CLOSE-UP',12,20);
+}
+
+/* ---------------- UI ---------------- */
+const $=id=>document.getElementById(id);
+function sevWord(){const v=+$('sev').value;return v===0?'None':v<34?'Mild':v<67?'Moderate':'Severe'}
+const chips=[];
+NUT.forEach((n,i)=>{
+  const b=document.createElement('button');b.type='button';b.className='chip';b.style.setProperty('--c',n.col);
+  b.innerHTML='<b>'+n.id+'</b><small>'+n.name+'</small>';b.setAttribute('aria-label',n.name+' ('+n.id+')');
+  b.addEventListener('click',()=>{cur=i;parts=[];update()});
+  $(n.grp==='macro'?'macro':'micro').appendChild(b);chips.push(b);
+});
+$('sev').addEventListener('input',()=>{sev=+$('sev').value/100;update()});
+$('flow').addEventListener('click',()=>{flowOn=!flowOn;$('flow').classList.toggle('on',flowOn);$('flow').setAttribute('aria-pressed',flowOn);if(!flowOn)parts=[];
+  $('key').style.visibility=flowOn?'visible':'hidden'});
+$('flow').setAttribute('aria-pressed','true');
+
+function update(){
+  const n=NUT[cur];
+  computeTargets();
+  chips.forEach((b,i)=>{b.classList.toggle('on',i===cur);b.setAttribute('aria-pressed',i===cur)});
+  $('sevv').textContent=sevWord();
+  $('k1').style.background=n.col;$('k2').style.cssText='background:#fff;border:2.5px solid '+n.col;$('k3').style.cssText='background:'+n.col+';border:1.5px solid #fff;box-shadow:0 0 0 1px '+n.col;
+  $('badge').textContent=n.id;$('badge').style.background=n.col;$('nm').textContent=n.name;
+  $('tType').textContent=n.grp==='macro'?'Macronutrient':'Micronutrient';
+  $('tIon').textContent=n.ion;
+  $('tMob').innerHTML='<span class="pill" style="background:'+MOB[n.mob].c+'">'+MOB[n.mob].t+'</span>';
+  $('tFirst').textContent=n.first;
+  $('role').textContent=n.role;
+  $('signs').innerHTML=n.signs.map(s=>'<li>'+s+'</li>').join('');
+  $('when').textContent=n.when;$('alike').textContent=n.alike;
+  $('whyBox').style.setProperty('--c',MOB[n.mob].c);
+  const nm=n.name;
+  $('why').innerHTML='<b>Why there?</b> '+(n.mob===2?nm+' is mobile. When the roots can’t supply enough, the plant breaks it out of its oldest leaves and ships it through the phloem to new growth. The old leaves are sacrificed, so they show signs first.'
+    :n.mob===0?nm+' is immobile. Once it is built into a leaf it stays there, so new growth depends on a steady supply arriving from the roots in the xylem. When supply runs short, the youngest leaves and growing tips suffer first while old leaves look fine.'
+    :nm+' is only partly mobile. The plant can move a little out of old leaves, but not much, so signs usually show on '+(n.comps[0].w==='new'?'the newest leaves.':'older and middle leaves.'));
+  const d=sev<.01?'No deficiency. All leaves are evenly green and the plant is full size.':sevWord()+' '+nm.toLowerCase()+' deficiency. '+n.vis;
+  $('srDesc').textContent=d;
+  pcv.setAttribute('aria-label','Plant diagram. '+d+' Arrow at right: '+MOB[n.mob].t.toLowerCase()+' in the plant.');
+  zcv.setAttribute('aria-label','Close-up comparing a healthy leaf with the '+(sev<.01?'same leaf on a healthy plant.':repName()+' of the deficient plant. '+n.vis));
+  if(RM)snap();
+}
+function snap(){for(let i=0;i<NL;i++)leafCur[i]=Object.assign({},leafTgt[i]);plantCur=Object.assign({},plantTgt)}
+
+let last=performance.now();
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000);last=now;
+  const k=RM?1:1-Math.exp(-dt*2.2);
+  for(let i=0;i<NL;i++)for(const c of LCH)leafCur[i][c]+=(leafTgt[i][c]-leafCur[i][c])*k;
+  for(const c of PCH)plantCur[c]+=(plantTgt[c]-plantCur[c])*k;
+  const G=geom(),n=NUT[cur];
+  if(flowOn){
+    accX+=dt*(.5+2.4*(1-sev));while(accX>=1){accX--;spawnX(G)}
+    const pr=n.mob===2?2.3*sev:n.mob===1?.8*sev:0;
+    accP+=dt*(sev>.08?pr:0);while(accP>=1){accP--;spawnP(G)}
+  }
+  parts.forEach(p=>p.s+=p.v*dt);parts=parts.filter(p=>p.s<p.p.len);
+  drawPlant(G);drawZoom();
+  requestAnimationFrame(frame);
+}
+cur=0;update();snap();
+requestAnimationFrame(frame);
+})();
+</script>
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1180px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:inherit;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+.sim-notice button{font:inherit;padding:6px 14px;min-height:36px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;cursor:pointer}
+.sim-notice button[aria-pressed="true"]{background:rgba(127,127,127,.18)}
+html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-play-state:paused!important}
+@media (prefers-reduced-motion:reduce){html *{scroll-behavior:auto!important}}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+<p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
+</footer>
+<script>
+(function(){
+  var raw=window.requestAnimationFrame.bind(window),paused=false,queue=[],btn=document.getElementById('simMotionToggle');
+  window.requestAnimationFrame=function(cb){if(paused){queue.push(cb);return 0}return raw(cb)};
+  function set(v){paused=v;document.documentElement.classList.toggle('sim-paused',v);btn.setAttribute('aria-pressed',v?'true':'false');btn.textContent=v?'Resume animation':'Pause all animation';
+    if(!v){var q=queue;queue=[];q.forEach(function(cb){raw(cb)})}}
+  btn.addEventListener('click',function(){set(!paused)});
+})();
+</script>
+<!--/SIM-NOTICE-->
+<script>
+window.A11Y = {
+  names: { '#sev': 'Deficiency severity' },
+  live: []
+};
+</script>
+<!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
+<style id="a11y-css">
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;white-space:nowrap!important;border:0!important}
+:focus-visible{outline:3px solid #1557b0!important;outline-offset:2px!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) :focus-visible{outline-color:#8ab4f8!important}}
+</style>
+<script>
+(function(){
+  var C = window.A11Y || {};
+  function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+  function clean(s){ return String(s || '').replace(/\s+/g, ' ').replace(/[\s:]+$/, '').trim(); }
+  function matchCfg(map, el, dflt){
+    var out = dflt;
+    if (!map) return out;
+    Object.keys(map).forEach(function(sel){
+      if (el.matches(sel)){ var v = map[sel]; out = (typeof v === 'function') ? v(el, out) : v; }
+    });
+    return out;
+  }
+
+  /* Extra page CSS (contrast fixes, focus styles for custom widgets) */
+  if (C.css){ var st = document.createElement('style'); st.textContent = C.css; document.head.appendChild(st); }
+
+  /* Main landmark */
+  if (!document.querySelector('main,[role="main"]')){
+    var m = document.querySelector(C.main || '.wrap');
+    if (m) m.setAttribute('role', 'main');
+  }
+
+  /* Screen-reader announcer (polite). Only speaks after the user has interacted. */
+  var ann = document.createElement('div');
+  ann.className = 'sr-only'; ann.setAttribute('aria-live', 'polite'); ann.setAttribute('aria-atomic', 'true');
+  document.body.appendChild(ann);
+  var lastAct = -1e9;
+  ['input', 'change', 'click', 'keydown'].forEach(function(e){
+    document.addEventListener(e, function(){ lastAct = performance.now(); }, true);
+  });
+  function say(t){ ann.textContent = ''; setTimeout(function(){ ann.textContent = t; }, 50); }
+  window.A11Y_say = say;
+
+  /* Accessible names and spoken values for sliders, dropdowns and text fields */
+  function labelFor(el){
+    if (el.labels && el.labels.length) return el.labels[0];
+    var p = el.previousElementSibling;
+    while (p){ if (p.tagName === 'LABEL') return p; p = p.previousElementSibling; }
+    return null;
+  }
+  $$('input[type="range"],select,input[type="number"],input[type="text"],input[type="search"],textarea').forEach(function(el){
+    var lab = labelFor(el);
+    var vals = lab ? $$('[id],.val', lab).filter(function(x){ return x !== el && !x.contains(el) && !el.contains(x) && x.tagName !== 'INPUT' && x.tagName !== 'SELECT'; }) : [];
+    var name = null;
+    if (lab){
+      var cl = lab.cloneNode(true);
+      $$('[id],.val,input,select,textarea', cl).forEach(function(x){ x.remove(); });
+      var t = clean(cl.textContent);
+      var associated = el.labels && el.labels.length;
+      if (t && (vals.length || !associated)) name = t;
+    }
+    if (!name && !lab && !el.getAttribute('aria-label') && el.placeholder) name = clean(el.placeholder.replace(/\(.*?\)|…|\.\.\./g, ''));
+    name = matchCfg(C.names, el, name);
+    if (name) el.setAttribute('aria-label', name);
+
+    if (el.type === 'range'){
+      var unit = matchCfg(C.units, el, '');
+      var upd = function(){
+        var t = vals.map(function(v){ return clean(v.textContent); }).filter(Boolean).join(' ');
+        if (!t) t = el.value;
+        if (unit && t.indexOf(unit.trim()) < 0) t += ' ' + unit;
+        if (t && t !== el.value) el.setAttribute('aria-valuetext', t); else el.removeAttribute('aria-valuetext');
+      };
+      vals.forEach(function(v){ new MutationObserver(upd).observe(v, {childList:true, characterData:true, subtree:true}); });
+      el.addEventListener('input', function(){ setTimeout(upd, 0); });
+      upd();
+    }
+  });
+
+  /* Tabs: proper tab roles, selected state, and arrow-key navigation */
+  $$('nav').forEach(function(nav){
+    var btns = $$('button[data-tab]', nav).filter(function(b){ return document.getElementById(b.dataset.tab); });
+    if (btns.length < 2) return;
+    var activeCls = btns.some(function(b){ return b.classList.contains('active'); }) ? 'active' : 'on';
+    nav.setAttribute('role', 'tablist');
+    if (!nav.getAttribute('aria-label')) nav.setAttribute('aria-label', C.tabsLabel || 'Sections');
+    btns.forEach(function(b){
+      var p = document.getElementById(b.dataset.tab);
+      if (!b.id) b.id = 'tab-' + b.dataset.tab;
+      b.setAttribute('role', 'tab'); b.setAttribute('aria-controls', p.id);
+      p.setAttribute('role', 'tabpanel'); p.setAttribute('aria-labelledby', b.id);
+    });
+    var sync = function(){
+      btns.forEach(function(x){ var on = x.classList.contains(activeCls); x.setAttribute('aria-selected', on ? 'true' : 'false'); x.tabIndex = on ? 0 : -1; });
+    };
+    btns.forEach(function(x){ new MutationObserver(sync).observe(x, {attributes:true, attributeFilter:['class']}); });
+    nav.addEventListener('keydown', function(e){
+      var i = btns.indexOf(document.activeElement); if (i < 0) return;
+      var j = null, n = btns.length;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j !== null){ e.preventDefault(); btns[j].click(); btns[j].focus(); }
+    });
+    sync();
+  });
+
+  /* Toggle buttons: expose on/off state */
+  (C.pressed || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(b){
+      var s = function(){ b.setAttribute('aria-pressed', b.classList.contains(pair[1]) ? 'true' : 'false'); };
+      new MutationObserver(s).observe(b, {attributes:true, attributeFilter:['class']}); s();
+    });
+  });
+
+  /* Text alternatives for canvases and diagrams */
+  (C.img || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el, i){
+      var d = (typeof pair[1] === 'function') ? pair[1](el, i) : pair[1];
+      el.setAttribute('role', 'img'); el.setAttribute('aria-label', d);
+    });
+  });
+  (C.groups || []).forEach(function(pair){
+    $$(pair[0]).forEach(function(el){ el.setAttribute('role', 'group'); el.setAttribute('aria-label', pair[1]); });
+  });
+  (C.hidden || []).forEach(function(sel){ $$(sel).forEach(function(el){ el.setAttribute('aria-hidden', 'true'); }); });
+
+  /* Announce result text when it changes after the student does something */
+  var regions = [];
+  function txt(el){ return clean(el.innerText !== undefined ? el.innerText : el.textContent); }
+  (C.live || []).forEach(function(sel){ $$(sel).forEach(function(el){ regions.push({el:el, last:txt(el), dirty:false}); }); });
+  var timer = null, first = 0;
+  function flush(){
+    first = 0;
+    var parts = regions.filter(function(r){ return r.dirty && r.el.offsetParent !== null && r.last; }).map(function(r){ return r.last; });
+    regions.forEach(function(r){ r.dirty = false; });
+    if (parts.length) say(parts.join('. '));
+  }
+  function check(){
+    var changed = false;
+    regions.forEach(function(r){ var t = txt(r.el); if (t !== r.last){ r.last = t; r.dirty = true; changed = true; } });
+    if (!changed) return;
+    var now = performance.now();
+    if (now - lastAct > 12000){ regions.forEach(function(r){ r.dirty = false; }); return; }
+    if (!first) first = now;
+    clearTimeout(timer);
+    timer = setTimeout(flush, Math.max(0, Math.min(900, 4000 - (now - first))));
+  }
+  regions.forEach(function(r){ new MutationObserver(check).observe(r.el, {childList:true, characterData:true, subtree:true}); });
+})();
+</script>
+<script src="../mobile.js"></script>
+</body>
+</html>
