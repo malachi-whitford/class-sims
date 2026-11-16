@@ -79,6 +79,8 @@ button.tg.on{background:var(--accent);border-color:var(--accent);color:#fff}
   </div>
 
   <div class="card infocard">
+    <canvas id="role" width="560" height="280"></canvas>
+    <div style="height:10px"></div>
     <canvas id="zoom" width="560" height="230"></canvas>
     <div class="info">
       <h2 id="infoTitle"><span class="badge" id="badge"></span><span id="nm"></span></h2>
@@ -398,7 +400,7 @@ function drawPlant(G){
       let y0=Math.min.apply(null,sel.map(l=>Math.min(l.node.y,l.base.y+Math.sin(l.dir)*l.L)))-24,
           y1=Math.max.apply(null,sel.map(l=>Math.max(l.node.y,l.base.y+Math.sin(l.dir)*l.L)))+22;
       if(c0.w==='new')y0=Math.min(y0,G.T.y-26);
-      y0=clamp(y0,58,SOIL-30);y1=clamp(y1,y0+30,SOIL-4);
+      y0=clamp(y0,70,SOIL-30);y1=clamp(y1,y0+30,SOIL-4);
       const al=clamp(sev*3,0,1);
       rr(g,10,y0,W-70,y1-y0,14);g.fillStyle=dk?'rgba(255,214,90,'+(.10*al)+')':'rgba(255,205,40,'+(.16*al)+')';g.fill();
       g.setLineDash([6,5]);g.strokeStyle='rgba(205,150,0,'+(.75*al)+')';g.lineWidth=1.6;g.stroke();g.setLineDash([]);
@@ -486,8 +488,10 @@ function drawPlant(G){
   g.fillStyle='#fff';g.font='800 15px system-ui,Arial,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(n.id,28,31);g.textBaseline='alphabetic';
   g.textAlign='left';g.fillStyle=txt;g.font='700 17px system-ui,Arial,sans-serif';
   g.fillText(sev<.01?'Healthy plant':n.name+' deficiency',56,27);
-  g.font='12px system-ui,Arial,sans-serif';g.fillStyle=mut;
-  g.fillText(sev<.01?'No deficiency':sevWord()+' deficiency',56,44);
+  g.font='600 12px system-ui,Arial,sans-serif';g.fillStyle=txt;
+  g.fillText('Job: '+JOB[n.id][0],56,44);
+  g.font='11.5px system-ui,Arial,sans-serif';g.fillStyle=mut;
+  g.fillText(sev<.01?'No deficiency':sevWord()+' deficiency',56,60);
 }
 
 /* ---------------- close-up ---------------- */
@@ -511,6 +515,244 @@ function drawZoom(){
   g.textAlign='left';g.font='700 11px system-ui,Arial,sans-serif';g.fillStyle=mut;g.fillText('CLOSE-UP',12,20);
 }
 
+/* ---------------- "its job" diagrams ---------------- */
+const JOB={
+ N:['Builds proteins, chlorophyll, and DNA','less protein and chlorophyll get made, so the oldest leaves yellow as N is shipped to new growth.'],
+ P:['Carries energy as ATP; builds DNA and membranes','too little ATP for growth, so the plant is dark, purple-tinted, and stunted.'],
+ K:['Opens and closes stomata; controls water','stomata and water balance fail, so older leaf edges dry out and scorch.'],
+ Ca:['Glues cell walls together','new cell walls fall apart, so new leaves distort and growing tips die.'],
+ Mg:['The center atom of chlorophyll','chlorophyll can’t be made, so old leaves yellow between the veins.'],
+ S:['Part of proteins (cysteine and methionine)','fewer working proteins, so the newest leaves turn pale yellow.'],
+ Fe:['Needed to make chlorophyll; passes electrons','new tissue can’t make chlorophyll, so young leaves turn yellow-white with green veins.'],
+ Mn:['Splits water in photosynthesis','water splitting stalls, so young leaves yellow and get small dead specks.'],
+ Zn:['Activates enzymes; makes the hormone auxin','little auxin, so cells stay short: rosettes of small "little leaves".'],
+ B:['Cross-links cell walls; grows pollen tubes','walls at growing points weaken and pollen tubes fail: dead tips, poor fruit set.'],
+ Cu:['Passes electrons; builds stiff lignin','electron flow and lignin both fail, so young leaves wilt and twist.'],
+ Mo:['Turns nitrate into usable nitrogen','nitrate piles up unused, so the plant looks nitrogen-starved.'],
+ Cl:['Helps split water; helps open stomata','guard cells and water splitting falter, so leaf tips wilt.'],
+ Ni:['Runs urease, which breaks down urea','urea builds up to toxic levels, so leaf tips die.']
+};
+const RW=560,RH=280;
+const rcv=document.getElementById('role'),rg=rcv.getContext('2d');
+sizeCanvas(rcv,rg,RW,RH);rcv.setAttribute('role','img');
+let roleF=1,roleT=0;
+const hsh=k=>{const x=Math.sin(k*127.1+311.7)*43758.5453;return x-Math.floor(x)};
+function T(g,s,x,y,font,col,al){g.font=font+' system-ui,Arial,sans-serif';g.fillStyle=col;g.textAlign=al||'left';g.fillText(s,x,y)}
+function ionD(g,x,y,r,col,lab,a){
+  g.globalAlpha=a==null?1:clamp(a,0,1);g.beginPath();g.arc(x,y,r,0,7);g.fillStyle=col;g.fill();g.strokeStyle='#fff';g.lineWidth=1.2;g.stroke();
+  if(lab){g.fillStyle='#fff';g.font='700 '+Math.max(7,Math.round(r*.85))+'px system-ui,Arial,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(lab,x,y+.5);g.textBaseline='alphabetic'}
+  g.globalAlpha=1;
+}
+function ghost(g,x,y,r,col){g.setLineDash([3,3]);g.strokeStyle=col;g.lineWidth=1.3;g.beginPath();g.arc(x,y,r,0,7);g.stroke();g.setLineDash([])}
+function arrowD(g,x1,y1,x2,y2,col,w){g.strokeStyle=col;g.fillStyle=col;g.lineWidth=w||2;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
+  const a=Math.atan2(y2-y1,x2-x1);g.beginPath();g.moveTo(x2,y2);g.lineTo(x2-8*Math.cos(a-.45),y2-8*Math.sin(a-.45));g.lineTo(x2-8*Math.cos(a+.45),y2-8*Math.sin(a+.45));g.closePath();g.fill()}
+function pill(g,x,y,lab,col,a){g.globalAlpha=a==null?1:clamp(a,0,1);g.font='700 10px system-ui,Arial,sans-serif';const w=g.measureText(lab).width+12;
+  rr(g,x-w/2,y-9,w,18,9);g.fillStyle=col;g.fill();g.fillStyle='#fff';g.textAlign='center';g.textBaseline='middle';g.fillText(lab,x,y+.5);g.textBaseline='alphabetic';g.globalAlpha=1}
+function chl(g,x,y,s,green,center,nDot){
+  const c=lerpC([238,232,176],[78,160,70],green),e=lerpC([196,184,110],[34,104,44],green);
+  g.beginPath();g.arc(x,y,s*.72,0,7);g.fillStyle=rgba(c,.35);g.fill();g.strokeStyle=rgba(e);g.lineWidth=2;g.stroke();
+  for(let q=0;q<4;q++){const a=q*Math.PI/2-Math.PI/4,px=x+Math.cos(a)*s*.72,py=y+Math.sin(a)*s*.72;
+    g.beginPath();for(let v=0;v<5;v++){const b=a+v*1.2566;g[v?'lineTo':'moveTo'](px+Math.cos(b)*s*.22,py+Math.sin(b)*s*.22)}g.closePath();g.fillStyle=rgba(c);g.fill();g.stroke();
+    if(nDot){const nx=x+Math.cos(a)*s*.45,ny=y+Math.sin(a)*s*.45;ionD(g,nx,ny,Math.max(3,s*.12),nDot)}}
+  g.strokeStyle=rgba(e);g.lineWidth=1.6;g.beginPath();g.moveTo(x+s*.55,y+s*.55);for(let v=1;v<6;v++)g.lineTo(x+s*.55+v*s*.22,y+s*.55+(v%2?s*.12:0)+v*s*.05);g.stroke();
+  if(center)ionD(g,x,y,s*.27,center[0],center[1]);else if(center===null)ghost(g,x,y,s*.27,rgba(e));
+}
+function membrane(g,y0,y1,dk){
+  g.fillStyle=dk?'rgba(120,150,110,.25)':'rgba(170,200,150,.35)';g.fillRect(16,y0,RW-32,y1-y0);
+  g.fillStyle=dk?'#6f8f66':'#9cbf88';for(let x=20;x<RW-16;x+=9){g.beginPath();g.arc(x,y0+3,3.2,0,7);g.fill();g.beginPath();g.arc(x,y1-3,3.2,0,7);g.fill()}
+}
+/* items move along a belt into an enzyme; a share (f) gets converted, the rest piles up */
+function conveyor(g,t,f,n,o){
+  const y=o.y,x0=o.x0,x1=o.x1,ex=o.ex,v=o.v||46,per=o.per||1.25,dk=isDark();
+  g.strokeStyle=dk?'#4a5562':'#c3ccd6';g.lineWidth=2;g.setLineDash([10,7]);g.lineDashOffset=-t*v;g.beginPath();g.moveTo(x0,y+20);g.lineTo(x1,y+20);g.stroke();g.setLineDash([]);g.lineDashOffset=0;
+  const k1=Math.floor(t/per);
+  for(let k=k1-22;k<=k1;k++){
+    if(k<0)continue;const age=t-k*per,x=x0+age*v,pass=hsh(k)<f;
+    if(x<ex-34)o.inD(g,x,y,1);
+    else if(pass){if(x>ex+34&&x<x1)o.outD(g,x,y,clamp((x1-x)/30,0,1))}
+    else{const sx=ex-40-hsh(k*3.1)*(ex-x0-60)*.55,sy=y-hsh(k*7.7)*30,tStop=(ex-34-x0)/v,st=age-tStop;
+      const a=clamp(1-(st-9)/2,0,1),q=clamp(st/1.2,0,1);if(a>0)o.inD(g,ex-34+(sx-ex+34)*q,y+(sy-y)*q,a)}
+  }
+  rr(g,ex-34,y-28,68,56,16);g.fillStyle=dk?'#2d3846':'#e3e9f0';g.fill();g.strokeStyle=dk?'#5c6878':'#9aa7b6';g.lineWidth=1.5;g.stroke();
+  ionD(g,ex,y,13,n.col,n.id);
+  T(g,o.enz,ex,y-36,'700 11px',css('--text'),'center');
+}
+function etcD(g,t,f,n,dk,txt,mut){
+  membrane(g,100,140,dk);
+  const C2=[{x:90,lab:'PSII',w:56},{x:235,lab:'Cyt b₆f',w:62},{x:430,lab:'PSI',w:56}];
+  C2.forEach(c=>{rr(g,c.x-c.w/2,88,c.w,64,12);g.fillStyle=dk?'#3f6a45':'#a8d58f';g.fill();g.strokeStyle=dk?'#6f9a74':'#5f9a4a';g.lineWidth=1.4;g.stroke();T(g,c.lab,c.x,124,'700 11px',dk?'#e7ecf2':'#1d2530','center')});
+  const pcx=335,pcy=170,pa=.25+.75*f;
+  g.globalAlpha=pa;g.beginPath();g.ellipse(pcx,pcy,30,16,0,0,7);g.fillStyle=dk?'#3a4a63':'#cfe0f5';g.fill();g.globalAlpha=1;
+  ionD(g,pcx,pcy,11,n.col,'Cu',pa);T(g,'plastocyanin',pcx,pcy+30,'600 10.5px',mut,'center');
+  [[64,62],[404,62]].forEach(p=>{arrowD(g,p[0],p[1],p[0]+18,p[1]+22,'#e0a800',2.2)});T(g,'light',40,72,'600 10.5px',mut,'center');
+  const P=[{x:90,y:120},{x:235,y:120},{x:pcx,y:pcy},{x:430,y:120},{x:530,y:70}],D=[0];for(let i=1;i<P.length;i++)D.push(D[i-1]+Math.hypot(P[i].x-P[i-1].x,P[i].y-P[i-1].y));
+  const per=.7,v=60,k1=Math.floor(t/per);
+  for(let k=k1-20;k<=k1;k++){if(k<0)continue;let s=(t-k*per)*v;const pass=hsh(k)<f;if(!pass&&s>D[2]-14){s=D[2]-14;if(t-k*per>(D[2]-14)/v+3)continue}
+    if(s>D[4])continue;let i=1;while(i<4&&D[i]<s)i++;const u=(s-D[i-1])/(D[i]-D[i-1]);ionD(g,P[i-1].x+(P[i].x-P[i-1].x)*u,P[i-1].y+(P[i].y-P[i-1].y)*u,6,'#f2b705','e⁻')}
+  T(g,'to sugar-making',522,62,'600 10.5px',mut,'right');
+}
+function stomaD(g,t,f,n,ions,txt,mut,dk){
+  const cyc=.5-.5*Math.cos(t*2*Math.PI/8),open=cyc*f,cx=150,cy=128;
+  g.beginPath();g.ellipse(cx,cy,95,72,0,0,7);g.fillStyle=dk?'#243024':'#e8f3df';g.fill();
+  [-1,1].forEach(s=>{g.beginPath();g.ellipse(cx+s*(15+12*open),cy,15+9*open,52,s*.05,0,7);g.fillStyle=dk?'#4f8a45':'#9fd17f';g.fill();g.strokeStyle=dk?'#7fb070':'#4c8a3a';g.lineWidth=2;g.stroke();
+    for(let j=0;j<4;j++){g.beginPath();g.arc(cx+s*(15+12*open)+(j%2?4:-4),cy-30+j*20,3,0,7);g.fillStyle=dk?'#2f6a2a':'#3f8a32';g.fill()}});
+  g.beginPath();g.ellipse(cx,cy,1.5+12*open,38*(.4+.6*open),0,0,7);g.fillStyle=dk?'#0d1116':'#3b3226';g.fill();
+  const nIn=Math.round(5*cyc*f);
+  ions.forEach((io,q)=>{const isMain=q===ions.length-1,cnt=isMain?nIn:Math.round(5*cyc);
+    for(let j=0;j<5;j++){const s=j%2?1:-1,x=cx+s*(16+12*open)+(q?6:-6)*s*.5,y=cy-36+j*17+q*7;
+      if(j<cnt)ionD(g,x,y,7,io.col,io.lab);else{const ox=cx+s*(70+q*10),oy=cy-40+j*20;ionD(g,ox,oy,7,io.col,io.lab,.35)}}});
+  if(open>.3){g.globalAlpha=clamp((open-.3)*3,0,1);arrowD(g,cx-56,cy-62,cx-10,cy-40,'#5d6877',2);T(g,'CO₂ in',cx-64,cy-66,'700 11px',txt,'center');
+    arrowD(g,cx+10,cy-40,cx+56,cy-62,'#1d6fb8',2);T(g,'H₂O out',cx+66,cy-66,'700 11px',txt,'center');g.globalAlpha=1}
+  T(g,open>.35?'Stoma open':'Stoma closed',cx,cy+90,'700 12px',txt,'center');
+  const ml=ions[ions.length-1].lab,x=268;
+  T(g,'1. '+ml+(ions.length>1?' and K⁺':'')+' enter guard cells',x,92,'600 12px',txt);
+  T(g,'2. Water follows by osmosis',x,118,'600 12px',txt);
+  T(g,'3. Guard cells swell and bow',x,144,'600 12px',txt);
+  T(g,'4. Pore opens: CO₂ in, water out',x,170,'600 12px',txt);
+}
+const ROLE={
+ N:(g,t,f,n,txt,mut)=>{
+  T(g,'Amino acids join into a protein',150,70,'700 11.5px',mut,'center');
+  const nb=Math.round(3+11*f);let prev=null;
+  for(let i=0;i<14;i++){const x=40+i*20,y=128+Math.sin(i*.9+t*1.2)*12;
+    if(i<nb){if(prev){g.strokeStyle='#c98a2b';g.lineWidth=2.4;g.beginPath();g.moveTo(prev[0],prev[1]);g.lineTo(x,y);g.stroke()}prev=[x,y]}}
+  for(let i=0;i<14;i++){const x=40+i*20,y=128+Math.sin(i*.9+t*1.2)*12;if(i<nb){ionD(g,x,y,8,'#e9a23b');ionD(g,x+5,y-7,4,n.col)}else ghost(g,x,y,8,mut)}
+  T(g,'Each amino acid contains N',150,178,'600 11px',mut,'center');
+  T(g,'Chlorophyll (has 4 N)',440,70,'700 11.5px',mut,'center');
+  const ok=Math.round(4*f+.15);for(let q=0;q<4;q++){const x=390+(q%2)*100,y=110+Math.floor(q/2)*58;chl(g,x,y,24,q<ok?1:0,q<ok?['#0e7c6b','Mg']:null,q<ok?n.col:null)}
+ },
+ P:(g,t,f,n,txt,mut,dk)=>{
+  T(g,'ATP: the cell’s energy carrier',125,70,'700 11.5px',mut,'center');
+  const ok=Math.round(3*f+.1);
+  for(let r=0;r<3;r++){const y=90+r*35;
+    rr(g,24,y-12,34,24,6);g.fillStyle='#7d8fa8';g.fill();T(g,'A',41,y+4,'700 11px','#fff','center');
+    g.beginPath();for(let v=0;v<5;v++){const b=-Math.PI/2+v*1.2566;g[v?'lineTo':'moveTo'](80+Math.cos(b)*12,y+Math.sin(b)*12)}g.closePath();g.fillStyle='#b5a07a';g.fill();
+    g.strokeStyle=mut;g.lineWidth=2;g.beginPath();g.moveTo(58,y);g.lineTo(186,y);g.stroke();
+    if(r<ok){ionD(g,112,y,10,n.col,'P');ionD(g,138,y,10,n.col,'P');
+      const ph=(t*.45+r*.33)%1;
+      if(ph<.55)ionD(g,164,y,10,n.col,'P');
+      else{const u=(ph-.55)/.45,x=164+u*70;ionD(g,x,y-u*8,10,n.col,'P',1-u*.6);
+        if(u<.5){g.globalAlpha=1-u*2;g.strokeStyle='#f2b705';g.lineWidth=2.4;for(let s=0;s<8;s++){const a=s*Math.PI/4;g.beginPath();g.moveTo(178+Math.cos(a)*6,y+Math.sin(a)*6);g.lineTo(178+Math.cos(a)*(14+u*14),y+Math.sin(a)*(14+u*14));g.stroke()}g.globalAlpha=1}}}
+    else{ionD(g,112,y,10,n.col,'P');ghost(g,138,y,10,mut);ghost(g,164,y,10,mut)}}
+  T(g,'last P pops off = energy',125,196,'600 11px',mut,'center');
+  T(g,'DNA backbone',430,70,'700 11.5px',mut,'center');
+  for(let i=0;i<10;i++){const x=345+i*19,a=i*.75+t*.6,y1=128+Math.sin(a)*34,y2=128-Math.sin(a)*34;
+    g.strokeStyle=dk?'#5c6878':'#c3ccd6';g.lineWidth=2;g.beginPath();g.moveTo(x,y1);g.lineTo(x,y2);g.stroke();
+    const okB=hsh(i+40)<f*1.08;[y1,y2].forEach((yy,s)=>{if(okB||s)ionD(g,x,yy,6,n.col,'P');else ghost(g,x,yy,6,mut)})}
+  T(g,'also in membranes',430,190,'600 11px',mut,'center');
+ },
+ K:(g,t,f,n,txt,mut,dk)=>stomaD(g,t,f,n,[{lab:'K⁺',col:n.col}],txt,mut,dk),
+ Cl:(g,t,f,n,txt,mut,dk)=>stomaD(g,t,f,n,[{lab:'K⁺',col:'#b85f00'},{lab:'Cl⁻',col:n.col}],txt,mut,dk),
+ Ca:(g,t,f,n,txt,mut,dk)=>{
+  const x0=34,w=66,h=40,y0=78;
+  for(let c=0;c<7;c++)for(let r=0;r<3;r++){
+    const s=c<4?1:clamp(f+(6-c)*.12,0,1),bad=1-s,x=x0+c*w,y=y0+r*h,shr=bad*7,wob=bad*Math.sin(t*1.5+c+r)*2;
+    rr(g,x+3+shr+wob,y+3+shr,w-6-2*shr,h-6-2*shr,6);g.fillStyle=rgba(lerpC(dk?[70,120,64]:[190,228,165],[150,108,62],bad));g.fill();
+    if(bad>.35)g.setLineDash([4,4]);g.strokeStyle=rgba(lerpC([60,120,50],[120,80,40],bad));g.lineWidth=2;g.stroke();g.setLineDash([]);
+    if(c<6&&hsh(c*9+r)<(c<3?1:s))ionD(g,x+w,y+h/2,5.5,n.col);
+    if(r<2&&hsh(c*5+r+50)<(c<4?1:s))ionD(g,x+w/2,y+h,5.5,n.col);}
+  T(g,'older cells',x0+2*w,y0-10,'700 11.5px',mut,'center');T(g,'new growth (tip)',x0+5.5*w,y0-10,'700 11.5px',mut,'center');
+  ionD(g,48,207,6,n.col);T(g,'Ca²⁺ glues neighboring cell walls together',60,211,'600 11px',mut);
+ },
+ Mg:(g,t,f,n,txt,mut)=>{
+  const pulse=.5+.5*Math.sin(t*2.4);
+  g.globalAlpha=.25+.25*pulse;g.beginPath();g.arc(140,125,62,0,7);g.fillStyle='#9fe08a';g.fill();g.globalAlpha=1;
+  for(let j=0;j<3;j++){const ox=40+j*22;arrowD(g,ox,58+j*4,ox+40,90+j*6,'#e0a800',2.2)}
+  chl(g,140,125,58,1,[n.col,'Mg'],null);
+  T(g,'One chlorophyll molecule',140,206,'700 11.5px',mut,'center');
+  T(g,'Chlorophyll in a leaf cell',430,70,'700 11.5px',mut,'center');
+  const ok=Math.round(8*f);for(let q=0;q<8;q++){const x=355+(q%4)*50,y=105+Math.floor(q/4)*56;chl(g,x,y,18,q<ok?1:0,q<ok?[n.col,'Mg']:null,null)}
+  T(g,'no Mg = no chlorophyll = yellow',430,206,'600 11px',mut,'center');
+ },
+ S:(g,t,f,n,txt,mut)=>{
+  const loose=(1-f)*16,pts=[];
+  for(let i=0;i<34;i++){const x=48+i*13.5,y=128+40*Math.sin(i*Math.PI/6)+Math.sin(t*1.6+i*.7)*loose*(.4+hsh(i));pts.push([x,y])}
+  g.strokeStyle='#c98a2b';g.lineWidth=2.4;g.beginPath();pts.forEach((p,i)=>g[i?'lineTo':'moveTo'](p[0],p[1]));g.stroke();
+  const pairs=[[3,9],[15,21],[27,33],[9,15]];
+  pairs.forEach((p,j)=>{if(j<Math.round(4*f)){const a=pts[p[0]],b=pts[p[1]];g.strokeStyle=n.col;g.lineWidth=3;g.setLineDash([]);g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(b[0],b[1]);g.stroke();
+    pill(g,(a[0]+b[0])/2,(a[1]+b[1])/2,'S–S',n.col)}});
+  pts.forEach((p,i)=>{const cys=pairs.some(q=>q[0]===i||q[1]===i);ionD(g,p[0],p[1],cys?7:5,cys?n.col:'#e9a23b',cys?'S':'')});
+  T(g,'S–S bridges hold a protein’s folded shape',RW/2,205,'600 11px',mut,'center');
+ },
+ Fe:(g,t,f,n,txt,mut)=>{
+  conveyor(g,t,f,n,{y:122,x0:30,x1:540,ex:280,enz:'Fe enzymes',inD:(g,x,y,a)=>{g.globalAlpha=a;chl(g,x,y,15,0,undefined,null);g.globalAlpha=1},outD:(g,x,y,a)=>{g.globalAlpha=a;chl(g,x,y,15,1,['#0e7c6b','Mg'],null);g.globalAlpha=1}});
+  T(g,'building blocks',90,82,'700 11.5px',mut,'center');T(g,'finished chlorophyll',460,82,'700 11.5px',mut,'center');
+  T(g,'Fe also passes electrons (cytochromes)',RW/2,200,'600 11px',mut,'center');
+ },
+ Mn:(g,t,f,n,txt,mut,dk)=>{
+  membrane(g,96,138,dk);
+  rr(g,215,74,110,84,14);g.fillStyle=dk?'#3f6a45':'#a8d58f';g.fill();g.strokeStyle=dk?'#6f9a74':'#5f9a4a';g.lineWidth=1.4;g.stroke();
+  T(g,'Photosystem II',270,92,'700 11px',dk?'#e7ecf2':'#1d2530','center');
+  const ca=.3+.7*f;[[262,160],[278,160],[262,174],[278,174]].forEach(p=>ionD(g,p[0],p[1],8,n.col,'Mn',ca));
+  arrowD(g,250,60,262,78,'#e0a800',2.2);
+  const per=.8,k1=Math.floor(t/per);
+  for(let k=k1-10;k<=k1;k++){if(k<0)continue;const age=t-k*per,pass=hsh(k)<f;
+    if(age<2.6){const u=age/2.6;ionD(g,60+u*190,198-u*28,10,'#4aa3df','H₂O')}
+    else if(pass&&age<6){const u=(age-2.6)/3.4;ionD(g,290+u*190,175+u*18,10,'#8ec5ff','O₂',1-u*.3);
+      const e=clamp(u*1.6,0,1);ionD(g,275+e*0,150-e*30+(e>=1?0:0),5,'#f2b705','e⁻',1-e);
+      ionD(g,330+u*190,118,5,'#f2b705','e⁻',u<.95?1:0)}
+    else if(!pass&&age<5.5){g.globalAlpha=clamp(1-(age-2.6)/2.9,0,1);ionD(g,250,170,10,'#4aa3df','H₂O');g.globalAlpha=1}}
+  T(g,'water in',60,216,'700 11px',mut,'center');T(g,'O₂ released',470,216,'700 11px',mut,'center');T(g,'electrons →',520,110,'700 11px',mut,'right');
+ },
+ Zn:(g,t,f,n,txt,mut,dk)=>{
+  conveyor(g,t,f,n,{y:122,x0:24,x1:330,ex:170,v:38,per:1.5,enz:'Zn enzyme',
+    inD:(g,x,y,a)=>pill(g,x,y,'Trp','#7d8fa8',a),outD:(g,x,y,a)=>pill(g,x,y,'auxin','#c2366b',a)});
+  T(g,'tryptophan',60,86,'700 11px',mut,'center');
+  const cx=400,top=58,ch=10+14*f;
+  g.fillStyle=dk?'#2a3a24':'#e4f2da';rr(g,cx-30,top,60,5*ch+8,8);g.fill();
+  for(let i=0;i<5;i++){rr(g,cx-26,top+4+i*ch,52,ch-3,4);g.fillStyle=dk?'#4f8a45':'#9fd17f';g.fill();g.strokeStyle=dk?'#7fb070':'#4c8a3a';g.lineWidth=1.5;g.stroke()}
+  for(let j=0;j<Math.round(4*f);j++){const yy=top+((t*30+j*25)%(5*ch));ionD(g,cx,yy+4,4,'#c2366b')}
+  T(g,'stem cells',cx,top+5*ch+26,'700 11.5px',mut,'center');
+  T(g,'auxin makes',cx+50,100,'600 11px',mut);T(g,'cells longer',cx+50,115,'600 11px',mut);
+ },
+ B:(g,t,f,n,txt,mut,dk)=>{
+  const ys=[84,114,144,174],loose=(1-f)*9;
+  ys.forEach((y0,i)=>{g.strokeStyle='#a1887f';g.lineWidth=3;g.beginPath();for(let x=26;x<=262;x+=6){const y=y0+Math.sin(x*.06+i)*3+Math.sin(t*1.4+x*.03+i)*loose*(i%2?1:-1);g[x===26?'moveTo':'lineTo'](x,y)}g.stroke()});
+  for(let i=0;i<3;i++)for(let j=0;j<5;j++){const x=44+j*48,ok=hsh(i*5+j+3)<f;if(!ok)continue;
+    const ya=ys[i]+Math.sin(x*.06+i)*3+Math.sin(t*1.4+x*.03+i)*loose*(i%2?1:-1),yb=ys[i+1]+Math.sin(x*.06+i+1)*3+Math.sin(t*1.4+x*.03+i+1)*loose*((i+1)%2?1:-1);
+    g.strokeStyle=n.col;g.lineWidth=2;g.beginPath();g.moveTo(x,ya);g.lineTo(x,yb);g.stroke();ionD(g,x,(ya+yb)/2,6,n.col,'B')}
+  T(g,'cell-wall pectin linked by B',144,206,'600 11px',mut,'center');
+  const gx=320,gy=170,ox=515,oy=86,ph=(t*.13)%1,reach=Math.min(ph/.8,1),grow=Math.min(reach,f);
+  g.beginPath();g.ellipse(ox,oy,24,16,0,0,7);g.fillStyle=dk?'#3f6a45':'#bfe3a8';g.fill();g.strokeStyle='#4c8a3a';g.lineWidth=1.5;g.stroke();
+  T(g,'ovule',ox,oy+32,'700 11px',mut,'center');
+  const tx=gx+(ox-24-gx)*grow,ty=gy+(oy-gy)*grow;
+  g.strokeStyle='#e9a23b';g.lineWidth=5;g.lineCap='round';g.beginPath();g.moveTo(gx,gy);g.quadraticCurveTo(gx+60*grow,gy-10*grow,tx,ty);g.stroke();g.lineCap='butt';
+  ionD(g,gx,gy,14,'#e9a23b');T(g,'pollen grain',gx,gy+30,'700 11px',mut,'center');
+  if(reach>f&&f<.98){g.strokeStyle='#c0392b';g.lineWidth=2;for(let s=0;s<6;s++){const a=s*1.047;g.beginPath();g.moveTo(tx+Math.cos(a)*4,ty+Math.sin(a)*4);g.lineTo(tx+Math.cos(a)*10,ty+Math.sin(a)*10);g.stroke()}T(g,'tube bursts',tx,ty-14,'700 11px','#c0392b','center')}
+  else if(ph>.8){T(g,'seed can form ✓',ox,oy-24,'700 11px','#1f7a4d','center')}
+ },
+ Cu:(g,t,f,n,txt,mut,dk)=>etcD(g,t,f,n,dk,txt,mut),
+ Mo:(g,t,f,n,txt,mut)=>{
+  conveyor(g,t,f,n,{y:122,x0:30,x1:540,ex:280,enz:'nitrate reductase',inD:(g,x,y,a)=>pill(g,x,y,'NO₃⁻','#1d6fb8',a),outD:(g,x,y,a)=>pill(g,x,y,'NO₂⁻','#0e7c6b',a)});
+  T(g,'nitrate from soil',90,82,'700 11.5px',mut,'center');T(g,'→ NH₄⁺ → amino acids',460,82,'700 11.5px',mut,'center');
+  T(g,'Mo also helps legumes fix N₂',RW/2,200,'600 11px',mut,'center');
+ },
+ Ni:(g,t,f,n,txt,mut)=>{
+  conveyor(g,t,f,n,{y:122,x0:30,x1:540,ex:280,enz:'urease',inD:(g,x,y,a)=>pill(g,x,y,'urea','#8d6e63',a),outD:(g,x,y,a)=>{pill(g,x,y-9,'NH₃','#0e7c6b',a);pill(g,x,y+11,'CO₂','#7d8fa8',a)}});
+  T(g,'urea from the plant',100,82,'700 11.5px',mut,'center');T(g,'usable nitrogen',460,82,'700 11.5px',mut,'center');
+  T(g,'Unbroken urea is toxic to leaf tips',RW/2,200,'600 11px',mut,'center');
+ }
+};
+function wrapLines(g,s,maxW){const w=s.split(' '),L=[];let line='';w.forEach(x=>{const tst=line?line+' '+x:x;if(g.measureText(tst).width>maxW&&line){L.push(line);line=x}else line=tst});if(line)L.push(line);return L}
+function drawRole(dt){
+  const g=rg,n=NUT[cur],dk=isDark(),txt=css('--text')||'#1d2530',mut=css('--muted')||'#5d6877';
+  roleT+=dt;roleF+=((1-.88*sev)-roleF)*(RM?1:1-Math.exp(-dt*2.2));
+  g.clearRect(0,0,RW,RH);rr(g,0,0,RW,RH,10);g.fillStyle=dk?'#18202a':'#f4f7fb';g.fill();
+  T(g,'ITS JOB',12,20,'700 11px',mut);
+  T(g,JOB[n.id][0],12,40,'700 15px',txt);
+  const bw=96,bx=RW-12-bw;T(g,'Job getting done',RW-12,20,'700 10.5px',mut,'right');
+  rr(g,bx,27,bw,10,5);g.fillStyle=dk?'#2d3846':'#dde4ec';g.fill();
+  const fc=roleF>.66?'#1f7a4d':roleF>.4?'#c98a00':'#c0392b';rr(g,bx,27,Math.max(10,bw*roleF),10,5);g.fillStyle=fc;g.fill();
+  g.save();g.beginPath();g.rect(0,48,RW,174);g.clip();
+  ROLE[n.id](g,roleT,roleF,n,txt,mut,dk);
+  g.restore();
+  g.font='600 12.5px system-ui,Arial,sans-serif';
+  const cap=sev<.01?'Plenty of '+n.name.toLowerCase()+', so the job gets done. Raise the deficiency to see what breaks.':'Short on '+n.id+': '+JOB[n.id][1];
+  const lines=wrapLines(g,cap,RW-24),fs=parseFloat((/(\d+(?:\.\d+)?)px/.exec(g.font)||[0,12.5])[1]),lh=fs*1.22;
+  g.fillStyle=sev<.01?txt:(dk?'#ff9b8a':'#a8352a');g.textAlign='left';
+  lines.slice(0,3).forEach((l,i)=>g.fillText(l,12,RH-8-(Math.min(3,lines.length)-1-i)*lh));
+}
+
 /* ---------------- UI ---------------- */
 const $=id=>document.getElementById(id);
 function sevWord(){const v=+$('sev').value;return v===0?'None':v<34?'Mild':v<67?'Moderate':'Severe'}
@@ -518,7 +760,7 @@ const chips=[];
 NUT.forEach((n,i)=>{
   const b=document.createElement('button');b.type='button';b.className='chip';b.style.setProperty('--c',n.col);
   b.innerHTML='<b>'+n.id+'</b><small>'+n.name+'</small>';b.setAttribute('aria-label',n.name+' ('+n.id+')');
-  b.addEventListener('click',()=>{cur=i;parts=[];update()});
+  b.addEventListener('click',()=>{if(cur!==i)roleT=0;cur=i;parts=[];update()});
   $(n.grp==='macro'?'macro':'micro').appendChild(b);chips.push(b);
 });
 $('sev').addEventListener('input',()=>{sev=+$('sev').value/100;update()});
@@ -549,6 +791,7 @@ function update(){
   $('srDesc').textContent=d;
   pcv.setAttribute('aria-label','Plant diagram. '+d+' Arrow at right: '+MOB[n.mob].t.toLowerCase()+' in the plant.');
   zcv.setAttribute('aria-label','Close-up comparing a healthy leaf with the '+(sev<.01?'same leaf on a healthy plant.':repName()+' of the deficient plant. '+n.vis));
+  rcv.setAttribute('aria-label','Diagram of the job '+nm.toLowerCase()+' does: '+JOB[n.id][0].toLowerCase()+'. '+(sev<.01?'With plenty of it, the job gets done.':'With a '+sevWord().toLowerCase()+' deficiency, '+JOB[n.id][1]));
   if(RM)snap();
 }
 function snap(){for(let i=0;i<NL;i++)leafCur[i]=Object.assign({},leafTgt[i]);plantCur=Object.assign({},plantTgt)}
@@ -566,7 +809,7 @@ function frame(now){
     accP+=dt*(sev>.08?pr:0);while(accP>=1){accP--;spawnP(G)}
   }
   parts.forEach(p=>p.s+=p.v*dt);parts=parts.filter(p=>p.s<p.p.len);
-  drawPlant(G);drawZoom();
+  drawPlant(G);drawZoom();drawRole(dt);
   requestAnimationFrame(frame);
 }
 cur=0;update();snap();
