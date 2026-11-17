@@ -111,13 +111,13 @@
 <div class="wrap">
   <a class="back" href="../../">&larr; All class simulations</a>
   <h1>Clovis waste: build your own graphs</h1>
-  <p class="sub">Where does Clovis's trash go, what is in it, and how has that changed? You get the data from CalRecycle, California's recycling and waste agency. You decide how to show it. Each graph starts blank.</p>
+  <p class="sub">Where does Clovis's trash go, what is in it, and how has that changed since 1998? You get the data from CalRecycle, California's recycling and waste agency. You decide how to show it. Each graph starts blank.</p>
 
   <div class="card">
     <h2>Choose your graph</h2>
     <div class="tabs" role="group" aria-label="Which graph" id="taskTabs">
       <button class="tab" data-t="0" aria-pressed="true">Graph 1: Total by type<small>What is Clovis's waste made of, and where does it go?</small></button>
-      <button class="tab" data-t="1" aria-pressed="false">Graph 2: A relationship over time<small>How has Clovis's waste changed from 2020 to 2025?</small></button>
+      <button class="tab" data-t="1" aria-pressed="false">Graph 2: A relationship over time<small>How has Clovis's trash changed since 1998?</small></button>
     </div>
     <div class="task" id="taskText"></div>
     <div class="f" style="grid-template-columns:110px 1fr;max-width:680px;margin-top:12px">
@@ -247,7 +247,7 @@
   </div>
 
   <p class="foot" style="margin-top:18px">
-    Sources: CalRecycle Recycling and Disposal Reporting System, <a href="https://www2.calrecycle.ca.gov/RecyclingDisposalReporting/Reports/JurisdictionDisposalAndBeneficial" target="_blank" rel="noopener">Report 2</a> (Clovis disposal by destination landfill, 2020–2025), pulled Nov 2026.
+    Sources: CalRecycle <a href="https://www2.calrecycle.ca.gov/LGCentral/DisposalReporting/Destination/DisposalByFacility" target="_blank" rel="noopener">Disposal Reporting System</a> (Clovis disposal by facility and quarter, 1998–2019) and <a href="https://www2.calrecycle.ca.gov/RecyclingDisposalReporting/Reports/JurisdictionDisposalAndBeneficial" target="_blank" rel="noopener">Recycling and Disposal Reporting System, Report 2</a> (2020 – June 2026), pulled Nov 2026; Clovis population from the California Department of Finance <a href="https://dof.ca.gov/forecasting/demographics/estimates/" target="_blank" rel="noopener">E-4 estimates</a>.
     Estimated tables apply California's statewide shares from CalRecycle's <a href="https://www2.calrecycle.ca.gov/Docs/Publications/137472" target="_blank" rel="noopener">2021 Waste Characterization Study</a> to Clovis's 2025 trash total; no Clovis-only study exists.
     Distances are approximate driving miles from central Clovis, rounded to the nearest 5; check them with a map app.
   </p>
@@ -289,10 +289,7 @@ const LF = [ // name, county, approx miles from Clovis, tons by year
  ['Visalia Landfill','Tulare',50,[100,74,39,98,77,197]],
  ['Other small landfills (under 15 t)','Various',null,[12,2,3,6,6,3]]
 ];
-const GREEN_ADC = [0,1,0,188,805,1296];       // green waste used as landfill cover (beneficial reuse)
-const LANDFILLS_USED = [9,11,13,9,12,10];     // facilities that received any Clovis trash
 const TOTAL = YEARS.map((y,i)=>LF.reduce((a,l)=>a+l[3][i],0));
-const INF = i => LF.filter(l=>l[1]==='Fresno').reduce((a,l)=>a+l[3][i],0);
 // Statewide 2021 characterization study (tons, California)
 const CA_TOTAL = 39878983;
 const CLASSES = [['Organics',11305710,'Compostable'],['Miscellaneous (incl. mixed residue)',6739781,'Other'],['Paper',6193825,'Recyclable'],['Plastic',5445299,'Recyclable'],
@@ -305,6 +302,7 @@ const SECTORS = [['Businesses & apartments (commercial + multifamily)',19206354]
 const CLOVIS25 = TOTAL[5];
 const est = v => Math.round(CLOVIS25 * v / CA_TOTAL);
 
+const LONG = {"years":[1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"LFY":[["City of Clovis Landfill","Fresno",10,[35578,34289,36947,38376,40864,44786,47053,51660,47342,47452,46506,45189,43291,46321,45387,47248,52356,53328,58242,58038,60022,63545,66018,72036,69702,69325,73695,68764]],["American Avenue Disposal Site","Fresno",35,[3684,4255,2219,1406,1864,4255,5227,6604,5687,4067,2362,1184,1673,1447,4193,2369,2506,5098,8154,11061,11412,11586,12607,12638,10334,5791,6017,12818]],["Orange Avenue Disposal (closed)","Fresno",15,[5010,6444,6339,6750,5975,7193,2611,2138,2966,2256,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],["Fairmead Landfill","Madera",40,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5014,5439,4254,8252,1956,6082,9038,14065,16530,13118,7713]],["Avenal Landfill","Kings",85,[0,0,0,0,0,451,3835,3963,4884,12002,3931,18953,26091,11950,9258,2416,1050,362,0,0,0,358,1226,3044,6299,4176,5424,2902]],["Kettleman Hills Landfill","Kings",80,[0,0,0,0,80,4183,5279,2368,1374,199,15,86,37,600,1271,527,347,80,109,144,218,98,0,197,103,46,69,294]],["Visalia Landfill","Tulare",50,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50,73,31,12,100,74,39,98,77,197]],["Highway 59 Landfill","Merced",65,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,23,0,0,1209,3269]],["Billy Wright Landfill","Merced",90,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,133,335,405,308,689]],["Forward Landfill","San Joaquin",125,[9,29,1758,2040,3454,2628,3019,5275,3810,0,21,4,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0]],["Newby Island Landfill","Santa Clara",155,[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1227,2798,2178,1531,1371,907,309,0,0,0,0,258,894]],["Azusa Landfill","Los Angeles",240,[0,56,315,242,196,222,294,243,117,64,0,193,110,24,0,160,35,85,77,23,33,11,0,0,0,0,0,0]],["Other small landfills","Various",null,[0,39,15,36,47,27,15,16,35,5,78,6,1,13,24,8,5,23,40,30,45,84,12,2,3,6,6,3]]],"summary":[{"year":1998,"pop":65376,"total":44281,"ppd":3.71,"clovislf":35578,"outside":9,"pctout":0.0,"nlf":4,"adc":0,"tonmi":560995},{"year":1999,"pop":66308,"total":45112,"ppd":3.73,"clovislf":34289,"outside":124,"pctout":0.3,"nlf":7,"adc":0,"tonmi":605540},{"year":2000,"pop":68057,"total":47593,"ppd":3.83,"clovislf":36947,"outside":2088,"pctout":4.4,"nlf":6,"adc":0,"tonmi":837570},{"year":2001,"pop":69992,"total":48850,"ppd":3.82,"clovislf":38376,"outside":2318,"pctout":4.7,"nlf":6,"adc":0,"tonmi":847300},{"year":2002,"pop":72514,"total":52480,"ppd":3.97,"clovislf":40864,"outside":3777,"pctout":7.2,"nlf":7,"adc":0,"tonmi":1048695},{"year":2003,"pop":75805,"total":63745,"ppd":4.61,"clovislf":44786,"outside":7511,"pctout":11.8,"nlf":10,"adc":0,"tonmi":1459435},{"year":2004,"pop":80111,"total":67333,"ppd":4.61,"clovislf":47053,"outside":12442,"pctout":18.5,"nlf":9,"adc":9,"tonmi":1888870},{"year":2005,"pop":84552,"total":72267,"ppd":4.68,"clovislf":51660,"outside":11865,"pctout":16.4,"nlf":10,"adc":2,"tonmi":2023800},{"year":2006,"pop":88239,"total":66215,"ppd":4.11,"clovislf":47342,"outside":10220,"pctout":15.4,"nlf":10,"adc":0,"tonmi":1746345},{"year":2007,"pop":90155,"total":66045,"ppd":4.01,"clovislf":47452,"outside":12270,"pctout":18.6,"nlf":10,"adc":0,"tonmi":1702155},{"year":2008,"pop":92484,"total":52913,"ppd":3.13,"clovislf":46506,"outside":4045,"pctout":7.6,"nlf":9,"adc":0,"tonmi":885690},{"year":2009,"pop":93629,"total":65615,"ppd":3.84,"clovislf":45189,"outside":19242,"pctout":29.3,"nlf":8,"adc":0,"tonmi":2158035},{"year":2010,"pop":95447,"total":71203,"ppd":4.09,"clovislf":43291,"outside":26239,"pctout":36.9,"nlf":8,"adc":0,"tonmi":2738560},{"year":2011,"pop":97263,"total":60355,"ppd":3.4,"clovislf":46321,"outside":12587,"pctout":20.9,"nlf":6,"adc":0,"tonmi":1583365},{"year":2012,"pop":98943,"total":60133,"ppd":3.33,"clovislf":45387,"outside":10553,"pctout":17.5,"nlf":7,"adc":0,"tonmi":1489235},{"year":2013,"pop":100656,"total":53955,"ppd":2.94,"clovislf":47248,"outside":4338,"pctout":8.0,"nlf":11,"adc":0,"tonmi":1031500},{"year":2014,"pop":102478,"total":59097,"ppd":3.16,"clovislf":52356,"outside":4235,"pctout":7.2,"nlf":8,"adc":142,"tonmi":1170370},{"year":2015,"pop":105165,"total":66168,"ppd":3.45,"clovislf":53328,"outside":7742,"pctout":11.7,"nlf":11,"adc":2076,"tonmi":1307430},{"year":2016,"pop":107856,"total":73643,"ppd":3.74,"clovislf":58242,"outside":7247,"pctout":9.8,"nlf":13,"adc":333,"tonmi":1352500},{"year":2017,"pop":110318,"total":74994,"ppd":3.72,"clovislf":58038,"outside":5895,"pctout":7.9,"nlf":12,"adc":8,"tonmi":1370870},{"year":2018,"pop":113513,"total":80920,"ppd":3.91,"clovislf":60022,"outside":9486,"pctout":11.7,"nlf":11,"adc":2,"tonmi":1497215},{"year":2019,"pop":116529,"total":77959,"ppd":3.67,"clovislf":63545,"outside":2828,"pctout":3.6,"nlf":16,"adc":3,"tonmi":1208605},{"year":2020,"pop":119011,"total":86045,"ppd":3.96,"clovislf":66018,"outside":7420,"pctout":8.6,"nlf":9,"adc":0,"tonmi":1453915},{"year":2021,"pop":121413,"total":97185,"ppd":4.39,"clovislf":72036,"outside":12511,"pctout":12.9,"nlf":11,"adc":1,"tonmi":1815875},{"year":2022,"pop":123525,"total":100880,"ppd":4.47,"clovislf":69702,"outside":20844,"pctout":20.7,"nlf":13,"adc":0,"tonmi":2197065},{"year":2023,"pop":124631,"total":96377,"ppd":4.24,"clovislf":69325,"outside":21261,"pctout":22.1,"nlf":9,"adc":188,"tonmi":1957125},{"year":2024,"pop":127662,"total":100181,"ppd":4.3,"clovislf":73695,"outside":20469,"pctout":20.4,"nlf":12,"adc":805,"tonmi":2088970},{"year":2025,"pop":129570,"total":97543,"ppd":4.13,"clovislf":68764,"outside":15961,"pctout":16.4,"nlf":10,"adc":1296,"tonmi":2137895}],"quarters":[[1998,1,10655,8933,1722],[1998,2,11824,9494,2330],[1998,3,10937,8697,2240],[1998,4,10865,8454,2411],[1999,1,10480,7950,2530],[1999,2,12035,9192,2843],[1999,3,11513,8371,3142],[1999,4,11084,8776,2308],[2000,1,10967,8849,2118],[2000,2,11864,9100,2764],[2000,3,12474,9684,2790],[2000,4,12289,9314,2975],[2001,1,11668,9129,2539],[2001,2,13320,10093,3226],[2001,3,12196,9555,2641],[2001,4,11668,9599,2069],[2002,1,11717,9750,1967],[2002,2,13235,10395,2840],[2002,3,13351,10337,3014],[2002,4,14179,10382,3797],[2003,1,14386,10657,3729],[2003,2,16045,11688,4357],[2003,3,16931,11220,5711],[2003,4,16383,11221,5162],[2004,1,16122,11337,4785],[2004,2,16289,12358,3931],[2004,3,17652,11803,5849],[2004,4,17270,11555,5715],[2005,1,16960,12553,4407],[2005,2,18731,14103,4628],[2005,3,17212,12362,4850],[2005,4,19365,12642,6723],[2006,1,16210,12431,3779],[2006,2,18412,13945,4467],[2006,3,13732,8502,5230],[2006,4,17862,12464,5398],[2007,1,15417,12032,3385],[2007,2,18792,12240,6552],[2007,3,16345,11782,4563],[2007,4,15491,11398,4093],[2008,1,13364,11910,1454],[2008,2,14695,12303,2392],[2008,3,12024,10830,1194],[2008,4,12830,11463,1367],[2009,1,13311,11264,2047],[2009,2,17679,11698,5981],[2009,3,16006,10774,5232],[2009,4,18620,11453,7167],[2010,1,20664,11646,9018],[2010,2,17294,8088,9206],[2010,3,17920,11240,6680],[2010,4,15324,12317,3007],[2011,1,14908,11728,3180],[2011,2,15445,11813,3632],[2011,3,14681,11191,3490],[2011,4,15320,11589,3731],[2012,1,16194,11381,4813],[2012,2,15881,11613,4268],[2012,3,14250,10663,3587],[2012,4,13807,11730,2077],[2013,1,12988,10908,2080],[2013,2,13032,11644,1388],[2013,3,14184,12175,2009],[2013,4,13751,12521,1230],[2014,1,14864,12912,1952],[2014,2,15122,13415,1707],[2014,3,14209,12980,1229],[2014,4,14903,13049,1854],[2015,1,14663,13246,1417],[2015,2,17841,13584,4257],[2015,3,16423,12933,3490],[2015,4,17240,13565,3675],[2016,1,18618,14824,3794],[2016,2,18403,14793,3610],[2016,3,17424,13950,3474],[2016,4,19197,14675,4522],[2017,1,18272,14613,3659],[2017,2,20368,15168,5200],[2017,3,18297,14270,4027],[2017,4,18058,13987,4071],[2018,1,21182,15865,5317],[2018,2,20606,15616,4990],[2018,3,20522,14559,5963],[2018,4,18609,13982,4627],[2019,1,16783,15085,1698],[2019,2,19971,17517,2454],[2019,3,20336,15421,4915],[2019,4,20868,15522,5346],[2020,1,21102,15995,5107],[2020,2,22508,17879,4629],[2020,3,21889,16622,5267],[2020,4,20546,15522,5024],[2021,1,23876,18607,5268],[2021,2,23920,17840,6080],[2021,3,23229,17429,5800],[2021,4,26162,18160,8002],[2022,1,26521,17586,8935],[2022,2,25819,17487,8332],[2022,3,25025,17912,7113],[2022,4,23517,16717,6799],[2023,1,27110,19120,7990],[2023,2,23646,17221,6425],[2023,3,22674,16552,6122],[2023,4,22946,16432,6515],[2024,1,25503,18185,7318],[2024,2,23219,16620,6599],[2024,3,24938,18885,6053],[2024,4,26519,20004,6515],[2025,1,23727,17440,6287],[2025,2,24812,17592,7220],[2025,3,24957,17026,7931],[2025,4,24048,16706,7342],[2026,1,25299,17091,8208],[2026,2,23771,16418,7353]]};
 const C = (key,label,type,extra) => Object.assign({key,label,type}, extra||{});
 const TASKS = [
  { name:'Graph 1: Total by type',
@@ -329,19 +327,23 @@ const TASKS = [
       rows: LF.map(l=>({lf:l[0], county:l[1], inout: l[1]==='Fresno'?'Inside':(l[1]==='Various'?'Various':'Outside'), mi:l[2], tons:l[3][5]})) }
    ]},
  { name:'Graph 2: A relationship over time',
-   text:'<b>Your task:</b> make a graph that explores <b>how something changed over time</b> (2020–2025) for Clovis\'s trash. Look for a relationship, for example between time and where the trash goes, or between distance and amount. Try several variables before you settle on one graph.',
+   text:'<b>Your task:</b> make a graph that explores <b>how something changed over time</b> (1998–2026) for Clovis\'s trash. Look for a relationship, for example between time and where the trash goes, or between distance and amount. Try several variables before you settle on one graph.',
    cap:'In 2–3 sentences: What changed over time, and what relationship does your graph show? Suggest a reason for the pattern.',
    datasets:[
-    { name:'Clovis trash by landfill and year, 2020–2025', est:false,
-      desc:'Measured: each row is one landfill in one year. Includes the landfill\'s county, whether it is inside Fresno County, and roughly how far it is from Clovis.',
+    { name:'Clovis trash by landfill and year, 1998–2025', est:false,
+      desc:'Measured: each row is one landfill in one year (28 years). Includes the landfill\'s county, whether it is inside Fresno County, and roughly how far it is from Clovis. Orange Avenue Disposal in Fresno closed in the 2000s.',
       cols:[C('year','Year','ord'),C('lf','Landfill','cat'),C('county','Landfill county','cat'),C('inout','Inside Fresno County?','cat'),C('mi','Approx. miles from Clovis','num'),C('tons','Tons','num')],
-      rows: YEARS.flatMap((y,i)=>LF.map(l=>({year:y, lf:l[0], county:l[1], inout: l[1]==='Fresno'?'Inside':(l[1]==='Various'?'Various':'Outside'), mi:l[2], tons:l[3][i]}))) },
-    { name:'Clovis yearly summary, 2020–2025', est:false,
-      desc:'Measured: one row per year. "Tons-miles" multiplies each landfill\'s tons by its approximate distance, a rough measure of how much trucking the trash took.',
-      cols:[C('year','Year','ord'),C('total','Total tons landfilled','num'),C('clovislf','Tons to City of Clovis Landfill','num'),C('outside','Tons sent outside Fresno County','num'),
-            C('pctout','Percent sent outside Fresno County','num',{rate:true}),C('nlf','Number of landfills used','num',{rate:true}),C('adc','Green waste used as landfill cover (t)','num'),C('tonmi','Ton-miles of trucking (approx.)','num')],
-      rows: YEARS.map((y,i)=>({year:y, total:TOTAL[i], clovislf:LF[0][3][i], outside:TOTAL[i]-INF(i), pctout:Math.round(1000*(TOTAL[i]-INF(i))/TOTAL[i])/10, nlf:LANDFILLS_USED[i], adc:GREEN_ADC[i],
-        tonmi: LF.reduce((a,l)=>a+(l[2]||0)*l[3][i],0)})) }
+      rows: LONG.years.flatMap((y,i)=>LONG.LFY.map(l=>({year:y, lf:l[0], county:l[1], inout: l[1]==='Fresno'?'Inside':(l[1]==='Various'?'Various':'Outside'), mi:l[2], tons:l[3][i]}))) },
+    { name:'Clovis yearly summary, 1998–2025', est:false,
+      desc:'Measured: one row per year. Residents are California Department of Finance estimates for January 1. Pounds per person per day = tons × 2,000 ÷ residents ÷ 365. "Ton-miles" multiplies each landfill\'s tons by its approximate distance, a rough measure of trucking. Landfill cover counts all cover material before 2020 and green waste after.',
+      cols:[C('year','Year','ord'),C('pop','Residents','num',{rate:true}),C('total','Total tons landfilled','num'),C('ppd','Pounds per person per day','num',{rate:true}),C('clovislf','Tons to City of Clovis Landfill','num'),
+            C('outside','Tons sent outside Fresno County','num'),C('pctout','Percent sent outside Fresno County','num',{rate:true}),C('nlf','Number of landfills used','num',{rate:true}),
+            C('adc','Material used as landfill cover (t)','num'),C('tonmi','Ton-miles of trucking (approx.)','num')],
+      rows: LONG.summary },
+    { name:'Clovis trash by quarter, 1998 – mid-2026', est:false,
+      desc:'Measured: one row per three-month quarter (114 quarters). "Time" places each quarter on a number line (2020.1 = early 2020) so you can see seasons and long-term change together. 2026 has only January–June so far.',
+      cols:[C('year','Year','ord'),C('q','Quarter','cat'),C('time','Time (year + quarter)','num'),C('total','Total tons landfilled','num'),C('clovislf','Tons to City of Clovis Landfill','num'),C('other','Tons to other landfills','num')],
+      rows: LONG.quarters.map(([y,q,t,c,o])=>({year:y, q:'Q'+q, time:Math.round((y+(q-0.5)/4)*1000)/1000, total:t, clovislf:c, other:o})) }
    ]}
 ];
 
@@ -518,6 +520,7 @@ function render(){
   const yUnit = S.valMode==='pct' ? '%' : (S.y==='__count' ? ' rows' : '');
   const fv = v => (S.yCat && S.yCats) ? (S.yCats[Math.round(v)-1] ?? '') : fmt(v) + (S.valMode==='pct' && !S.yCat ? '%' : '');
   const footY = BASEH - 6;
+  const fmtX = v => (S.xCol && /year|time/i.test(S.xCol.label) && v>=1800 && v<=2200) ? String(Math.round(v*1000)/1000) : fmt(v);
 
   if (isPie && ready){
     const vals = S.order.map((x,i)=> S.series.reduce((a,s)=>a+(s.vals[i]||0),0));
@@ -575,8 +578,8 @@ function render(){
       if (horiz){ const x=mL+f*pw; if($('grid').checked) o+=`<line x1="${x}" x2="${x}" y1="${mT}" y2="${mT+ph}" stroke="${T.grid}"/>`; o+=`<text x="${x}" y="${mT+ph+18}" text-anchor="middle" font-size="12" fill="${T.ink2}">${fv(t)}</text>`; }
       else { const y=mT+ph-f*ph; if($('grid').checked) o+=`<line x1="${mL}" x2="${mL+pw}" y1="${y}" y2="${y}" stroke="${T.grid}"/>`; o+=`<text x="${mL-8}" y="${y+4}" text-anchor="end" font-size="12" fill="${T.ink2}">${fv(t)}</text>`; } });
     if (S.xNum) xticks.forEach(t=>{ const p = horiz ? mT+ph-(t-xlo)/(xhi-xlo)*ph : mL+(t-xlo)/(xhi-xlo)*pw;
-      if (horiz){ if($('grid').checked) o+=`<line x1="${mL}" x2="${mL+pw}" y1="${p}" y2="${p}" stroke="${T.grid}"/>`; o+=`<text x="${mL-8}" y="${p+4}" text-anchor="end" font-size="12" fill="${T.ink2}">${fmt(t)}</text>`; }
-      else { if($('grid').checked) o+=`<line x1="${p}" x2="${p}" y1="${mT}" y2="${mT+ph}" stroke="${T.grid}"/>`; o+=`<text x="${p}" y="${mT+ph+18}" text-anchor="middle" font-size="12" fill="${T.ink2}">${fmt(t)}</text>`; } });
+      if (horiz){ if($('grid').checked) o+=`<line x1="${mL}" x2="${mL+pw}" y1="${p}" y2="${p}" stroke="${T.grid}"/>`; o+=`<text x="${mL-8}" y="${p+4}" text-anchor="end" font-size="12" fill="${T.ink2}">${fmtX(t)}</text>`; }
+      else { if($('grid').checked) o+=`<line x1="${p}" x2="${p}" y1="${mT}" y2="${mT+ph}" stroke="${T.grid}"/>`; o+=`<text x="${p}" y="${mT+ph+18}" text-anchor="middle" font-size="12" fill="${T.ink2}">${fmtX(t)}</text>`; } });
     o += `<line x1="${mL}" x2="${mL}" y1="${mT}" y2="${mT+ph}" stroke="${T.axis}" stroke-width="1.5"/><line x1="${mL}" x2="${mL+pw}" y1="${mT+ph}" y2="${mT+ph}" stroke="${T.axis}" stroke-width="1.5"/>`;
     const xAxisName = horiz ? 'Y' : 'X', vAxisName = horiz ? 'X' : 'Y';
     const catLab = xlab ? `<tspan fill="${T.ink}">${esc(xlab)}</tspan>` : `<tspan fill="${T.ph}" font-style="italic">${xAxisName} axis label?</tspan>`;
@@ -627,7 +630,7 @@ function render(){
             const r = S.sz ? sizeR(s.sizes[q.i]||0) : ps;
             if (showP) o += marker(shapeFor(s), q.p[0], q.p[1], r, col, T.ring, op);
             o += `<circle cx="${q.p[0]}" cy="${q.p[1]}" r="${Math.max(12,r)}" fill="transparent" data-m="${marks.length}"/>`;
-            marks.push({label: S.xNum? `${S.xCol.label}: ${fmt(S.order[q.i])}` : S.order[q.i], series:[s.g,s.s].filter(Boolean).join(' · '), value:q.v, size: S.sz? s.sizes[q.i] : null});
+            marks.push({label: S.xNum? `${S.xCol.label}: ${fmtX(S.order[q.i])}` : S.order[q.i], series:[s.g,s.s].filter(Boolean).join(' · '), value:q.v, size: S.sz? s.sizes[q.i] : null});
             if (labels) o += `<text x="${q.p[0]}" y="${q.p[1]-r-5}" text-anchor="middle" font-size="11" fill="${T.ink2}">${fv(q.v)}</text>`;
             if (stacked) cum[q.i] += q.v;
           });
@@ -811,7 +814,7 @@ function check(S){
     if ((type==='bar'||type==='column') && S.order.length>4 && $('sort').value==='data') warn('<b>Try sorting.</b> "Largest first" makes it easy to see which type is biggest.');
     if ((type==='bar'||type==='column') && $('sort').value!=='data') ok('Sorted bars make the ranking easy to read.');
   } else {
-    if (!(xOrd || xNum)) warn(`<b>Where is time?</b> This graph should show change from 2020 to 2025. Put Year on the X axis${hasYear?'':' (or pick the other data table)'}, or put a number on X and color or shape by Year.`);
+    if (!(xOrd || xNum)) warn(`<b>Where is time?</b> This graph should show change over time (1998–2026). Put Year or Time on the X axis, or put a number on X and color or shape by Year.`);
     else if (xOrd) ok('Year is on the X axis, so the graph shows change over time.');
     else ok(`${S.xCol.label} on the X axis with ${yCol?yCol.label:'counts'} on Y explores a relationship between two numbers.`);
     if (xNum && !(S.g==='year' || S.sh==='year' || S.fCol==='year')) warn('<b>Add time.</b> With a number on X, use "Color by" or "Shape by" Year (or "Show only" one year) so the graph still shows time.');
@@ -829,7 +832,7 @@ function check(S){
   // aggregation problems
   const dup = d.rows.filter(r=>!S.fCol || String(r[S.fCol])===S.fVal).length > S.order.length * Math.max(1, S.series.length);
   if (hasYear && S.x!=='year' && S.g!=='year' && S.sh!=='year' && S.fCol!=='year' && S.agg==='sum' && d.rows.some(r=>r.year!==undefined) && dup)
-    warn('<b>You are adding six years together.</b> Each value is the 2020–2025 total. Use "Show only: Year," put Year on X, or color by Year.');
+    warn('<b>You are adding many years together.</b> Each value is the total for every year in the table. Use "Show only: Year," put Year on X, or color by Year.');
   if (yCol && yCol.rate && S.agg==='sum' && dup) warn(`<b>${yCol.label} can't be added up.</b> Adding rates or counts from several rows gives a meaningless number. Use "Average them" or "Largest value."`);
   if (yCol && yCol.rate && S.valMode==='pct') warn(`<b>Percent of a percent.</b> ${yCol.label} is already a rate; showing it as "percent of total" is confusing.`);
   if (!S.xNum && type!=='pie' && !((type==='bar') !== $('swap').checked) && !$('rotate').checked && S.order.length>6 && S.order.some(x=>String(x).length>9)) warn('<b>Crowded labels.</b> The category names overlap. Try a Bar chart (labels go on the side), or "Tilt X labels" under More options.');
