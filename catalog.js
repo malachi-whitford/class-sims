@@ -227,12 +227,12 @@ const ITEMS = [
     tags: ["commons", "sustainability", "Hardin", "Ostrom", "overgrazing"]
   },
   {
-    title: "Clovis Waste: Build Your Own Graphs",
+    title: "Fresno County Waste: Build Your Own Graphs",
     where: ["ecology/conservation"],
     type: "sim",
     url: "sims/waste-pathways/",
-    desc: "Use real CalRecycle data on Clovis's trash to build two graphs from a blank canvas: totals by type, and a relationship over time. Choose the chart type, axes, color, shape, size, trend lines and labels, then check whether your graph communicates clearly.",
-    tags: ["solid waste", "landfills", "graphing", "data literacy", "Clovis"]
+    desc: "Use real CalRecycle data on Fresno County's trash (every city plus the unincorporated county, 1998–2026) to build two graphs from a blank canvas: totals by type, and a relationship over time. Choose the chart type, axes, color, shape, size, trend lines and labels, then check whether your graph communicates clearly.",
+    tags: ["solid waste", "landfills", "graphing", "data literacy", "Fresno County", "Clovis"]
   },
   {
     title: "What Makes a Greenhouse Gas? Light Meets the Air",
