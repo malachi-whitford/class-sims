@@ -227,6 +227,14 @@ const ITEMS = [
     tags: ["commons", "sustainability", "Hardin", "Ostrom", "overgrazing"]
   },
   {
+    title: "Where Does Fresno County's Waste Go?",
+    where: ["ecology/conservation"],
+    type: "sim",
+    url: "sims/waste-pathways/",
+    desc: "Pick a waste stream (trash, organics, construction debris, recyclables, or bulky items) and follow real 2025 CalRecycle data from where it's collected to the landfill, compost site, or buyer where it ends up. Then compare who makes California's trash and what's in it.",
+    tags: ["solid waste", "recycling", "landfills", "CalRecycle", "Fresno County"]
+  },
+  {
     title: "What Makes a Greenhouse Gas? Light Meets the Air",
     where: ["ecology/climate"],
     type: "sim",

@@ -128,6 +128,12 @@ const THUMBS = {
   <g fill="#fff" stroke="#3b3b3b" stroke-width="1.5"><rect x="22" y="56" width="22" height="12" rx="5"/><rect x="66" y="64" width="22" height="12" rx="5"/><rect x="104" y="52" width="22" height="12" rx="5"/><rect x="128" y="70" width="22" height="12" rx="5"/></g>
   <g fill="#3b3b3b"><circle cx="45" cy="58" r="4"/><circle cx="89" cy="66" r="4"/><circle cx="127" cy="54" r="4"/><circle cx="151" cy="72" r="4"/></g>
   <circle cx="130" cy="18" r="10" fill="#f4b62a"/>`,
+"sims/waste-pathways/": `
+  <rect x="10" y="12" width="8" height="22" rx="2" fill="#2a78d6"/><rect x="10" y="40" width="8" height="14" rx="2" fill="#eb6834"/><rect x="10" y="60" width="8" height="18" rx="2" fill="#1baf7a"/>
+  <path d="M18 12 C60 12 90 20 132 20 L132 42 C90 42 60 34 18 34Z" fill="#2a78d6" opacity=".45"/>
+  <path d="M18 40 C60 40 90 48 132 48 L132 56 C90 56 60 54 18 54Z" fill="#eb6834" opacity=".45"/>
+  <path d="M18 60 C60 60 90 64 132 64 L132 82 C90 82 60 78 18 78Z" fill="#1baf7a" opacity=".45"/>
+  <rect x="132" y="20" width="8" height="22" rx="2" fill="#52514e"/><rect x="132" y="48" width="8" height="8" rx="2" fill="#52514e"/><rect x="132" y="64" width="8" height="18" rx="2" fill="#52514e"/>`,
 "sims/molecules-light/": `
   <rect x="0" y="0" width="160" height="90" fill="#13243b"/>
   <rect x="0" y="70" width="160" height="20" fill="#ff5a4a" opacity=".16"/>

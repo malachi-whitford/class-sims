@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fresno County Waste Pathways</title>
+<style>
+  .viz-root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface-1: #fcfcfb;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --muted: #6b6a65;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+    --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
+    --other: #a9a79f;
+    --node: #52514e;
+    --accent: #2a78d6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); }
+  .viz-root {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    color: var(--text-primary);
+    max-width: 1080px; margin: 0 auto; padding: 20px 16px 40px;
+    line-height: 1.45;
+  }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 0 0 4px; }
+  h3 { font-size: 15px; margin: 18px 0 6px; }
+  .sub { color: var(--text-secondary); margin: 0 0 16px; font-size: 14px; }
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 18px; }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 16px; }
+  .tab {
+    font: inherit; font-size: 14px; padding: 9px 14px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--axis); background: var(--surface-1); color: var(--text-primary);
+  }
+  .tab:hover { background: #f0efec; }
+  .tab[aria-pressed="true"] { background: var(--text-primary); color: #fff; border-color: var(--text-primary); }
+  .tab:focus-visible, select:focus-visible, .toggle button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 14px 0; }
+  .stat { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  .stat .v { font-size: 22px; font-weight: 650; }
+  .stat .l { font-size: 12.5px; color: var(--text-secondary); }
+  .desc { font-size: 14.5px; color: var(--text-secondary); margin: 0; }
+  .chart-wrap { position: relative; width: 100%; }
+  svg { display: block; width: 100%; height: auto; }
+  .colhead { font-size: 12px; fill: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .nlabel { font-size: 12.5px; fill: var(--text-primary); }
+  .nval { font-size: 11.5px; fill: var(--text-secondary); }
+  .link { mix-blend-mode: multiply; transition: opacity .15s; cursor: pointer; }
+  .node { cursor: pointer; }
+  .dim .link { opacity: .12 !important; }
+  .dim .link.hl { opacity: .75 !important; }
+  .tip {
+    position: absolute; pointer-events: none; background: #0b0b0b; color: #fff; font-size: 12.5px;
+    padding: 7px 9px; border-radius: 6px; white-space: nowrap; opacity: 0; transition: opacity .1s; z-index: 5;
+  }
+  .tip b { font-weight: 650; }
+  .q { background: #f0efec; border-radius: 10px; padding: 10px 14px; margin-top: 14px; font-size: 14px; }
+  .q ol { margin: 6px 0 0; padding-left: 20px; }
+  details { margin-top: 12px; font-size: 13.5px; }
+  summary { cursor: pointer; color: var(--text-secondary); }
+  table { border-collapse: collapse; margin-top: 8px; width: 100%; }
+  th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--grid); }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 6px 0 4px; font-size: 14px; }
+  select { font: inherit; font-size: 14px; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--axis); background: var(--surface-1); }
+  .toggle { display: inline-flex; border: 1px solid var(--axis); border-radius: 8px; overflow: hidden; }
+  .toggle button { font: inherit; font-size: 13.5px; padding: 6px 12px; border: 0; background: var(--surface-1); cursor: pointer; }
+  .toggle button[aria-pressed="true"] { background: var(--text-primary); color: #fff; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--text-secondary); margin-top: 8px; }
+  .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+  .axis text { font-size: 11.5px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+  .foot { font-size: 12.5px; color: var(--text-secondary); }
+  .foot a { color: var(--text-secondary); }
+  .hidden { display: none; }
+  .back { display:inline-block; margin-bottom:10px; font-size:14px; color: var(--text-secondary); }
+</style>
+<!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
+</head>
+<body>
+<div class="viz-root">
+  <a class="back" href="../../">&larr; All class simulations</a>
+  <h1>Where does Fresno County's waste go?</h1>
+  <p class="sub">Pick a waste stream to see how much there is and the pathway it takes from where it's collected to where it ends up. Data: CalRecycle Recycling and Disposal Reporting System, 2025.</p>
+
+  <div class="card">
+    <div class="tabs" role="group" aria-label="Waste stream" id="tabs"></div>
+    <h2 id="sTitle" aria-live="polite"></h2>
+    <p class="desc" id="sDesc"></p>
+    <div class="stats" id="stats"></div>
+    <div class="chart-wrap" id="sankeyWrap">
+      <svg id="sankey" role="img" aria-labelledby="sTitle" aria-describedby="tableHint"></svg>
+      <div class="tip" id="tip"></div>
+    </div>
+    <p class="foot" style="margin:6px 0 0">Hover over (or tap) a band or box to see tons. Band width is proportional to tons.</p>
+
+    <div id="trendBlock" class="hidden">
+      <h3>Trash sent to disposal, 2020–2025</h3>
+      <div class="row">
+        <label for="jSel">Show:</label>
+        <select id="jSel"></select>
+      </div>
+      <div class="chart-wrap" id="trendWrap">
+        <svg id="trend" role="img" aria-label="Line chart of tons disposed per year"></svg>
+        <div class="tip" id="tip2"></div>
+      </div>
+    </div>
+
+    <div class="q" id="questions"></div>
+
+    <details>
+      <summary id="tableHint">Show the data as a table (same numbers as the diagram)</summary>
+      <table id="dataTable"></table>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>Who makes the trash? Residential vs. commercial vs. self-haul</h2>
+    <p class="desc">CalRecycle doesn't split each county's trash by who threw it away, but its 2021 statewide study sampled garbage trucks at landfills to estimate it. Industrial businesses are counted inside "commercial." Switch to the Fresno County estimate to apply the statewide shares to Fresno County's 2025 trash total.</p>
+    <div class="row" style="margin-top:12px">
+      <div class="toggle" role="group" aria-label="Scale">
+        <button id="tState" aria-pressed="true">California (actual study)</button>
+        <button id="tFresno" aria-pressed="false">Fresno County (estimate)</button>
+      </div>
+    </div>
+    <div class="chart-wrap" id="sectorWrap">
+      <svg id="sector" role="img" aria-label="Stacked bar of disposed waste by sector"></svg>
+      <div class="tip" id="tip3"></div>
+    </div>
+    <div class="legend" id="sectorLegend"></div>
+
+    <h3>What's in the trash? (California, 2021)</h3>
+    <div class="chart-wrap" id="compWrap">
+      <svg id="comp" role="img" aria-label="Bar chart of disposed waste by material class"></svg>
+      <div class="tip" id="tip4"></div>
+    </div>
+    <div class="q">
+      <b>Think about it</b>
+      <ol>
+        <li>Commercial and multifamily sources produce the largest share. Why might businesses and apartments throw away more than single-family homes?</li>
+        <li>Organics are the biggest material class in the trash. Since 2022, California law (SB 1383) has required cities to collect organics separately. Why would the state target organics first?</li>
+      </ol>
+    </div>
+  </div>
+
+  <p class="foot">
+    Sources: CalRecycle RDRS <a href="https://www2.calrecycle.ca.gov/RecyclingDisposalReporting/Reports/JurisdictionDisposalAndBeneficial" target="_blank" rel="noopener">Report 2</a> (disposal by destination) and
+    <a href="https://www2.calrecycle.ca.gov/RecyclingDisposalReporting/Reports/RecyclingCompostingRelatedOutflows" target="_blank" rel="noopener">Report 11</a> (recycling and composting outflows from Fresno County facilities), pulled Nov 2026;
+    <a href="https://www2.calrecycle.ca.gov/Docs/Publications/137472" target="_blank" rel="noopener">2021 Statewide Waste Characterization Study</a>.
+    Trash flows under 50 tons are left out of the diagram. Recycling streams are measured where facilities send material, so a ton can be counted more than once as it moves between facilities.
+  </p>
+</div>
+
+<script>
+(function(){
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const pct = (a,b) => (100*a/b).toFixed(1) + '%';
+const SLOTS = ['var(--s1)','var(--s2)','var(--s3)','var(--s4)','var(--s5)','var(--s6)','var(--s7)','var(--s8)'];
+const OTHER = 'var(--other)';
+
+/* ---------- Trash (RDRS Report 2, 2025, flows >= 50 t) ---------- */
+const FAC_COUNTY = {
+  'American Avenue Disposal Site':'Fresno','City of Clovis Landfill':'Fresno',
+  'Lost Hills landfill':'Kern','Fairmead Landfill':'Madera','Avenal Landfill':'Kings',
+  'Kettleman Hills landfill':'Kings','Billy Wright Landfill':'Merced','Highway 59 Landfill':'Merced',
+  'Visalia Landfill':'Tulare','Woodville Landfill':'Tulare','Newby Island Landfill':'Santa Clara',
+  'Anderson Landfill':'Shasta','Potrero Hills Landfill':'Solano','Recology Hay Road':'Solano',
+  'Fink Road Landfill':'Stanislaus','Simi Valley Landfill':'Ventura'
+};
+const A='American Avenue Disposal Site', LH='Lost Hills landfill', FM='Fairmead Landfill', CL='City of Clovis Landfill',
+      AV='Avenal Landfill', KH='Kettleman Hills landfill', BW='Billy Wright Landfill', H59='Highway 59 Landfill', VI='Visalia Landfill';
+const FLOWS = [
+ ['Fresno (city)',A,471766],['Fresno (city)',LH,117175],['Fresno-Unincorporated',A,73669],['Clovis',CL,68764],
+ ['Fresno (city)',FM,51000],['Fresno (city)',AV,42531],['Sanger',A,18722],['Selma',A,18440],
+ ['Fresno-Unincorporated',KH,17947],['Fresno-Unincorporated',FM,17009],['Clovis',A,12818],['Fresno (city)',KH,11190],
+ ['Kerman',A,10470],['Fresno (city)',H59,9186],['Coalinga',AV,8720],['Clovis',FM,7713],['Fowler',KH,7455],
+ ['Fresno-Unincorporated',BW,5970],['Fresno (city)',BW,5807],['Fresno-Unincorporated',VI,5716],['Huron',AV,5344],
+ ['Mendota',A,5234],['Fresno-Unincorporated',AV,4339],['Parlier',A,4324],['Firebaugh',A,3949],['Kingsburg',A,3558],
+ ['Clovis',H59,3269],['Reedley',A,3216],['Clovis',AV,2902],['Fowler',A,2586],['Sanger',KH,2581],['Firebaugh',BW,1766],
+ ['Reedley',KH,1678],['Fresno (city)',VI,1633],['Selma',BW,1575],['Sanger',BW,1546],['Sanger',LH,1424],
+ ['San Joaquin',A,1372],['Coalinga',A,1207],['Fresno-Unincorporated',H59,1206],['Kerman',BW,1136],['Reedley',LH,1014],
+ ['Clovis','Newby Island Landfill',894],['Fresno (city)','Newby Island Landfill',754],['Sanger',FM,741],['Reedley',VI,706],
+ ['Fresno-Unincorporated',LH,705],['Clovis',BW,689],['Selma',VI,686],['Sanger',VI,495],['Mendota',BW,447],['Selma',FM,433],
+ ['Orange Cove',A,416],['Fresno (city)','Potrero Hills Landfill',395],['Parlier',BW,394],['Sanger',H59,341],['Kingsburg',BW,331],
+ ['San Joaquin',H59,330],['Fresno-Unincorporated','Anderson Landfill',304],['Clovis',KH,294],['Reedley',BW,289],
+ ['San Joaquin','Fink Road Landfill',261],['San Joaquin',BW,245],['Kingsburg',KH,236],['Orange Cove',VI,215],['Clovis',VI,197],
+ ['Parlier',KH,186],['Kingsburg',VI,169],['San Joaquin',AV,147],['Fresno (city)','Anderson Landfill',140],['Firebaugh',AV,135],
+ ['Selma',AV,135],['Selma',KH,123],['Parlier',VI,121],['Parlier',AV,115],['Orange Cove',LH,112],['Coalinga',BW,112],
+ ['Huron',A,106],['Kingsburg',AV,67],['Fresno (city)','Recology Hay Road',65],['Fresno-Unincorporated','Potrero Hills Landfill',57],
+ ['Orange Cove','Woodville Landfill',56],['Fowler',FM,55],['Fresno (city)','Simi Valley Landfill',55],['Orange Cove',BW,54],['Reedley',AV,51]
+];
+const TOPJ = ['Fresno (city)','Fresno-Unincorporated','Clovis','Sanger','Selma','Kerman'];
+const TOPF = [A,LH,FM,CL,AV,KH,BW,H59,VI];
+const TOPC = ['Fresno','Kern','Madera','Kings','Merced','Tulare'];
+function trashLinks(){
+  const L = {};
+  const add=(a,b,v)=>{const k=a+'|'+b; L[k]=(L[k]||0)+v;};
+  FLOWS.forEach(([j,f,v])=>{
+    const jg = TOPJ.includes(j)? j : 'Other cities (10)';
+    const fg = TOPF.includes(f)? f : 'Other landfills';
+    const c = FAC_COUNTY[f]; const cg = TOPC.includes(c)? c+' County' : 'Outside the region';
+    add('0:'+jg,'1:'+fg,v); add('1:'+fg,'2:'+cg,v);
+  });
+  return Object.entries(L).map(([k,v])=>{const [a,b]=k.split('|'); return [a,b,v];});
+}
+
+const JDATA = {
+ 'Fresno County total':[981462,1100440,1087310,1093223,1095134,1052320],
+ 'Fresno (city)':[656893,678578,678338,668664,723028,711738],
+ 'Fresno-Unincorporated':[124667,169792,179522,190464,131607,126942],
+ 'Clovis':[86044,97186,100881,96377,100179,97543],
+ 'Sanger':[25852,27025,22322,21505,23326,25856],
+ 'Selma':[6046,21791,19586,19211,20102,21434],
+ 'Kerman':[10886,15171,12753,15145,21255,11712],
+ 'Fowler':[4135,11989,5227,7613,10609,10121],
+ 'Coalinga':[11908,12437,12142,13532,7440,10062],
+ 'Reedley':[6635,18847,17498,17584,15683,6957],
+ 'Firebaugh':[4408,4733,4417,5186,5099,5931],
+ 'Mendota':[6451,5018,4686,4458,5124,5737],
+ 'Huron':[5502,4507,4620,5946,5198,5459],
+ 'Parlier':[11825,12905,10875,11138,11064,5140],
+ 'Kingsburg':[12466,12554,10734,10864,9549,4410],
+ 'San Joaquin':[1371,1237,956,1656,1392,2382],
+ 'Orange Cove':[6373,6670,2753,3880,4479,896]
+};
+const YEARS = ['2020','2021','2022','2023','2024','2025'];
+
+/* ---------- Streams ---------- */
+const STREAMS = [
+ { id:'trash', name:'Trash (municipal solid waste)',
+   desc:'Garbage from homes and businesses in each city goes to a landfill. This is the "black bin" stream: everything that is disposed of rather than recycled or composted.',
+   cols:['Collected in','Landfill','Landfill location'],
+   links: trashLinks(),
+   stats: L => {
+     const tot = sum(L.filter(l=>l[0].startsWith('0:')));
+     const inF = sum(L.filter(l=>l[1]==='2:Fresno County'));
+     return [[fmt(1052320)+' t','sent to disposal in 2025'],[pct(inF,tot),'stays in Fresno County'],['16','landfills got 50+ tons'],['Shasta County','farthest landfill used']];
+   },
+   qs:['About a third of the trash leaves Fresno County. What are the costs (fuel, emissions, fees) of trucking waste to Kern, Madera and Kings counties?',
+       'Pick a city in the line chart below. Did its trash go up or down between 2020 and 2025? What might explain the change?']
+ },
+ { id:'organics', name:'Organics (yard & food waste)',
+   desc:'Green waste, food scraps, compost and biosolids sent out by organics facilities in Fresno County. Most stays in Fresno County; much of the rest goes to Kings County.',
+   cols:['Material','Handled at','Sent to'],
+   links: [
+     ['0:Green waste','1:Fresno County organics facilities',274161],['0:Compost (finished)','1:Fresno County organics facilities',48050],
+     ['0:Mixed organics','1:Fresno County organics facilities',42661],['0:Food waste','1:Fresno County organics facilities',13553],
+     ['0:Biosolids & other','1:Fresno County organics facilities',2402],
+     ['1:Fresno County organics facilities','2:Fresno County',246659],['1:Fresno County organics facilities','2:Kings County',109664],
+     ['1:Fresno County organics facilities','2:Madera County',9800],['1:Fresno County organics facilities','2:Merced County',6798],
+     ['1:Fresno County organics facilities','2:Other counties',7906]
+   ],
+   stats: L => [[fmt(380827)+' t','organics sent out in 2025'],['72%','was green (yard) waste'],['65%','stayed in Fresno County'],['53%','went straight to end users*']],
+   note:'*End users include farms (land application), compost buyers and fuel users. The other 47% went to composting or recycling facilities.',
+   qs:['Food waste is only about 4% of this stream, but food is one of the largest items in the trash. Where is most food waste going instead?',
+       'Why might Kings County, a farming county, be a major destination for Fresno County organics?']
+ },
+ { id:'cdi', name:'Construction & demolition',
+   desc:'Rock, concrete and other inert debris sent out by facilities in Fresno County. Almost all of it goes to end users inside the county, such as construction projects and fill sites.',
+   cols:['Material','Handled at','Sent to'],
+   links: [
+     ['0:Rock','1:Fresno County C&D facilities',90399],['0:Other C&D debris','1:Fresno County C&D facilities',129],
+     ['1:Fresno County C&D facilities','2:Fresno County',90131],['1:Fresno County C&D facilities','2:Other counties',397]
+   ],
+   stats: L => [[fmt(90528)+' t','sent out in 2025'],['99.6%','stayed in Fresno County'],['99.9%','was rock']],
+   qs:['Rock is heavy. How does weight explain why this stream almost never leaves the county?',
+       'Construction waste that is self-hauled to a landfill is not in this stream. What could a city do to keep more of it out of landfills?']
+ },
+ { id:'recyc', name:'Recyclables (paper, metal, glass, plastic)',
+   desc:'Paper, metal, glass and plastic sent out by recycling facilities in Fresno County, and the region where each was received. Much of it goes to buyers in Southern California and the Bay Area, and some is exported to other countries.',
+   cols:['Material','Sent to'],
+   links: [
+     ['0:Paper','1:Southern California',95762],['0:Paper','1:Unknown destination',36733],['0:Paper','1:Export (S. Korea, Canada)',5816],
+     ['0:Paper','1:Other US states',1268],['0:Paper','1:Smaller destinations',5833],
+     ['0:Metal','1:Bay Area',42216],['0:Metal','1:Fresno (local)',10896],['0:Metal','1:Southern California',3262],
+     ['0:Metal','1:Other US states',2476],['0:Metal','1:Export (S. Korea, Canada)',2049],['0:Metal','1:Unknown destination',1344],['0:Metal','1:Smaller destinations',5416],
+     ['0:Mixed recyclables','1:Fresno (local)',22192],
+     ['0:Glass','1:Bay Area',6343],['0:Glass','1:Southern California',4113],['0:Glass','1:Central Valley',2465],['0:Glass','1:Unknown destination',4869],['0:Glass','1:Smaller destinations',1377],
+     ['0:Plastic','1:Southern California',4264],['0:Plastic','1:Unknown destination',5576],['0:Plastic','1:Smaller destinations',2821]
+   ],
+   stats: L => [[fmt(267091)+' t','sent out in 2025'],['54%','was paper and cardboard'],['12%','stayed in Fresno'],['2.9%','exported to other countries']],
+   qs:['Over 60% of the scrap metal went to Oakland, a major port. What do you think happens to it there?',
+       'Plastic is the smallest recycled stream, yet plastic is 14% of what Californians throw away. Why is plastic so much harder to recycle than metal or paper?']
+ },
+ { id:'bulky', name:'Bulky & special items',
+   desc:'Carpet, furniture, tires, large appliances (white goods) and electronics (brown goods) sent out by facilities in Fresno County. These need special handling because they are large or contain hazardous parts.',
+   cols:['Item','Pathway','Sent to'],
+   links: [
+     ['0:Carpet','1:Direct to end user',2145],['0:Furniture','1:Recycling facility',894],['0:Furniture','1:Direct to end user',65],
+     ['0:Mixed residuals','1:Direct to end user',955],['0:Tires','1:Recycling facility',637],['0:Large appliances','1:Recycling facility',265],
+     ['0:Electronics','1:Recycling facility',20],['0:Electronics','1:Direct to end user',10],
+     ['1:Direct to end user','2:San Bernardino Co. (carpet)',2061],['1:Direct to end user','2:Not broken out',1114],
+     ['1:Recycling facility','2:Not broken out',1816]
+   ],
+   stats: L => [[fmt(4991)+' t','sent out in 2025'],['43%','was carpet'],['0.6%','of this stream was electronics']],
+   qs:['Only 30 tons of electronics show up here. Where else might old phones, TVs and computers go?',
+       'Almost all the carpet went to one recycler in San Bernardino County, in Southern California. Is it worth recycling something that far away? What would you need to know?']
+ }
+];
+
+function sum(arr){ return arr.reduce((s,l)=>s+l[2],0); }
+
+/* ---------- Sankey ---------- */
+const tip = document.getElementById('tip');
+function showTip(el, wrap, html, ev){
+  el.innerHTML = html; el.style.opacity = 1;
+  const r = wrap.getBoundingClientRect();
+  let x = ev.clientX - r.left + 12, y = ev.clientY - r.top + 12;
+  const w = el.offsetWidth;
+  if (x + w > r.width) x = ev.clientX - r.left - w - 12;
+  el.style.left = x + 'px'; el.style.top = y + 'px';
+}
+function hideTip(el){ el.style.opacity = 0; }
+
+function drawSankey(stream){
+  const svg = document.getElementById('sankey');
+  const wrap = document.getElementById('sankeyWrap');
+  const links = stream.links;
+  const ncol = stream.cols.length;
+  const W = 960, H = 520, top = 34, bottom = 8;
+  const marginL = 190, marginR = 230, nw = 14, gap = 10;
+  // nodes
+  const nodes = {};
+  links.forEach(([a,b,v])=>{
+    [a,b].forEach(id=>{ if(!nodes[id]) nodes[id] = {id, col:+id.split(':')[0], name:id.slice(id.indexOf(':')+1), inV:0, outV:0, out:[], inn:[]}; });
+    nodes[a].outV += v; nodes[b].inV += v;
+  });
+  const cols = [...Array(ncol)].map(()=>[]);
+  Object.values(nodes).forEach(n=>{ n.v = Math.max(n.inV, n.outV); cols[n.col].push(n); });
+  const isOther = n => /^(Other|Unknown|Smaller|Not broken|Outside)/.test(n.name);
+  cols.forEach(c=>c.sort((a,b)=> (isOther(a)-isOther(b)) || (b.v-a.v)));
+  const innerH = H - top - bottom;
+  const k = Math.min(...cols.map(c => (innerH - gap*(c.length-1)) / c.reduce((s,n)=>s+n.v,0)));
+  const xStep = (W - marginL - marginR - nw) / (ncol-1);
+  cols.forEach((c,ci)=>{
+    let y = top;
+    const used = c.reduce((s,n)=>s+n.v*k,0) + gap*(c.length-1);
+    y += (innerH - used)/2;
+    c.forEach(n=>{ n.x = marginL + ci*xStep; n.y = y; n.h = Math.max(n.v*k, 1.5); y += n.h + gap; });
+  });
+  // colors: first-column nodes take categorical slots in order; Other gets gray
+  let slot = 0;
+  cols[0].forEach(n=>{ n.color = isOther(n) ? OTHER : SLOTS[slot++ % SLOTS.length]; });
+  // propagate color for links: links leaving col0 take source color; later links take color of dominant col0 ancestor? use neutral
+  const L = links.map(([a,b,v])=>({s:nodes[a], t:nodes[b], v}));
+  L.forEach(l=>{ l.s.out.push(l); l.t.inn.push(l); });
+  Object.values(nodes).forEach(n=>{
+    n.out.sort((p,q)=>p.t.y-q.t.y); n.inn.sort((p,q)=>p.s.y-q.s.y);
+    let sy = n.y; n.out.forEach(l=>{ l.sy = sy; sy += l.v*k; });
+    let ty = n.y; n.inn.forEach(l=>{ l.ty = ty; ty += l.v*k; });
+  });
+  // color for middle nodes: if single-source col0 inflow use that color else neutral
+  Object.values(nodes).forEach(n=>{ if(n.col>0){ const srcs=[...new Set(n.inn.map(l=>l.s.color))]; n.color = 'var(--node)'; n.flow = srcs.length===1? srcs[0] : null; } });
+  L.forEach(l=>{ l.color = l.s.col===0 ? l.s.color : 'var(--axis)'; });
+
+  const total = cols[0].reduce((s,n)=>s+n.v,0);
+  let out = '';
+  stream.cols.forEach((t,ci)=>{
+    const x = marginL + ci*xStep + nw/2;
+    const anchor = ci===0 ? 'end' : (ci===ncol-1 ? 'start' : 'middle');
+    const tx = ci===0 ? x+nw/2 : (ci===ncol-1 ? x-nw/2 : x);
+    out += `<text class="colhead" x="${tx}" y="16" text-anchor="${anchor}">${t}</text>`;
+  });
+  out += '<g id="links">';
+  L.forEach((l,i)=>{
+    const w = Math.max(l.v*k, 0.8);
+    const x0 = l.s.x + nw, x1 = l.t.x, xm = (x0+x1)/2;
+    const y0 = l.sy, y1 = l.ty;
+    const d = `M${x0},${y0} C${xm},${y0} ${xm},${y1} ${x1},${y1} L${x1},${y1+w} C${xm},${y1+w} ${xm},${y0+w} ${x0},${y0+w} Z`;
+    out += `<path class="link" data-i="${i}" d="${d}" fill="${l.color}" opacity="0.42"></path>`;
+  });
+  out += '</g><g id="nodes">';
+  Object.values(nodes).forEach(n=>{
+    out += `<rect class="node" data-id="${esc(n.id)}" x="${n.x}" y="${n.y}" width="${nw}" height="${n.h}" rx="3" fill="${n.col===0? n.color : 'var(--node)'}"></rect>`;
+    const show = n.h >= 2 || n.col===0;
+    if (!show) return;
+    const cy = n.y + n.h/2;
+    let lx, anchor;
+    if (n.col===0){ lx = n.x - 8; anchor='end'; }
+    else { lx = n.x + nw + 8; anchor='start'; }
+    const big = n.h >= 22;
+    out += `<text class="nlabel" x="${lx}" y="${big? cy-2 : cy+4}" text-anchor="${anchor}">${esc(n.name)}</text>`;
+    if (big) out += `<text class="nval" x="${lx}" y="${cy+13}" text-anchor="${anchor}">${fmt(n.v)} t · ${pct(n.v,total)}</text>`;
+  });
+  out += '</g>';
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = out;
+
+  const g = svg;
+  svg.querySelectorAll('.link').forEach(p=>{
+    const l = L[+p.dataset.i];
+    const html = `<b>${esc(l.s.name)} → ${esc(l.t.name)}</b><br>${fmt(l.v)} tons · ${pct(l.v,total)} of stream`;
+    p.addEventListener('mousemove', e=>{ svg.classList.add('dim'); p.classList.add('hl'); showTip(tip, wrap, html, e); });
+    p.addEventListener('mouseleave', ()=>{ svg.classList.remove('dim'); p.classList.remove('hl'); hideTip(tip); });
+  });
+  svg.querySelectorAll('.node').forEach(r=>{
+    const n = nodes[r.dataset.id];
+    const html = `<b>${esc(n.name)}</b><br>${fmt(n.v)} tons · ${pct(n.v,total)} of stream`;
+    const rel = [...n.out, ...n.inn];
+    r.addEventListener('mousemove', e=>{
+      svg.classList.add('dim');
+      rel.forEach(l=>svg.querySelector(`.link[data-i="${L.indexOf(l)}"]`).classList.add('hl'));
+      showTip(tip, wrap, html, e);
+    });
+    r.addEventListener('mouseleave', ()=>{ svg.classList.remove('dim'); svg.querySelectorAll('.link.hl').forEach(p=>p.classList.remove('hl')); hideTip(tip); });
+  });
+
+  // table
+  const tbl = document.getElementById('dataTable');
+  let t = '<tr><th>From</th><th>To</th><th class="n">Tons (2025)</th><th class="n">% of stream</th></tr>';
+  L.slice().sort((a,b)=> a.s.col-b.s.col || b.v-a.v).forEach(l=>{
+    t += `<tr><td>${esc(l.s.name)}</td><td>${esc(l.t.name)}</td><td class="n">${fmt(l.v)}</td><td class="n">${pct(l.v,total)}</td></tr>`;
+  });
+  tbl.innerHTML = t;
+}
+function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ---------- Trend line ---------- */
+function drawTrend(name){
+  const svg = document.getElementById('trend'), wrap = document.getElementById('trendWrap'), tip2 = document.getElementById('tip2');
+  const vals = JDATA[name];
+  const W=960,H=260,mL=70,mR=20,mT=16,mB=34;
+  const max = Math.max(...vals)*1.12;
+  const step = niceStep(max/4);
+  const yMax = Math.ceil(max/step)*step;
+  const x = i => mL + i*(W-mL-mR)/(vals.length-1);
+  const y = v => mT + (H-mT-mB)*(1 - v/yMax);
+  let s = '<g class="axis">';
+  for (let v=0; v<=yMax+1e-6; v+=step){
+    s += `<line x1="${mL}" x2="${W-mR}" y1="${y(v)}" y2="${y(v)}" stroke="${v===0?'var(--axis)':'var(--grid)'}" stroke-width="1"/>`;
+    s += `<text x="${mL-8}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`;
+  }
+  YEARS.forEach((yr,i)=> s += `<text x="${x(i)}" y="${H-10}" text-anchor="middle">${yr}</text>`);
+  s += '</g>';
+  const pts = vals.map((v,i)=>`${x(i)},${y(v)}`).join(' ');
+  s += `<polyline points="${pts}" fill="none" stroke="var(--s1)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>`;
+  vals.forEach((v,i)=> s += `<circle cx="${x(i)}" cy="${y(v)}" r="4" fill="var(--s1)" stroke="var(--surface-1)" stroke-width="2"/>`);
+  s += `<text x="${x(5)-6}" y="${y(vals[5])-12}" text-anchor="end" class="nval">${fmt(vals[5])} t in 2025</text>`;
+  s += `<line id="cross" x1="0" x2="0" y1="${mT}" y2="${H-mB}" stroke="var(--axis)" stroke-width="1" opacity="0"/>`;
+  s += `<rect id="hit" x="${mL-20}" y="0" width="${W-mL-mR+40}" height="${H}" fill="transparent"/>`;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = s;
+  const hit = svg.querySelector('#hit'), cross = svg.querySelector('#cross');
+  hit.addEventListener('mousemove', e=>{
+    const r = svg.getBoundingClientRect();
+    const sx = (e.clientX - r.left) * W / r.width;
+    const i = Math.max(0, Math.min(5, Math.round((sx-mL)/((W-mL-mR)/5))));
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('opacity', 1);
+    const ch = i>0 ? ` (${vals[i]>=vals[i-1]?'+':''}${fmt(vals[i]-vals[i-1])} vs ${YEARS[i-1]})` : '';
+    showTip(tip2, wrap, `<b>${esc(name)}, ${YEARS[i]}</b><br>${fmt(vals[i])} tons${ch}`, e);
+  });
+  hit.addEventListener('mouseleave', ()=>{ cross.setAttribute('opacity',0); hideTip(tip2); });
+}
+function niceStep(raw){ const p = Math.pow(10, Math.floor(Math.log10(raw))); const m = raw/p; return (m<=1?1:m<=2?2:m<=5?5:10)*p; }
+
+/* ---------- Sector panel ---------- */
+const SECTORS = [['Commercial & multifamily (incl. industrial)',19206354],['Single-family homes',12810213],['Self-haul (mostly construction)',7862416]];
+const STATE_TOTAL = 39878983, FRESNO_TOTAL = 1052320;
+let sectorMode = 'state';
+function drawSector(){
+  const svg = document.getElementById('sector'), wrap = document.getElementById('sectorWrap'), tip3 = document.getElementById('tip3');
+  const W=960,H=92,mL=0,mR=0,barY=14,barH=40;
+  const scale = sectorMode==='state' ? 1 : FRESNO_TOTAL/STATE_TOTAL;
+  let x = mL, s = '';
+  const tot = SECTORS.reduce((a,b)=>a+b[1],0);
+  SECTORS.forEach(([name,v],i)=>{
+    const w = (W-mL-mR)*v/tot - (i<SECTORS.length-1?2:0);
+    const r = i===0? 'rx="4"' : (i===SECTORS.length-1? 'rx="4"':'');
+    s += `<rect class="seg" data-i="${i}" x="${x}" y="${barY}" width="${w}" height="${barH}" ${r} fill="${SLOTS[i]}"/>`;
+    s += `<text x="${x+8}" y="${barY+barH/2+5}" font-size="14" font-weight="650" fill="#fff">${pct(v,tot)}</text>`;
+    s += `<text x="${x}" y="${barY+barH+20}" class="nval">${fmt(v*scale)} t${sectorMode==='fresno'?' (est.)':''}</text>`;
+    x += w + 2;
+  });
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = s;
+  svg.querySelectorAll('.seg').forEach(r=>{
+    const [name,v] = SECTORS[+r.dataset.i];
+    r.addEventListener('mousemove', e=> showTip(tip3, wrap, `<b>${esc(name)}</b><br>${fmt(v*scale)} tons${sectorMode==='fresno'?' (estimated, Fresno County 2025)':' (California, 2021)'} · ${pct(v,tot)}`, e));
+    r.addEventListener('mouseleave', ()=>hideTip(tip3));
+  });
+  document.getElementById('sectorLegend').innerHTML = SECTORS.map(([n],i)=>`<span><span class="sw" style="background:${SLOTS[i]}"></span>${esc(n)}</span>`).join('');
+}
+const COMP = [['Organics (food, yard, wood)',11305710],['Miscellaneous (incl. mixed residue)',6739781],['Paper',6193825],['Plastic',5445299],
+  ['Inerts & other (rock, drywall)',4770238],['Special waste (tires, bulky)',2071294],['Metal',1960400],['Glass',926822],['Electronics',344267],['Household hazardous',121346]];
+function drawComp(){
+  const svg = document.getElementById('comp'), wrap = document.getElementById('compWrap'), tip4 = document.getElementById('tip4');
+  const W=960, rowH=26, mL=250, mR=110, H=COMP.length*rowH+6;
+  const max = COMP[0][1];
+  let s = '';
+  COMP.forEach(([n,v],i)=>{
+    const y = i*rowH+3, w = (W-mL-mR)*v/max;
+    s += `<text x="${mL-10}" y="${y+15}" text-anchor="end" class="nlabel">${esc(n)}</text>`;
+    s += `<rect class="cb" data-i="${i}" x="${mL}" y="${y+3}" width="${Math.max(w,2)}" height="${rowH-8}" rx="4" fill="var(--s1)"/>`;
+    s += `<text x="${mL+w+8}" y="${y+15}" class="nval">${pct(v,STATE_TOTAL)}</text>`;
+  });
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML = s;
+  svg.querySelectorAll('.cb').forEach(r=>{
+    const [n,v] = COMP[+r.dataset.i];
+    r.addEventListener('mousemove', e=> showTip(tip4, wrap, `<b>${esc(n)}</b><br>${fmt(v)} tons · ${pct(v,STATE_TOTAL)} of California's trash`, e));
+    r.addEventListener('mouseleave', ()=>hideTip(tip4));
+  });
+}
+
+/* ---------- Wiring ---------- */
+const tabs = document.getElementById('tabs');
+STREAMS.forEach((s,i)=>{
+  const b = document.createElement('button');
+  b.className='tab'; b.textContent = s.name; b.setAttribute('aria-pressed', i===0);
+  b.addEventListener('click', ()=>select(i));
+  tabs.appendChild(b);
+});
+const jSel = document.getElementById('jSel');
+Object.keys(JDATA).forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; jSel.appendChild(o); });
+jSel.addEventListener('change', ()=>drawTrend(jSel.value));
+
+function select(i){
+  const s = STREAMS[i];
+  [...tabs.children].forEach((b,j)=>b.setAttribute('aria-pressed', i===j));
+  document.getElementById('sTitle').textContent = s.name;
+  document.getElementById('sDesc').textContent = s.desc;
+  document.getElementById('stats').innerHTML = s.stats(s.links).map(([v,l])=>`<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('')
+     + (s.note? `<div class="stat" style="grid-column:1/-1;border:0;padding:0"><div class="l">${s.note}</div></div>` : '');
+  drawSankey(s);
+  document.getElementById('trendBlock').classList.toggle('hidden', s.id!=='trash');
+  if (s.id==='trash') drawTrend(jSel.value);
+  document.getElementById('questions').innerHTML = '<b>Think about it</b><ol>' + s.qs.map(q=>`<li>${q}</li>`).join('') + '</ol>';
+}
+document.getElementById('tState').addEventListener('click', ()=>{ sectorMode='state'; document.getElementById('tState').setAttribute('aria-pressed',true); document.getElementById('tFresno').setAttribute('aria-pressed',false); drawSector(); });
+document.getElementById('tFresno').addEventListener('click', ()=>{ sectorMode='fresno'; document.getElementById('tState').setAttribute('aria-pressed',false); document.getElementById('tFresno').setAttribute('aria-pressed',true); drawSector(); });
+
+select(0); drawSector(); drawComp();
+})();
+</script>
+<!--SIM-NOTICE-->
+<style>
+.sim-notice{max-width:1080px;margin:28px auto 24px;padding:14px 18px 4px;border-top:1px solid rgba(127,127,127,.4);font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#0b0b0b;box-sizing:border-box}
+.sim-notice p{margin:4px 0 8px}
+.sim-notice a{color:inherit;text-decoration:underline;font-weight:600}
+.sim-notice .ai{font-weight:700}
+</style>
+<footer class="sim-notice" role="contentinfo" aria-label="About this page">
+<p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
+<p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
+</footer>
+<!--/SIM-NOTICE-->
+<script src="../mobile.js"></script>
+</body>
+</html>
