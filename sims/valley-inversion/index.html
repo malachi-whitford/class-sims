@@ -73,7 +73,7 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .scen button.on{color:#0d1b2a}}
 .tile .v.sm{font-size:1.1rem}
 #cvF{aspect-ratio:760/420}
-.tile.ft .s{min-height:1.2em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile.ft .s{min-height:2.5em;line-height:1.25}
 #cvN{aspect-ratio:760/440}
 #cvS{aspect-ratio:760/440}
 .aqi{display:inline-block;border-radius:6px;padding:1px 8px;font-size:.8rem;font-weight:700;margin-top:2px}
@@ -84,7 +84,7 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
 <h1>Inversion Layers: Why the Central Valley Traps Air Pollution</h1>
-<p class="sub">Normally air gets colder as you go up, so warm, polluted air near the ground rises and spreads out. During a <b>temperature inversion</b>, a layer of <i>warmer</i> air sits above cooler air like a lid. Tab 1 shows <b>how and why inversions form</b>: the ground cooling the air from below on long, calm nights, and sinking air in a high-pressure system warming the air from above. Tab 2 shows what the lid does to pollution in the San Joaquin Valley. Tab 3 shows why fog needs particles to form, and why cleaner air has meant less tule fog.</p>
+<p class="sub">Normally air gets colder as you go up, so warm, polluted air near the ground rises and spreads out. During a <b>temperature inversion</b>, a layer of <i>warmer</i> air sits above cooler air like a lid. Tab 1 shows <b>how and why inversions form</b>: the ground cooling the air from below on long, calm nights, and sinking air in a high-pressure system warming the air from above. Tab 2 shows what the lid does to pollution in the San Joaquin Valley. Tab 3 shows how temperature, dew point, humidity, and particles work together to make fog, and why cleaner air has meant less tule fog.</p>
 
 <nav class="tabs"><button data-tab="form" class="on">1. How inversions form</button><button data-tab="pol">2. Pollution under the lid</button><button data-tab="fog">3. Fog needs particles</button></nav>
 
@@ -220,27 +220,31 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 </section>
 
 <section class="panel" id="fog">
-<p class="sub" style="margin-top:0">Fog droplets can't just appear out of thin air. Water vapor needs a tiny particle to <b>condense on</b>, and in the Central Valley many of those particles come from air pollution. Pick how many particles the air holds, then watch one damp winter night.</p>
+<p class="sub" style="margin-top:0">Fog forms when air cools to its <b>dew point</b>, but only if there is something for water vapor to <b>condense on</b>. Change how damp the air is, the sky, and how many particles (much of it pollution) the air holds, then watch one winter night.</p>
 <div class="layout">
   <div class="card ctrl">
-    <h3>Water-attracting particles</h3>
+    <h3>Particles in the air</h3>
     <div class="scen" id="fPre" role="group" aria-label="Particle presets">
       <button data-v="0">None at all</button>
-      <button data-v="2">Very clean air (10 per cm³)</button>
-      <button data-v="5" class="on">Somewhat polluted (100 per cm³)</button>
-      <button data-v="8">Heavily polluted (700 per cm³)</button>
+      <button data-v="3">Clean air (200 per cm³)</button>
+      <button data-v="5" class="on">Moderately polluted (1,000 per cm³)</button>
+      <button data-v="8">Heavily polluted (5,000 per cm³)</button>
     </div>
     <label for="fN">Particles in each cm³ of air <span class="val" id="fNV"></span></label>
     <input type="range" id="fN" min="0" max="9" step="1" value="5">
-    <p class="hint">Only particles that attract water count here, like ammonium nitrate, sulfate, salt, and smoke. A cm³ is about the size of a sugar cube.</p>
+    <h3>How damp the air is</h3>
+    <div class="seg" id="fTd" aria-label="Evening dew point"><button data-v="3">Dew point 3 °C</button><button data-v="5" class="on">5 °C</button><button data-v="7">7 °C (just rained)</button></div>
+    <h3>Sky</h3>
+    <div class="seg" id="fSky" aria-label="Sky"><button data-v="0" class="on">Clear (low 3.6 °C)</button><button data-v="1">Thin clouds (low 6.2 °C)</button></div>
     <h3>Speed</h3>
-    <div class="seg" id="fSpd" aria-label="Speed"><button data-v="0.25" class="on">Slow</button><button data-v="1">Fast</button></div>
+    <div class="seg" id="fSpd" aria-label="Speed"><button data-v="900" class="on">Slow</button><button data-v="3600">Fast</button></div>
     <p class="hint">Slow: 1 second = 15 minutes. Fast: 1 second = 1 hour.</p>
     <div class="row"><button class="primary" id="fPause">Pause</button><button id="fReset">Restart at 6 PM</button></div>
   </div>
   <div>
     <div class="tiles">
-      <div class="tile ft"><div class="k">Time</div><div class="v sm" id="fTime"></div><div class="s" id="fTemp"></div></div>
+      <div class="tile ft"><div class="k">Time</div><div class="v sm" id="fTime"></div><div class="s" id="fTime2"></div></div>
+      <div class="tile ft"><div class="k">Air temp / dew point</div><div class="v sm" id="fTT"></div><div class="s" id="fTT2"></div></div>
       <div class="tile ft"><div class="k">Relative humidity</div><div class="v sm" id="fRH"></div><div class="s" id="fRH2"></div></div>
       <div class="tile ft"><div class="k">Fog droplets</div><div class="v sm" id="fDrop"></div><div class="s" id="fDrop2"></div></div>
       <div class="tile ft"><div class="k">How far you can see</div><div class="v sm" id="fVis"></div><div class="s" id="fVis2"></div></div>
@@ -250,31 +254,34 @@ canvas{display:block;width:100%;height:auto;border-radius:10px;touch-action:mani
 </div>
 <div class="msg" id="msgF"></div>
 <div class="two" style="margin-top:12px">
-  <div class="card chart"><h2>How far you can see during the night</h2><svg id="fVisChart" viewBox="0 0 520 340"></svg><div class="legend" id="fVisLeg"></div></div>
-  <div class="card chart"><h2>Hours of dense fog in one night</h2><svg id="fBar" viewBox="0 0 520 340"></svg><p class="small muted" style="margin:6px 0 0">Same weather every time; only the number of particles changes. Dense fog means you can see less than 400 m (about a quarter mile).</p></div>
+  <div class="card chart"><h2>Temperature, dew point, and humidity</h2><svg id="fTChart" viewBox="0 0 520 340"></svg>
+    <div class="legend"><span><i class="sw" style="background:#c0392b"></i>Air temperature</span><span><i class="sw" style="background:#1f6fbf"></i>Dew point</span><span><i class="sw" style="background:transparent;border:2px dashed #2e8b57"></i>Relative humidity (right axis)</span><span><i class="sw" style="background:rgba(140,150,170,.3)"></i>Fog</span></div></div>
+  <div class="card chart"><h2>How far you can see</h2><svg id="fVisChart" viewBox="0 0 520 340"></svg><div class="legend" id="fVisLeg"></div></div>
 </div>
-<details class="card" style="margin-top:12px" open><summary>Why fog needs particles</summary>
+<div class="card chart" style="margin-top:12px"><h2>Hours of dense fog: dampness × pollution</h2><div id="fGrid"></div>
+  <p class="small muted" style="margin:8px 0 0">Each box is one full night with the sky you picked (<span id="fGridSky"></span>). Dense fog means you can see less than 400 m (about a quarter mile). Your current settings are outlined.</p></div>
+<details class="card" style="margin-top:12px" open><summary>How temperature, dew point, humidity, and particles work together</summary>
 <ul>
-  <li><b>Fog is a cloud touching the ground.</b> It is made of billions of tiny liquid water droplets, each a few to a few tens of micrometers across (a human hair is about 70).</li>
-  <li><b>Droplets need something to form on.</b> A brand-new droplet made of pure water would be so small and so curved that it evaporates as fast as it forms. Without particles, air would need a relative humidity of several hundred percent before droplets could start on their own. That never happens in nature.</li>
-  <li><b>Particles solve the problem.</b> Particles that attract water (scientists call them <b>cloud condensation nuclei</b>) give the vapor a ready-made surface, and the material dissolved in them makes condensing easier. With them, fog forms as soon as the air is just barely past 100% humidity.</li>
-  <li><b>The word is "condense," not "precipitate."</b> Vapor <i>condenses</i> onto particles to make droplets. "Precipitation" is when drops get heavy enough to fall out, as rain or drizzle.</li>
-  <li><b>More particles = thicker fog.</b> On a given night the air can only give up so much water. Shared among many particles, that water makes many <b>small</b> droplets, which block more light (worse visibility) and fall so slowly that they hang in the air. Shared among few particles, it makes fewer, <b>bigger</b> droplets. They block less light, and because they are heavier they settle out (drizzle onto the ground), so the fog thins and clears sooner.</li>
-  <li><b>No particles = no fog.</b> The water still has to go somewhere, so it condenses as <b>dew or frost</b> on the ground, plants, and cars instead.</li>
-  <li><b>In the Central Valley, a lot of those particles are pollution:</b> ammonium nitrate made from farm and dairy ammonia plus vehicle exhaust, along with sulfate, wood smoke, and dust. Tule fog droplets carry measurable ammonia, nitrate, and sulfate.</li>
+  <li><b>Dew point</b> is the temperature the air would have to cool to before it is holding all the water vapor it can. It depends only on how much water vapor is in the air. Damp ground after a rain means a higher dew point.</li>
+  <li><b>Relative humidity</b> compares the vapor in the air to the most the air could hold at its current temperature. Cold air holds less, so as the air cools overnight, the humidity climbs even though no water is added. When the temperature reaches the dew point, the humidity is 100%.</li>
+  <li><b>If the night never cools down to the dew point, there is no fog</b>, no matter how polluted the air is. Try a 3 °C dew point, or thin clouds, which keep the night warmer.</li>
+  <li><b>Particles swell before fog forms.</b> Many pollution particles (like ammonium nitrate) soak up water and swell as the humidity rises, especially above about 70 to 80%. They grow into haze, so polluted air turns hazy and visibility drops even before there is fog.</li>
+  <li><b>At just past 100%, the biggest particles go first.</b> Each particle has a "critical" humidity it must pass to become a fog droplet. Big, water-loving particles need only a few hundredths of a percent over 100%; small ones need much more. Once droplets start growing they soak up the extra vapor, so the humidity never climbs high enough for the small particles. Most particles never become droplets.</li>
+  <li><b>No particles, no fog.</b> A droplet made of pure water would be so tiny and curved that it evaporates as fast as it forms; it would take a humidity of several hundred percent. The vapor deposits as dew on the ground instead. (Vapor <i>condenses</i> onto particles; "precipitation" is when drops get heavy enough to fall out as rain or drizzle.)</li>
+  <li><b>In fog, the temperature equals the dew point.</b> As the air keeps cooling, more vapor condenses, so the dew point falls right along with the temperature. Condensing also releases heat, which slows the cooling a little.</li>
+  <li><b>More particles = more, smaller droplets.</b> They block more light and fall so slowly they hang in the air. Fewer particles make fewer, bigger droplets that block less light and settle out as drizzle, so the fog thins sooner.</li>
 </ul>
 <h3>What the real data show</h3>
 <ul>
-  <li>UC Berkeley researchers (Gray and others, 2019) found that tule fog became about 85% more frequent from 1930 to 1970, as farming and industry added pollution with few controls. After clean-air rules took effect, fog declined by 76% over the 36 winters they studied. Changes in air pollution were the main driver of the long-term trend.</li>
+  <li>UC Berkeley researchers (Gray and others, 2019) found that tule fog became about 85% more frequent from 1930 to 1970, as farming and industry added pollution with few controls. After clean-air rules took effect, fog declined by 76% over the 36 winters they studied. Changes in air pollution were the main driver of the long-term trend, and the effect showed up on nights that were close to the dew point.</li>
   <li>An earlier satellite study (Baldocchi and Waller, 2014) found that winter fog events in the Central Valley dropped 46% on average over 32 winters starting in 1981.</li>
   <li>Pollution isn't the only factor: warmer winters also mean fewer nights that cool all the way to the dew point.</li>
   <li><b>The trade-off:</b> cleaner air is much better for our lungs and makes the roads safer, since tule fog is a leading cause of weather-related crashes in California. But fruit and nut orchards rely on cold, foggy winters to build up the winter chill they need, so less fog is a concern for farmers.</li>
 </ul>
 <h3>What this model leaves out</h3>
 <ul>
-  <li>Every particle here grows a droplet. In real fog, only the larger or more water-loving particles grow, because the air is barely past 100% humidity.</li>
-  <li>The weather is the same every run: a calm, clear night, damp air with a dew point of 5 °C, and a fog layer about 100 m deep. Real fog also changes how fast the ground cools, which this tab ignores.</li>
-  <li>Particles also make haze even without fog. That is not shown here.</li>
+  <li>All particles here are one water-loving type. Real air mixes types (soot and dust attract less water). Size ranges and numbers are typical values, not Fresno measurements.</li>
+  <li>The temperature follows a set cooling curve for each sky. Real fog also changes how fast the ground cools (see tab 1). The fog layer is a fixed 250 m deep.</li>
 </ul>
 </details>
 </section>
@@ -713,125 +720,182 @@ return{tick(dt,now){if(running)step(dt);draw();if(now-lastUI>1500){lastUI=now;if
 <script>
 /*FOG-PHYS-START*/
 function makeFog(){
-  // saturation vapor density (g/m3) at temperature T (deg C), Magnus formula
+  // saturation vapor density (g per m3) at temperature T (deg C), Magnus formula
   const es=T=>6.112*Math.exp(17.67*T/(T+243.5)),rhoS=T=>216.7*es(T)/(T+273.15);
-  const TD=5,H=10000,TEND=17;                 // dew point (C), fog depth (cm), run length (h after 6 PM)
-  // a calm, clear winter night: the air cools toward its overnight low, then the sun warms it after ~7 AM
-  const Tair=t=>t<13.1?3.6+5.4*Math.exp(-t/4):3.6+5.4*Math.exp(-13.1/4)+0.9*(t-13.1);
-  const S={t:0,N:100,W:rhoS(TD),TD,TEND,rhoS,Tair,L:0,r:0,V:Infinity,v:0,T:Tair(0),dense:0,minV:Infinity,
-    reset(){S.t=0;S.W=rhoS(TD);S.dense=0;S.minV=Infinity;S.calc()},
-    calc(){S.T=Tair(S.t);const s=rhoS(S.T);S.L=S.N>0?Math.max(0,S.W-s):0;
-      if(S.L>0){S.r=Math.cbrt(3*S.L*1e-6/(4*Math.PI*S.N));           // droplet radius (cm): water shared among N droplets per cm3
-        S.v=1.19e6*S.r*S.r;                                            // settling speed (cm/s), Stokes' law
-        S.V=3.912/(2*Math.PI*S.N*1e6*Math.pow(S.r/100,2))}             // visibility (m): extinction = 2 pi N r^2
-      else{S.r=0;S.v=0;S.V=Infinity}
-      S.RH=S.L>0?100:Math.min(100*S.W/s,999)},
-    step(dt){if(S.t>=TEND)return;S.t=Math.min(TEND,S.t+dt);S.calc();
-      S.W-=S.L*S.v/H*3600*dt;                                          // droplets settle out (drizzle onto the ground)
-      const ex=S.W-rhoS(S.T);if(S.N===0&&ex>0)S.W-=0.1*ex*dt;           // with no particles, extra water slowly forms dew on the ground
-      S.calc();if(S.V<400)S.dense+=dt;S.minV=Math.min(S.minV,S.V)}};
-  S.calc();return S}
+  const tdOf=rho=>{let lo=-30,hi=30;for(let k=0;k<40;k++){const m=(lo+hi)/2;rhoS(m)<rho?lo=m:hi=m}return(lo+hi)/2};
+  // particle sizes: lognormal, median dry radius 0.1 um, geometric spread 1.8, split into 24 size classes
+  const NB=24,RD=[],FR=[];{let tot=0;for(let i=0;i<NB;i++){const lr=Math.log(0.015e-6)+i*(Math.log(1.2e-6)-Math.log(0.015e-6))/(NB-1);RD.push(Math.exp(lr));const z=(lr-Math.log(0.1e-6))/Math.log(1.8);FR.push(Math.exp(-z*z/2));tot+=FR[i]}for(let i=0;i<NB;i++)FR[i]/=tot}
+  const KAP=0.5,RHOW=1e6,DV=2.2e-5;           // hygroscopicity (like ammonium nitrate/sulfate), water density (g/m3), vapor diffusivity (m2/s)
+  const RC=[],SC=[];                          // Kohler theory: critical wet radius and critical supersaturation of each class
+  function kohler(T){const a=3.3e-7/(T+273.15);for(let i=0;i<NB;i++){const B=KAP*RD[i]**3;RC[i]=Math.sqrt(3*B/a);SC[i]=Math.sqrt(4*a**3/(27*B))}}
+  const mass=r=>4/3*Math.PI*r*r*r*RHOW;
+  const S={t:0,TEND:17,Nt:1000,td0:5,sky:0,H:250,cls:[],RD,FR,NB,rhoS,
+    // air temperature without fog: cools toward the overnight low, then warms after sunrise (~7 AM = 13.1 h)
+    Trad(t){const lo=S.sky?6.2:3.6;return t<13.1?lo+(9-lo)*Math.exp(-t/4):lo+(9-lo)*Math.exp(-13.1/4)+0.9*(t-13.1)},
+    reset(){S.t=0;S.lat=0;S.dense=0;S.minV=Infinity;S.fogStart=null;S.W=rhoS(S.td0);S.cls=RD.map((rd,i)=>({rd,n0:S.Nt*1e6*FR[i],n:S.Nt*1e6*FR[i],act:false,r:0}));S.T=S.Trad(0);kohler(S.T);S.diag()},
+    wet(c,RH){const h=Math.min(Math.max(RH,0),0.995);return c.rd*Math.cbrt(1+KAP*h/(1-h))},   // particle swollen with water (haze)
+    r0(c,i){return Math.min(RC[i],S.wet(c,0.995))},
+    liq(){let L=0;for(const c of S.cls)if(c.act)L+=c.n*mass(c.r);return L},
+    diag(){let L=0,Nd=0,rs=0,beta=0;const RH=(S.W-S.liq())/rhoS(S.T);
+      for(const c of S.cls){if(c.n<=0)continue;const r=c.act?c.r:S.wet(c,RH);
+        const p=2*(2*Math.PI*r/0.55e-6)*0.33,Q=p<1e-3?0:2-4/p*Math.sin(p)+4/(p*p)*(1-Math.cos(p));   // light extinction efficiency (anomalous diffraction)
+        beta+=c.n*Q*Math.PI*r*r;if(c.act){L+=c.n*mass(c.r);Nd+=c.n;rs+=c.n*c.r}}
+      S.L=L;S.Nd=Nd/1e6;S.rmean=Nd?rs/Nd:0;S.RH=100*RH;S.V=beta>0?3.912/beta:Infinity;S.TD=tdOf(S.W-L)},
+    step(dt){if(S.t>=S.TEND)return;S.t+=dt/3600;
+      S.T=S.Trad(S.t)+1.96*S.lat;kohler(S.T);                 // condensing water releases latent heat: 1 g/m3 warms the air ~2 C
+      const ps=rhoS(S.T),L0=S.liq(),rv=S.W-L0,s=rv/ps-1;
+      // activation: once the supersaturation passes a particle's critical value, it becomes a fog droplet (largest particles first)
+      for(let i=0;i<NB;i++){const c=S.cls[i];if(!c.act&&c.n>0&&s>=SC[i]){c.act=true;c.r=S.r0(c,i);S.lat+=c.n*mass(c.r)}}
+      // droplets grow (or shrink) by vapor diffusion: rate = 4 pi D r n (vapor - saturation), integrated exactly over the step
+      let K=0;for(const c of S.cls)if(c.act)K+=4*Math.PI*DV*c.r*c.n;
+      let dq=K>0?(rv-ps)*(1-Math.exp(-K*dt)):0;if(dq<0)dq=Math.max(dq,-L0);
+      if(K>0)for(let i=0;i<NB;i++){const c=S.cls[i];if(!c.act)continue;const m=mass(c.r)+dq*(4*Math.PI*DV*c.r*c.n)/K/c.n;
+        if(m<=mass(S.r0(c,i))*0.7){c.act=false;S.lat-=Math.max(0,m)*c.n;c.r=0;continue}c.r=Math.cbrt(m/(4/3*Math.PI*RHOW))}
+      S.lat+=dq;
+      // droplets settle out (Stokes' law), taking their water and their particle to the ground
+      for(const c of S.cls){if(!c.act)continue;const f=Math.min(1,1.25e8*c.r*c.r*dt/S.H),dn=c.n*f;S.W-=dn*mass(c.r);c.n-=dn}
+      // with no droplets, extra vapor slowly deposits as dew on the ground
+      const ex=S.W-S.liq()-rhoS(S.T);if(K===0&&ex>0)S.W-=ex*dt/36000;
+      S.diag();if(S.L>0&&S.fogStart===null)S.fogStart=S.t;if(S.V<400)S.dense+=dt/3600;S.minV=Math.min(S.minV,S.V)},
+    run(dt){while(S.t<S.TEND-1e-9)S.step(dt);return S}};
+  S.reset();return S}
 /*FOG-PHYS-END*/
 const FOG=(function(){
-const NV=[0,5,10,25,50,100,200,400,700,1000];
-const S=makeFog();const W=760,H=420,cv=$('#cvF');
-let running=true,speed=0.25,tick=0,lastUI=0,cur=[],runs=[],parts=[],vap=[];
-function seedParts(){parts=[];const n=Math.ceil(S.N/10);for(let i=0;i<Math.min(100,n);i++)parts.push({x:30+Math.random()*300,y:70+Math.random()*300,ph:Math.random()*6})}
-for(let i=0;i<70;i++)vap.push({x:30+Math.random()*300,y:70+Math.random()*300,vx:(Math.random()-.5)*60,vy:(Math.random()-.5)*60});
-const fmtV=v=>!isFinite(v)||v>5000?'Over 5 km':v>=1000?(v/1000).toFixed(1)+' km':Math.round(v)+' m';
-function clockF(t){return clock((18+t)%24)}
-function saveRun(n){if(cur.length>3){runs.push({N:n,pts:cur,dense:S.dense});if(runs.length>3)runs.shift()}cur=[]}
-function restart(save,n){if(save)saveRun(n===undefined?S.N:n);else cur=[];S.reset();seedParts();ui()}
-function setN(i){const old=S.N;S.N=NV[i];$('#fN').value=i;$('#fNV').textContent=NV[i]+' per cm³';
+const NV=[0,50,100,200,500,1000,2000,3500,5000,7500],GTD=[3,4,5,6,7],GN=[0,200,1000,2500,5000];
+const S=makeFog();const W=760,H=430,cv=$('#cvF');
+let running=true,speed=900,lastUI=0,cur=[],tcur=[],runs=[],dots=[],vap=[],gridTok=0,grid={};
+const fmtV=v=>!isFinite(v)||v>=20000?'Over 20 km':v>=1000?(v/1000).toFixed(v>=10000?0:1)+' km':Math.round(v)+' m';
+const fmtN=n=>n.toLocaleString('en-US');
+const clockF=t=>clock((18+t)%24);
+// sample of particles to draw: picked evenly through the size distribution, so most are small (as in real air)
+function seedDots(){dots=[];if(S.Nt<=0)return;const M=100;let cum=0,i=0;const cdf=S.FR.map(f=>cum+=f);const rank=new Array(S.NB).fill(0);
+  for(let j=0;j<M;j++){const q=(j+0.5)/M;while(i<S.NB-1&&cdf[i]<q)i++;dots.push({c:i,k:rank[i]++,x:34+Math.random()*232,y:88+Math.random()*280,ph:Math.random()*6})}
+  dots.forEach(d=>d.of=rank[d.c])}
+for(let i=0;i<70;i++)vap.push({x:34+Math.random()*232,y:88+Math.random()*280,vx:(Math.random()-.5)*60,vy:(Math.random()-.5)*60});
+function saveRun(n){if(cur.length>3){runs.push({N:n,td:S.td0,sky:S.sky,pts:cur,dense:S.dense});if(runs.length>3)runs.shift()}cur=[];tcur=[]}
+function restart(save,n){if(save)saveRun(n===undefined?S.Nt:n);else{cur=[];tcur=[]}S.reset();seedDots();ui()}
+function setN(i){const old=S.Nt;S.Nt=NV[i];$('#fN').value=i;
   $$('#fPre button').forEach(b=>{const on=+b.dataset.v===+i;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false')});
-  if(old!==S.N)restart(true,old)}
+  if(old!==S.Nt)restart(true,old);else ui()}
 $$('#fPre button').forEach(b=>b.onclick=()=>setN(+b.dataset.v));
 $('#fN').addEventListener('input',()=>setN(+$('#fN').value));
+seg($('#fTd'),v=>{const n=S.Nt;S.td0=+v;restart(true,n)});
+seg($('#fSky'),v=>{const n=S.Nt;S.sky=+v;restart(true,n);buildGrid()});
 seg($('#fSpd'),v=>{speed=+v});
 $('#fPause').onclick=()=>{running=!running;$('#fPause').textContent=running?'Pause':'Play'};
 $('#fReset').onclick=()=>restart(true);
-// dense-fog hours for every particle level (same weather each time)
-const BAR=NV.map(n=>{const s=makeFog();s.N=n;s.reset();while(s.t<s.TEND-1e-9)s.step(0.02);return{n,h:s.dense,minV:s.minV}});
-function stepVis(dt){tick+=dt;
-  const big=S.r*1e4;
-  parts.forEach(p=>{p.ph+=dt;if(S.L>0){p.y+=dt*Math.min(40,0.18*big*big);if(p.y>370){p.y=70;p.x=30+Math.random()*300}}});
-  const nv=Math.round(70*Math.min(1,Math.max(0.15,(S.W-S.L)/S.rhoS(5))));
-  vap.forEach((q,i)=>{q.x+=q.vx*dt;q.y+=q.vy*dt;if(q.x<24||q.x>336)q.vx*=-1;if(q.y<64||q.y>376)q.vy*=-1;q.on=i<nv})}
-function draw(){const x=ctx2d(cv,W,H);x.clearRect(0,0,W,H);
-  const night=S.t<13.1;
-  // ---- left: magnified air ----
-  x.fillStyle=night?'#1b2740':'#9fc2e0';x.beginPath();x.roundRect(20,40,320,340,12);x.fill();
-  x.font='700 13px system-ui,Arial';x.textAlign='left';x.fillStyle='#e8eef5';x.fillText('Air, magnified',30,60);
-  vap.forEach(q=>{if(!q.on)return;x.fillStyle='rgba(140,200,255,.8)';x.fillRect(q.x,q.y,2.2,2.2)});
-  const rp=S.L>0?2.5+S.r*1e4*0.9:0;
-  parts.forEach(p=>{if(rp>0){x.fillStyle='rgba(225,240,255,.75)';x.strokeStyle='rgba(255,255,255,.95)';x.lineWidth=1.2;x.beginPath();x.arc(p.x,p.y,rp,0,7);x.fill();x.stroke()}
-    x.fillStyle='#5a4a3a';x.beginPath();x.arc(p.x,p.y,2.4,0,7);x.fill()});
-  if(S.N===0){x.font='700 13px system-ui,Arial';x.textAlign='center';x.fillStyle='rgba(255,255,255,.95)';x.fillText(S.RH>100?'Too humid, but nothing to condense on':'No particles in this air',180,220)}
-  // dew on the ground of the box when there are no particles
-  if(S.N===0&&S.RH>=100){x.fillStyle='rgba(200,230,255,.9)';for(let i=0;i<30;i++){x.beginPath();x.arc(32+i*10.3,372,2.2,0,7);x.fill()}x.font='600 11px system-ui,Arial';x.textAlign='left';x.fillStyle='#e8eef5';x.fillText('Dew on the ground',30,364)}
-  x.font='600 11px system-ui,Arial';x.textAlign='left';x.fillStyle='rgba(232,238,245,.85)';x.fillText(`Each brown dot = 10 particles per cm³`,30,76);
-  // ---- right: driver's view ----
-  const X0=380,X1=740,Yh=210,Yb=380;
-  const sky=x.createLinearGradient(0,40,0,Yh);sky.addColorStop(0,night?'#26324a':'#8fb6dc');sky.addColorStop(1,night?'#4a5670':'#d7e6f2');
-  x.save();x.beginPath();x.roundRect(X0,40,X1-X0,Yb-40,12);x.clip();
-  x.fillStyle=sky;x.fillRect(X0,40,X1-X0,Yh-40);x.fillStyle=night?'#2f3a2a':'#7d8f55';x.fillRect(X0,Yh,X1-X0,Yb-Yh);
-  const cx=(X0+X1)/2;x.fillStyle=night?'#3a3d42':'#6b6e72';x.beginPath();x.moveTo(cx-6,Yh);x.lineTo(cx+6,Yh);x.lineTo(cx+150,Yb);x.lineTo(cx-150,Yb);x.fill();
-  // fog veil over the distant background (sky, horizon, far road)
-  const beta=isFinite(S.V)?3.912/S.V:0;const fogCol=night?'176,184,196':'228,232,237';
-  if(beta>0){x.fillStyle=`rgba(${fogCol},${1-Math.exp(-beta*1500)})`;x.fillRect(X0,40,X1-X0,Yb-40)}
-  // reflector posts beside the road; each one's contrast fades as e^(-beta x distance)
-  const D=[25,50,100,200,400,800],CAM=12;
-  D.slice().reverse().forEach(d=>{const f=CAM/(CAM+d);const yb=Yh+(Yb-Yh)*f*1.9,half=6+144*f*1.9,h=Math.max(3,520*f),w=Math.max(1.5,26*f);
-    const xl=cx-half-8*f*20,xr=cx+half+8*f*20,tr=Math.exp(-beta*d);
-    x.globalAlpha=tr;x.fillStyle='#f4f4f4';x.fillRect(xl-w/2,yb-h,w,h);x.fillRect(xr-w/2,yb-h,w,h);
-    x.fillStyle='#e8a020';x.fillRect(xl-w/2,yb-h,w,Math.max(1.5,h*0.14));x.fillRect(xr-w/2,yb-h,w,Math.max(1.5,h*0.14));
+/* ---- grid of whole-night runs, computed a few at a time so the page stays responsive ---- */
+function buildGrid(){const tok=++gridTok;grid={};const jobs=[];GTD.forEach(td=>GN.forEach(n=>jobs.push([td,n])));renderGrid();
+  (function next(){if(tok!==gridTok||!jobs.length)return;const[td,n]=jobs.shift();const s=makeFog();s.Nt=n;s.td0=td;s.sky=S.sky;s.reset();s.run(2);grid[td+'_'+n]={h:s.dense,v:s.minV};renderGrid();setTimeout(next,0)})()}
+function renderGrid(){const cw=70,ch=40,l=96,t=26,w=l+cw*GN.length+10,h=t+ch*GTD.length+44;let s=`<svg viewBox="0 0 ${w} ${h}" style="max-width:${w}px">`;
+  GN.forEach((n,j)=>s+=`<text x="${l+j*cw+cw/2}" y="${t-8}" text-anchor="middle">${fmtN(n)}</text>`);
+  GTD.forEach((td,i)=>{s+=`<text x="${l-8}" y="${t+i*ch+ch/2+4}" text-anchor="end">dew pt ${td} °C</text>`;
+    GN.forEach((n,j)=>{const g=grid[td+'_'+n],x=l+j*cw,y=t+i*ch;const u=g?Math.min(1,g.h/12):0;
+      const fill=g?`rgba(${Math.round(225-150*u)},${Math.round(232-140*u)},${Math.round(240-100*u)},1)`:'var(--soft)';
+      const on=S.td0===td&&S.Nt===n;
+      s+=`<rect x="${x+2}" y="${y+2}" width="${cw-4}" height="${ch-4}" rx="5" fill="${fill}" ${on?'stroke="#ff4a6a" stroke-width="3"':'stroke="var(--line)"'}/>`;
+      s+=`<text x="${x+cw/2}" y="${y+ch/2+5}" text-anchor="middle" style="fill:${u>0.55?'#fff':'#1d2530'};font-weight:700;font-size:13px">${g?(g.h<0.05?'0':g.h.toFixed(1))+' h':'…'}</text>`})});
+  s+=`<text class="lab" x="${l+cw*GN.length/2}" y="${h-8}" text-anchor="middle">Particles per cm³ (more pollution →)</text></svg>`;
+  const el=$('#fGrid');el.innerHTML=s;el.setAttribute('role','img');
+  el.setAttribute('aria-label','Table of hours of dense fog in one night. '+GTD.map(td=>'Dew point '+td+' degrees: '+GN.map(n=>{const g=grid[td+'_'+n];return fmtN(n)+' particles '+(g?g.h.toFixed(1)+' hours':'computing')}).join(', ')).join('. ')+'.');
+  $('#fGridSky').textContent=S.sky?'thin clouds':'clear'}
+/* ---- picture ---- */
+function stepVis(dt){const RH=S.RH/100;
+  dots.forEach(d=>{const c=S.cls[d.c];d.ph+=dt;if(c.act){d.y+=dt*Math.min(30,0.06*Math.pow(c.r*1e6,2));if(d.y>368){d.y=88;d.x=34+Math.random()*232}}});
+  const nv=Math.round(70*Math.min(1,Math.max(0.1,(S.W-S.L)/S.rhoS(7))));
+  vap.forEach((q,i)=>{q.x+=q.vx*dt;q.y+=q.vy*dt;if(q.x<28||q.x>272)q.vx*=-1;if(q.y<82||q.y>372)q.vy*=-1;q.on=i<nv})}
+function draw(){const x=ctx2d(cv,W,H);x.clearRect(0,0,W,H);const night=S.t<13.1,RH=S.RH/100;
+  // timeline
+  const tx0=150,tw0=460;x.fillStyle='rgba(20,28,60,.9)';x.fillRect(tx0,10,tw0*(13.1/S.TEND),10);x.fillStyle='rgba(255,226,140,.95)';x.fillRect(tx0+tw0*(13.1/S.TEND),10,tw0*(1-13.1/S.TEND),10);
+  const mx=tx0+tw0*S.t/S.TEND;x.fillStyle='#ff4a6a';x.fillRect(mx-1.5,6,3,18);
+  x.font='600 11px system-ui,Arial';x.fillStyle='#5d6877';x.textAlign='center';[[0,'6 PM'],[6,'Midnight'],[12,'6 AM'],[17,'11 AM']].forEach(([t,l])=>x.fillText(l,tx0+tw0*t/S.TEND,34));
+  x.textAlign='left';x.font='700 12px system-ui,Arial';x.fillStyle='#5d6877';x.fillText(clockF(S.t),20,20);
+  /* left: magnified air */
+  x.fillStyle=night?'#1b2740':'#8fb3d6';x.beginPath();x.roundRect(20,44,260,336,12);x.fill();
+  if(S.L>0){x.fillStyle=`rgba(225,232,240,${Math.min(0.35,S.L*1.2)})`;x.beginPath();x.roundRect(20,44,260,336,12);x.fill()}
+  x.font='700 13px system-ui,Arial';x.textAlign='left';x.fillStyle='#eef3f8';x.fillText('Air, magnified',30,64);
+  x.font='600 11px system-ui,Arial';x.fillStyle='rgba(238,243,248,.85)';x.fillText(S.Nt?`Each dot = ${fmtN(Math.max(1,Math.round(S.Nt/100)))} particles per cm³`:'No particles',30,79);
+  vap.forEach(q=>{if(!q.on)return;x.fillStyle='rgba(140,200,255,.75)';x.fillRect(q.x,q.y,2,2)});
+  dots.forEach(d=>{const c=S.cls[d.c];if(d.k>=Math.round(d.of*c.n/c.n0))return;        // settled out
+    const core=1+c.rd*1e6*6;
+    if(c.act){const rp=core+Math.max(0,c.r*1e6-0.5)*0.9;x.fillStyle='rgba(230,242,255,.8)';x.strokeStyle='#fff';x.lineWidth=1.3;x.beginPath();x.arc(d.x,d.y,rp,0,7);x.fill();x.stroke()}
+    else{const g=S.wet(c,RH)/c.rd;if(g>1.15){x.fillStyle='rgba(170,210,245,.35)';x.beginPath();x.arc(d.x,d.y,core*g,0,7);x.fill()}}
+    x.fillStyle='#b08a5e';x.beginPath();x.arc(d.x,d.y,core,0,7);x.fill()});
+  if(S.Nt===0){x.font='700 13px system-ui,Arial';x.textAlign='center';x.fillStyle='#fff';x.fillText(S.RH>100?'Supersaturated, but nothing':'No particles in this air',150,220);if(S.RH>100)x.fillText('for vapor to condense on',150,238)}
+  if(S.Nt===0&&S.RH>=100){x.fillStyle='rgba(200,230,255,.9)';for(let i=0;i<24;i++){x.beginPath();x.arc(32+i*10.3,374,2.2,0,7);x.fill()}x.font='600 11px system-ui,Arial';x.textAlign='left';x.fillStyle='#e8eef5';x.fillText('Dew forming on the ground',30,366)}
+  /* middle: thermometer with temperature and dew point */
+  const gx=330,gy0=360,gy1=96,Tlo=0,Thi=10,gY=T=>gy0-(Math.max(Tlo,Math.min(Thi,T))-Tlo)/(Thi-Tlo)*(gy0-gy1);
+  x.font='700 12px system-ui,Arial';x.textAlign='center';x.fillStyle='#5d6877';x.fillText('Temp vs.',gx,62);x.fillText('dew point',gx,77);
+  x.fillStyle='rgba(127,127,127,.18)';x.beginPath();x.roundRect(gx-7,gy1-6,14,gy0-gy1+12,7);x.fill();
+  x.font='600 10px system-ui,Arial';x.textAlign='right';x.fillStyle='#5d6877';for(let T=0;T<=10;T+=2){x.fillRect(gx-12,gY(T),5,1);x.fillText(T+'°',gx-15,gY(T)+3)}
+  const yT=gY(S.T),yD=gY(S.TD);if(yD-yT>2){x.fillStyle='rgba(46,139,87,.25)';x.fillRect(gx-6,yT,12,yD-yT)}
+  x.fillStyle='#c0392b';x.beginPath();x.moveTo(gx+8,yT);x.lineTo(gx+18,yT-6);x.lineTo(gx+18,yT+6);x.fill();
+  x.fillStyle='#1f6fbf';x.beginPath();x.moveTo(gx+8,yD);x.lineTo(gx+18,yD-6);x.lineTo(gx+18,yD+6);x.fill();
+  x.font='700 11px system-ui,Arial';x.textAlign='left';const close=Math.abs(yD-yT)<16;
+  x.fillStyle='#c0392b';x.fillText(`Air ${S.T.toFixed(1)}°`,gx+21,yT+(close?-6:4));x.fillStyle='#1f6fbf';x.fillText(`Dew ${S.TD.toFixed(1)}°`,gx+21,yD+(close?12:4));
+  x.textAlign='center';x.font='700 12px system-ui,Arial';x.fillStyle='#5d6877';x.fillText(`RH ${S.RH>=99.95&&S.RH<100.5?S.RH.toFixed(2):Math.round(S.RH)}%`,gx+6,gy0+22);
+  /* right: driver's view */
+  const X0=420,X1=740,Yh=210,Yb=380,cx=(X0+X1)/2;
+  x.save();x.beginPath();x.roundRect(X0,44,X1-X0,Yb-44,12);x.clip();
+  const sky=x.createLinearGradient(0,44,0,Yh);sky.addColorStop(0,night?'#26324a':'#8fb6dc');sky.addColorStop(1,night?'#4a5670':'#d7e6f2');x.fillStyle=sky;x.fillRect(X0,44,X1-X0,Yh-44);
+  x.fillStyle=night?'#2f3a2a':'#7d8f55';x.fillRect(X0,Yh,X1-X0,Yb-Yh);
+  x.fillStyle=night?'#3a3d42':'#6b6e72';x.beginPath();x.moveTo(cx-5,Yh);x.lineTo(cx+5,Yh);x.lineTo(cx+130,Yb);x.lineTo(cx-130,Yb);x.fill();
+  const beta=isFinite(S.V)?3.912/S.V:0,fogCol=night?'176,184,196':'228,232,237';
+  if(beta>0){x.fillStyle=`rgba(${fogCol},${1-Math.exp(-beta*1500)})`;x.fillRect(X0,44,X1-X0,Yb-44)}
+  [800,400,200,100,50,25].forEach(d=>{const f=12/(12+d),yb=Yh+(Yb-Yh)*f*1.9,half=5+125*f*1.9,h=Math.max(3,470*f),w=Math.max(1.5,24*f),xl=cx-half-14*f*20,xr=cx+half+14*f*20,tr=Math.exp(-beta*d);
+    x.globalAlpha=tr;x.fillStyle='#f4f4f4';x.fillRect(xl-w/2,yb-h,w,h);x.fillRect(xr-w/2,yb-h,w,h);x.fillStyle='#e8a020';x.fillRect(xl-w/2,yb-h,w,Math.max(1.5,h*0.14));x.fillRect(xr-w/2,yb-h,w,Math.max(1.5,h*0.14));
     if(d<=200){x.globalAlpha=Math.max(0.35,tr);x.font='600 11px system-ui,Arial';x.textAlign='center';x.fillStyle=night?'#fff':'#1d2530';x.fillText(d+' m',Math.min(X1-18,xr),yb+13)}x.globalAlpha=1});
   x.font='600 11px system-ui,Arial';x.textAlign='center';x.fillStyle=night?'rgba(255,255,255,.9)':'#1d2530';x.fillText('Posts at 25, 50, 100, 200, 400 and 800 m',cx,Yb-6);
-  x.restore();
-  x.font='700 13px system-ui,Arial';x.textAlign='left';x.fillStyle='#fff';x.strokeStyle='rgba(0,0,0,.45)';x.lineWidth=3;x.strokeText("A driver's view",X0+10,60);x.fillText("A driver's view",X0+10,60);
-  // header: clock and timeline (6 PM to 11 AM)
-  const tx0=150,tw0=460;x.fillStyle='rgba(20,28,60,.9)';x.fillRect(tx0,10,tw0*(13.1/S.TEND),10);x.fillStyle='rgba(255,226,140,.95)';x.fillRect(tx0+tw0*(13.1/S.TEND),10,tw0*(1-13.1/S.TEND),10);
-  x.fillStyle='#ff4a6a';const mx=tx0+tw0*S.t/S.TEND;x.fillRect(mx-1.5,6,3,18);
-  x.font='600 11px system-ui,Arial';x.fillStyle='#5d6877';x.textAlign='center';[[0,'6 PM'],[6,'Midnight'],[12,'6 AM'],[17,'11 AM']].forEach(([t,l])=>x.fillText(l,tx0+tw0*t/S.TEND,34));
-  x.textAlign='left';x.font='700 12px system-ui,Arial';x.fillStyle='#1d2530';x.fillText(clockF(S.t),20,22);
+  x.restore();x.font='700 13px system-ui,Arial';x.textAlign='left';x.fillStyle='#fff';x.fillText("A driver's view",X0+10,64);
 }
-function visChart(){const svg=$('#fVisChart'),w=520,h=340,m={l:58,r:14,t:12,b:42},pw=w-m.l-m.r,ph=h-m.t-m.b;
-  const X=t=>m.l+t/S.TEND*pw,lg=Math.log10,Yv=v=>m.t+ph-(lg(Math.min(5000,Math.max(10,v)))-1)/(lg(5000)-1)*ph;let s='';
+/* ---- charts ---- */
+function tChart(){const svg=$('#fTChart'),w=520,h=340,m={l:46,r:46,t:12,b:42},pw=w-m.l-m.r,ph=h-m.t-m.b,lo=2,hi=10,rlo=70,rhi=105;
+  const X=t=>m.l+t/S.TEND*pw,Y=T=>m.t+ph-(Math.max(lo,Math.min(hi,T))-lo)/(hi-lo)*ph,Yr=v=>m.t+ph-(Math.max(rlo,Math.min(rhi,v))-rlo)/(rhi-rlo)*ph;let s='';
+  for(let i=1;i<tcur.length;i++)if(tcur[i][4])s+=`<rect x="${X(tcur[i-1][0])}" y="${m.t}" width="${X(tcur[i][0])-X(tcur[i-1][0])+0.5}" height="${ph}" fill="rgba(140,150,170,.3)"/>`;
+  for(let T=lo;T<=hi;T+=2)s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Y(T)}" y2="${Y(T)}"/><text x="${m.l-6}" y="${Y(T)+4}" text-anchor="end">${T}°</text>`;
+  [70,80,90,100].forEach(v=>s+=`<text x="${m.l+pw+6}" y="${Yr(v)+4}" style="fill:#2e8b57">${v}%</text>`);
+  [[0,'6 PM'],[6,'12 AM'],[12,'6 AM'],[17,'11 AM']].forEach(([t,l])=>s+=`<text x="${X(t)}" y="${m.t+ph+16}" text-anchor="middle">${l}</text>`);
+  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
+  const p=(k,f)=>tcur.map((q,i)=>(i?'L':'M')+X(q[0]).toFixed(1)+' '+f(q[k]).toFixed(1)).join('');
+  if(tcur.length>1){s+=`<path d="${p(3,Yr)}" fill="none" stroke="#2e8b57" stroke-width="2" stroke-dasharray="6 4"/><path d="${p(2,Y)}" fill="none" stroke="#1f6fbf" stroke-width="3"/><path d="${p(1,Y)}" fill="none" stroke="#c0392b" stroke-width="3"/>`}
+  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Time of night</text><text class="lab" transform="translate(12 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">°C</text>`;
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label',`Line graph of air temperature, dew point and relative humidity so far tonight. Now: air ${S.T.toFixed(1)} degrees, dew point ${S.TD.toFixed(1)} degrees, humidity ${Math.round(S.RH)} percent.${S.fogStart!==null?' Fog formed at '+clockF(S.fogStart)+', and from then on the temperature and dew point stay together.':''}`)}
+function visChart(){const svg=$('#fVisChart'),w=520,h=340,m={l:58,r:14,t:12,b:42},pw=w-m.l-m.r,ph=h-m.t-m.b,top=20000;
+  const X=t=>m.l+t/S.TEND*pw,lg=Math.log10,Yv=v=>m.t+ph-(lg(Math.min(top,Math.max(10,v)))-1)/(lg(top)-1)*ph;let s='';
   s+=`<rect x="${m.l}" y="${Yv(400)}" width="${pw}" height="${Yv(10)-Yv(400)}" fill="rgba(140,150,170,.18)"/>`;
-  [10,30,100,400,1000,5000].forEach(v=>s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Yv(v)}" y2="${Yv(v)}"/><text x="${m.l-6}" y="${Yv(v)+4}" text-anchor="end">${v>=1000?v/1000+' km':v+' m'}</text>`);
+  [10,30,100,400,1000,5000,20000].forEach(v=>s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Yv(v)}" y2="${Yv(v)}"/><text x="${m.l-6}" y="${Yv(v)+4}" text-anchor="end">${v>=1000?v/1000+' km':v+' m'}</text>`);
   [[0,'6 PM'],[6,'12 AM'],[12,'6 AM'],[17,'11 AM']].forEach(([t,l])=>s+=`<text x="${X(t)}" y="${m.t+ph+16}" text-anchor="middle">${l}</text>`);
   s+=`<text x="${m.l+6}" y="${Yv(400)+14}" style="fill:var(--muted)">dense fog</text><rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
   const path=pts=>pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Yv(p[1]).toFixed(1)).join('');
   const GC=['#9aa6b4','#7f8fa3','#64748a'];runs.forEach((r,i)=>s+=`<path d="${path(r.pts)}" fill="none" stroke="${GC[i]}" stroke-width="2" stroke-dasharray="5 4"/>`);
   if(cur.length>1)s+=`<path d="${path(cur)}" fill="none" stroke="#1f6fbf" stroke-width="3"/>`;
   s+=`<text class="lab" x="${m.l+pw/2}" y="${h-6}" text-anchor="middle">Time of night</text><text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">Visibility (log scale)</text>`;
-  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label',`Visibility through the night with ${S.N} particles per cubic centimeter. Lowest so far ${fmtV(S.minV)}.${runs.length?' Earlier runs: '+runs.map(r=>r.N+' particles, '+r.dense.toFixed(1)+' hours of dense fog').join('; ')+'.':''}`);
-  $('#fVisLeg').innerHTML=`<span><i class="sw" style="background:#1f6fbf"></i>This run (${S.N} per cm³)</span>`+runs.map((r,i)=>`<span><i class="sw" style="background:transparent;border:2px dashed ${GC[i]}"></i>Earlier: ${r.N} per cm³</span>`).join('')}
-function barChart(){const svg=$('#fBar'),w=520,h=340,m={l:44,r:12,t:16,b:56},pw=w-m.l-m.r,ph=h-m.t-m.b,hi=12;
-  const bw=pw/NV.length,Yh2=v=>m.t+ph-v/hi*ph;let s='';
-  for(let v=0;v<=hi;v+=3)s+=`<line class="grid" x1="${m.l}" x2="${m.l+pw}" y1="${Yh2(v)}" y2="${Yh2(v)}"/><text x="${m.l-6}" y="${Yh2(v)+4}" text-anchor="end">${v}</text>`;
-  BAR.forEach((b,i)=>{const on=b.n===S.N,bx=m.l+i*bw+bw*0.15;s+=`<rect x="${bx}" y="${Yh2(b.h)}" width="${bw*0.7}" height="${Yh2(0)-Yh2(b.h)}" fill="${on?'#1f6fbf':'rgba(31,111,191,.35)'}" rx="3"/><text x="${bx+bw*0.35}" y="${m.t+ph+16}" text-anchor="middle"${on?' style="fill:var(--text);font-weight:700"':''}>${b.n}</text>`;
-    s+=`<text x="${bx+bw*0.35}" y="${Yh2(b.h)-4}" text-anchor="middle" style="font-size:11px">${b.h.toFixed(1)}</text>`});
-  s+=`<rect class="ax" x="${m.l}" y="${m.t}" width="${pw}" height="${ph}" fill="none"/>`;
-  s+=`<text class="lab" x="${m.l+pw/2}" y="${h-14}" text-anchor="middle">Water-attracting particles per cm³</text><text class="lab" transform="translate(12 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">Hours of dense fog</text>`;
-  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label','Bar chart of hours of dense fog in one night for each particle level: '+BAR.map(b=>b.n+' particles, '+b.h.toFixed(1)+' hours').join('; ')+'.')}
-function ui(){$('#fNV').textContent=S.N+' per cm³';
-  $('#fTime').textContent=clockF(S.t);$('#fTemp').textContent=`Air ${S.T.toFixed(1)} °C · dew point ${S.TD} °C`;
-  $('#fRH').textContent=(S.L>0?100:S.RH<100?Math.min(99,Math.round(S.RH)):Math.round(S.RH))+'%';$('#fRH2').textContent=S.L>0?'extra vapor → droplets':S.RH>100?'supersaturated':'below saturation';
-  $('#fDrop').textContent=S.L>0?S.N+' per cm³':'None';$('#fDrop2').textContent=S.L>0?`${(2*S.r*1e4).toFixed(0)} µm across`:'—';
-  $('#fVis').textContent=fmtV(S.V);$('#fVis2').textContent=S.V<400?'Dense fog':S.V<1000?'Fog':isFinite(S.V)?'Mist':'Clear';
-  let m;const done=S.t>=S.TEND-1e-6;
-  if(S.L>0){const d=2*S.r*1e4;m=`<b>Fog!</b> The air cooled past its dew point, so the extra water vapor condenses onto the particles. ${S.N} particles in each cm³ share the water, making ${S.N} droplets about <b>${d.toFixed(0)} µm</b> across, and you can see about <b>${fmtV(S.V)}</b>. ${S.N>=200?'With so many particles, each droplet stays small. Lots of small droplets block a lot of light, and they fall so slowly that the fog just hangs there.':S.N<=25?'With so few particles, each droplet gets a big share of the water and grows large. Big droplets block less light, and they are heavy enough to settle out as drizzle, so this fog is thinner and clears sooner.':'Try fewer or more particles and compare the visibility and the droplet size.'}`}
-  else if(S.N===0&&S.RH>100)m=`<b>Too humid, but no fog.</b> The air holds ${Math.round(S.RH)}% of the water vapor it can at this temperature, so it is <i>supersaturated</i>. With no particles, vapor can't form droplets: a brand-new pure-water droplet is so tiny that it evaporates as fast as it forms. It would take a relative humidity of several hundred percent. The extra water condenses as <b>dew</b> on the ground instead.`;
-  else if(done||S.t>13.1)m=`<b>Morning: the sun warms the air above its dew point, and the fog evaporates.</b> ${S.N===0?'With no particles, there was no fog all night, only dew.':`This night had <b>${S.dense.toFixed(1)} hours</b> of dense fog, and the worst visibility was ${fmtV(S.minV)}.`} Change the particles to run the same night again; your earlier runs stay on the chart as dashed lines.`;
-  else m=`<b>Evening.</b> The ground is radiating heat away on a clear, calm night, so the air is cooling toward its dew point (${S.TD} °C). Right now it holds ${Math.min(99,Math.round(S.RH))}% of the water vapor it could. When it passes 100%, the vapor will need something to condense on.`;
+  svg.innerHTML=s;svg.setAttribute('role','img');svg.setAttribute('aria-label',`Visibility through the night. Now ${fmtV(S.V)}; lowest so far ${fmtV(S.minV)}.${runs.length?' Earlier runs: '+runs.map(r=>fmtN(r.N)+' particles, dew point '+r.td+', '+r.dense.toFixed(1)+' hours of dense fog').join('; ')+'.':''}`);
+  const lab=r=>`${fmtN(r.N)}/cm³, dew pt ${r.td}°${r.sky?', clouds':''}`;
+  $('#fVisLeg').innerHTML=`<span><i class="sw" style="background:#1f6fbf"></i>Now: ${lab({N:S.Nt,td:S.td0,sky:S.sky})}</span>`+runs.map((r,i)=>`<span><i class="sw" style="background:transparent;border:2px dashed ${GC[i]}"></i>Earlier: ${lab(r)}</span>`).join('')}
+/* ---- numbers and explanation ---- */
+function ui(){$('#fNV').textContent=fmtN(S.Nt)+' per cm³';
+  $('#fTime').textContent=clockF(S.t);$('#fTime2').textContent=S.t<13.1?'night: air cooling':'after sunrise: warming';
+  $('#fTT').textContent=`${S.T.toFixed(1)}° / ${S.TD.toFixed(1)}°`;const gap=S.T-S.TD;$('#fTT2').textContent=gap>0.05?`gap ${gap.toFixed(1)} °C`:gap<-0.05?'cooler than dew point!':'equal: saturated';
+  $('#fRH').textContent=(S.RH>=99.95&&S.RH<100.5?S.RH.toFixed(2):Math.round(S.RH))+'%';$('#fRH2').textContent=S.RH>100.005?`supersaturated by ${(S.RH-100).toFixed(S.RH>101?0:2)}%`:S.RH>=99.95?'saturated':'below saturation';
+  const Nd=S.Nd;$('#fDrop').textContent=S.L>0?(Nd>=10?fmtN(Math.round(Nd)):Nd.toFixed(1))+' per cm³':'None';
+  $('#fDrop2').textContent=S.L>0?`${(100*Nd/Math.max(1,S.Nt)).toFixed(Nd/S.Nt<0.1?1:0)}% of particles · ${(2*S.rmean*1e6).toFixed(0)} µm`:S.Nt&&S.RH>70?'particles swelling (haze)':'—';
+  $('#fVis').textContent=fmtV(S.V);$('#fVis2').textContent=S.V<400?'Dense fog':S.V<1000?'Fog':S.V<5000?'Haze or mist':'Clear';
+  let m;const done=S.t>=S.TEND-1e-6,TD=S.TD.toFixed(1);
+  if(S.L>0){const d=2*S.rmean*1e6,pct=100*Nd/Math.max(1,S.Nt);
+    m=`<b>Fog.</b> The air cooled to its dew point, and the humidity crept just past 100%. Only the biggest, most water-loving particles could become droplets at that tiny excess: <b>${pct<1?pct.toFixed(1):Math.round(pct)}% of the ${fmtN(S.Nt)} particles</b> per cm³ became about ${Nd>=10?fmtN(Math.round(Nd)):Nd.toFixed(1)} droplets, now about <b>${d.toFixed(0)} µm</b> across. Visibility: <b>${fmtV(S.V)}</b>. As the night keeps cooling, more vapor condenses, so the <b>dew point drops right along with the temperature</b> (both ${S.T.toFixed(1)} °C). ${S.Nt>=2500?'With this many particles, lots of droplets share the water and stay small, so they block a lot of light and hang in the air.':S.Nt<=500?'With few particles, each droplet gets a big share of the water and grows large. Big droplets block less light and drizzle out, so this fog stays thinner.':''}`}
+  else if(S.Nt===0&&S.RH>100)m=`<b>Supersaturated, but no fog.</b> The air has cooled below its dew point and holds ${S.RH.toFixed(0)}% of the vapor it can at this temperature. With nothing to condense on, no droplets form: a pure-water droplet would evaporate as fast as it forms unless the humidity reached several hundred percent. The extra water forms <b>dew</b> on the ground instead.`;
+  else if(done||S.t>13.1)m=`<b>Morning.</b> ${S.fogStart!==null?`The sun warms the air above its dew point, and the fog droplets evaporate back into vapor. Tonight had <b>${S.dense.toFixed(1)} hours</b> of dense fog; the worst visibility was ${fmtV(S.minV)}.`:(S.Nt?`The air never cooled all the way to its dew point, so no fog formed. The particles only swelled into haze (worst visibility ${fmtV(S.minV)}).`:'There was no fog all night, only dew.')} Change one setting to run the same night again; earlier runs stay on the visibility chart as dashed lines.`;
+  else if(S.RH>=99.9&&S.Nt>0&&S.t<13.1)m=`<b>Saturated, but no droplets yet.</b> The air has cooled to its dew point (${TD} °C), so the humidity is 100%. That isn't quite enough: each particle has to pass its own <b>critical humidity</b>, a tiny bit over 100%, before it can grow into a fog droplet. The biggest particles will go first as the air cools a little more. Until then the swollen particles make thick haze (visibility ${fmtV(S.V)}).`;
+  else if(S.RH>=70&&S.Nt>0)m=`<b>Humid, and the particles are swelling.</b> The air (${S.T.toFixed(1)} °C) is now ${gap.toFixed(1)} °C above its dew point (${TD} °C), so the humidity is ${Math.round(S.RH)}%. Water-loving pollution particles soak up water and swell into <b>haze</b>${S.V<20000?`, cutting visibility to about ${fmtV(S.V)}`:''}. No fog yet: that needs the air to cool all the way to the dew point.${S.sky&&S.td0<7?' With thin clouds holding heat in, the night may not get that cold.':S.td0<=3&&!S.sky?' With a dew point of only 3 °C, tonight\'s low may not get there.':''}`;
+  else m=`<b>Evening.</b> The ground is radiating heat away, so the air is cooling: ${S.T.toFixed(1)} °C now, with a dew point of ${TD} °C. Cooler air can hold less vapor, so the relative humidity (${Math.round(S.RH)}%) rises even though no water is being added.`;
   $('#msgF').innerHTML=m;
-  cv.setAttribute('aria-label',`Left: magnified air with ${S.N} water-attracting particles per cubic centimeter${S.L>0?`, each now wrapped in a fog droplet ${(2*S.r*1e4).toFixed(0)} micrometers across`:''}. Right: a road with posts at 25 to 800 meters. Visibility ${fmtV(S.V)}. Time ${clockF(S.t)}.`);
-  visChart();barChart()}
-$('#legF').innerHTML=`<span><i class="sw" style="background:#5a4a3a;border-radius:50%"></i>Particle (condensation nucleus)</span><span><i class="sw" style="background:rgba(140,200,255,.9)"></i>Water vapor</span><span><i class="sw" style="background:#e1f0ff;border:1px solid #9ab;border-radius:50%"></i>Fog droplet</span>`;
-setN(5);restart(false);
-return{tick(dt,now){if(running&&S.t<S.TEND){const hrs=dt*speed;const n=Math.max(1,Math.ceil(hrs/0.02));for(let k=0;k<n;k++)S.step(hrs/n);
-    const last=cur[cur.length-1];if(!last||S.t-last[0]>=0.05)cur.push([S.t,S.V]);stepVis(dt)}
+  cv.setAttribute('aria-label',`Left: magnified air with ${fmtN(S.Nt)} particles per cubic centimeter${S.L>0?`, of which the largest have become fog droplets about ${(2*S.rmean*1e6).toFixed(0)} micrometers across`:S.RH>70&&S.Nt?', swollen with water as haze':''}. Middle: thermometer showing air ${S.T.toFixed(1)} and dew point ${S.TD.toFixed(1)} degrees, humidity ${Math.round(S.RH)} percent. Right: a road with posts from 25 to 800 meters; visibility ${fmtV(S.V)}. Time ${clockF(S.t)}.`);
+  tChart();visChart();renderGrid()}
+$('#legF').innerHTML=`<span><i class="sw" style="background:#b08a5e;border-radius:50%"></i>Particle (bigger dot = bigger particle)</span><span><i class="sw" style="background:rgba(170,210,245,.6);border-radius:50%"></i>Particle swollen with water (haze)</span><span><i class="sw" style="background:#e6f2ff;border:1px solid #9ab;border-radius:50%"></i>Fog droplet</span><span><i class="sw" style="background:rgba(140,200,255,.9)"></i>Water vapor</span>`;
+setN(5);restart(false);buildGrid();
+return{tick(dt,now){if(running&&S.t<S.TEND){let sec=dt*speed;while(sec>0){const h=Math.min(2,sec);S.step(h);sec-=h}
+    const last=cur[cur.length-1];if(!last||S.t-last[0]>=0.05){cur.push([S.t,S.V]);tcur.push([S.t,S.T,S.TD,S.RH,S.L>0])}stepVis(dt)}
   draw();if(now-lastUI>400){lastUI=now;ui()}}};
 })();
 (function(){let lt=0;function f(ts){const dt=Math.min(0.05,(ts-lt)/1000||0);lt=ts;if(curTab==='fog')FOG.tick(dt,ts);requestAnimationFrame(f)}requestAnimationFrame(ts=>{lt=ts;f(ts)})})();
@@ -851,7 +915,7 @@ html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-p
 <footer class="sim-notice" role="contentinfo" aria-label="About this page">
 <p><span class="ai">AI-generated content.</span> This page was created with generative AI (Claude, by Anthropic) under the direction of Dr. Malachi Whitford, Clovis Community College. It is a simplified teaching model and may contain errors or simplifications, so check important facts against your course materials.</p>
 <p>&copy; 2026 Malachi Whitford. Licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)</a>. You may share and adapt it for non-commercial purposes if you give credit and share your version under the same license.</p>
-<p><b>Sources.</b> The night-cooling model is a simplified one-column energy balance (sunlight, infrared loss, conduction, mixing, a small cold-air drainage term, and cooling at the top of the fog) tuned to typical San Joaquin Valley winter and summer conditions for teaching; it is not a forecast. Sinking air warms at the dry adiabatic rate (9.8 &deg;C per km), and the normal atmosphere cools 6.5 &deg;C per km (standard atmosphere). AQI uses the U.S. EPA PM2.5 breakpoints. The fog tab uses the Magnus formula for saturation, droplets sharing the available water equally, Stokes' law for how fast droplets settle, and the Koschmieder relation for visibility (dense fog = under 400 m). Fog trends: Gray, E., et al. (2019), Impact of air pollution controls on radiation fog frequency in the Central Valley of California, <i>Journal of Geophysical Research: Atmospheres</i> 124; Baldocchi, D., and Waller, E. (2014), Winter fog is decreasing in the fruit growing region of the Central Valley of California, <i>Geophysical Research Letters</i>.</p>
+<p><b>Sources.</b> The night-cooling model is a simplified one-column energy balance (sunlight, infrared loss, conduction, mixing, a small cold-air drainage term, and cooling at the top of the fog) tuned to typical San Joaquin Valley winter and summer conditions for teaching; it is not a forecast. Sinking air warms at the dry adiabatic rate (9.8 &deg;C per km), and the normal atmosphere cools 6.5 &deg;C per km (standard atmosphere). AQI uses the U.S. EPA PM2.5 breakpoints. The fog tab uses the Magnus formula for saturation, kappa-K&ouml;hler theory for which particles swell and which become droplets, droplet growth by vapor diffusion, Stokes' law for settling, an anomalous-diffraction estimate of how much light each drop or particle blocks, and the Koschmieder relation for visibility (dense fog = under 400 m). Fog trends: Gray, E., et al. (2019), Impact of air pollution controls on radiation fog frequency in the Central Valley of California, <i>Journal of Geophysical Research: Atmospheres</i> 124; Baldocchi, D., and Waller, E. (2014), Winter fog is decreasing in the fruit growing region of the Central Valley of California, <i>Geophysical Research Letters</i>.</p>
 <p><button type="button" id="simMotionToggle" aria-pressed="false">Pause all animation</button></p>
 </footer>
 <script>
