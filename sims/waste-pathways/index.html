@@ -139,12 +139,12 @@
         <div class="tiles" id="typeTiles"></div>
       </fieldset>
       <fieldset>
-        <legend>2. Data columns <span class="hint">(drop on an axis, Color, Shape, Size or Filter)</span></legend>
+        <legend>2. Data columns <span class="hint">(drop anywhere: an axis, Color, Shape, Size, Filter or the graph)</span></legend>
         <div class="tiles" id="varTiles"></div>
         <p class="hint"><span class="tchip">Abc</span> category &nbsp; <span class="tchip">Yr</span> year &nbsp; <span class="tchip">#</span> number</p>
       </fieldset>
       <fieldset>
-        <legend>3. Colors <span class="hint">(drop a color on the graph; a palette on Color)</span></legend>
+        <legend>3. Colors <span class="hint">(drop on the graph or Color)</span></legend>
         <div class="tiles" id="colorTiles"></div>
         <div class="tiles" id="paletteTiles" style="margin-top:6px"></div>
       </fieldset>
@@ -379,12 +379,8 @@ function pickTask(t){
 function pickDataset(j, keep){
   di = +j; const d = ds(); buildVarTiles(); $('dsDesc').innerHTML = esc(d.desc) + (d.est? '<span class="est">ESTIMATED</span>' : '');
   const nonNum = d.cols.filter(c=>c.type!=='num'), num = d.cols.filter(c=>c.type==='num');
-  opt($('xSel'), [['','— choose —'], ...d.cols.map(c=>[c.key,c.label])]);
-  opt($('ySel'), [['','— choose —'], ...num.map(c=>[c.key,c.label]), ['__count','Number of rows (count)']]);
-  opt($('gSel'), [['','(none: one color)'], ...nonNum.map(c=>[c.key,c.label])]);
-  opt($('shSel'), [['','(none: one shape)'], ...nonNum.map(c=>[c.key,c.label])]);
-  opt($('szSel'), [['','(none: one size)'], ...num.map(c=>[c.key,c.label])]);
-  opt($('fCol'), [['','(all rows)'], ...nonNum.map(c=>[c.key,c.label])]);
+  const ALL = [...d.cols.map(c=>[c.key,c.label]), ['__count','Number of rows (count)']];
+  ['xSel','ySel','gSel','shSel','szSel','fCol'].forEach(id=>opt($(id), [['',''], ...ALL]));
   if (!keep) fillFilterVals();
   let t='<tr>'+d.cols.map(c=>`<th class="${c.type==='num'?'n':''}">${esc(c.label)}</th>`).join('')+'</tr>';
   d.rows.forEach(r=>{ t+='<tr>'+d.cols.map(c=>`<td class="${c.type==='num'?'n':''}">${c.type==='num'? (r[c.key]==null?'—':fmt(r[c.key])) : esc(r[c.key])}</td>`).join('')+'</tr>'; });
@@ -392,7 +388,7 @@ function pickDataset(j, keep){
   if (!keep){ $('feedback').hidden = true; render(); }
 }
 function fillFilterVals(keepVal){ const k=$('fCol').value; if(!k){ opt($('fVal'),[['','—']]); $('fVal').disabled=true; return; }
-  $('fVal').disabled=false; const vals=[...new Set(ds().rows.map(r=>r[k]))]; if(colOf(k).type==='ord') vals.sort((a,b)=>a-b);
+  $('fVal').disabled=false; const vals=[...new Set(ds().rows.map(r=>valOf(r,k)))]; if(colAny(k).type!=='cat') vals.sort((a,b)=>a-b);
   opt($('fVal'), vals.map(v=>[String(v),String(v)])); if (keepVal!=null) $('fVal').value = keepVal; }
 $('dsSel').addEventListener('change', e=>{ ['xSel','ySel','gSel','shSel','szSel','fCol'].forEach(id=>$(id).value=''); pickDataset(e.target.value); });
 $('fCol').addEventListener('change', ()=>{ fillFilterVals(); render(); });
@@ -401,52 +397,68 @@ $('resetBtn').addEventListener('click', ()=>{ const keepDi=di; restore(blank); $
 
 /* ===================== DATA SHAPING ===================== */
 function aggregate(list, how){ if(!list.length) return null; if (how==='mean') return list.reduce((a,b)=>a+b,0)/list.length; if (how==='max') return Math.max(...list); return list.reduce((a,b)=>a+b,0); }
+const COUNTCOL = {key:'__count', label:'Number of rows', type:'num'};
+const colAny = k => k==='__count' ? COUNTCOL : colOf(k);
+const valOf = (r,k) => k==='__count' ? 'All rows' : (r[k]==null ? '(blank)' : r[k]);
+function mode(list){ const m=new Map(); list.forEach(v=>m.set(v,(m.get(v)||0)+1)); let best=null,bn=-1; m.forEach((n,v)=>{ if(n>bn){bn=n;best=v;} }); return best; }
 function shape(){
   const S = { type:$('type').value, x:$('xSel').value, y:$('ySel').value, g:$('gSel').value, sh:$('shSel').value, sz:$('szSel').value,
     agg:$('agg').value, fCol:$('fCol').value, fVal:$('fVal').value, sort:$('sort').value, topN:+$('topN').value, barMode:$('barMode').value, valMode:$('valMode').value };
   let rows = ds().rows;
-  if (S.fCol) rows = rows.filter(r=>String(r[S.fCol])===S.fVal);
+  if (S.fCol) rows = rows.filter(r=>String(valOf(r,S.fCol))===S.fVal);
   if (!S.x || !S.y) return S;
-  S.xCol = colOf(S.x);
+  S.xCol = S.x==='__count' ? {key:'__count', label:'Number of rows', type:'cat'} : colOf(S.x);
   S.xNum = S.xCol.type==='num' && (S.type==='points' || S.type==='line' || S.type==='area');
-  const gKey = (S.g && S.g!==S.x) ? S.g : '', shKey = (S.sh && S.type==='points') ? S.sh : '';
+  const yC = colAny(S.y); S.yCol = yC;
+  S.yCat = yC.type==='cat';
+  S.yCats = S.yCat ? [...new Set(rows.map(r=>String(r[S.y])))] : null;
+  const yv = r => S.y==='__count' ? 1 : S.yCat ? S.yCats.indexOf(String(r[S.y]))+1 : (r[S.y]==null ? null : +r[S.y]);
+  const gKey = (S.g && S.g!==S.x) ? S.g : '';
+  const shKey = (S.sh && (S.type==='points'||S.type==='line'||S.type==='area')) ? S.sh : '';
   S.gSame = S.g && S.g===S.x;
+  let zRank = null;
+  if (S.sz && S.sz!=='__count' && colAny(S.sz).type!=='num'){ const u=[...new Set(ds().rows.map(r=>r[S.sz]))]; if (colAny(S.sz).type==='ord') u.sort((a,b)=>a-b); zRank = v => u.indexOf(v)+1; S.zRank = u; }
+  const zv = r => !S.sz ? null : S.sz==='__count' ? 1 : zRank ? zRank(r[S.sz]) : (+r[S.sz]||0);
   const cell = new Map(), xs = [], keys = [];
   rows.forEach(r=>{
-    if (r[S.x]==null) return;
-    const xv = S.xNum ? +r[S.x] : String(r[S.x]);
-    const gv = gKey ? String(r[gKey]) : '', sv = shKey ? String(r[shKey]) : '';
+    const xraw = valOf(r,S.x); if (S.xNum && isNaN(+xraw)) return;
+    const xv = S.xNum ? +xraw : String(xraw);
+    const gv = gKey ? String(valOf(r,gKey)) : '', sv = shKey ? String(valOf(r,shKey)) : '';
     const key = gv+'\u0001'+sv;
     if (!xs.some(x=>x===xv)) xs.push(xv); if (!keys.includes(key)) keys.push(key);
     const k = xv+'\u0000'+key; const c = cell.get(k) || {y:[], z:[]};
-    c.y.push(S.y==='__count' ? 1 : r[S.y]); if (S.sz) c.z.push(r[S.sz]||0); cell.set(k,c);
+    c.y.push(yv(r)); if (S.sz) c.z.push(zv(r)); cell.set(k,c);
   });
-  const val = (xv,key) => { const c=cell.get(xv+'\u0000'+key); if(!c) return null; return S.y==='__count' ? c.y.length : aggregate(c.y.filter(v=>v!=null), S.agg); };
-  const zval = (xv,key) => { const c=cell.get(xv+'\u0000'+key); if(!c || !S.sz) return null; return aggregate(c.z, S.agg==='max'?'max':S.agg); };
+  const val = (xv,key) => { const c=cell.get(xv+'\u0000'+key); if(!c) return null; if (S.y==='__count') return c.y.length;
+    const ys=c.y.filter(v=>v!=null); if (!ys.length) return null; return S.yCat ? mode(ys) : aggregate(ys, S.agg); };
+  const zval = (xv,key) => { const c=cell.get(xv+'\u0000'+key); if(!c || !S.sz) return null; return S.sz==='__count' ? c.z.length : zRank ? mode(c.z) : aggregate(c.z, S.agg==='max'?'max':S.agg); };
   const xTot = xv => keys.reduce((s,k)=>s+(val(xv,k)||0),0);
   let order = xs.slice();
-  if (S.xNum || S.xCol.type==='ord') order.sort((a,b)=>+a-+b);
-  else if (S.sort==='desc') order.sort((a,b)=>xTot(b)-xTot(a));
-  else if (S.sort==='asc') order.sort((a,b)=>xTot(a)-xTot(b));
-  else if (S.sort==='az') order.sort((a,b)=>String(a).localeCompare(String(b)));
-  let series = keys.map(k=>{ const [g,s]=k.split('\u0001'); return {key:k, g, s, vals:order.map(x=>val(x,k)), sizes:order.map(x=>zval(x,k))}; });
-  if (S.topN && !S.xNum && S.xCol.type!=='ord' && order.length > S.topN){
+  const numLike = t => t==='ord' || t==='num';
+  if (S.xNum || numLike(S.xCol.type)) order.sort((a,b)=>+a-+b);
+  if (!S.xNum && S.sort==='desc') order.sort((a,b)=>xTot(b)-xTot(a));
+  else if (!S.xNum && S.sort==='asc') order.sort((a,b)=>xTot(a)-xTot(b));
+  else if (!S.xNum && S.sort==='az') order.sort((a,b)=>String(a).localeCompare(String(b), undefined, {numeric:true}));
+  let series = keys.map(k=>{ const [g,s2]=k.split('\u0001'); return {key:k, g, s:s2, vals:order.map(x=>val(x,k)), sizes:order.map(x=>zval(x,k))}; });
+  if (S.topN && !S.xNum && order.length > S.topN){
     const ranked = order.slice().sort((a,b)=>xTot(b)-xTot(a)); const keep = new Set(ranked.slice(0,S.topN));
     const no = order.filter(x=>keep.has(x)); no.push('Other');
-    series = series.map(s=>({...s, vals: no.map(x=> x==='Other' ? order.filter(o=>!keep.has(o)).reduce((a,o)=>a+(val(o,s.key)||0),0) : val(x,s.key)),
-                                   sizes: no.map(x=> x==='Other' ? null : zval(x,s.key))}));
+    series = series.map(sr=>({...sr, vals: no.map(x=> x==='Other' ? order.filter(o=>!keep.has(o)).reduce((a,o)=>a+(val(o,sr.key)||0),0) : val(x,sr.key)),
+                                   sizes: no.map(x=> x==='Other' ? null : zval(x,sr.key))}));
     order = no; S.combined = true;
   }
-  if (S.valMode==='pct'){
-    const grand = series.reduce((a,s)=>a+s.vals.reduce((b,v)=>b+(v||0),0),0);
-    series.forEach(s=>s.vals = s.vals.map(v=> v==null? null : 100*v/grand));
+  if (S.valMode==='pct' && !S.yCat){
+    const grand = series.reduce((a,sr)=>a+sr.vals.reduce((b,v)=>b+(v||0),0),0);
+    if (grand) series.forEach(sr=>sr.vals = sr.vals.map(v=> v==null? null : 100*v/grand));
   }
-  const gNames = [...new Set(series.map(s=>s.g))], sNames = [...new Set(series.map(s=>s.s))];
-  if (gKey){ const tot = n=>series.filter(s=>s.g===n).reduce((a,s)=>a+s.vals.reduce((b,v)=>b+(v||0),0),0);
-    if (colOf(gKey).type==='ord') gNames.sort((a,b)=>+a-+b); else gNames.sort((a,b)=>tot(b)-tot(a)); }
+  const gNames = [...new Set(series.map(sr=>sr.g))], sNames = [...new Set(series.map(sr=>sr.s))];
+  const gType = gKey ? colAny(gKey).type : '', shType = shKey ? colAny(shKey).type : '';
+  if (gKey){ const tot = n=>series.filter(sr=>sr.g===n).reduce((a,sr)=>a+sr.vals.reduce((b,v)=>b+(v||0),0),0);
+    if (numLike(gType)) gNames.sort((a,b)=>+a-+b); else gNames.sort((a,b)=>tot(b)-tot(a)); }
+  if (shKey && numLike(shType)) sNames.sort((a,b)=>+a-+b);
   series.sort((a,b)=> gNames.indexOf(a.g)-gNames.indexOf(b.g) || sNames.indexOf(a.s)-sNames.indexOf(b.s));
   S.order = order; S.series = series; S.gKey = gKey; S.shKey = shKey; S.gNames = gNames; S.sNames = sNames;
-  const allZ = series.flatMap(s=>s.sizes).filter(v=>v!=null); S.zMax = allZ.length? Math.max(...allZ) : 0;
+  const allZ = series.flatMap(sr=>sr.sizes).filter(v=>v!=null); S.zMax = allZ.length? Math.max(...allZ) : 0;
   return S;
 }
 
@@ -472,6 +484,7 @@ function linReg(pts){ const n=pts.length; if(n<2) return null; const mx=pts.redu
   let sxy=0,sxx=0,syy=0; pts.forEach(([x,y])=>{ sxy+=(x-mx)*(y-my); sxx+=(x-mx)**2; syy+=(y-my)**2; }); if(!sxx) return null; const b=sxy/sxx; return {b, a:my-b*mx, r2: syy? (sxy*sxy)/(sxx*syy) : 0}; }
 
 function render(){
+  tip.style.opacity = 0;
   const S = shape();
   const dark = $('bgSel').value==='dark';
   const T = dark ? {bg:'#1a1a19', ink:'#f0efec', ink2:'#c3c2b7', grid:'#2c2c2a', axis:'#5a5954', ph:'#6b6a65', ring:'#1a1a19'} : {bg:'#ffffff', ink:'#0b0b0b', ink2:'#52514e', grid:'#e6e5df', axis:'#9a9890', ph:'#a9a79f', ring:'#ffffff'};
@@ -494,7 +507,7 @@ function render(){
   const shapeFor = s => S.shKey ? SHAPES[S.sNames.indexOf(s.s) % SHAPES.length] : $('shape').value;
   const dashFor = s => { const d=$('dash').value; if (d==='dashed') return '8 5'; if (d==='dotted') return '2 4'; if (d==='bygroup') return DASHES[gIndex(s.g) % DASHES.length]; return ''; };
   const yUnit = S.valMode==='pct' ? '%' : (S.y==='__count' ? ' rows' : '');
-  const fv = v => fmt(v) + (S.valMode==='pct' ? '%' : '');
+  const fv = v => (S.yCat && S.yCats) ? (S.yCats[Math.round(v)-1] ?? '') : fmt(v) + (S.valMode==='pct' && !S.yCat ? '%' : '');
   const footY = BASEH - 6;
 
   if (isPie && ready){
@@ -512,15 +525,16 @@ function render(){
     if ($('showLegend').checked) S.order.slice(0,18).forEach((x,i)=>{ const y=110+i*22; o += `<rect x="560" y="${y-11}" width="12" height="12" rx="3" fill="${pal[i%pal.length]}"/><text x="580" y="${y}" font-size="13" fill="${T.ink2}">${esc(String(x).length>32?String(x).slice(0,31)+'…':x)} (${pct(vals[i],tot)})</text>`; });
   } else {
     const legendItems = [];
-    if (ready && S.gKey && S.gNames.length>1) legendItems.push({title: colOf(S.gKey).label, items: S.gNames.map(n=>({kind:'color', label:n, color: pal[gIndex(n)%pal.length]}))});
-    if (ready && S.shKey && S.sNames.length>1) legendItems.push({title: colOf(S.shKey).label, items: S.sNames.map((n,i)=>({kind:'shape', label:n, shape: SHAPES[i%SHAPES.length]}))});
-    if (ready && S.sz && type==='points') legendItems.push({title: colOf(S.sz).label, items: [{kind:'size', label: fmt(S.zMax*0.25), r: sizeR(S.zMax*0.25)}, {kind:'size', label: fmt(S.zMax), r: sizeR(S.zMax)}]});
+    if (ready && S.gKey && S.gNames.length>1) legendItems.push({title: colAny(S.gKey).label, items: S.gNames.map(n=>({kind:'color', label:n, color: pal[gIndex(n)%pal.length]}))});
+    if (ready && S.shKey && S.sNames.length>1) legendItems.push({title: colAny(S.shKey).label, items: S.sNames.map((n,i)=>({kind:'shape', label:n, shape: SHAPES[i%SHAPES.length]}))});
+    if (ready && S.sz && type!=='column' && type!=='bar') legendItems.push({title: colAny(S.sz).label, items: S.zRank ? [{kind:'size', label: String(S.zRank[0]), r: sizeR(1)}, {kind:'size', label: String(S.zRank[S.zRank.length-1]), r: sizeR(S.zRank.length)}] : [{kind:'size', label: fmt(S.zMax*0.25), r: sizeR(S.zMax*0.25)}, {kind:'size', label: fmt(S.zMax), r: sizeR(S.zMax)}]});
     function sizeR(z){ const base=+$('psize').value; return S.zMax ? 3 + Math.sqrt(Math.max(z,0)/S.zMax) * base*2.2 : base; }
     const legendOn = $('showLegend').checked && legendItems.length;
     const catLabels = ready && !S.xNum ? S.order.map(String) : [];
     const maxCatW = catLabels.reduce((m,s)=>Math.max(m,textW(s,12)),0);
     const rot = $('rotate').checked;
     let mL = 84, mR = legendOn ? 200 : 30, mT = 56, mB = 72;
+    if (ready && S.yCat && !((type==='bar') !== ($('swap').checked))) mL = Math.max(84, Math.min(240, S.yCats.reduce((m,c)=>Math.max(m,textW(c,12)),0)+28));
     if (horiz && !S.xNum) mL = Math.max(90, Math.min(260, maxCatW + 26));
     else if (rot && !S.xNum) mB = Math.max(72, Math.min(180, maxCatW*0.75 + 44));
     const pw = W - mL - mR, ph = BASEH - mT - mB;
@@ -532,11 +546,12 @@ function render(){
       else S.series.forEach(s=>s.vals.forEach(v=>{ if(v!=null){ vmax=Math.max(vmax,v); vmin=Math.min(vmin,v);} }));
       if (!isFinite(vmax)) { vmax=1; vmin=0; }
     }
-    const logY = $('logY').checked && ready;
+    const logY = $('logY').checked && ready && !S.yCat;
     let lo, hi, ticks=[];
     const userMax = parseFloat(String($('yMax').value).replace(/,/g,''));
     if (!ready){ lo=0; hi=1; }
     else if (logY){ const pos=Math.max(1, vmin>0?vmin:1); lo=Math.pow(10,Math.floor(Math.log10(pos))); hi=Math.pow(10,Math.ceil(Math.log10(Math.max(vmax, lo*10)))); if(!isNaN(userMax)&&userMax>lo) hi=userMax; for(let t=lo;t<=hi*1.0001;t*=10) ticks.push(t); }
+    else if (S.yCat){ lo = $('zero').checked ? 0 : 0.5; hi = S.yCats.length + 0.5; for (let t=1; t<=S.yCats.length; t++) ticks.push(t); }
     else { hi = !isNaN(userMax)&&userMax>0 ? userMax : vmax*1.08; lo = $('zero').checked ? Math.min(0,vmin) : vmin-(vmax-vmin)*0.15; if (!$('zero').checked && vmin>=0) lo=Math.max(0,lo);
       const step=niceStep((hi-lo)/5||1); lo=Math.floor(lo/step)*step; if(isNaN(userMax)) hi=Math.ceil(hi/step)*step; if (hi<=lo) hi=lo+step; for(let t=lo;t<=hi+step*1e-6;t+=step) ticks.push(t); }
     const vScale = v => { if (logY){ return (Math.log10(Math.max(v,lo))-Math.log10(lo))/(Math.log10(hi)-Math.log10(lo)); } return (v-lo)/(hi-lo); };
@@ -600,7 +615,7 @@ function render(){
           if (type==='area' && pts.length>1){ const fwd=pts.map(q=>q.p.join(',')).join(' L'), back=pts.slice().reverse().map(q=>q.p0.join(',')).join(' L'); o+=`<path d="M${fwd} L${back}Z" fill="${col}" fill-opacity="${0.35*op+ (stacked?0.3:0)}" stroke="none"/>`; }
           if (showL && pts.length>1) o += `<polyline points="${pts.map(q=>q.p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-opacity="${op}" stroke-width="${lw}" stroke-dasharray="${dashFor(s)}" stroke-linejoin="round" stroke-linecap="round"/>`;
           pts.forEach(q=>{
-            const r = (type==='points' && S.sz) ? sizeR(s.sizes[q.i]||0) : ps;
+            const r = S.sz ? sizeR(s.sizes[q.i]||0) : ps;
             if (showP) o += marker(shapeFor(s), q.p[0], q.p[1], r, col, T.ring, op);
             o += `<circle cx="${q.p[0]}" cy="${q.p[1]}" r="${Math.max(12,r)}" fill="transparent" data-m="${marks.length}"/>`;
             marks.push({label: S.xNum? `${S.xCol.label}: ${fmt(S.order[q.i])}` : S.order[q.i], series:[s.g,s.s].filter(Boolean).join(' · '), value:q.v, size: S.sz? s.sizes[q.i] : null});
@@ -657,11 +672,11 @@ function render(){
   svg.querySelectorAll('[data-m]').forEach(el=>{
     const m = marks[+el.dataset.m]; el.style.cursor='pointer';
     el.addEventListener('mousemove', e=>{
-      tip.innerHTML = `<strong>${fv(m.value)}</strong>${m.extra? ' · '+m.extra:''}<br>${esc(m.label)}${m.series? ' · '+esc(m.series):''}${m.size!=null? '<br>'+esc(colOf(S.sz).label)+': '+fmt(m.size):''}`;
+      tip.innerHTML = `<strong>${fv(m.value)}</strong>${m.extra? ' · '+m.extra:''}<br>${esc(m.label)}${m.series? ' · '+esc(m.series):''}${m.size!=null? '<br>'+esc(colAny(S.sz).label)+': '+fmt(m.size):''}`;
       tip.style.opacity=1; const r=$('chartWrap').getBoundingClientRect(); let x=e.clientX-r.left+12; if (x+tip.offsetWidth>r.width) x=e.clientX-r.left-tip.offsetWidth-12; tip.style.left=x+'px'; tip.style.top=(e.clientY-r.top+12)+'px'; });
     el.addEventListener('mouseleave', ()=>tip.style.opacity=0);
   });
-  $('graphDesc').textContent = ready ? `${type} chart of ${$('ySel').selectedOptions[0].text} by ${S.xCol.label}${S.gKey?', colored by '+colOf(S.gKey).label:''}${S.shKey?', shaped by '+colOf(S.shKey).label:''}.` : 'Blank graph.';
+  $('graphDesc').textContent = ready ? `${type} chart of ${$('ySel').selectedOptions[0].text} by ${S.xCol.label}${S.gKey?', colored by '+colAny(S.gKey).label:''}${S.shKey?', shaped by '+colAny(S.shKey).label:''}.` : 'Blank graph.';
   if (!$('feedback').hidden) check(S);
 }
 
@@ -691,29 +706,25 @@ function buildVarTiles(){
 const isHoriz = () => ($('type').value==='bar') !== ($('swap').checked && $('type').value!=='pie');
 const targetOf = zone => zone==='left' ? (isHoriz() ? 'xSel' : 'ySel') : zone==='bottom' ? (isHoriz() ? 'ySel' : 'xSel') : zone;
 function labelOfVar(k){ if (!k) return ''; if (k==='__count') return 'Number of rows'; const c=colOf(k); return c? c.label : k; }
-function accept(zone, t){
-  const kind=t.dataset.kind, v=t.dataset.value, vt=t.dataset.vtype;
-  if (zone==='chart') return ['type','color','shape','palette'].includes(kind) ? {ok:true} : {ok:false, msg:'Drop data columns on an axis, Color, Shape, Size or Filter.'};
-  if (kind==='palette') return zone==='gSel' ? {ok:true} : {ok:false, msg:'Drop a palette on Color.'};
-  if (kind!=='var') return {ok:false, msg:'Drop chart types, colors and shapes on the graph itself.'};
-  const tgt = targetOf(zone);
-  if (tgt==='ySel' && vt!=='num') return {ok:false, msg:`The value axis needs a number (#). "${labelOfVar(v)}" is not a number; try the other axis or Color.`};
-  if (tgt==='xSel' && v==='__count') return {ok:false, msg:'A count goes on the value axis.'};
-  if ((tgt==='gSel'||tgt==='shSel'||tgt==='fCol') && vt==='num') return {ok:false, msg:`${zone==='fCol'?'Filter':zone==='gSel'?'Color':'Shape'} needs a category or year, not a number. Try Size for numbers.`};
-  if (tgt==='szSel' && vt!=='num') return {ok:false, msg:'Size needs a number (#).'};
-  if (tgt==='szSel' && v==='__count') return {ok:false, msg:'Size needs a number column.'};
-  return {ok:true};
-}
+function accept(zone, t){ return {ok:true}; }   // students have full control: anything can go anywhere
 function applyDrop(zone, t){
-  const a = accept(zone, t); if (!a.ok){ $('dropMsg').textContent = a.msg; return; }
   const kind=t.dataset.kind, v=t.dataset.value;
+  let where = '';
   if (kind==='type') $('type').value = v;
   else if (kind==='color') $('color').value = v;
   else if (kind==='shape') $('shape').value = v;
   else if (kind==='palette') $('palette').value = v;
-  else { const tgt = targetOf(zone); $(tgt).value = v; if (tgt==='fCol') fillFilterVals(); }
+  else {
+    let tgt;
+    if (zone==='chart'){ tgt = ['xSel','ySel','gSel','shSel','szSel'].find(id=>!$(id).value) || 'ySel'; }
+    else tgt = targetOf(zone);
+    if (!['xSel','ySel','gSel','shSel','szSel','fCol'].includes(tgt)) tgt = 'ySel';
+    $(tgt).value = v; if (tgt==='fCol') fillFilterVals();
+    where = {xSel:'the X axis', ySel:'the Y axis', gSel:'Color', shSel:'Shape', szSel:'Size', fCol:'Filter'}[tgt];
+    if (isHoriz() && (tgt==='xSel' || tgt==='ySel')) where = tgt==='xSel' ? 'the category axis' : 'the value axis';
+  }
   const what = kind==='var' ? labelOfVar(v) : kind==='type' ? v+' chart' : kind==='palette' ? PAL_NAMES[v]+' palette' : kind==='shape' ? SHAPE_NAMES[v]+' points' : 'color';
-  $('dropMsg').textContent = `Placed: ${what}.`;
+  $('dropMsg').textContent = `Placed: ${what}${where? ' on '+where : ''}.`;
   render();
 }
 function clearZone(zone){ const tgt = targetOf(zone); $(tgt).value=''; if (tgt==='fCol') fillFilterVals(); if (zone==='gSel') {} render(); }
@@ -732,7 +743,7 @@ function syncZones(){
 }
 let drag=null, armed=null, justDragged=false;
 const zonesEls = () => [...document.querySelectorAll('[data-zone]')];
-function markZones(t){ zonesEls().forEach(z=>{ const a=accept(z.dataset.zone, t); z.classList.toggle('ok', a.ok); z.classList.toggle('no', !a.ok); }); }
+function markZones(t){ zonesEls().forEach(z=>{ z.classList.add('ok'); }); }
 function unmarkZones(){ zonesEls().forEach(z=>z.classList.remove('ok','no','hover')); }
 function setArmed(t){ if (armed) armed.classList.remove('armed'); armed = t; if (t){ t.classList.add('armed'); markZones(t); $('dropMsg').textContent = 'Now tap or click where it goes (green outline).'; } else unmarkZones(); }
 document.addEventListener('pointerdown', e=>{ const t=e.target.closest('.tile'); if(!t || e.button>0) return; e.preventDefault(); drag={t, x:e.clientX, y:e.clientY, started:false}; });
@@ -810,19 +821,27 @@ function check(S){
   if (yCol && yCol.rate && S.agg==='sum' && dup) warn(`<b>${yCol.label} can't be added up.</b> Adding rates or counts from several rows gives a meaningless number. Use "Average them" or "Largest value."`);
   if (yCol && yCol.rate && S.valMode==='pct') warn(`<b>Percent of a percent.</b> ${yCol.label} is already a rate; showing it as "percent of total" is confusing.`);
   if (!S.xNum && type!=='pie' && !((type==='bar') !== $('swap').checked) && !$('rotate').checked && S.order.length>6 && S.order.some(x=>String(x).length>9)) warn('<b>Crowded labels.</b> The category names overlap. Try a Bar chart (labels go on the side), or "Tilt X labels" under More options.');
+  if (S.yCat) warn(`<b>Words on the value axis.</b> ${S.yCol.label} is a category, not an amount, so the height or position only shows which category, not how much. If you want amounts, put a # column on this axis.`);
+  if (S.yCol && S.yCol.key==='year' && S.agg==='sum') warn('<b>Years on the value axis.</b> Years are labels for time, not amounts. Adding them up (like 2020 + 2021 = 4041) means nothing.');
+  if (S.x==='__count') warn('<b>A count on the category axis</b> puts every row into one group ("All rows"). Counts belong on the value axis.');
+  if (S.gKey && colAny(S.gKey).type==='num') warn(`<b>Color by a number</b> gives every different value its own color (${S.gNames.length} colors). For amounts, Size or a light-to-dark palette usually works better.`);
+  if (S.shKey && colAny(S.shKey).type==='num') warn(`<b>Shape by a number</b> gives every value its own shape, and shapes have no order. Readers can't tell bigger from smaller.`);
+  if (S.gKey && S.gKey===S.shKey) {}
   // axis
   if ((type==='column'||type==='bar'||type==='area') && !$('zero').checked && !$('logY').checked) warn('<b>Bars and areas should start at 0.</b> Their length or area stands for the amount, so cutting off the bottom exaggerates differences.');
   if ($('logY').checked) warn('<b>Log scale.</b> Each gridline is 10× the one below. Useful when values range from tiny to huge, but say so in the axis label.');
   // color / shape / size
   if (S.gSame) warn('<b>"Color by" repeats the X axis.</b> It adds no new information; try a different column, such as one that groups the types.');
   if (S.gKey && S.gNames.length>8) warn(`<b>Too many colors.</b> ${S.gNames.length} color groups are hard to tell apart. Filter, or color by a column with fewer groups.`);
-  if (S.gKey && !S.gSame) ok(`Coloring by ${colOf(S.gKey).label} adds a second variable to the graph.`);
-  if (S.gKey && $('palette').value==='blues' && colOf(S.gKey).type!=='ord') warn('<b>Palette choice.</b> Light-to-dark blues suggest an order; your groups have none, so distinct hues (Bold) are clearer.');
-  if (S.sh && type!=='points') warn('<b>Shape only works on points.</b> Switch the chart type to Points to use "Shape by."');
-  if (S.sz && type!=='points') warn('<b>Size only works on points.</b> Switch the chart type to Points to use "Size by."');
+  if (S.gKey && !S.gSame) ok(`Coloring by ${colAny(S.gKey).label} adds a second variable to the graph.`);
+  if (S.gKey && $('palette').value==='blues' && colAny(S.gKey).type!=='ord') warn('<b>Palette choice.</b> Light-to-dark blues suggest an order; your groups have none, so distinct hues (Bold) are clearer.');
+  if (S.sh && !['points','line','area'].includes(type)) warn('<b>Shape isn\'t showing.</b> Bars and pies have no points, so "Shape" has nothing to change. Use Points or Line to see it.');
+  if (S.sz && !['points','line','area'].includes(type)) warn('<b>Size isn\'t showing.</b> Bars and pies already use length or angle for amount. Use Points to see size.');
+  if (S.sz && ['line','area'].includes(type) && !$('showPoints').checked) warn('<b>Size needs points.</b> Turn on Points (More options) to see sizes on a line.');
   if (S.shKey && S.shKey===S.gKey) ok('Color and shape show the same groups: that helps readers who can\'t see color well.');
   if (S.shKey && S.sNames.length>6) warn('<b>Too many shapes.</b> More than 6 shapes are hard to tell apart.');
-  if (S.sz && type==='points') ok(`Point size shows ${colOf(S.sz).label}, a third variable. Readers compare sizes less precisely than positions, so use it for rough comparisons.`);
+  if (S.sz && S.zRank) warn(`<b>Size by a category?</b> ${colAny(S.sz).label} has no amount, so sizes just follow the order of its names. Bigger dots will look like "more" even though they aren't.`);
+  if (S.sz && !S.zRank && type==='points') ok(`Point size shows ${colAny(S.sz).label}, a third variable. Readers compare sizes less precisely than positions, so use it for rough comparisons.`);
   if ((S.gKey || S.shKey) && !$('showLegend').checked && type!=='pie') warn('<b>No legend.</b> Readers can\'t tell what the colors or shapes mean.');
   if ($('dash').value==='bygroup' && !S.gKey) warn('<b>Line styles by group need groups.</b> Choose a "Color by" column first.');
   // labels
