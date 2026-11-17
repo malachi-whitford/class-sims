@@ -231,8 +231,8 @@ const ITEMS = [
     where: ["ecology/conservation"],
     type: "sim",
     url: "sims/waste-pathways/",
-    desc: "Pick a waste stream (trash, organics, construction debris, recyclables, or bulky items) and follow real 2025 CalRecycle data from where it's collected to the landfill, compost site, or buyer where it ends up. Then compare who makes California's trash and what's in it.",
-    tags: ["solid waste", "recycling", "landfills", "CalRecycle", "Fresno County"]
+    desc: "Pick a waste stream (trash, organics, construction debris, recyclables, or bulky items) and build your own graph of real CalRecycle data from a blank canvas: choose the chart type, axes, colors, and labels, then check whether it communicates clearly.",
+    tags: ["solid waste", "recycling", "graphing", "data literacy", "Fresno County"]
   },
   {
     title: "What Makes a Greenhouse Gas? Light Meets the Air",
