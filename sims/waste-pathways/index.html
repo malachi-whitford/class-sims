@@ -3,13 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Fresno County Waste Pathways: Build a Graph</title>
+<title>Clovis Waste: Build Your Own Graphs</title>
 <style>
   :root {
     color-scheme: light;
     --page: #f4f6f8; --card: #ffffff; --text: #0b0b0b; --text2: #52514e; --muted: #6b6a65;
-    --line: #d5d8dc; --soft: #f0efec; --accent: #1f6fbf; --warn: #8a5a00; --good: #1d7a3a;
-    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
+    --line: #d5d8dc; --soft: #f0efec; --warn: #8a5a00; --good: #1d7a3a;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--page); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; line-height: 1.45; }
@@ -21,19 +20,21 @@
   .sub { color: var(--text2); margin: 0 0 14px; font-size: 15px; }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
   .step { display: inline-block; background: var(--text); color: #fff; border-radius: 999px; font-size: 12px; font-weight: 700; padding: 2px 9px; margin-right: 6px; vertical-align: 2px; }
-  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 4px; }
-  .tab { font: inherit; font-size: 14px; padding: 8px 14px; border-radius: 999px; cursor: pointer; border: 1px solid #b9bcc1; background: var(--card); color: var(--text); }
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; }
+  .tab { font: inherit; font-size: 14.5px; padding: 9px 16px; border-radius: 999px; cursor: pointer; border: 1px solid #b9bcc1; background: var(--card); color: var(--text); text-align: left; }
+  .tab small { display: block; font-size: 12px; color: inherit; opacity: .8; }
   .tab:hover { background: var(--soft); }
   .tab[aria-pressed="true"] { background: var(--text); color: #fff; border-color: var(--text); }
   :focus-visible { outline: 3px solid #1557b0; outline-offset: 2px; }
   .desc { font-size: 14.5px; color: var(--text2); margin: 6px 0 0; }
-  .builder { display: grid; grid-template-columns: 310px 1fr; gap: 16px; align-items: start; }
+  .task { background: #eef4fb; border: 1px solid #c9dcf3; border-radius: 10px; padding: 10px 14px; font-size: 14.5px; margin-top: 8px; }
+  .builder { display: grid; grid-template-columns: 320px 1fr; gap: 16px; align-items: start; }
   @media (max-width: 900px) { .builder { grid-template-columns: 1fr; } }
   .panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
   fieldset { border: 0; border-top: 1px solid var(--line); margin: 0; padding: 10px 0 6px; }
   fieldset:first-of-type { border-top: 0; padding-top: 0; }
   legend { font-weight: 700; font-size: 13.5px; padding: 0; margin-bottom: 6px; }
-  .f { display: grid; grid-template-columns: 96px 1fr; gap: 6px; align-items: center; margin: 5px 0; font-size: 13.5px; }
+  .f { display: grid; grid-template-columns: 100px 1fr; gap: 6px; align-items: center; margin: 5px 0; font-size: 13.5px; }
   .f label { color: var(--text2); }
   select, input[type="text"], textarea { font: inherit; font-size: 13.5px; padding: 5px 7px; border-radius: 7px; border: 1px solid #b9bcc1; background: #fff; width: 100%; color: var(--text); }
   textarea { min-height: 70px; resize: vertical; }
@@ -60,67 +61,40 @@
   th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid #e6e7e9; }
   th { position: sticky; top: 0; background: var(--card); }
   td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
-  .tablewrap { max-height: 280px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; margin-top: 6px; }
+  .tablewrap { max-height: 300px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; margin-top: 6px; }
   details { margin-top: 10px; }
   summary { cursor: pointer; font-weight: 650; font-size: 14.5px; }
-  .q { background: var(--soft); border-radius: 10px; padding: 10px 14px; margin-top: 12px; font-size: 14px; }
-  .q ol { margin: 6px 0 0; padding-left: 20px; }
-  .sankey-wrap { position: relative; }
-  #sankey { width: 100%; height: auto; display: block; }
-  .colhead { font-size: 12px; fill: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-  .nlabel { font-size: 12.5px; fill: var(--text); }
-  .nval { font-size: 11.5px; fill: var(--text2); }
-  .dim .link { opacity: .12 !important; }
-  .dim .link.hl { opacity: .75 !important; }
-  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 12px 0; }
-  .stat { border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
-  .stat .v { font-size: 21px; font-weight: 700; }
-  .stat .l { font-size: 12.5px; color: var(--text2); }
-  .chart-wrap2 { position: relative; }
-  #locChart, #locChart2 { display: block; width: 100%; height: auto; }
   .foot { font-size: 12.5px; color: var(--text2); }
   .foot a { color: var(--text2); }
   .sr-only { position:absolute!important; width:1px!important; height:1px!important; overflow:hidden!important; clip:rect(0 0 0 0)!important; white-space:nowrap!important; }
+  .est { display: inline-block; font-size: 11.5px; font-weight: 700; background: #fff3d6; color: #6b4a00; border-radius: 6px; padding: 1px 6px; margin-left: 6px; vertical-align: 1px; }
 </style>
 <!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
 </head>
 <body>
 <div class="wrap">
   <a class="back" href="../../">&larr; All class simulations</a>
-  <h1>Where does Fresno County's waste go? Build a graph</h1>
-  <p class="sub">Real 2020–2025 data from CalRecycle. Pick a waste stream and a data table, then build your own graph from a blank canvas: choose the chart type, the axes, the colors and the labels. Use <b>Check my graph</b> to see if it communicates clearly.</p>
-
-  <div class="card" id="explore">
-    <h2>Explore first: how much of the waste ends up in a landfill?</h2>
-    <div class="f" style="grid-template-columns:110px 1fr;max-width:520px;margin-top:6px">
-      <label for="locSel"><b>Location</b></label>
-      <select id="locSel"></select>
-    </div>
-    <p class="desc" id="locDesc"></p>
-    <div class="stats-row" id="locStats"></div>
-    <div class="chart-wrap2" id="locWrap"><svg id="locChart" role="img" aria-labelledby="locTitle"></svg><div class="tip" id="tip3"></div></div>
-    <h3 id="locTitle2" style="margin-top:14px"></h3>
-    <div class="chart-wrap2" id="loc2Wrap"><svg id="locChart2" role="img" aria-labelledby="locTitle2"></svg><div class="tip" id="tip4"></div></div>
-    <p class="hint" id="locNote"></p>
-    <details><summary>Show these numbers as a table</summary><div class="tablewrap"><table id="locTable"></table></div></details>
-  </div>
+  <h1>Clovis waste: build your own graphs</h1>
+  <p class="sub">Where does Clovis's trash go, what is in it, and how has that changed? You get the data from CalRecycle, California's recycling and waste agency. You decide how to show it. Each graph starts blank.</p>
 
   <div class="card">
-    <h2><span class="step">1</span>Pick a waste stream</h2>
-    <div class="tabs" role="group" aria-label="Waste stream" id="streamTabs"></div>
-    <p class="desc" id="streamDesc"></p>
-    <div class="f" style="grid-template-columns:110px 1fr;max-width:640px;margin-top:10px">
+    <h2>Choose your graph</h2>
+    <div class="tabs" role="group" aria-label="Which graph" id="taskTabs">
+      <button class="tab" data-t="0" aria-pressed="true">Graph 1: Total by type<small>What is Clovis's waste made of, and where does it go?</small></button>
+      <button class="tab" data-t="1" aria-pressed="false">Graph 2: A relationship over time<small>How has Clovis's waste changed from 2020 to 2025?</small></button>
+    </div>
+    <div class="task" id="taskText"></div>
+    <div class="f" style="grid-template-columns:110px 1fr;max-width:680px;margin-top:12px">
       <label for="dsSel"><b>Data table</b></label>
       <select id="dsSel"></select>
     </div>
     <p class="hint" id="dsDesc"></p>
-    <details>
+    <details open>
       <summary>Look at the data table</summary>
       <div class="tablewrap"><table id="rawTable"></table></div>
     </details>
   </div>
 
-  <h2 style="margin:4px 0 10px"><span class="step">2</span>Build your graph</h2>
   <div class="builder">
     <div class="panel" id="controls">
       <fieldset>
@@ -131,33 +105,44 @@
             <option value="column">Column (vertical bars)</option>
             <option value="bar">Bar (horizontal bars)</option>
             <option value="line">Line</option>
-            <option value="points">Points (dot plot)</option>
+            <option value="area">Area (filled line)</option>
+            <option value="points">Points / scatter</option>
             <option value="pie">Pie</option>
           </select></div>
       </fieldset>
       <fieldset>
-        <legend>Data</legend>
+        <legend>What goes where</legend>
         <div class="f"><label for="xSel" id="xLbl">X axis</label><select id="xSel"></select></div>
         <div class="f"><label for="ySel" id="yLbl">Y axis</label><select id="ySel"></select></div>
         <div class="f"><label for="gSel">Color by</label><select id="gSel"></select></div>
-        <div class="f"><label for="agg">Combine rows</label>
-          <select id="agg"><option value="sum">Add them up (sum)</option><option value="mean">Average them</option></select></div>
+        <div class="f"><label for="shSel">Shape by</label><select id="shSel"></select></div>
+        <div class="f"><label for="szSel">Size by</label><select id="szSel"></select></div>
+        <p class="hint">Shape and size apply to points.</p>
+      </fieldset>
+      <fieldset>
+        <legend>Filter &amp; combine</legend>
         <div class="f"><label for="fCol">Show only</label>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><select id="fCol" aria-label="Filter column"></select><select id="fVal" aria-label="Filter value"></select></div></div>
+        <div class="f"><label for="agg">Combine rows</label>
+          <select id="agg"><option value="sum">Add them up (sum)</option><option value="mean">Average them</option><option value="max">Largest value</option></select></div>
         <div class="f"><label for="sort">Order</label>
           <select id="sort"><option value="data">As in the table</option><option value="desc">Largest first</option><option value="asc">Smallest first</option><option value="az">A to Z</option></select></div>
         <div class="f"><label for="topN">Categories</label>
-          <select id="topN"><option value="0">Show all</option><option value="5">Top 5 + Other</option><option value="8">Top 8 + Other</option><option value="12">Top 12 + Other</option></select></div>
+          <select id="topN"><option value="0">Show all</option><option value="3">Top 3 + Other</option><option value="5">Top 5 + Other</option><option value="8">Top 8 + Other</option></select></div>
+        <div class="f"><label for="valMode">Show values as</label>
+          <select id="valMode"><option value="raw">Amounts</option><option value="pct">Percent of total</option></select></div>
         <div class="f" id="barModeRow"><label for="barMode">Groups</label>
           <select id="barMode"><option value="grouped">Side by side</option><option value="stacked">Stacked</option></select></div>
       </fieldset>
       <fieldset>
         <legend>Axes</legend>
         <div class="checks">
-          <label><input type="checkbox" id="zero" checked> Start value axis at 0</label>
+          <label><input type="checkbox" id="zero" checked> Value axis starts at 0</label>
           <label><input type="checkbox" id="grid" checked> Gridlines</label>
           <label><input type="checkbox" id="logY"> Log scale</label>
           <label><input type="checkbox" id="rotate"> Tilt X labels</label>
+          <label><input type="checkbox" id="swap"> Swap X and Y</label>
+          <label><input type="checkbox" id="trend"> Trend line</label>
         </div>
         <div class="f" style="margin-top:6px"><label for="yMax">Axis max</label><input type="text" id="yMax" placeholder="auto (or type a number)" inputmode="numeric"></div>
       </fieldset>
@@ -173,8 +158,13 @@
           <div style="display:flex;gap:8px;align-items:center"><input type="color" id="color" value="#2a78d6"><span class="hint" style="margin:0">used when not coloring by a column</span></div></div>
         <div class="f"><label for="palette">Palette</label>
           <select id="palette"><option value="bold">Bold (distinct hues)</option><option value="blues">Blues (light to dark)</option><option value="earth">Earth tones</option><option value="gray">Grays</option></select></div>
-        <div class="f"><label for="psize">Point size</label><input type="range" id="psize" min="2" max="12" value="5"></div>
-        <div class="f"><label for="lwidth">Line width</label><input type="range" id="lwidth" min="1" max="6" value="2"></div>
+        <div class="f"><label for="shape">Point shape</label>
+          <select id="shape"><option value="circle">Circle</option><option value="square">Square</option><option value="triangle">Triangle</option><option value="diamond">Diamond</option><option value="star">Star</option></select></div>
+        <div class="f"><label for="psize">Point size</label><input type="range" id="psize" min="2" max="14" value="6"></div>
+        <div class="f"><label for="lwidth">Line width</label><input type="range" id="lwidth" min="1" max="8" value="2"></div>
+        <div class="f"><label for="dash">Line style</label>
+          <select id="dash"><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option><option value="bygroup">Different for each group</option></select></div>
+        <div class="f"><label for="opacity">Opacity</label><input type="range" id="opacity" min="20" max="100" value="100"></div>
         <div class="f"><label for="bgSel">Background</label>
           <select id="bgSel"><option value="light">White</option><option value="dark">Dark</option></select></div>
       </fieldset>
@@ -202,27 +192,17 @@
       <div class="feedback" id="feedback" hidden></div>
 
       <div class="panel" style="margin-top:14px">
-        <h3><span class="step">3</span>Explain your graph</h3>
-        <label for="caption" class="hint" style="display:block;margin-bottom:6px">In 2–3 sentences: what relationship or pattern does your graph show, and why do you think it happens? (This prints under your graph in the image.)</label>
+        <h3>Explain your graph</h3>
+        <label for="caption" class="hint" style="display:block;margin-bottom:6px" id="capPrompt"></label>
         <textarea id="caption"></textarea>
       </div>
     </div>
   </div>
 
-  <div class="card" style="margin-top:16px">
-    <details id="pathDetails">
-      <summary>After you finish: see the pathway diagram for this stream</summary>
-      <p class="desc" id="pathDesc">Band width is proportional to tons. Hover or tap a band to see its value.</p>
-      <div class="sankey-wrap" id="sankeyWrap"><svg id="sankey" role="img" aria-label="Pathway diagram"></svg><div class="tip" id="tip2"></div></div>
-      <div class="q" id="questions"></div>
-    </details>
-  </div>
-
-  <p class="foot">
-    Sources: CalRecycle Recycling and Disposal Reporting System <a href="https://www2.calrecycle.ca.gov/RecyclingDisposalReporting/Reports/JurisdictionDisposalAndBeneficial" target="_blank" rel="noopener">Report 2</a> (disposal by destination) and
-    <a href="https://www2.calrecycle.ca.gov/RecyclingDisposalReporting/Reports/RecyclingCompostingRelatedOutflows" target="_blank" rel="noopener">Report 11</a> (recycling and composting outflows from Fresno County facilities), pulled Nov 2026;
-    <a href="https://www2.calrecycle.ca.gov/Docs/Publications/137472" target="_blank" rel="noopener">2021 Statewide Waste Characterization Study</a>; population from the <a href="https://dof.ca.gov/Forecasting/Demographics/estimates-e1/" target="_blank" rel="noopener">CA Department of Finance E-1 estimates</a> (Jan 1, 2025); California's 6.2 lb/person/day from CalRecycle's <a href="https://calrecycle.ca.gov/stateofreport" target="_blank" rel="noopener">State of Disposal and Recycling, 2024</a>; the 2.7 lb/person/day level tied to the 75% recycling goal as reported by <a href="https://resource-recycling.com/?p=15055" target="_blank" rel="noopener">Resource Recycling</a>.
-    Trash flows under 50 tons are left out of the city-to-landfill table. Recycling streams are measured where facilities send material, so a ton can be counted more than once as it moves between facilities.
+  <p class="foot" style="margin-top:18px">
+    Sources: CalRecycle Recycling and Disposal Reporting System, <a href="https://www2.calrecycle.ca.gov/RecyclingDisposalReporting/Reports/JurisdictionDisposalAndBeneficial" target="_blank" rel="noopener">Report 2</a> (Clovis disposal by destination landfill, 2020–2025), pulled Nov 2026.
+    Estimated tables apply California's statewide shares from CalRecycle's <a href="https://www2.calrecycle.ca.gov/Docs/Publications/137472" target="_blank" rel="noopener">2021 Waste Characterization Study</a> to Clovis's 2025 trash total; no Clovis-only study exists.
+    Distances are approximate driving miles from central Clovis, rounded to the nearest 5; check them with a map app.
   </p>
 </div>
 
@@ -243,582 +223,475 @@
 (function(){
 "use strict";
 const $ = id => document.getElementById(id);
-const fmt = n => (Math.abs(n) >= 100 ? Math.round(n) : Math.round(n*10)/10).toLocaleString('en-US');
+const fmt = n => { if (n==null || isNaN(n)) return ''; const a=Math.abs(n); return (a>=100 ? Math.round(n) : a>=10 ? Math.round(n*10)/10 : Math.round(n*100)/100).toLocaleString('en-US'); };
 const pct = (a,b) => (100*a/b).toFixed(1) + '%';
 const esc = s => String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-/* ===================== DATA ===================== */
+/* ===================== DATA (Clovis) ===================== */
 const YEARS = [2020,2021,2022,2023,2024,2025];
-const JDATA = {
- 'Fresno (city)':[656893,678578,678338,668664,723028,711738], 'Fresno-Unincorporated':[124667,169792,179522,190464,131607,126942],
- 'Clovis':[86044,97186,100881,96377,100179,97543], 'Sanger':[25852,27025,22322,21505,23326,25856], 'Selma':[6046,21791,19586,19211,20102,21434],
- 'Kerman':[10886,15171,12753,15145,21255,11712], 'Fowler':[4135,11989,5227,7613,10609,10121], 'Coalinga':[11908,12437,12142,13532,7440,10062],
- 'Reedley':[6635,18847,17498,17584,15683,6957], 'Firebaugh':[4408,4733,4417,5186,5099,5931], 'Mendota':[6451,5018,4686,4458,5124,5737],
- 'Huron':[5502,4507,4620,5946,5198,5459], 'Parlier':[11825,12905,10875,11138,11064,5140], 'Kingsburg':[12466,12554,10734,10864,9549,4410],
- 'San Joaquin':[1371,1237,956,1656,1392,2382], 'Orange Cove':[6373,6670,2753,3880,4479,896]
-};
-const DDATA = [
- ['American Avenue Disposal Site','Fresno',[633355,724369,672901,648950,647721,631853]],
- ['Lost Hills landfill','Kern',[48441,40770,58937,73017,98300,120429]],
- ['Fairmead Landfill','Madera',[63343,71800,82138,83978,73067,77007]],
- ['City of Clovis Landfill','Fresno',[66018,72036,69702,69325,73695,68764]],
- ['Avenal Landfill','Kings',[81220,79868,109583,106592,78063,64592]],
- ['Kettleman Hills landfill','Kings',[63431,67329,56433,58043,49894,41797]],
- ['Billy Wright Landfill','Merced',[177,6654,16365,23348,19782,20361]],
- ['Highway 59 Landfill','Merced',[45,8505,7383,9179,10233,14379]],
- ['Visalia Landfill','Tulare',[23670,27017,11835,17756,42157,10003]],
- ['Covanta Stanislaus (waste-to-energy)','Stanislaus',[1335,1259,1691,1485,818,0]],
- ['Other landfills (outside region)','Various',[427,833,342,1550,1404,3135]]
+// CalRecycle RDRS Report 2: tons of Clovis trash received by each landfill, per year
+const LF = [ // name, county, approx miles from Clovis, tons by year
+ ['City of Clovis Landfill','Fresno',10,[66018,72036,69702,69325,73695,68764]],
+ ['American Avenue Disposal Site','Fresno',35,[12607,12638,10334,5791,6017,12818]],
+ ['Fairmead Landfill','Madera',40,[6082,9038,14065,16530,13118,7713]],
+ ['Avenal Landfill','Kings',85,[1226,3044,6299,4176,5424,2902]],
+ ['Highway 59 Landfill','Merced',65,[0,23,0,0,1209,3269]],
+ ['Newby Island Landfill','Santa Clara',155,[0,0,0,0,258,894]],
+ ['Billy Wright Landfill','Merced',90,[0,133,335,405,308,689]],
+ ['Kettleman Hills Landfill','Kings',80,[0,197,103,46,69,294]],
+ ['Visalia Landfill','Tulare',50,[100,74,39,98,77,197]],
+ ['Other small landfills (under 15 t)','Various',null,[12,2,3,6,6,3]]
 ];
-const FAC_COUNTY = {'American Avenue Disposal Site':'Fresno','City of Clovis Landfill':'Fresno','Lost Hills landfill':'Kern','Fairmead Landfill':'Madera','Avenal Landfill':'Kings',
-  'Kettleman Hills landfill':'Kings','Billy Wright Landfill':'Merced','Highway 59 Landfill':'Merced','Visalia Landfill':'Tulare','Woodville Landfill':'Tulare',
-  'Newby Island Landfill':'Santa Clara','Anderson Landfill':'Shasta','Potrero Hills Landfill':'Solano','Recology Hay Road':'Solano','Fink Road Landfill':'Stanislaus','Simi Valley Landfill':'Ventura'};
-const A='American Avenue Disposal Site', LH='Lost Hills landfill', FM='Fairmead Landfill', CL='City of Clovis Landfill', AV='Avenal Landfill', KH='Kettleman Hills landfill', BW='Billy Wright Landfill', H59='Highway 59 Landfill', VI='Visalia Landfill';
-const FLOWS = [
- ['Fresno (city)',A,471766],['Fresno (city)',LH,117175],['Fresno-Unincorporated',A,73669],['Clovis',CL,68764],['Fresno (city)',FM,51000],['Fresno (city)',AV,42531],['Sanger',A,18722],['Selma',A,18440],
- ['Fresno-Unincorporated',KH,17947],['Fresno-Unincorporated',FM,17009],['Clovis',A,12818],['Fresno (city)',KH,11190],['Kerman',A,10470],['Fresno (city)',H59,9186],['Coalinga',AV,8720],['Clovis',FM,7713],['Fowler',KH,7455],
- ['Fresno-Unincorporated',BW,5970],['Fresno (city)',BW,5807],['Fresno-Unincorporated',VI,5716],['Huron',AV,5344],['Mendota',A,5234],['Fresno-Unincorporated',AV,4339],['Parlier',A,4324],['Firebaugh',A,3949],['Kingsburg',A,3558],
- ['Clovis',H59,3269],['Reedley',A,3216],['Clovis',AV,2902],['Fowler',A,2586],['Sanger',KH,2581],['Firebaugh',BW,1766],['Reedley',KH,1678],['Fresno (city)',VI,1633],['Selma',BW,1575],['Sanger',BW,1546],['Sanger',LH,1424],
- ['San Joaquin',A,1372],['Coalinga',A,1207],['Fresno-Unincorporated',H59,1206],['Kerman',BW,1136],['Reedley',LH,1014],['Clovis','Newby Island Landfill',894],['Fresno (city)','Newby Island Landfill',754],['Sanger',FM,741],['Reedley',VI,706],
- ['Fresno-Unincorporated',LH,705],['Clovis',BW,689],['Selma',VI,686],['Sanger',VI,495],['Mendota',BW,447],['Selma',FM,433],['Orange Cove',A,416],['Fresno (city)','Potrero Hills Landfill',395],['Parlier',BW,394],['Sanger',H59,341],['Kingsburg',BW,331],
- ['San Joaquin',H59,330],['Fresno-Unincorporated','Anderson Landfill',304],['Clovis',KH,294],['Reedley',BW,289],['San Joaquin','Fink Road Landfill',261],['San Joaquin',BW,245],['Kingsburg',KH,236],['Orange Cove',VI,215],['Clovis',VI,197],
- ['Parlier',KH,186],['Kingsburg',VI,169],['San Joaquin',AV,147],['Fresno (city)','Anderson Landfill',140],['Firebaugh',AV,135],['Selma',AV,135],['Selma',KH,123],['Parlier',VI,121],['Parlier',AV,115],['Orange Cove',LH,112],['Coalinga',BW,112],
- ['Huron',A,106],['Kingsburg',AV,67],['Fresno (city)','Recology Hay Road',65],['Fresno-Unincorporated','Potrero Hills Landfill',57],['Orange Cove','Woodville Landfill',56],['Fowler',FM,55],['Fresno (city)','Simi Valley Landfill',55],['Orange Cove',BW,54],['Reedley',AV,51]
+const GREEN_ADC = [0,1,0,188,805,1296];       // green waste used as landfill cover (beneficial reuse)
+const LANDFILLS_USED = [9,11,13,9,12,10];     // facilities that received any Clovis trash
+const TOTAL = YEARS.map((y,i)=>LF.reduce((a,l)=>a+l[3][i],0));
+const INF = i => LF.filter(l=>l[1]==='Fresno').reduce((a,l)=>a+l[3][i],0);
+// Statewide 2021 characterization study (tons, California)
+const CA_TOTAL = 39878983;
+const CLASSES = [['Organics',11305710,'Compostable'],['Miscellaneous (incl. mixed residue)',6739781,'Other'],['Paper',6193825,'Recyclable'],['Plastic',5445299,'Recyclable'],
+  ['Inerts & other (rock, drywall)',4770238,'Other'],['Special waste (tires, bulky items)',2071294,'Special handling'],['Metal',1960400,'Recyclable'],['Glass',926822,'Recyclable'],
+  ['Electronics',344267,'Special handling'],['Household hazardous',121346,'Special handling']];
+const TYPES10 = [['Corrugated cardboard',1643490,'Paper','Recyclable'],['Food (non-meat)',1587268,'Organics','Compostable'],['Bulky items',1433777,'Special waste','Special handling'],
+  ['Other compostable paper',1407596,'Paper','Compostable'],['Treated/painted wood',1362209,'Organics','Other'],['Other plastic packaging',1247468,'Plastic','Recyclable'],
+  ['Prunings and trimmings',1127857,'Organics','Compostable'],['Clean lumber',1118977,'Organics','Compostable'],['Textiles and clothing',982659,'Miscellaneous','Other'],['Other ferrous metal',962863,'Metal','Recyclable']];
+const SECTORS = [['Businesses & apartments (commercial + multifamily)',19206354],['Single-family homes',12810213],['Self-haul (mostly construction)',7862416]];
+const CLOVIS25 = TOTAL[5];
+const est = v => Math.round(CLOVIS25 * v / CA_TOTAL);
+
+const C = (key,label,type,extra) => Object.assign({key,label,type}, extra||{});
+const TASKS = [
+ { name:'Graph 1: Total by type',
+   text:'<b>Your task:</b> make a graph that compares <b>totals by type</b> for Clovis in 2025. Pick a data table, decide which column is the "type," and choose the clearest way to compare the amounts. Then explain what stands out.',
+   cap:'In 2–3 sentences: Which type is largest, and by how much? What does that suggest Clovis could do to keep more out of landfills?',
+   datasets:[
+    { name:'Clovis 2025 trash by material type (estimated)', est:true,
+      desc:'Clovis landfilled 97,543 tons in 2025. These amounts are estimated by applying California\'s statewide trash makeup to that total. "Could it be diverted?" groups each material by what could be done with it instead.',
+      cols:[C('mat','Material','cat'),C('div','Could it be diverted?','cat'),C('tons','Estimated tons','num'),C('share','Percent of trash','num',{rate:true})],
+      rows: CLASSES.map(([m,v,g])=>({mat:m, div:g, tons:est(v), share:Math.round(1000*v/CA_TOTAL)/10})) },
+    { name:'Clovis 2025 trash: ten most common items (estimated)', est:true,
+      desc:'The ten most common items in California\'s trash, scaled to Clovis\'s 2025 total. Each item has a material class and a "could it be diverted?" group.',
+      cols:[C('item','Item','cat'),C('mat','Material class','cat'),C('div','Could it be diverted?','cat'),C('tons','Estimated tons','num')],
+      rows: TYPES10.map(([it,v,m,g])=>({item:it, mat:m, div:g, tons:est(v)})) },
+    { name:'Clovis 2025 trash by who threw it away (estimated)', est:true,
+      desc:'California\'s statewide split by source, applied to Clovis\'s 2025 total. Industrial businesses are counted with businesses.',
+      cols:[C('sector','Source','cat'),C('tons','Estimated tons','num')],
+      rows: SECTORS.map(([s,v])=>({sector:s, tons:est(v)})) },
+    { name:'Clovis 2025 trash by landfill', est:false,
+      desc:'Measured: which landfill received Clovis\'s 2025 trash, the county it is in, and roughly how far it is from Clovis.',
+      cols:[C('lf','Landfill','cat'),C('county','Landfill county','cat'),C('inout','Inside Fresno County?','cat'),C('mi','Approx. miles from Clovis','num'),C('tons','Tons','num')],
+      rows: LF.map(l=>({lf:l[0], county:l[1], inout: l[1]==='Fresno'?'Inside':(l[1]==='Various'?'Various':'Outside'), mi:l[2], tons:l[3][5]})) }
+   ]},
+ { name:'Graph 2: A relationship over time',
+   text:'<b>Your task:</b> make a graph that explores <b>how something changed over time</b> (2020–2025) for Clovis\'s trash. Look for a relationship, for example between time and where the trash goes, or between distance and amount. Try several variables before you settle on one graph.',
+   cap:'In 2–3 sentences: What changed over time, and what relationship does your graph show? Suggest a reason for the pattern.',
+   datasets:[
+    { name:'Clovis trash by landfill and year, 2020–2025', est:false,
+      desc:'Measured: each row is one landfill in one year. Includes the landfill\'s county, whether it is inside Fresno County, and roughly how far it is from Clovis.',
+      cols:[C('year','Year','ord'),C('lf','Landfill','cat'),C('county','Landfill county','cat'),C('inout','Inside Fresno County?','cat'),C('mi','Approx. miles from Clovis','num'),C('tons','Tons','num')],
+      rows: YEARS.flatMap((y,i)=>LF.map(l=>({year:y, lf:l[0], county:l[1], inout: l[1]==='Fresno'?'Inside':(l[1]==='Various'?'Various':'Outside'), mi:l[2], tons:l[3][i]}))) },
+    { name:'Clovis yearly summary, 2020–2025', est:false,
+      desc:'Measured: one row per year. "Tons-miles" multiplies each landfill\'s tons by its approximate distance, a rough measure of how much trucking the trash took.',
+      cols:[C('year','Year','ord'),C('total','Total tons landfilled','num'),C('clovislf','Tons to City of Clovis Landfill','num'),C('outside','Tons sent outside Fresno County','num'),
+            C('pctout','Percent sent outside Fresno County','num',{rate:true}),C('nlf','Number of landfills used','num',{rate:true}),C('adc','Green waste used as landfill cover (t)','num'),C('tonmi','Ton-miles of trucking (approx.)','num')],
+      rows: YEARS.map((y,i)=>({year:y, total:TOTAL[i], clovislf:LF[0][3][i], outside:TOTAL[i]-INF(i), pctout:Math.round(1000*(TOTAL[i]-INF(i))/TOTAL[i])/10, nlf:LANDFILLS_USED[i], adc:GREEN_ADC[i],
+        tonmi: LF.reduce((a,l)=>a+(l[2]||0)*l[3][i],0)})) }
+   ]}
 ];
-
-// DOF E-1 population, January 1, 2025
-const POP = {'Clovis':129570,'Coalinga':17622,'Firebaugh':8703,'Fowler':7705,'Fresno (city)':560474,'Huron':6957,'Kerman':17481,'Kingsburg':13358,
-  'Mendota':12829,'Orange Cove':9752,'Parlier':14726,'Reedley':26690,'San Joaquin':3672,'Sanger':27130,'Selma':24593,'Fresno-Unincorporated':160734};
-const COUNTY_POP = 1041996;
-const CA_PPD = 6.2;      // CalRecycle, State of Disposal and Recycling, 2024
-const GOAL_PPD = 2.7;    // per-person disposal level tied to the state's 75% recycling goal
-const ppd = (tons, pop) => tons*2000/pop/365;
-const FATE = [ // Fresno County 2025, approximate
-  ['Landfill (trash)', 1052320, '#52514e'],
-  ['Composted or reused organics', 380827, '#1baf7a'],
-  ['Recycled (paper, metal, glass, plastic)', 267091, '#2a78d6'],
-  ['Reused construction rock & debris', 90528, '#eda100'],
-  ['Bulky items recycled or reused', 4991, '#e87ba4']
-];
-
-const C = (key,label,type) => ({key,label,type}); // type: cat | ord | num
-const TONS = C('tons','Tons','num');
-function rowsFrom(arr, keys){ return arr.map(a=>{const o={}; keys.forEach((k,i)=>o[k]=a[i]); return o;}); }
-
-const STREAMS = [
- { id:'trash', name:'Trash (municipal solid waste)',
-   desc:'Garbage from homes and businesses in each city that goes to a landfill: the "black bin" stream.',
-   datasets:[
-    { name:'Trash by city and year, 2020–2025', desc:'Tons of trash each city sent to disposal each year.',
-      cols:[C('city','City','cat'),C('year','Year','ord'),TONS],
-      rows: Object.entries(JDATA).flatMap(([c,v])=>v.map((t,i)=>({city:c,year:YEARS[i],tons:t}))) },
-    { name:'Trash by landfill and year, 2020–2025', desc:'Tons of Fresno County trash each landfill received each year, and the county the landfill is in.',
-      cols:[C('landfill','Landfill','cat'),C('county','Landfill county','cat'),C('year','Year','ord'),TONS],
-      rows: DDATA.flatMap(([f,c,v])=>v.map((t,i)=>({landfill:f,county:c,year:YEARS[i],tons:t}))) },
-    { name:'Trash from each city to each landfill, 2025', desc:'Every 2025 flow of 50 tons or more: which city sent trash to which landfill.',
-      cols:[C('city','City','cat'),C('landfill','Landfill','cat'),C('county','Landfill county','cat'),TONS],
-      rows: FLOWS.map(([c,f,t])=>({city:c,landfill:f,county:FAC_COUNTY[f],tons:t})) },
-    { name:'Trash per person by location, 2025', desc:'Each location\'s 2025 trash, its population (CA Dept. of Finance, Jan 2025), and pounds of trash per person per day.',
-      cols:[C('city','Location','cat'),C('tons','Tons landfilled','num'),C('pop','Residents','num'),C('ppd','Pounds per person per day','num')],
-      rows: Object.keys(JDATA).map(c=>({city:c, tons:JDATA[c][5], pop:POP[c], ppd:Math.round(ppd(JDATA[c][5],POP[c])*100)/100})) },
-    { name:'Where all of Fresno County\'s waste ends up, 2025 (approximate)', desc:'Fresno County trash landfilled, compared with what county facilities sent to be composted, recycled or reused.',
-      cols:[C('fate','Pathway','cat'),TONS],
-      rows: FATE.map(f=>({fate:f[0], tons:f[1]})) },
-    { name:'Who makes California\'s trash? (statewide, 2021)', desc:'California\'s disposed waste by source sector, from CalRecycle\'s 2021 study. Industrial businesses are counted in "commercial."',
-      cols:[C('sector','Sector','cat'),TONS],
-      rows: rowsFrom([['Commercial & multifamily',19206354],['Single-family homes',12810213],['Self-haul (mostly construction)',7862416]],['sector','tons']) },
-    { name:'What\'s in California\'s trash? (statewide, 2021)', desc:'California\'s disposed waste by material class, from CalRecycle\'s 2021 study.',
-      cols:[C('material','Material','cat'),TONS],
-      rows: rowsFrom([['Organics',11305710],['Miscellaneous',6739781],['Paper',6193825],['Plastic',5445299],['Inerts & other',4770238],['Special waste',2071294],['Metal',1960400],['Glass',926822],['Electronics',344267],['Household hazardous',121346]],['material','tons']) }
-   ],
-   links: null,
-   cols3:['Collected in','Landfill','Landfill location'],
-   qs:['About a third of the trash leaves Fresno County. What are the costs (fuel, emissions, fees) of trucking waste to Kern, Madera and Kings counties?',
-       'Did your graph show a city whose trash changed a lot between 2020 and 2025? What might explain it?']
- },
- { id:'organics', name:'Organics (yard & food waste)',
-   desc:'Green waste, food scraps, compost and biosolids sent out by organics facilities in Fresno County in 2025.',
-   datasets:[
-    { name:'Organics by material, 2025', desc:'Tons of each kind of organic material sent out.', cols:[C('material','Material','cat'),TONS],
-      rows: rowsFrom([['Green waste',274161],['Compost (finished)',48050],['Mixed organics',42661],['Food waste',13553],['Biosolids & other',2402]],['material','tons']) },
-    { name:'Organics by destination, 2025', desc:'Where the organics went, by county.', cols:[C('dest','Destination','cat'),TONS],
-      rows: rowsFrom([['Fresno County',246659],['Kings County',109664],['Madera County',9800],['Merced County',6798],['Other San Joaquin Valley counties',7845],['Other',61]],['dest','tons']) },
-    { name:'Organics by pathway, 2025', desc:'Whether organics went to a composting/recycling facility, straight to an end user (farms, compost buyers, fuel users), or to a broker.', cols:[C('path','Pathway','cat'),TONS],
-      rows: rowsFrom([['Composting or recycling facility',178648],['Straight to end user',202133],['Broker or transporter',46]],['path','tons']) }
-   ],
-   cols3:['Material','Handled at','Sent to'],
-   links:[['0:Green waste','1:Fresno County facilities',274161],['0:Compost (finished)','1:Fresno County facilities',48050],['0:Mixed organics','1:Fresno County facilities',42661],['0:Food waste','1:Fresno County facilities',13553],['0:Biosolids & other','1:Fresno County facilities',2402],
-     ['1:Fresno County facilities','2:Fresno County',246659],['1:Fresno County facilities','2:Kings County',109664],['1:Fresno County facilities','2:Madera County',9800],['1:Fresno County facilities','2:Merced County',6798],['1:Fresno County facilities','2:Other counties',7906]],
-   qs:['Food waste is only about 4% of this stream, but food is one of the largest items in the trash. Where is most food waste going instead?',
-       'Why might Kings County, a farming county, be a major destination for Fresno County organics?']
- },
- { id:'cdi', name:'Construction & demolition',
-   desc:'Rock and other inert debris sent out by facilities in Fresno County in 2025.',
-   datasets:[
-    { name:'C&D by material, 2025', desc:'Tons of each material.', cols:[C('material','Material','cat'),TONS], rows: rowsFrom([['Rock',90399],['Other C&D debris',129]],['material','tons']) },
-    { name:'C&D by pathway, 2025', desc:'Whether material went straight to an end user (construction projects, fill sites) or to a recycling facility.', cols:[C('path','Pathway','cat'),TONS],
-      rows: rowsFrom([['Straight to end user',90399],['Recycling facility',129]],['path','tons']) },
-    { name:'C&D by destination, 2025', desc:'Where it went.', cols:[C('dest','Destination','cat'),TONS], rows: rowsFrom([['Fresno County',90131],['Other counties',397]],['dest','tons']) }
-   ],
-   cols3:['Material','Handled at','Sent to'],
-   links:[['0:Rock','1:Fresno County C&D facilities',90399],['0:Other C&D debris','1:Fresno County C&D facilities',129],['1:Fresno County C&D facilities','2:Fresno County',90131],['1:Fresno County C&D facilities','2:Other counties',397]],
-   qs:['Rock is heavy. How does weight explain why this stream almost never leaves the county?',
-       'Construction waste that is self-hauled to a landfill is not in this stream. What could a city do to keep more of it out of landfills?']
- },
- { id:'recyc', name:'Recyclables (paper, metal, glass, plastic)',
-   desc:'Paper, metal, glass and plastic sent out by recycling facilities in Fresno County in 2025, and where it was received.',
-   datasets:[
-    { name:'Recyclables by material and destination, 2025', desc:'Each row is one material going to one region.', cols:[C('material','Material','cat'),C('dest','Destination region','cat'),TONS],
-      rows: rowsFrom([
-        ['Paper','Southern California',95762],['Paper','Unknown',36733],['Paper','Exported (S. Korea, Canada)',5816],['Paper','Other US states',1268],['Paper','Smaller destinations',5833],
-        ['Metal','Bay Area',42216],['Metal','Fresno (local)',10896],['Metal','Southern California',3262],['Metal','Other US states',2476],['Metal','Exported (S. Korea, Canada)',2049],['Metal','Unknown',1344],['Metal','Smaller destinations',5416],
-        ['Mixed recyclables','Fresno (local)',22192],
-        ['Glass','Bay Area',6343],['Glass','Southern California',4113],['Glass','Central Valley',2465],['Glass','Unknown',4869],['Glass','Smaller destinations',1377],
-        ['Plastic','Southern California',4264],['Plastic','Unknown',5576],['Plastic','Smaller destinations',2821]],['material','dest','tons']) },
-    { name:'Recyclables by material and pathway, 2025', desc:'Whether each material went to another recycling facility, straight to an end user (mills, manufacturers), or to a broker.', cols:[C('material','Material','cat'),C('path','Pathway','cat'),TONS],
-      rows: rowsFrom([['Paper','Recycling facility',70507],['Paper','End user',35002],['Paper','Broker',39903],['Metal','Recycling facility',55421],['Metal','End user',10815],['Metal','Broker',1423],
-        ['Mixed recyclables','Recycling facility',22192],['Glass','Recycling facility',7720],['Glass','End user',6578],['Glass','Broker',4869],['Plastic','Recycling facility',3400],['Plastic','End user',3241],['Plastic','Broker',6020]],['material','path','tons']) }
-   ],
-   cols3:['Material','Sent to'],
-   links:null,
-   qs:['Over 60% of the scrap metal went to the Bay Area (Oakland, a major port). What do you think happens to it there?',
-       'Plastic is the smallest recycled stream, yet plastic is 14% of what Californians throw away. Why is plastic so much harder to recycle than metal or paper?']
- },
- { id:'bulky', name:'Bulky & special items',
-   desc:'Carpet, furniture, tires, large appliances and electronics sent out by facilities in Fresno County in 2025.',
-   datasets:[
-    { name:'Bulky items by pathway, 2025', desc:'Each row is one item type going by one pathway.', cols:[C('item','Item','cat'),C('path','Pathway','cat'),TONS],
-      rows: rowsFrom([['Carpet','End user',2145],['Furniture','Recycling facility',894],['Furniture','End user',65],['Mixed residuals','End user',955],['Tires','Recycling facility',637],['Large appliances','Recycling facility',265],['Electronics','Recycling facility',20],['Electronics','End user',10]],['item','path','tons']) }
-   ],
-   cols3:['Item','Pathway','Sent to'],
-   links:[['0:Carpet','1:End user',2145],['0:Furniture','1:Recycling facility',894],['0:Furniture','1:End user',65],['0:Mixed residuals','1:End user',955],['0:Tires','1:Recycling facility',637],['0:Large appliances','1:Recycling facility',265],
-     ['0:Electronics','1:Recycling facility',20],['0:Electronics','1:End user',10],['1:End user','2:San Bernardino Co. (carpet)',2061],['1:End user','2:Not broken out',1114],['1:Recycling facility','2:Not broken out',1816]],
-   qs:['Only 30 tons of electronics show up here. Where else might old phones, TVs and computers go?',
-       'Almost all the carpet went to one recycler in San Bernardino County. Is it worth recycling something that far away? What would you need to know?']
- }
-];
-// trash sankey links from flows
-(function(){
-  const TOPJ=['Fresno (city)','Fresno-Unincorporated','Clovis','Sanger','Selma','Kerman'], TOPF=[A,LH,FM,CL,AV,KH,BW,H59,VI], TOPC=['Fresno','Kern','Madera','Kings','Merced','Tulare'];
-  const L={}; const add=(a,b,v)=>{const k=a+'|'+b; L[k]=(L[k]||0)+v;};
-  FLOWS.forEach(([j,f,v])=>{ const jg=TOPJ.includes(j)?j:'Other cities (10)', fg=TOPF.includes(f)?f:'Other landfills', c=FAC_COUNTY[f], cg=TOPC.includes(c)?c+' County':'Outside the region';
-    add('0:'+jg,'1:'+fg,v); add('1:'+fg,'2:'+cg,v); });
-  STREAMS[0].links = Object.entries(L).map(([k,v])=>{const [a,b]=k.split('|'); return [a,b,v];});
-  STREAMS[3].links = STREAMS[3].datasets[0].rows.map(r=>['0:'+r.material,'1:'+r.dest,r.tons]);
-})();
-
-/* ===================== LOCATION EXPLORER ===================== */
-const locSel = $('locSel');
-[['__county','Fresno County (all locations)'], ...Object.keys(JDATA).sort((a,b)=>a.localeCompare(b)).map(c=>[c,c])].forEach(([v,l])=>{ const o=document.createElement('option'); o.value=v; o.textContent=l; locSel.appendChild(o); });
-locSel.addEventListener('change', drawLocation);
-function tipOn(el, wrap, tipEl, html){
-  el.addEventListener('mousemove', e=>{ tipEl.innerHTML=html; tipEl.style.opacity=1; const r=wrap.getBoundingClientRect(); let x=e.clientX-r.left+12; if(x+tipEl.offsetWidth>r.width) x=e.clientX-r.left-tipEl.offsetWidth-12; tipEl.style.left=x+'px'; tipEl.style.top=(e.clientY-r.top+12)+'px'; });
-  el.addEventListener('mouseleave', ()=>tipEl.style.opacity=0);
-}
-function hbars(svgEl, wrapEl, tipEl, rows, unit, opts){
-  // rows: [label, value, color, note]
-  const W=900, rowH=34, mL=opts.mL||230, mR=110, H=rows.length*rowH+30;
-  const max = Math.max(...rows.map(r=>r[1]))*1.05;
-  let o = '';
-  const step = niceStep(max/4); for (let t=0; t<=max; t+=step){ const x=mL+(W-mL-mR)*t/max; o+=`<line x1="${x}" x2="${x}" y1="4" y2="${H-24}" stroke="#e6e5df"/><text x="${x}" y="${H-8}" text-anchor="middle" font-size="12" fill="#52514e">${fmt(t)}</text>`; }
-  rows.forEach(([lab,v,col,note],i)=>{ const y=8+i*rowH, w=Math.max((W-mL-mR)*v/max,2);
-    o+=`<text x="${mL-10}" y="${y+18}" text-anchor="end" font-size="13" fill="#0b0b0b" ${opts.bold===i?'font-weight="700"':''}>${esc(lab)}</text>`;
-    o+=`<rect class="hb" data-i="${i}" x="${mL}" y="${y+4}" width="${w}" height="${rowH-12}" rx="4" fill="${col}"/>`;
-    o+=`<text x="${mL+w+8}" y="${y+18}" font-size="12.5" fill="#52514e">${opts.fmt? opts.fmt(v) : fmt(v)}</text>`; });
-  svgEl.setAttribute('viewBox',`0 0 ${W} ${H}`); svgEl.innerHTML=o;
-  svgEl.querySelectorAll('.hb').forEach(r=>{ const row=rows[+r.dataset.i]; tipOn(r, wrapEl, tipEl, `<strong>${opts.fmt? opts.fmt(row[1]) : fmt(row[1])}${unit}</strong><br>${esc(row[0])}${row[3]? '<br>'+esc(row[3]):''}`); });
-}
-function drawLocation(){
-  const loc = locSel.value, chart=$('locChart'), wrap=$('locWrap'), t3=$('tip3');
-  let stats=[], table='';
-  if (loc==='__county'){
-    const tot = FATE.reduce((a,f)=>a+f[1],0), land=FATE[0][1];
-    $('locDesc').textContent = 'Everything Fresno County threw away (landfill) compared with what facilities in the county sent to be composted, recycled or reused in 2025. The bar shows the share of each pathway.';
-    stats = [[pct(land,tot),'went to a landfill'],[pct(tot-land,tot),'composted, recycled or reused'],[fmt(land)+' t','trash landfilled'],[ppd(land,COUNTY_POP).toFixed(1)+' lb','of trash per person per day']];
-    // 100% stacked bar
-    const W=900, H=118, x0=10, bw=W-20; let x=x0, o='';
-    FATE.forEach(([lab,v,col],i)=>{ const w=bw*v/tot-(i<FATE.length-1?2:0);
-      o+=`<rect class="seg" data-i="${i}" x="${x}" y="10" width="${Math.max(w,1)}" height="54" rx="4" fill="${col}"/>`;
-      if (w>60) o+=`<text x="${x+8}" y="43" font-size="14" font-weight="700" fill="${inkOn(col)}">${pct(v,tot)}</text>`;
-      x+=w+2; });
-    let lx=10, ly=92; FATE.forEach(([lab,v,col],i)=>{ const tw=textW(lab+' '+pct(v,tot),12.5)+34; if(lx+tw>W){ lx=10; ly+=20; } o+=`<rect x="${lx}" y="${ly-10}" width="12" height="12" rx="3" fill="${col}"/><text x="${lx+18}" y="${ly}" font-size="12.5" fill="#52514e">${esc(lab)} ${pct(v,tot)}</text>`; lx+=tw; });
-    chart.setAttribute('viewBox',`0 0 ${W} ${ly+10}`); chart.innerHTML=o;
-    chart.querySelectorAll('.seg').forEach(r=>{ const f=FATE[+r.dataset.i]; tipOn(r, wrap, t3, `<strong>${fmt(f[1])} t</strong> · ${pct(f[1],tot)}<br>${esc(f[0])}`); });
-    // second chart: per-person by city
-    $('locTitle2').textContent = 'Pounds of trash per person per day, 2025, by location';
-    const rows = Object.keys(JDATA).map(c=>[c, ppd(JDATA[c][5], POP[c]), '#2a78d6']).sort((a,b)=>b[1]-a[1]);
-    rows.push(['Fresno County overall', ppd(land,COUNTY_POP), '#52514e', 'all locations combined']);
-    rows.push(['California average (2024)', CA_PPD, '#a9a79f', 'CalRecycle statewide figure']);
-    rows.push(['Level needed for 75% recycling', GOAL_PPD, '#1baf7a', "state's goal, as pounds per person per day"]);
-    hbars($('locChart2'), $('loc2Wrap'), $('tip4'), rows, ' lb/person/day', {fmt:v=>v.toFixed(1), mL:250});
-    $('locNote').innerHTML = 'Approximate. Trash tons are counted by the city they came from. Composting and recycling tons are counted where a Fresno County facility sent material out, so they can include some material from other counties, can count a ton twice if it moved between two facilities, and miss Fresno County material processed elsewhere. California tracks recycling by facility, not by city, so the landfill vs. recycling split exists only for the county as a whole.';
-    table = '<tr><th>Pathway (Fresno County, 2025)</th><th class="n">Tons</th><th class="n">Share</th></tr>' + FATE.map(f=>`<tr><td>${esc(f[0])}</td><td class="n">${fmt(f[1])}</td><td class="n">${pct(f[1],tot)}</td></tr>`).join('')
-      + '<tr><th>Location</th><th class="n">Trash 2025 (t)</th><th class="n">Lb/person/day</th></tr>' + rows.map(r=>`<tr><td>${esc(r[0])}</td><td class="n">${JDATA[r[0]]? fmt(JDATA[r[0]][5]) : (r[0]==='Fresno County overall'? fmt(land) : '')}</td><td class="n">${r[1].toFixed(1)}</td></tr>`).join('');
-  } else {
-    const t = JDATA[loc][5], pop = POP[loc], rate = ppd(t,pop), cRate = ppd(1052320, COUNTY_POP);
-    const yrs = JDATA[loc];
-    $('locDesc').textContent = `${loc}: how much trash each person sends to a landfill, compared with the county, the state, and the level needed to reach California's 75% recycling goal. The lower the number, the more is being kept out of landfills.`;
-    const diff = rate - cRate;
-    stats = [[rate.toFixed(1)+' lb','of trash per person per day'],[fmt(t)+' t','landfilled in 2025'],[fmt(pop),'residents (Jan 2025)'],
-      [(diff>=0?'+':'')+diff.toFixed(1)+' lb', diff>=0? 'more than the county average' : 'less than the county average']];
-    const rows = [[loc, rate, '#2a78d6', fmt(t)+' t ÷ '+fmt(pop)+' people'],['Fresno County overall', cRate, '#52514e','all locations combined'],['California average (2024)', CA_PPD, '#a9a79f','CalRecycle statewide figure'],['Level needed for 75% recycling', GOAL_PPD, '#1baf7a',"state's goal, as pounds per person per day"]];
-    hbars(chart, wrap, t3, rows, ' lb/person/day', {fmt:v=>v.toFixed(1), mL:250, bold:0});
-    // second chart: where this city's trash went
-    const dest = {}; FLOWS.filter(f=>f[0]===loc).forEach(([c,f,v])=>{ dest[f]=(dest[f]||0)+v; });
-    const drows = Object.entries(dest).sort((a,b)=>b[1]-a[1]).map(([f,v])=>[`${f} (${FAC_COUNTY[f]} Co.)`, v, FAC_COUNTY[f]==='Fresno'?'#2a78d6':'#eb6834', FAC_COUNTY[f]==='Fresno'?'inside Fresno County':'outside Fresno County']);
-    const tot = drows.reduce((a,r)=>a+r[1],0), out = drows.filter(r=>!r[0].includes('(Fresno Co.)')).reduce((a,r)=>a+r[1],0);
-    stats.push([pct(out,tot), 'of its trash left Fresno County']);
-    $('locTitle2').textContent = `Where ${loc}'s trash went in 2025 (tons; blue = inside Fresno County, orange = outside)`;
-    hbars($('locChart2'), $('loc2Wrap'), $('tip4'), drows, ' t', {mL:330});
-    $('locNote').innerHTML = `Pounds per person = tons landfilled × 2,000 ÷ residents ÷ 365. Trash from businesses counts too, so places with many stores, offices or industry (or few residents) score higher. California tracks recycling by facility, not by city, so a landfill vs. recycling split is shown only for the whole county (choose "Fresno County"). ${loc==='Coalinga'?'Coalinga\'s population includes a state prison and state hospital. ':''}${(()=>{ const avg=yrs.slice(0,5).reduce((a,b)=>a+b,0)/5; return yrs[5] < 0.6*avg ? `<b>Look closely:</b> ${esc(loc)}'s 2025 trash (${fmt(yrs[5])} t) is far below its 2020–2024 average (${fmt(avg)} t). A drop this large can be real, but it can also mean haulers credited some of its trash to a neighboring area. Check the trend in the table before drawing conclusions.` : ''; })()}`;
-    table = '<tr><th>Year</th><th class="n">Trash landfilled (t)</th></tr>' + YEARS.map((y,i)=>`<tr><td>${y}</td><td class="n">${fmt(yrs[i])}</td></tr>`).join('')
-      + '<tr><th>2025 destination</th><th class="n">Tons</th></tr>' + drows.map(r=>`<tr><td>${esc(r[0])}</td><td class="n">${fmt(r[1])}</td></tr>`).join('');
-  }
-  $('locStats').innerHTML = stats.map(([v,l])=>`<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
-  $('locTable').innerHTML = table;
-}
 
 /* ===================== STATE ===================== */
-let si = 0, di = 0;
+let ti = 0, di = 0;
+const CTRL = ['type','xSel','ySel','gSel','shSel','szSel','fCol','fVal','agg','sort','topN','valMode','barMode','zero','grid','logY','rotate','swap','trend','yMax','showLines','showPoints','dataLabels','showLegend','color','palette','shape','psize','lwidth','dash','opacity','bgSel','title','xlab','ylab','source','sname','caption'];
+const saved = [null, null];
 const PALETTES = {
   bold: ['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#008300','#6250d6','#e34948'],
   blues: ['#cde2fb','#9ec5f4','#6da7ec','#3987e5','#256abf','#1c5cab','#104281','#0d366b'],
   earth: ['#8c6d46','#b8913a','#6b8f3a','#3f6f5a','#a65a3a','#5e5a8a','#c2a77a','#4a4a42'],
   gray: ['#d4d4d0','#b4b3ad','#94938c','#76756e','#5a5954','#403f3b','#2a2a27','#121211']
 };
-const ds = () => STREAMS[si].datasets[di];
+const SHAPES = ['circle','square','triangle','diamond','star','cross'];
+const DASHES = ['', '8 5', '2 4', '12 4 2 4', '4 3'];
+const ds = () => TASKS[ti].datasets[di];
 const colOf = k => ds().cols.find(c=>c.key===k);
+function snapshot(){ const o={di}; CTRL.forEach(id=>{ const el=$(id); o[id] = el.type==='checkbox' ? el.checked : el.value; }); return o; }
+function restore(o){ CTRL.forEach(id=>{ const el=$(id); if (el.type==='checkbox') el.checked=o[id]; else el.value=o[id]; }); }
 
 /* ===================== UI SETUP ===================== */
-STREAMS.forEach((s,i)=>{ const b=document.createElement('button'); b.className='tab'; b.textContent=s.name; b.setAttribute('aria-pressed', i===0); b.addEventListener('click',()=>pickStream(i)); $('streamTabs').appendChild(b); });
-function opt(sel, items, keepVal){ const v = sel.value; sel.innerHTML=''; items.forEach(([val,label])=>{const o=document.createElement('option'); o.value=val; o.textContent=label; sel.appendChild(o);}); if(keepVal && [...sel.options].some(o=>o.value===v)) sel.value=v; }
-function pickStream(i){ si=i; di=0; [...$('streamTabs').children].forEach((b,j)=>b.setAttribute('aria-pressed', i===j)); $('streamDesc').textContent=STREAMS[i].desc;
-  opt($('dsSel'), STREAMS[i].datasets.map((d,j)=>[j,d.name])); $('dsSel').value=0; pickDataset(0); drawSankey(); }
-function pickDataset(j){ di=+j; const d=ds(); $('dsDesc').textContent=d.desc;
-  const catCols = d.cols.filter(c=>c.type!=='num');
-  opt($('xSel'), [['','— choose —'], ...catCols.map(c=>[c.key,c.label])]);
-  opt($('ySel'), [['','— choose —'], ...d.cols.filter(c=>c.type==='num').map(c=>[c.key,c.label]), ['__count','Number of rows (count)']]);
-  opt($('gSel'), [['','(none: one color)'], ...catCols.map(c=>[c.key,c.label])]);
-  opt($('fCol'), [['','(all rows)'], ...catCols.map(c=>[c.key,c.label])]);
-  fillFilterVals();
-  // raw table
-  let t='<tr>'+d.cols.map(c=>`<th class="${c.type==='num'?'n':''}">${esc(c.label)}</th>`).join('')+'</tr>';
-  d.rows.forEach(r=>{ t+='<tr>'+d.cols.map(c=>`<td class="${c.type==='num'?'n':''}">${c.type==='num'?fmt(r[c.key]):esc(r[c.key])}</td>`).join('')+'</tr>'; });
-  $('rawTable').innerHTML=t;
-  $('feedback').hidden = true;
-  render();
+function opt(sel, items){ sel.innerHTML=''; items.forEach(([val,label])=>{const o=document.createElement('option'); o.value=val; o.textContent=label; sel.appendChild(o);}); }
+[...$('taskTabs').children].forEach(b=>b.addEventListener('click', ()=>pickTask(+b.dataset.t)));
+const blank = snapshot();
+function pickTask(t){
+  saved[ti] = snapshot();
+  ti = t; [...$('taskTabs').children].forEach((b,j)=>b.setAttribute('aria-pressed', j===t));
+  $('taskText').innerHTML = TASKS[t].text; $('capPrompt').textContent = TASKS[t].cap;
+  opt($('dsSel'), TASKS[t].datasets.map((d,j)=>[String(j), d.name]));
+  const s = saved[t];
+  if (s){ $('dsSel').value = s.di; pickDataset(s.di, true); restore(s); fillFilterVals(s.fVal); }
+  else { restore(blank); $('dsSel').value = 0; pickDataset(0); }
+  $('feedback').hidden = true; render();
 }
-function fillFilterVals(){ const k=$('fCol').value; if(!k){ opt($('fVal'),[['','—']]); $('fVal').disabled=true; return; }
+function pickDataset(j, keep){
+  di = +j; const d = ds(); $('dsDesc').innerHTML = esc(d.desc) + (d.est? '<span class="est">ESTIMATED</span>' : '');
+  const nonNum = d.cols.filter(c=>c.type!=='num'), num = d.cols.filter(c=>c.type==='num');
+  opt($('xSel'), [['','— choose —'], ...d.cols.map(c=>[c.key,c.label])]);
+  opt($('ySel'), [['','— choose —'], ...num.map(c=>[c.key,c.label]), ['__count','Number of rows (count)']]);
+  opt($('gSel'), [['','(none: one color)'], ...nonNum.map(c=>[c.key,c.label])]);
+  opt($('shSel'), [['','(none: one shape)'], ...nonNum.map(c=>[c.key,c.label])]);
+  opt($('szSel'), [['','(none: one size)'], ...num.map(c=>[c.key,c.label])]);
+  opt($('fCol'), [['','(all rows)'], ...nonNum.map(c=>[c.key,c.label])]);
+  if (!keep) fillFilterVals();
+  let t='<tr>'+d.cols.map(c=>`<th class="${c.type==='num'?'n':''}">${esc(c.label)}</th>`).join('')+'</tr>';
+  d.rows.forEach(r=>{ t+='<tr>'+d.cols.map(c=>`<td class="${c.type==='num'?'n':''}">${c.type==='num'? (r[c.key]==null?'—':fmt(r[c.key])) : esc(r[c.key])}</td>`).join('')+'</tr>'; });
+  $('rawTable').innerHTML=t;
+  if (!keep){ $('feedback').hidden = true; render(); }
+}
+function fillFilterVals(keepVal){ const k=$('fCol').value; if(!k){ opt($('fVal'),[['','—']]); $('fVal').disabled=true; return; }
   $('fVal').disabled=false; const vals=[...new Set(ds().rows.map(r=>r[k]))]; if(colOf(k).type==='ord') vals.sort((a,b)=>a-b);
-  opt($('fVal'), vals.map(v=>[String(v),String(v)])); }
-$('dsSel').addEventListener('change', e=>pickDataset(e.target.value));
+  opt($('fVal'), vals.map(v=>[String(v),String(v)])); if (keepVal!=null) $('fVal').value = keepVal; }
+$('dsSel').addEventListener('change', e=>{ ['xSel','ySel','gSel','shSel','szSel','fCol'].forEach(id=>$(id).value=''); pickDataset(e.target.value); });
 $('fCol').addEventListener('change', ()=>{ fillFilterVals(); render(); });
-['type','xSel','ySel','gSel','agg','fVal','sort','topN','barMode','zero','grid','logY','rotate','yMax','showLines','showPoints','dataLabels','showLegend','color','palette','psize','lwidth','bgSel','title','xlab','ylab','source','sname','caption']
-  .forEach(id=>{ $(id).addEventListener('input', render); $(id).addEventListener('change', render); });
-$('resetBtn').addEventListener('click', ()=>{
-  ['type','xSel','ySel','gSel','fCol'].forEach(id=>$(id).value=''); fillFilterVals();
-  ['title','xlab','ylab','source','yMax','caption'].forEach(id=>$(id).value='');
-  $('agg').value='sum'; $('sort').value='data'; $('topN').value='0'; $('barMode').value='grouped';
-  $('zero').checked=true; $('grid').checked=true; $('logY').checked=false; $('rotate').checked=false; $('showLines').checked=true; $('showPoints').checked=true; $('dataLabels').checked=false; $('showLegend').checked=true;
-  $('color').value='#2a78d6'; $('palette').value='bold'; $('psize').value=5; $('lwidth').value=2; $('bgSel').value='light';
-  $('feedback').hidden=true; render();
-});
+CTRL.forEach(id=>{ $(id).addEventListener('input', render); $(id).addEventListener('change', render); });
+$('resetBtn').addEventListener('click', ()=>{ const keepDi=di; restore(blank); $('dsSel').value=keepDi; pickDataset(keepDi); });
 
 /* ===================== DATA SHAPING ===================== */
+function aggregate(list, how){ if(!list.length) return null; if (how==='mean') return list.reduce((a,b)=>a+b,0)/list.length; if (how==='max') return Math.max(...list); return list.reduce((a,b)=>a+b,0); }
 function shape(){
-  const S = { type:$('type').value, x:$('xSel').value, y:$('ySel').value, g:$('gSel').value, agg:$('agg').value, fCol:$('fCol').value, fVal:$('fVal').value,
-    sort:$('sort').value, topN:+$('topN').value, barMode:$('barMode').value };
-  if (S.g && S.g===S.x) S.gSame = true;
+  const S = { type:$('type').value, x:$('xSel').value, y:$('ySel').value, g:$('gSel').value, sh:$('shSel').value, sz:$('szSel').value,
+    agg:$('agg').value, fCol:$('fCol').value, fVal:$('fVal').value, sort:$('sort').value, topN:+$('topN').value, barMode:$('barMode').value, valMode:$('valMode').value };
   let rows = ds().rows;
   if (S.fCol) rows = rows.filter(r=>String(r[S.fCol])===S.fVal);
-  S.nRows = rows.length;
   if (!S.x || !S.y) return S;
-  const xCol = colOf(S.x), gKey = (S.g && !S.gSame) ? S.g : '';
-  const cell = new Map(), xs = [], gs = [];
+  S.xCol = colOf(S.x);
+  S.xNum = S.xCol.type==='num' && (S.type==='points' || S.type==='line' || S.type==='area');
+  const gKey = (S.g && S.g!==S.x) ? S.g : '', shKey = (S.sh && S.type==='points') ? S.sh : '';
+  S.gSame = S.g && S.g===S.x;
+  const cell = new Map(), xs = [], keys = [];
   rows.forEach(r=>{
-    const xv = String(r[S.x]), gv = gKey ? String(r[gKey]) : '';
-    if (!xs.includes(xv)) xs.push(xv); if (!gs.includes(gv)) gs.push(gv);
-    const k = xv+'\u0000'+gv; const c = cell.get(k) || {sum:0,n:0}; c.sum += S.y==='__count' ? 1 : r[S.y]; c.n++; cell.set(k,c);
+    if (r[S.x]==null) return;
+    const xv = S.xNum ? +r[S.x] : String(r[S.x]);
+    const gv = gKey ? String(r[gKey]) : '', sv = shKey ? String(r[shKey]) : '';
+    const key = gv+'\u0001'+sv;
+    if (!xs.some(x=>x===xv)) xs.push(xv); if (!keys.includes(key)) keys.push(key);
+    const k = xv+'\u0000'+key; const c = cell.get(k) || {y:[], z:[]};
+    c.y.push(S.y==='__count' ? 1 : r[S.y]); if (S.sz) c.z.push(r[S.sz]||0); cell.set(k,c);
   });
-  const val = (xv,gv) => { const c=cell.get(xv+'\u0000'+gv); if(!c) return null; return (S.agg==='mean' && S.y!=='__count') ? c.sum/c.n : c.sum; };
-  const xTot = xv => gs.reduce((s,g)=>s+(val(xv,g)||0),0);
+  const val = (xv,key) => { const c=cell.get(xv+'\u0000'+key); if(!c) return null; return S.y==='__count' ? c.y.length : aggregate(c.y.filter(v=>v!=null), S.agg); };
+  const zval = (xv,key) => { const c=cell.get(xv+'\u0000'+key); if(!c || !S.sz) return null; return aggregate(c.z, S.agg==='max'?'max':S.agg); };
+  const xTot = xv => keys.reduce((s,k)=>s+(val(xv,k)||0),0);
   let order = xs.slice();
-  if (xCol.type==='ord') order.sort((a,b)=>+a-+b);
+  if (S.xNum || S.xCol.type==='ord') order.sort((a,b)=>+a-+b);
   else if (S.sort==='desc') order.sort((a,b)=>xTot(b)-xTot(a));
   else if (S.sort==='asc') order.sort((a,b)=>xTot(a)-xTot(b));
-  else if (S.sort==='az') order.sort((a,b)=>a.localeCompare(b));
-  // top N + Other
-  let series = gs.map(g=>({name:g, vals:order.map(x=>val(x,g))}));
-  if (S.topN && xCol.type!=='ord' && order.length > S.topN){
+  else if (S.sort==='az') order.sort((a,b)=>String(a).localeCompare(String(b)));
+  let series = keys.map(k=>{ const [g,s]=k.split('\u0001'); return {key:k, g, s, vals:order.map(x=>val(x,k)), sizes:order.map(x=>zval(x,k))}; });
+  if (S.topN && !S.xNum && S.xCol.type!=='ord' && order.length > S.topN){
     const ranked = order.slice().sort((a,b)=>xTot(b)-xTot(a)); const keep = new Set(ranked.slice(0,S.topN));
-    const newOrder = order.filter(x=>keep.has(x)); newOrder.push('Other');
-    series = gs.map(g=>{ const vs = newOrder.map(x=> x==='Other' ? order.filter(o=>!keep.has(o)).reduce((s,o)=>s+(val(o,g)||0),0) : val(x,g)); return {name:g, vals:vs}; });
-    order = newOrder; S.combined = true;
+    const no = order.filter(x=>keep.has(x)); no.push('Other');
+    series = series.map(s=>({...s, vals: no.map(x=> x==='Other' ? order.filter(o=>!keep.has(o)).reduce((a,o)=>a+(val(o,s.key)||0),0) : val(x,s.key)),
+                                   sizes: no.map(x=> x==='Other' ? null : zval(x,s.key))}));
+    order = no; S.combined = true;
   }
-  // group order: by total desc unless ordinal
-  if (gKey){ const gt = s=>s.vals.reduce((a,b)=>a+(b||0),0); if (colOf(gKey).type==='ord') series.sort((a,b)=>+a.name-+b.name); else series.sort((a,b)=>gt(b)-gt(a)); }
-  S.order = order; S.series = series; S.grouped = !!gKey; S.xCol = xCol;
+  if (S.valMode==='pct'){
+    const grand = series.reduce((a,s)=>a+s.vals.reduce((b,v)=>b+(v||0),0),0);
+    series.forEach(s=>s.vals = s.vals.map(v=> v==null? null : 100*v/grand));
+  }
+  const gNames = [...new Set(series.map(s=>s.g))], sNames = [...new Set(series.map(s=>s.s))];
+  if (gKey){ const tot = n=>series.filter(s=>s.g===n).reduce((a,s)=>a+s.vals.reduce((b,v)=>b+(v||0),0),0);
+    if (colOf(gKey).type==='ord') gNames.sort((a,b)=>+a-+b); else gNames.sort((a,b)=>tot(b)-tot(a)); }
+  series.sort((a,b)=> gNames.indexOf(a.g)-gNames.indexOf(b.g) || sNames.indexOf(a.s)-sNames.indexOf(b.s));
+  S.order = order; S.series = series; S.gKey = gKey; S.shKey = shKey; S.gNames = gNames; S.sNames = sNames;
+  const allZ = series.flatMap(s=>s.sizes).filter(v=>v!=null); S.zMax = allZ.length? Math.max(...allZ) : 0;
   return S;
 }
 
 /* ===================== RENDER ===================== */
 const svg = $('graph'), tip = $('tip');
 let marks = [];
-function niceStep(raw){ const p = Math.pow(10, Math.floor(Math.log10(raw))); const m = raw/p; return (m<=1?1:m<=2?2:m<=5?5:10)*p; }
-function inkOn(hex){ const h=hex.replace('#',''); const l=parseInt(h.slice(0,2),16)*0.299+parseInt(h.slice(2,4),16)*0.587+parseInt(h.slice(4,6),16)*0.114; return l>150 ? '#0b0b0b' : '#ffffff'; }
+function niceStep(raw){ if (!(raw>0)) return 1; const p = Math.pow(10, Math.floor(Math.log10(raw))); const m = raw/p; return (m<=1?1:m<=2?2:m<=5?5:10)*p; }
 function textW(s, size){ return String(s).length * size * 0.56; }
+function inkOn(hex){ const h=hex.replace('#',''); const l=parseInt(h.slice(0,2),16)*0.299+parseInt(h.slice(2,4),16)*0.587+parseInt(h.slice(4,6),16)*0.114; return l>150 ? '#0b0b0b' : '#ffffff'; }
 function wrapText(s, maxChars){ const words=String(s).split(/\s+/); const lines=[]; let cur=''; words.forEach(w=>{ if((cur+' '+w).trim().length>maxChars){ if(cur) lines.push(cur); cur=w; } else cur=(cur+' '+w).trim(); }); if(cur) lines.push(cur); return lines; }
+function marker(shape, x, y, r, fill, ring, op, extra){
+  const a = `fill="${fill}" fill-opacity="${op}" stroke="${ring}" stroke-width="1.5" ${extra||''}`;
+  switch(shape){
+    case 'square': return `<rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" rx="1.5" ${a}/>`;
+    case 'triangle': return `<path d="M${x},${y-r*1.2} L${x+r*1.1},${y+r*0.8} L${x-r*1.1},${y+r*0.8}Z" ${a}/>`;
+    case 'diamond': return `<path d="M${x},${y-r*1.25} L${x+r*1.1},${y} L${x},${y+r*1.25} L${x-r*1.1},${y}Z" ${a}/>`;
+    case 'star': { let p=''; for(let i=0;i<10;i++){ const rr=i%2? r*0.55 : r*1.3, an=-Math.PI/2+i*Math.PI/5; p+=(i?'L':'M')+(x+rr*Math.cos(an)).toFixed(1)+','+(y+rr*Math.sin(an)).toFixed(1); } return `<path d="${p}Z" ${a}/>`; }
+    case 'cross': return `<path d="M${x-r},${y-r*0.35} h${r*0.65} v${-r*0.65} h${r*0.7} v${r*0.65} h${r*0.65} v${r*0.7} h${-r*0.65} v${r*0.65} h${-r*0.7} v${-r*0.65} h${-r*0.65}Z" ${a}/>`;
+    default: return `<circle cx="${x}" cy="${y}" r="${r}" ${a}/>`;
+  }
+}
+function linReg(pts){ const n=pts.length; if(n<2) return null; const mx=pts.reduce((a,p)=>a+p[0],0)/n, my=pts.reduce((a,p)=>a+p[1],0)/n;
+  let sxy=0,sxx=0,syy=0; pts.forEach(([x,y])=>{ sxy+=(x-mx)*(y-my); sxx+=(x-mx)**2; syy+=(y-my)**2; }); if(!sxx) return null; const b=sxy/sxx; return {b, a:my-b*mx, r2: syy? (sxy*sxy)/(sxx*syy) : 0}; }
 
 function render(){
   const S = shape();
   const dark = $('bgSel').value==='dark';
   const T = dark ? {bg:'#1a1a19', ink:'#f0efec', ink2:'#c3c2b7', grid:'#2c2c2a', axis:'#5a5954', ph:'#6b6a65', ring:'#1a1a19'} : {bg:'#ffffff', ink:'#0b0b0b', ink2:'#52514e', grid:'#e6e5df', axis:'#9a9890', ph:'#a9a79f', ring:'#ffffff'};
-  const W = 900;
-  const title = $('title').value.trim(), xlab=$('xlab').value.trim(), ylab=$('ylab').value.trim(), src=$('source').value.trim(), nm=$('sname').value.trim(), cap=$('caption').value.trim();
-  const capLines = cap ? wrapText(cap, 120) : [];
-  const H = 540 + (capLines.length ? capLines.length*18 + 16 : 0);
+  const W = 900, BASEH = 560;
+  const title=$('title').value.trim(), xlab=$('xlab').value.trim(), ylab=$('ylab').value.trim(), src=$('source').value.trim(), nm=$('sname').value.trim(), cap=$('caption').value.trim();
+  const capLines = cap ? wrapText(cap, 118) : [];
+  const H = BASEH + (capLines.length ? capLines.length*18 + 16 : 0);
+  const op = (+$('opacity').value)/100;
   marks = [];
   let o = `<rect x="0" y="0" width="${W}" height="${H}" fill="${T.bg}"/>`;
-  // title
   o += title ? `<text x="${W/2}" y="34" text-anchor="middle" font-size="20" font-weight="700" fill="${T.ink}">${esc(title)}</text>`
              : `<text x="${W/2}" y="34" text-anchor="middle" font-size="18" fill="${T.ph}" font-style="italic">Title?</text>`;
-  const type = S.type;
-  const isBarH = type==='bar', isPie = type==='pie';
+  const type = S.type, isPie = type==='pie';
+  const swap = $('swap').checked && !isPie;
+  const horiz = (type==='bar') !== swap;   // categories on vertical axis
   const ready = type && S.x && S.y && S.order && S.order.length;
   const pal = PALETTES[$('palette').value];
-  const colorFor = i => S.grouped ? pal[i % pal.length] : $('color').value;
-  const footY = 540 - 14;
+  const gIndex = n => Math.max(0, S.gNames ? S.gNames.indexOf(n) : 0);
+  const colorFor = s => S.gKey ? pal[gIndex(s.g) % pal.length] : $('color').value;
+  const shapeFor = s => S.shKey ? SHAPES[S.sNames.indexOf(s.s) % SHAPES.length] : $('shape').value;
+  const dashFor = s => { const d=$('dash').value; if (d==='dashed') return '8 5'; if (d==='dotted') return '2 4'; if (d==='bygroup') return DASHES[gIndex(s.g) % DASHES.length]; return ''; };
+  const yUnit = S.valMode==='pct' ? '%' : (S.y==='__count' ? ' rows' : '');
+  const fv = v => fmt(v) + (S.valMode==='pct' ? '%' : '');
+  const footY = BASEH - 6;
 
   if (isPie && ready){
-    const s0 = S.series[0]; // pie uses first series (or sum across groups)
     const vals = S.order.map((x,i)=> S.series.reduce((a,s)=>a+(s.vals[i]||0),0));
     const tot = vals.reduce((a,b)=>a+b,0);
-    const cx = 330, cy = 290, r = 190;
-    let a0 = -Math.PI/2;
+    const cx = 320, cy = 300, r = 200; let a0 = -Math.PI/2;
+    const nz = vals.filter(v=>v>0).length;
     vals.forEach((v,i)=>{
-      if (v<=0) return;
-      const a1 = a0 + 2*Math.PI*v/tot, large = (a1-a0)>Math.PI?1:0;
-      const p = (vals.filter(x=>x>0).length===1) ? `M${cx-r},${cy} a${r},${r} 0 1,0 ${2*r},0 a${r},${r} 0 1,0 ${-2*r},0` :
-        `M${cx},${cy} L${cx+r*Math.cos(a0)},${cy+r*Math.sin(a0)} A${r},${r} 0 ${large} 1 ${cx+r*Math.cos(a1)},${cy+r*Math.sin(a1)} Z`;
-      const col = pal[i % pal.length];
-      o += `<path d="${p}" fill="${col}" stroke="${T.ring}" stroke-width="2" data-m="${marks.length}"/>`;
-      marks.push({label:S.order[i], value:v, extra: pct(v,tot)});
-      if ($('dataLabels').checked && (a1-a0) > 0.18){ const am=(a0+a1)/2; o += `<text x="${cx+(r*0.66)*Math.cos(am)}" y="${cy+(r*0.66)*Math.sin(am)+4}" text-anchor="middle" font-size="12" font-weight="700" fill="${inkOn(col)}">${pct(v,tot)}</text>`; }
-      a0 = a1;
-    });
-    if ($('showLegend').checked){
-      let ly = 120; o += S.order.slice(0,16).map((x,i)=>{ const y=ly+i*22; return `<rect x="560" y="${y-11}" width="12" height="12" rx="3" fill="${pal[i%pal.length]}"/><text x="580" y="${y}" font-size="13" fill="${T.ink2}">${esc(x)} (${pct(vals[i],tot)})</text>`; }).join('');
-    }
+      if (v<=0) return; const a1 = a0 + 2*Math.PI*v/tot, large=(a1-a0)>Math.PI?1:0, col=pal[i%pal.length];
+      const p = nz===1 ? `M${cx-r},${cy} a${r},${r} 0 1,0 ${2*r},0 a${r},${r} 0 1,0 ${-2*r},0` : `M${cx},${cy} L${cx+r*Math.cos(a0)},${cy+r*Math.sin(a0)} A${r},${r} 0 ${large} 1 ${cx+r*Math.cos(a1)},${cy+r*Math.sin(a1)} Z`;
+      o += `<path d="${p}" fill="${col}" fill-opacity="${op}" stroke="${T.ring}" stroke-width="2" data-m="${marks.length}"/>`;
+      marks.push({label:S.order[i], value:v, extra:pct(v,tot)});
+      if ($('dataLabels').checked && (a1-a0)>0.2){ const am=(a0+a1)/2; o += `<text x="${cx+r*0.66*Math.cos(am)}" y="${cy+r*0.66*Math.sin(am)+4}" text-anchor="middle" font-size="12" font-weight="700" fill="${inkOn(col)}">${pct(v,tot)}</text>`; }
+      a0 = a1; });
+    if ($('showLegend').checked) S.order.slice(0,18).forEach((x,i)=>{ const y=110+i*22; o += `<rect x="560" y="${y-11}" width="12" height="12" rx="3" fill="${pal[i%pal.length]}"/><text x="580" y="${y}" font-size="13" fill="${T.ink2}">${esc(String(x).length>32?String(x).slice(0,31)+'…':x)} (${pct(vals[i],tot)})</text>`; });
   } else {
-    // axes frame
-    const legendOn = $('showLegend').checked && ready && S.grouped && S.series.length>1 && !isPie;
-    const catLabels = ready ? S.order : [];
+    const legendItems = [];
+    if (ready && S.gKey && S.gNames.length>1) legendItems.push({title: colOf(S.gKey).label, items: S.gNames.map(n=>({kind:'color', label:n, color: pal[gIndex(n)%pal.length]}))});
+    if (ready && S.shKey && S.sNames.length>1) legendItems.push({title: colOf(S.shKey).label, items: S.sNames.map((n,i)=>({kind:'shape', label:n, shape: SHAPES[i%SHAPES.length]}))});
+    if (ready && S.sz && type==='points') legendItems.push({title: colOf(S.sz).label, items: [{kind:'size', label: fmt(S.zMax*0.25), r: sizeR(S.zMax*0.25)}, {kind:'size', label: fmt(S.zMax), r: sizeR(S.zMax)}]});
+    function sizeR(z){ const base=+$('psize').value; return S.zMax ? 3 + Math.sqrt(Math.max(z,0)/S.zMax) * base*2.2 : base; }
+    const legendOn = $('showLegend').checked && legendItems.length;
+    const catLabels = ready && !S.xNum ? S.order.map(String) : [];
     const maxCatW = catLabels.reduce((m,s)=>Math.max(m,textW(s,12)),0);
     const rot = $('rotate').checked;
-    let mL = 84, mR = legendOn ? 190 : 30, mT = 56, mB = 72;
-    if (isBarH) mL = Math.max(90, Math.min(250, maxCatW + 26));
-    else if (rot) mB = Math.max(72, Math.min(170, maxCatW*0.75 + 44));
-    const pw = W - mL - mR, ph = 540 - mT - mB;
+    let mL = 84, mR = legendOn ? 200 : 30, mT = 56, mB = 72;
+    if (horiz && !S.xNum) mL = Math.max(90, Math.min(260, maxCatW + 26));
+    else if (rot && !S.xNum) mB = Math.max(72, Math.min(180, maxCatW*0.75 + 44));
+    const pw = W - mL - mR, ph = BASEH - mT - mB;
+    const stacked = (type==='column'||type==='bar'||type==='area') && !!S.series && S.series.length>1 && S.barMode==='stacked';
     // value domain
-    let vmin = Infinity, vmax = -Infinity;
+    let vmin=Infinity, vmax=-Infinity;
     if (ready){
-      if ((type==='column'||type==='bar') && S.grouped && S.barMode==='stacked'){
-        S.order.forEach((x,i)=>{ const t=S.series.reduce((a,s)=>a+(s.vals[i]||0),0); vmax=Math.max(vmax,t); vmin=Math.min(vmin,t); });
-      } else S.series.forEach(s=>s.vals.forEach(v=>{ if(v!=null){ vmax=Math.max(vmax,v); vmin=Math.min(vmin,v);} }));
+      if (stacked) S.order.forEach((x,i)=>{ const t=S.series.reduce((a,s)=>a+(s.vals[i]||0),0); vmax=Math.max(vmax,t); vmin=Math.min(vmin,t); });
+      else S.series.forEach(s=>s.vals.forEach(v=>{ if(v!=null){ vmax=Math.max(vmax,v); vmin=Math.min(vmin,v);} }));
+      if (!isFinite(vmax)) { vmax=1; vmin=0; }
     }
     const logY = $('logY').checked && ready;
-    let lo, hi, ticks = [];
+    let lo, hi, ticks=[];
     const userMax = parseFloat(String($('yMax').value).replace(/,/g,''));
     if (!ready){ lo=0; hi=1; }
-    else if (logY){
-      const pos = Math.max(1, vmin>0?vmin:1); lo = Math.pow(10, Math.floor(Math.log10(pos))); hi = Math.pow(10, Math.ceil(Math.log10(Math.max(vmax, lo*10))));
-      if (!isNaN(userMax) && userMax>lo) hi = userMax;
-      for (let t=lo; t<=hi*1.0001; t*=10) ticks.push(t);
-    } else {
-      hi = !isNaN(userMax) && userMax>0 ? userMax : vmax*1.08;
-      lo = $('zero').checked ? 0 : vmin - (vmax-vmin)*0.15;
-      if (lo<0 && vmin>=0 && !$('zero').checked) lo = Math.max(0, lo);
-      const step = niceStep((hi-lo)/5 || 1); lo = Math.floor(lo/step)*step; if (isNaN(userMax)) hi = Math.ceil(hi/step)*step;
-      for (let t=lo; t<=hi+step*1e-6; t+=step) ticks.push(t);
-    }
-    const vScale = v => { if (logY){ const lv=Math.log10(Math.max(v,lo)); return (lv-Math.log10(lo))/(Math.log10(hi)-Math.log10(lo)); } return (v-lo)/(hi-lo); };
-    // gridlines + value ticks
-    ticks.forEach(t=>{
-      const f = vScale(t);
-      if (isBarH){ const x = mL + f*pw; if ($('grid').checked) o += `<line x1="${x}" x2="${x}" y1="${mT}" y2="${mT+ph}" stroke="${T.grid}"/>`; o += `<text x="${x}" y="${mT+ph+18}" text-anchor="middle" font-size="12" fill="${T.ink2}">${fmt(t)}</text>`; }
-      else { const y = mT + ph - f*ph; if ($('grid').checked) o += `<line x1="${mL}" x2="${mL+pw}" y1="${y}" y2="${y}" stroke="${T.grid}"/>`; o += `<text x="${mL-8}" y="${y+4}" text-anchor="end" font-size="12" fill="${T.ink2}">${fmt(t)}</text>`; }
-    });
-    // axis lines
+    else if (logY){ const pos=Math.max(1, vmin>0?vmin:1); lo=Math.pow(10,Math.floor(Math.log10(pos))); hi=Math.pow(10,Math.ceil(Math.log10(Math.max(vmax, lo*10)))); if(!isNaN(userMax)&&userMax>lo) hi=userMax; for(let t=lo;t<=hi*1.0001;t*=10) ticks.push(t); }
+    else { hi = !isNaN(userMax)&&userMax>0 ? userMax : vmax*1.08; lo = $('zero').checked ? Math.min(0,vmin) : vmin-(vmax-vmin)*0.15; if (!$('zero').checked && vmin>=0) lo=Math.max(0,lo);
+      const step=niceStep((hi-lo)/5||1); lo=Math.floor(lo/step)*step; if(isNaN(userMax)) hi=Math.ceil(hi/step)*step; if (hi<=lo) hi=lo+step; for(let t=lo;t<=hi+step*1e-6;t+=step) ticks.push(t); }
+    const vScale = v => { if (logY){ return (Math.log10(Math.max(v,lo))-Math.log10(lo))/(Math.log10(hi)-Math.log10(lo)); } return (v-lo)/(hi-lo); };
+    // numeric x domain
+    let xlo=0, xhi=1, xticks=[];
+    if (ready && S.xNum){ const xv=S.order.map(Number); xlo=Math.min(...xv); xhi=Math.max(...xv); const pad=(xhi-xlo)*0.06||1; xlo-=pad; xhi+=pad; const st=niceStep((xhi-xlo)/6); for(let t=Math.ceil(xlo/st)*st; t<=xhi; t+=st) xticks.push(t); }
+    const vPix = v => horiz ? mL + vScale(v)*pw : mT + ph - vScale(v)*ph;
+    const n = ready ? S.order.length : 1, band = (horiz ? ph : pw)/n;
+    const catPos = i => S.xNum ? (horiz ? mT + ph - (S.order[i]-xlo)/(xhi-xlo)*ph : mL + (S.order[i]-xlo)/(xhi-xlo)*pw) : (horiz ? mT : mL) + band*i + band/2;
+    // grid + value ticks
+    ticks.forEach(t=>{ const f=vScale(t);
+      if (horiz){ const x=mL+f*pw; if($('grid').checked) o+=`<line x1="${x}" x2="${x}" y1="${mT}" y2="${mT+ph}" stroke="${T.grid}"/>`; o+=`<text x="${x}" y="${mT+ph+18}" text-anchor="middle" font-size="12" fill="${T.ink2}">${fv(t)}</text>`; }
+      else { const y=mT+ph-f*ph; if($('grid').checked) o+=`<line x1="${mL}" x2="${mL+pw}" y1="${y}" y2="${y}" stroke="${T.grid}"/>`; o+=`<text x="${mL-8}" y="${y+4}" text-anchor="end" font-size="12" fill="${T.ink2}">${fv(t)}</text>`; } });
+    if (S.xNum) xticks.forEach(t=>{ const p = horiz ? mT+ph-(t-xlo)/(xhi-xlo)*ph : mL+(t-xlo)/(xhi-xlo)*pw;
+      if (horiz){ if($('grid').checked) o+=`<line x1="${mL}" x2="${mL+pw}" y1="${p}" y2="${p}" stroke="${T.grid}"/>`; o+=`<text x="${mL-8}" y="${p+4}" text-anchor="end" font-size="12" fill="${T.ink2}">${fmt(t)}</text>`; }
+      else { if($('grid').checked) o+=`<line x1="${p}" x2="${p}" y1="${mT}" y2="${mT+ph}" stroke="${T.grid}"/>`; o+=`<text x="${p}" y="${mT+ph+18}" text-anchor="middle" font-size="12" fill="${T.ink2}">${fmt(t)}</text>`; } });
     o += `<line x1="${mL}" x2="${mL}" y1="${mT}" y2="${mT+ph}" stroke="${T.axis}" stroke-width="1.5"/><line x1="${mL}" x2="${mL+pw}" y1="${mT+ph}" y2="${mT+ph}" stroke="${T.axis}" stroke-width="1.5"/>`;
-    // axis titles
-    const catAxisLab = xlab ? `<tspan fill="${T.ink}">${esc(xlab)}</tspan>` : `<tspan fill="${T.ph}" font-style="italic">${isBarH?'Y':'X'} axis label?</tspan>`;
-    const valAxisLab = ylab ? `<tspan fill="${T.ink}">${esc(ylab)}</tspan>` : `<tspan fill="${T.ph}" font-style="italic">${isBarH?'X':'Y'} axis label?</tspan>`;
-    if (isBarH){
-      o += `<text x="${mL+pw/2}" y="${mT+ph+46}" text-anchor="middle" font-size="14" font-weight="600">${valAxisLab}</text>`;
-      o += `<text transform="translate(18 ${mT+ph/2}) rotate(-90)" text-anchor="middle" font-size="14" font-weight="600">${catAxisLab}</text>`;
-    } else {
-      o += `<text x="${mL+pw/2}" y="${540-18}" text-anchor="middle" font-size="14" font-weight="600">${catAxisLab}</text>`;
-      o += `<text transform="translate(20 ${mT+ph/2}) rotate(-90)" text-anchor="middle" font-size="14" font-weight="600">${valAxisLab}</text>`;
-    }
+    const xAxisName = horiz ? 'Y' : 'X', vAxisName = horiz ? 'X' : 'Y';
+    const catLab = xlab ? `<tspan fill="${T.ink}">${esc(xlab)}</tspan>` : `<tspan fill="${T.ph}" font-style="italic">${xAxisName} axis label?</tspan>`;
+    const valLab = ylab ? `<tspan fill="${T.ink}">${esc(ylab)}</tspan>` : `<tspan fill="${T.ph}" font-style="italic">${vAxisName} axis label?</tspan>`;
+    if (horiz){ o += `<text x="${mL+pw/2}" y="${mT+ph+46}" text-anchor="middle" font-size="14" font-weight="600">${valLab}</text><text transform="translate(18 ${mT+ph/2}) rotate(-90)" text-anchor="middle" font-size="14" font-weight="600">${catLab}</text>`; }
+    else { o += `<text x="${mL+pw/2}" y="${BASEH-24}" text-anchor="middle" font-size="14" font-weight="600">${catLab}</text><text transform="translate(20 ${mT+ph/2}) rotate(-90)" text-anchor="middle" font-size="14" font-weight="600">${valLab}</text>`; }
     if (!ready){
       const msg = !type ? 'Choose a chart type to begin' : (!S.x ? 'Choose what goes on the X axis' : (!S.y ? 'Choose what goes on the Y axis' : 'No rows match your filter'));
       o += `<text x="${mL+pw/2}" y="${mT+ph/2}" text-anchor="middle" font-size="16" fill="${T.ph}">${msg}</text>`;
     } else {
-      const n = S.order.length, band = (isBarH ? ph : pw) / n;
-      const catPos = i => (isBarH ? mT : mL) + band*i + band/2;
-      // category labels
-      S.order.forEach((x,i)=>{
-        if (isBarH) o += `<text x="${mL-8}" y="${catPos(i)+4}" text-anchor="end" font-size="12" fill="${T.ink2}">${esc(x)}</text>`;
-        else if (rot) o += `<text transform="translate(${catPos(i)} ${mT+ph+14}) rotate(-40)" text-anchor="end" font-size="12" fill="${T.ink2}">${esc(x)}</text>`;
-        else { const show = n<=14 || i % Math.ceil(n/14)===0; if (show) o += `<text x="${catPos(i)}" y="${mT+ph+18}" text-anchor="middle" font-size="12" fill="${T.ink2}">${esc(x.length>16? x.slice(0,15)+'…' : x)}</text>`; }
-      });
-      const vPix = v => isBarH ? mL + vScale(v)*pw : mT + ph - vScale(v)*ph;
-      const base = isBarH ? mL + (logY?0:vScale(Math.max(lo,0)))*pw : mT + ph - (logY?0:vScale(Math.max(lo,0)))*ph;
-      const labels = $('dataLabels').checked;
-      const nS = S.series.length;
+      if (!S.xNum) S.order.forEach((x,i)=>{ const xs=String(x);
+        if (horiz) o += `<text x="${mL-8}" y="${catPos(i)+4}" text-anchor="end" font-size="12" fill="${T.ink2}">${esc(xs.length>40?xs.slice(0,39)+'…':xs)}</text>`;
+        else if (rot) o += `<text transform="translate(${catPos(i)} ${mT+ph+14}) rotate(-40)" text-anchor="end" font-size="12" fill="${T.ink2}">${esc(xs.length>34?xs.slice(0,33)+'…':xs)}</text>`;
+        else { const show = n<=14 || i%Math.ceil(n/14)===0; if (show) o += `<text x="${catPos(i)}" y="${mT+ph+18}" text-anchor="middle" font-size="12" fill="${T.ink2}">${esc(xs.length>16? xs.slice(0,15)+'…' : xs)}</text>`; } });
+      const labels = $('dataLabels').checked, nS = S.series.length;
+      const P = (c, v) => horiz ? [vPix(v), c] : [c, vPix(v)];
       if (type==='column' || type==='bar'){
-        const stacked = S.grouped && S.barMode==='stacked';
-        const inner = band*0.72, bw = stacked || !S.grouped ? inner : inner/nS;
-        const cum = new Array(n).fill(0);
-        S.series.forEach((s,si2)=>{
-          const col = colorFor(si2);
-          s.vals.forEach((v,i)=>{
-            if (v==null) return;
+        const inner = band*0.72, cum = new Array(n).fill(0);
+        S.series.forEach((s,k)=>{ const col=colorFor(s);
+          s.vals.forEach((v,i)=>{ if (v==null) return;
             const baseV = logY ? lo : Math.max(lo,0);
-            const a = vPix(stacked ? (cum[i] || (logY? lo : 0)) : baseV);
-            const b = vPix(stacked ? cum[i] + v : v);
-            const off = stacked || !S.grouped ? -inner/2 : -inner/2 + si2*bw;
-            const c = catPos(i) + off;
-            const g = (S.grouped && !stacked) ? 1 : 0;
-            let rect;
-            if (isBarH){ const x0=Math.min(a,b), w=Math.max(Math.abs(b-a)-(stacked&&si2<nS-1?2:0),0.5); rect=`<rect x="${x0}" y="${c+g}" width="${w}" height="${Math.max(bw-2*g,1)}" rx="3" fill="${col}" data-m="${marks.length}"/>`; }
-            else { const y0=Math.min(a,b), h=Math.max(Math.abs(b-a)-(stacked&&si2<nS-1?2:0),0.5); rect=`<rect x="${c+g}" y="${y0}" width="${Math.max(bw-2*g,1)}" height="${h}" rx="3" fill="${col}" data-m="${marks.length}"/>`; }
-            o += rect;
-            marks.push({label:S.order[i], series: S.grouped? s.name : '', value:v});
-            if (labels){
-              if (stacked){
-                const len = Math.abs(b-a), lc = inkOn(col);
-                if (isBarH && len >= textW(fmt(v),11)+8) o += `<text x="${(a+b)/2}" y="${c+bw/2+4}" text-anchor="middle" font-size="11" font-weight="600" fill="${lc}">${fmt(v)}</text>`;
-                else if (!isBarH && len >= 16 && bw >= textW(fmt(v),11)+4) o += `<text x="${c+bw/2}" y="${(a+b)/2+4}" text-anchor="middle" font-size="11" font-weight="600" fill="${lc}">${fmt(v)}</text>`;
-              }
-              else if (isBarH) o += `<text x="${b+5}" y="${c+bw/2+4}" font-size="11" fill="${T.ink2}">${fmt(v)}</text>`;
-              else o += `<text x="${c+bw/2}" y="${b-5}" text-anchor="middle" font-size="11" fill="${T.ink2}">${fmt(v)}</text>`;
-            }
-            if (stacked) cum[i] += v;
+            const a = vPix(stacked ? (cum[i] || (logY?lo:0)) : baseV), b = vPix(stacked ? cum[i]+v : v);
+            const present = S.series.map((ss,kk)=>ss.vals[i]!=null?kk:-1).filter(kk=>kk>=0), np = present.length, slot = present.indexOf(k);
+            const bwi = stacked || np<=1 ? inner : inner/np;
+            const off = stacked || np<=1 ? -inner/2 : -inner/2 + slot*bwi, c = catPos(i)+off, g = (!stacked && np>1) ? 1 : 0;
+            const bw = bwi;
+            if (horiz){ const x0=Math.min(a,b), w=Math.max(Math.abs(b-a)-(stacked&&k<nS-1?2:0),0.5); o+=`<rect x="${x0}" y="${c+g}" width="${w}" height="${Math.max(bw-2*g,1)}" rx="3" fill="${col}" fill-opacity="${op}" data-m="${marks.length}"/>`; }
+            else { const y0=Math.min(a,b), h=Math.max(Math.abs(b-a)-(stacked&&k<nS-1?2:0),0.5); o+=`<rect x="${c+g}" y="${y0}" width="${Math.max(bw-2*g,1)}" height="${h}" rx="3" fill="${col}" fill-opacity="${op}" data-m="${marks.length}"/>`; }
+            marks.push({label:S.order[i], series:[s.g,s.s].filter(Boolean).join(' · '), value:v});
+            if (labels){ if (stacked){ const len=Math.abs(b-a), lc=inkOn(col);
+                if (horiz && len>=textW(fv(v),11)+8) o+=`<text x="${(a+b)/2}" y="${c+bw/2+4}" text-anchor="middle" font-size="11" font-weight="600" fill="${lc}">${fv(v)}</text>`;
+                else if (!horiz && len>=16 && bw>=textW(fv(v),11)+4) o+=`<text x="${c+bw/2}" y="${(a+b)/2+4}" text-anchor="middle" font-size="11" font-weight="600" fill="${lc}">${fv(v)}</text>`; }
+              else if (horiz) o+=`<text x="${b+5}" y="${c+bw/2+4}" font-size="11" fill="${T.ink2}">${fv(v)}</text>`;
+              else o+=`<text x="${c+bw/2}" y="${b-5}" text-anchor="middle" font-size="11" fill="${T.ink2}">${fv(v)}</text>`; }
+            if (stacked) cum[i]+=v; }); });
+        if (stacked && labels) cum.forEach((t,i)=>{ const tp=vPix(t), c=catPos(i); o += horiz ? `<text x="${tp+5}" y="${c+4}" font-size="11" font-weight="700" fill="${T.ink2}">${fv(t)}</text>` : `<text x="${c}" y="${tp-5}" text-anchor="middle" font-size="11" font-weight="700" fill="${T.ink2}">${fv(t)}</text>`; });
+      } else {
+        const lw=+$('lwidth').value, ps=+$('psize').value;
+        const showL = (type==='line'||type==='area') && $('showLines').checked;
+        const showP = type==='points' || $('showPoints').checked;
+        const cum = new Array(n).fill(0);
+        S.series.forEach((s,k)=>{
+          const col=colorFor(s);
+          const pts = s.vals.map((v,i)=>{ if (v==null) return null; const base = stacked? cum[i] : 0; const top = base + v; return {i, v, top, base, p:P(catPos(i), top), p0:P(catPos(i), stacked? base : (logY?lo:Math.max(lo,0)))}; }).filter(Boolean);
+          if (type==='area' && pts.length>1){ const fwd=pts.map(q=>q.p.join(',')).join(' L'), back=pts.slice().reverse().map(q=>q.p0.join(',')).join(' L'); o+=`<path d="M${fwd} L${back}Z" fill="${col}" fill-opacity="${0.35*op+ (stacked?0.3:0)}" stroke="none"/>`; }
+          if (showL && pts.length>1) o += `<polyline points="${pts.map(q=>q.p.join(',')).join(' ')}" fill="none" stroke="${col}" stroke-opacity="${op}" stroke-width="${lw}" stroke-dasharray="${dashFor(s)}" stroke-linejoin="round" stroke-linecap="round"/>`;
+          pts.forEach(q=>{
+            const r = (type==='points' && S.sz) ? sizeR(s.sizes[q.i]||0) : ps;
+            if (showP) o += marker(shapeFor(s), q.p[0], q.p[1], r, col, T.ring, op);
+            o += `<circle cx="${q.p[0]}" cy="${q.p[1]}" r="${Math.max(12,r)}" fill="transparent" data-m="${marks.length}"/>`;
+            marks.push({label: S.xNum? `${S.xCol.label}: ${fmt(S.order[q.i])}` : S.order[q.i], series:[s.g,s.s].filter(Boolean).join(' · '), value:q.v, size: S.sz? s.sizes[q.i] : null});
+            if (labels) o += `<text x="${q.p[0]}" y="${q.p[1]-r-5}" text-anchor="middle" font-size="11" fill="${T.ink2}">${fv(q.v)}</text>`;
+            if (stacked) cum[q.i] += q.v;
           });
-        });
-        if (stacked && labels) cum.forEach((tot,i)=>{ const tp=vPix(tot), c=catPos(i);
-          o += isBarH ? `<text x="${tp+5}" y="${c+4}" font-size="11" font-weight="700" fill="${T.ink2}">${fmt(tot)}</text>` : `<text x="${c}" y="${tp-5}" text-anchor="middle" font-size="11" font-weight="700" fill="${T.ink2}">${fmt(tot)}</text>`; });
-      } else if (type==='line' || type==='points'){
-        const lw = +$('lwidth').value, ps = +$('psize').value;
-        const showL = $('showLines').checked && (type==='line'), showP = $('showPoints').checked || type==='points';
-        S.series.forEach((s,si2)=>{
-          const col = colorFor(si2);
-          const pts = s.vals.map((v,i)=> v==null? null : [isBarH? vPix(v) : catPos(i), isBarH? catPos(i) : vPix(v), v, i]).filter(Boolean);
-          if (showL && pts.length>1) o += `<polyline points="${pts.map(p=>p[0]+','+p[1]).join(' ')}" fill="none" stroke="${col}" stroke-width="${lw}" stroke-linejoin="round" stroke-linecap="round"/>`;
-          pts.forEach(p=>{
-            if (showP) o += `<circle cx="${p[0]}" cy="${p[1]}" r="${ps}" fill="${col}" stroke="${T.ring}" stroke-width="1.5"/>`;
-            o += `<circle cx="${p[0]}" cy="${p[1]}" r="12" fill="transparent" data-m="${marks.length}"/>`;
-            marks.push({label:S.order[p[3]], series:S.grouped? s.name:'', value:p[2]});
-            if (labels) o += `<text x="${p[0]}" y="${p[1]-ps-5}" text-anchor="middle" font-size="11" fill="${T.ink2}">${fmt(p[2])}</text>`;
-          });
+          if (stacked) s.vals.forEach((v,i)=>{ if (v!=null && !pts.find(q=>q.i===i)) cum[i]+=v; });
         });
       }
+      // trend line(s)
+      S.trendInfo = [];
+      if ($('trend').checked && type!=='pie' && (S.xNum || S.xCol.type==='ord') && !stacked){
+        const groups = S.gKey ? S.gNames : [''];
+        groups.forEach(gn=>{
+          const pts=[]; S.series.filter(s=>!S.gKey || s.g===gn).forEach(s=>s.vals.forEach((v,i)=>{ if(v!=null) pts.push([+S.order[i], v]); }));
+          const L = linReg(pts); if (!L) return;
+          const x0=+S.order[0], x1=+S.order[S.order.length-1];
+          const toPix = (xv, yv) => { const c = S.xNum ? (horiz ? mT+ph-(xv-xlo)/(xhi-xlo)*ph : mL+(xv-xlo)/(xhi-xlo)*pw) : catPos(S.order.findIndex(o=>+o===xv)); return P(c, yv); };
+          const a=toPix(x0, L.a+L.b*x0), b=toPix(x1, L.a+L.b*x1);
+          const col = S.gKey ? pal[gIndex(gn)%pal.length] : T.ink2;
+          o += `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${col}" stroke-width="2" stroke-dasharray="6 4" opacity=".9"/>`;
+          S.trendInfo.push({g:gn, slope:L.b, r2:L.r2});
+        });
+        if (S.trendInfo.length===1){ const t=S.trendInfo[0]; o += `<text x="${mL+pw-6}" y="${mT+14}" text-anchor="end" font-size="12" fill="${T.ink2}">Trend: ${t.slope>=0?'+':''}${fmt(t.slope)}${yUnit} per ${S.xCol.type==='ord'?'year':'unit'}  ·  R² = ${t.r2.toFixed(2)}</text>`; }
+      }
+      // legend
       if (legendOn){
-        const isLine = type==='line'||type==='points';
-        o += `<text x="${W-mR+16}" y="${mT+4}" font-size="12.5" font-weight="700" fill="${T.ink2}">${esc(colOf(S.g).label)}</text>`;
-        S.series.slice(0,18).forEach((s,i)=>{ const y=mT+26+i*21, col=colorFor(i);
-          o += isLine ? `<line x1="${W-mR+16}" x2="${W-mR+32}" y1="${y-4}" y2="${y-4}" stroke="${col}" stroke-width="3" stroke-linecap="round"/>` : `<rect x="${W-mR+16}" y="${y-11}" width="12" height="12" rx="3" fill="${col}"/>`;
-          o += `<text x="${W-mR+38}" y="${y}" font-size="12.5" fill="${T.ink2}">${esc(s.name.length>20? s.name.slice(0,19)+'…' : s.name)}</text>`; });
-        if (S.series.length>18) o += `<text x="${W-mR+16}" y="${mT+26+18*21}" font-size="12" fill="${T.ink2}">+${S.series.length-18} more</text>`;
+        let ly = mT+4; const lx = W-mR+16; const isLine = type==='line'||type==='area';
+        legendItems.forEach(sec=>{
+          o += `<text x="${lx}" y="${ly}" font-size="12.5" font-weight="700" fill="${T.ink2}">${esc(sec.title)}</text>`; ly += 20;
+          sec.items.slice(0,14).forEach(it=>{
+            if (it.kind==='color') o += isLine ? `<line x1="${lx}" x2="${lx+16}" y1="${ly-4}" y2="${ly-4}" stroke="${it.color}" stroke-width="3" stroke-linecap="round" stroke-dasharray="${$('dash').value==='bygroup'? DASHES[gIndex(it.label)%DASHES.length] : dashFor({g:it.label})}"/>` : (type==='points'? marker($('shape').value, lx+7, ly-4, 6, it.color, T.ring, 1) : `<rect x="${lx}" y="${ly-11}" width="12" height="12" rx="3" fill="${it.color}"/>`);
+            else if (it.kind==='shape') o += marker(it.shape, lx+7, ly-4, 6, T.ink2, T.ring, 1);
+            else o += `<circle cx="${lx+10}" cy="${ly-4}" r="${Math.min(it.r,12)}" fill="none" stroke="${T.ink2}"/>`;
+            const lab = String(it.label); o += `<text x="${lx+ (it.kind==='size'?26:22)}" y="${ly}" font-size="12.5" fill="${T.ink2}">${esc(lab.length>22?lab.slice(0,21)+'…':lab)}</text>`; ly += it.kind==='size' ? 26 : 20; });
+          if (sec.items.length>14) { o += `<text x="${lx}" y="${ly}" font-size="12" fill="${T.ink2}">+${sec.items.length-14} more</text>`; ly+=20; }
+          ly += 10; });
       }
     }
   }
-  // source & name
-  if (src) o += `<text x="16" y="${footY+8}" font-size="11.5" fill="${T.ink2}">Source: ${esc(src)}</text>`;
-  if (nm) o += `<text x="${W-16}" y="${footY+8}" text-anchor="end" font-size="11.5" fill="${T.ink2}">${esc(nm)}</text>`;
-  if (capLines.length){ o += `<line x1="16" x2="${W-16}" y1="548" y2="548" stroke="${T.grid}"/>`; capLines.forEach((l,i)=> o += `<text x="16" y="${570+i*18}" font-size="13.5" fill="${T.ink}">${esc(l)}</text>`); }
+  if (src) o += `<text x="16" y="${footY}" font-size="11.5" fill="${T.ink2}">Source: ${esc(src)}</text>`;
+  if (nm) o += `<text x="${W-16}" y="${footY}" text-anchor="end" font-size="11.5" fill="${T.ink2}">${esc(nm)}</text>`;
+  if (capLines.length){ o += `<line x1="16" x2="${W-16}" y1="${BASEH+8}" y2="${BASEH+8}" stroke="${T.grid}"/>`; capLines.forEach((l,i)=> o += `<text x="16" y="${BASEH+30+i*18}" font-size="13.5" fill="${T.ink}">${esc(l)}</text>`); }
   svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
   svg.setAttribute('font-family', 'system-ui, -apple-system, Segoe UI, sans-serif');
   svg.innerHTML = o;
-  $('barModeRow').style.display = (type==='column'||type==='bar') ? '' : 'none';
-  $('xLbl').textContent = isBarH ? 'Categories (Y)' : (isPie ? 'Slices' : 'X axis');
-  $('yLbl').textContent = isBarH ? 'Values (X)' : (isPie ? 'Slice size' : 'Y axis');
-  $('xlabL').textContent = isBarH ? 'Category label' : 'X axis label';
-  $('ylabL').textContent = isBarH ? 'Value label' : 'Y axis label';
-  // tooltips
+  $('barModeRow').style.display = (type==='column'||type==='bar'||type==='area') ? '' : 'none';
+  const horizNow = (type==='bar') !== ($('swap').checked && type!=='pie');
+  $('xLbl').textContent = isPie ? 'Slices' : (horizNow ? 'Categories (Y)' : 'X axis');
+  $('yLbl').textContent = isPie ? 'Slice size' : (horizNow ? 'Values (X)' : 'Y axis');
+  $('xlabL').textContent = horizNow ? 'Category label' : 'X axis label';
+  $('ylabL').textContent = horizNow ? 'Value label' : 'Y axis label';
   svg.querySelectorAll('[data-m]').forEach(el=>{
-    const m = marks[+el.dataset.m];
-    el.style.cursor='pointer';
+    const m = marks[+el.dataset.m]; el.style.cursor='pointer';
     el.addEventListener('mousemove', e=>{
-      tip.innerHTML = `<strong>${fmt(m.value)}${$('ySel').value==='__count'?' rows':' t'}</strong>${m.extra? ' · '+m.extra:''}<br>${esc(m.label)}${m.series? ' · '+esc(m.series):''}`;
+      tip.innerHTML = `<strong>${fv(m.value)}</strong>${m.extra? ' · '+m.extra:''}<br>${esc(m.label)}${m.series? ' · '+esc(m.series):''}${m.size!=null? '<br>'+esc(colOf(S.sz).label)+': '+fmt(m.size):''}`;
       tip.style.opacity=1; const r=$('chartWrap').getBoundingClientRect(); let x=e.clientX-r.left+12; if (x+tip.offsetWidth>r.width) x=e.clientX-r.left-tip.offsetWidth-12; tip.style.left=x+'px'; tip.style.top=(e.clientY-r.top+12)+'px'; });
     el.addEventListener('mouseleave', ()=>tip.style.opacity=0);
   });
-  $('graphDesc').textContent = ready ? `${type} chart of ${$('ySel').selectedOptions[0].text} by ${colOf(S.x).label}${S.grouped?', colored by '+colOf(S.g).label:''}. ${S.order.length} categories.` : 'Blank graph.';
+  $('graphDesc').textContent = ready ? `${type} chart of ${$('ySel').selectedOptions[0].text} by ${S.xCol.label}${S.gKey?', colored by '+colOf(S.gKey).label:''}${S.shKey?', shaped by '+colOf(S.shKey).label:''}.` : 'Blank graph.';
   if (!$('feedback').hidden) check(S);
 }
 
 /* ===================== FEEDBACK ===================== */
 function check(S){
   S = S || shape();
-  const out = []; const ok = m=>out.push(['ok',m]), warn = m=>out.push(['warn',m]);
-  const d = ds(), type=S.type, hasYear = d.cols.some(c=>c.key==='year');
+  const out=[]; const ok=m=>out.push(['ok',m]), warn=m=>out.push(['warn',m]);
+  const d=ds(), type=S.type;
   if (!type || !S.x || !S.y){ warn('<b>Not finished.</b> Pick a chart type, an X axis and a Y axis first.'); return show(out); }
-  const title=$('title').value.trim(), xlab=$('xlab').value.trim(), ylab=$('ylab').value.trim();
-  const xIsOrd = S.xCol.type==='ord';
-  // chart type fit
-  if (type==='line' && !xIsOrd) warn(`<b>Lines imply an order.</b> A line connects ${S.xCol.label} values as if they were a sequence (like time). ${S.xCol.label} has no natural order, so try columns, bars or points.`);
-  else if (type==='line' && xIsOrd) ok('A line fits: Year has a natural order, so the line shows change over time.');
-  if ((type==='column'||type==='bar') && xIsOrd) ok('Columns over years work. A line would show the trend even more clearly.');
-  if ((type==='column'||type==='bar') && !xIsOrd) ok(`${type==='bar'?'Bars':'Columns'} are a good way to compare amounts across categories.`);
-  if (type==='bar' && !xIsOrd && S.order.length>6 && $('sort').value==='data') warn('<b>Try sorting.</b> With many bars, "Largest first" makes the ranking easy to read.');
-  if (type==='pie'){
-    if (S.order.length>7) warn(`<b>Too many slices.</b> Your pie has ${S.order.length} slices. People can't compare thin slices; use "Top 5 + Other" or switch to bars.`);
-    else ok('A pie works here: a few parts that add up to a whole.');
-    if (S.grouped) warn('<b>Pies can\'t show groups.</b> "Color by" is ignored on a pie; the slices are already colored by category.');
-    if (xIsOrd) warn('<b>Years are not parts of a whole.</b> A pie of years adds different years together. Use a line or columns for change over time.');
-    if ($('agg').value==='mean') warn('<b>Averages don\'t make a whole.</b> Pie slices should be parts that add up to a total; use "Add them up."');
+  const title=$('title').value.trim(), xlab=$('xlab').value.trim(), ylab=$('ylab').value.trim(), src=$('source').value.trim();
+  const xOrd = S.xCol.type==='ord', xNum = S.xCol.type==='num', yCol = S.y==='__count' ? null : colOf(S.y);
+  const hasYear = d.cols.some(c=>c.key==='year');
+  if (ti===0){
+    if (xOrd || xNum) warn(`<b>Is ${S.xCol.label} a "type"?</b> This graph should compare categories (kinds of material, sources, landfills). Put a category column on the X axis.`);
+    else ok(`${S.xCol.label} works as the "type" for this graph.`);
+    if (type==='line' || type==='area') warn(`<b>Lines imply an order.</b> A line connects types as if they were steps in time. ${S.xCol.label} has no natural order, so use bars, columns or a pie.`);
+    if (type==='points' && !xNum) ok('A dot plot can compare types; bars usually make the differences easier to see.');
+    if ((type==='bar'||type==='column') && S.order.length>4 && $('sort').value==='data') warn('<b>Try sorting.</b> "Largest first" makes it easy to see which type is biggest.');
+    if ((type==='bar'||type==='column') && $('sort').value!=='data') ok('Sorted bars make the ranking easy to read.');
+  } else {
+    if (!(xOrd || xNum)) warn(`<b>Where is time?</b> This graph should show change from 2020 to 2025. Put Year on the X axis${hasYear?'':' (or pick the other data table)'}, or put a number on X and color or shape by Year.`);
+    else if (xOrd) ok('Year is on the X axis, so the graph shows change over time.');
+    else ok(`${S.xCol.label} on the X axis with ${yCol?yCol.label:'counts'} on Y explores a relationship between two numbers.`);
+    if (xNum && !(S.g==='year' || S.sh==='year' || S.fCol==='year')) warn('<b>Add time.</b> With a number on X, use "Color by" or "Shape by" Year (or "Show only" one year) so the graph still shows time.');
+    if ((type==='line'||type==='area') && xOrd) ok('A line is a natural choice for change over time.');
+    if ((type==='column'||type==='bar') && xOrd) ok('Columns over years work; a line can show the trend more clearly.');
+    if (!$('trend').checked && (xOrd||xNum) && type!=='pie') ok('Tip: turn on "Trend line" to see the overall direction and how well a straight line fits (R²).');
+    if ($('trend').checked && S.trendInfo && S.trendInfo.length) ok(`Trend line on. R² near 1 means the points follow a straight line closely; near 0 means little linear relationship.`);
   }
-  if (type==='points') ok('Points show each value as a position. If X is in time order, a Line chart connects them to show the trend.');
-  // summing years
-  if (hasYear && S.x!=='year' && S.g!=='year' && S.fCol!=='year' && $('agg').value==='sum')
-    warn('<b>You are adding six years together.</b> Each value is the total for 2020–2025. Use "Show only: Year" to pick one year, put Year on the X axis, or color by Year.');
-  if (S.y==='ppd' && $('agg').value==='sum' && S.x!=='city') warn('<b>Rates can\'t be added.</b> Pounds per person per day is a rate; adding rates from different places gives a meaningless number. Use "Average them," or put Location on the X axis.');
-  if (S.y==='pop') warn('<b>Check your Y.</b> You are graphing residents, not waste. Is that what you meant to compare?');
-  // zero baseline
-  if ((type==='column'||type==='bar'||type==='pie') && !$('zero').checked && !$('logY').checked) warn('<b>Bars should start at 0.</b> A bar\'s length stands for the amount, so cutting off the bottom makes small differences look huge.');
-  if ((type==='line'||type==='points') && !$('zero').checked) ok('Not starting a line chart at 0 is fine, as long as the axis numbers make that clear.');
-  if ($('logY').checked) warn('<b>Log scale.</b> Each gridline is 10× the one below. That helps when values range from tiny to huge, but readers may misread it. Say so in your axis label.');
-  // groups
-  if (S.gSame) warn('<b>Color by repeats the X axis.</b> Coloring by the same column as X adds nothing new; pick a different column or none.');
-  if (S.grouped && S.series.length>8) warn(`<b>Too many colors.</b> You have ${S.series.length} color groups, more than people can tell apart. Filter or use fewer groups.`);
-  if (S.grouped && $('palette').value==='blues' && colOf(S.g).type!=='ord') warn('<b>Palette choice.</b> Light-to-dark blues suggest an order (low to high). Your groups have no order, so distinct hues (Bold) are clearer.');
-  if (S.grouped && $('palette').value==='bold' && colOf(S.g).type==='ord') ok('Tip: for years, a light-to-dark palette (Blues) shows the time order.');
-  if (S.grouped && !$('showLegend').checked && type!=='pie') warn('<b>No legend.</b> Readers can\'t tell what each color means.');
-  if (S.grouped && type!=='pie' && S.series.length>1 && $('showLegend').checked) ok('The legend explains the colors.');
-  if (type!=='pie' && S.grouped && S.barMode==='stacked' && (type==='column'||type==='bar')) ok('Stacked bars show both the total and its parts. Only the bottom segment is easy to compare across bars.');
+  if (type==='pie'){
+    if (ti===1) warn('<b>Pies can\'t show change over time.</b> Each slice is part of one whole; years are not parts of a whole.');
+    if (S.order.length>7) warn(`<b>Too many slices.</b> Your pie has ${S.order.length} slices. Use "Top 5 + Other" or switch to bars.`);
+    if (yCol && yCol.rate) warn(`<b>Percents and counts can't be pie slices.</b> ${yCol.label} isn't an amount that adds up to a whole.`);
+    if (S.gKey) warn('<b>Pies ignore "Color by."</b> Slices are colored by category already.');
+  }
+  // aggregation problems
+  const dup = d.rows.filter(r=>!S.fCol || String(r[S.fCol])===S.fVal).length > S.order.length * Math.max(1, S.series.length);
+  if (hasYear && S.x!=='year' && S.g!=='year' && S.sh!=='year' && S.fCol!=='year' && S.agg==='sum' && d.rows.some(r=>r.year!==undefined) && dup)
+    warn('<b>You are adding six years together.</b> Each value is the 2020–2025 total. Use "Show only: Year," put Year on X, or color by Year.');
+  if (yCol && yCol.rate && S.agg==='sum' && dup) warn(`<b>${yCol.label} can't be added up.</b> Adding rates or counts from several rows gives a meaningless number. Use "Average them" or "Largest value."`);
+  if (yCol && yCol.rate && S.valMode==='pct') warn(`<b>Percent of a percent.</b> ${yCol.label} is already a rate; showing it as "percent of total" is confusing.`);
+  // axis
+  if ((type==='column'||type==='bar'||type==='area') && !$('zero').checked && !$('logY').checked) warn('<b>Bars and areas should start at 0.</b> Their length or area stands for the amount, so cutting off the bottom exaggerates differences.');
+  if ($('logY').checked) warn('<b>Log scale.</b> Each gridline is 10× the one below. Useful when values range from tiny to huge, but say so in the axis label.');
+  // color / shape / size
+  if (S.gSame) warn('<b>"Color by" repeats the X axis.</b> It adds no new information; try a different column, such as one that groups the types.');
+  if (S.gKey && S.gNames.length>8) warn(`<b>Too many colors.</b> ${S.gNames.length} color groups are hard to tell apart. Filter, or color by a column with fewer groups.`);
+  if (S.gKey && !S.gSame) ok(`Coloring by ${colOf(S.gKey).label} adds a second variable to the graph.`);
+  if (S.gKey && $('palette').value==='blues' && colOf(S.gKey).type!=='ord') warn('<b>Palette choice.</b> Light-to-dark blues suggest an order; your groups have none, so distinct hues (Bold) are clearer.');
+  if (S.sh && type!=='points') warn('<b>Shape only works on points.</b> Switch the chart type to Points to use "Shape by."');
+  if (S.sz && type!=='points') warn('<b>Size only works on points.</b> Switch the chart type to Points to use "Size by."');
+  if (S.shKey && S.shKey===S.gKey) ok('Color and shape show the same groups: that helps readers who can\'t see color well.');
+  if (S.shKey && S.sNames.length>6) warn('<b>Too many shapes.</b> More than 6 shapes are hard to tell apart.');
+  if (S.sz && type==='points') ok(`Point size shows ${colOf(S.sz).label}, a third variable. Readers compare sizes less precisely than positions, so use it for rough comparisons.`);
+  if ((S.gKey || S.shKey) && !$('showLegend').checked && type!=='pie') warn('<b>No legend.</b> Readers can\'t tell what the colors or shapes mean.');
+  if ($('dash').value==='bygroup' && !S.gKey) warn('<b>Line styles by group need groups.</b> Choose a "Color by" column first.');
   // labels
-  if (!title) warn('<b>Add a title.</b> Say what the graph shows, where and when (for example, "Trash sent to landfills by Fresno County cities, 2025").');
+  if (!title) warn('<b>Add a title.</b> Say what, where and when (for example, "Clovis trash by material type, 2025 (estimated)").');
   else if (title.length<15) warn('<b>Make the title more specific.</b> Include what, where and when.');
   else ok('The graph has a descriptive title.');
   if (type!=='pie'){
-    if (!xlab) warn(`<b>Label the ${type==='bar'?'category':'X'} axis.</b>`); else ok('The category axis is labeled.');
-    if (!ylab) warn(`<b>Label the ${type==='bar'?'value':'Y'} axis</b> and include units.`);
-    else if (S.y==='tons' && !/ton|\bt\b/i.test(ylab)) warn('<b>Include units</b> in the value axis label, for example "Tons per year."');
-    else ok('The value axis is labeled with units.');
+    if (!xlab) warn('<b>Label the category/X axis.</b>'); else ok('The category/X axis is labeled.');
+    if (!ylab) warn('<b>Label the value/Y axis</b> and include units.');
+    else if (yCol && /ton/i.test(yCol.label) && !/ton|\bt\b|%|percent/i.test(ylab)) warn('<b>Include units</b> in the value axis label, for example "Tons."');
+    else ok('The value axis is labeled.');
   }
-  if (!$('source').value.trim()) warn('<b>Credit the data.</b> Add a source note (CalRecycle).'); else ok('The data source is credited.');
-  if ($('dataLabels').checked && marks.length>24) warn('<b>Crowded labels.</b> With this many marks, data labels pile up. Keep them for a few key values.');
+  if (!src) warn('<b>Credit the data.</b> Add a source note (CalRecycle).');
+  else if (d.est && !/estimat/i.test(src+title)) warn('<b>Say it is estimated.</b> This table is an estimate from statewide data. Put "estimated" in the title or source note.');
+  else ok('The data source is credited.');
+  if ($('dataLabels').checked && marks.length>24) warn('<b>Crowded labels.</b> Keep data labels for a few key values.');
   if (S.combined) ok('Combining small categories into "Other" keeps the graph readable.');
   if ($('bgSel').value==='dark' && $('palette').value==='gray') warn('<b>Low contrast.</b> Dark grays are hard to see on a dark background.');
-  if (!S.grouped && type!=='pie'){ const c=$('color').value.toLowerCase(); const l = parseInt(c.slice(1,3),16)*0.299+parseInt(c.slice(3,5),16)*0.587+parseInt(c.slice(5,7),16)*0.114;
-    if (($('bgSel').value==='light' && l>215) || ($('bgSel').value==='dark' && l<45)) warn('<b>Low contrast.</b> Your color is hard to see against the background.'); }
+  if (+$('opacity').value < 40) warn('<b>Very see-through.</b> Low opacity makes marks hard to see.');
   show(out);
 }
 function show(out){
   const warns = out.filter(o=>o[0]==='warn').length;
-  $('feedback').innerHTML = `<b>${warns? warns+' thing'+(warns>1?'s':'')+' to improve' : 'Looks clear! Now explain it in Step 3.'}</b><ul>${out.sort((a,b)=>a[0]==='warn'?-1:1).map(([k,m])=>`<li class="${k}">${m}</li>`).join('')}</ul>`;
+  $('feedback').innerHTML = `<b>${warns? warns+' thing'+(warns>1?'s':'')+' to improve' : 'Looks clear! Now explain it below.'}</b><ul>${out.sort((a,b)=>a[0]==='warn'?-1:1).map(([k,m])=>`<li class="${k}">${m}</li>`).join('')}</ul>`;
   $('feedback').hidden = false;
 }
 $('checkBtn').addEventListener('click', ()=>{ $('feedback').hidden=false; check(); $('feedback').scrollIntoView({behavior:'smooth', block:'nearest'}); });
@@ -827,46 +700,13 @@ $('checkBtn').addEventListener('click', ()=>{ $('feedback').hidden=false; check(
 $('pngBtn').addEventListener('click', ()=>{
   const vb = svg.getAttribute('viewBox').split(' ').map(Number);
   const clone = svg.cloneNode(true); clone.setAttribute('xmlns','http://www.w3.org/2000/svg'); clone.setAttribute('width', vb[2]); clone.setAttribute('height', vb[3]);
-  const data = new XMLSerializer().serializeToString(clone);
   const img = new Image();
   img.onload = ()=>{ const c=document.createElement('canvas'); c.width=vb[2]*2; c.height=vb[3]*2; const ctx=c.getContext('2d'); ctx.scale(2,2); ctx.drawImage(img,0,0);
-    c.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b); const nm=($('sname').value.trim()||'my').replace(/[^a-z0-9]+/gi,'-'); a.download=`${nm}-waste-graph.png`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); }); };
-  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(data);
+    c.toBlob(b=>{ const a=document.createElement('a'); a.href=URL.createObjectURL(b); const nm=($('sname').value.trim()||'my').replace(/[^a-z0-9]+/gi,'-'); a.download=`${nm}-clovis-graph-${ti+1}.png`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); }); };
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(clone));
 });
 
-/* ===================== SANKEY (pathway diagram) ===================== */
-const SLOTS = ['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#008300','#6250d6','#e34948'], OTHER='#a9a79f';
-function drawSankey(){
-  const stream = STREAMS[si], links = stream.links, sv = $('sankey'), wrap = $('sankeyWrap'), tip2 = $('tip2');
-  const ncol = stream.cols3.length, W=960, H=520, top=34, bottom=8, marginL=190, marginR=230, nw=14, gap=10;
-  const nodes = {};
-  links.forEach(([a,b,v])=>{ [a,b].forEach(id=>{ if(!nodes[id]) nodes[id]={id,col:+id.split(':')[0],name:id.slice(id.indexOf(':')+1),inV:0,outV:0,out:[],inn:[]}; }); nodes[a].outV+=v; nodes[b].inV+=v; });
-  const cols=[...Array(ncol)].map(()=>[]); Object.values(nodes).forEach(n=>{ n.v=Math.max(n.inV,n.outV); cols[n.col].push(n); });
-  const isOther = n=>/^(Other|Unknown|Smaller|Not broken|Outside)/.test(n.name);
-  cols.forEach(c=>c.sort((a,b)=>(isOther(a)-isOther(b))||(b.v-a.v)));
-  const innerH=H-top-bottom, k=Math.min(...cols.map(c=>(innerH-gap*(c.length-1))/c.reduce((s,n)=>s+n.v,0))), xStep=(W-marginL-marginR-nw)/(ncol-1);
-  cols.forEach((c,ci)=>{ let y=top+(innerH-(c.reduce((s,n)=>s+n.v*k,0)+gap*(c.length-1)))/2; c.forEach(n=>{ n.x=marginL+ci*xStep; n.y=y; n.h=Math.max(n.v*k,1.5); y+=n.h+gap; }); });
-  let slot=0; cols[0].forEach(n=>{ n.color=isOther(n)?OTHER:SLOTS[slot++%8]; });
-  const L=links.map(([a,b,v])=>({s:nodes[a],t:nodes[b],v})); L.forEach(l=>{ l.s.out.push(l); l.t.inn.push(l); });
-  Object.values(nodes).forEach(n=>{ n.out.sort((p,q)=>p.t.y-q.t.y); n.inn.sort((p,q)=>p.s.y-q.s.y); let sy=n.y; n.out.forEach(l=>{l.sy=sy; sy+=l.v*k;}); let ty=n.y; n.inn.forEach(l=>{l.ty=ty; ty+=l.v*k;}); });
-  const total=cols[0].reduce((s,n)=>s+n.v,0);
-  let o='';
-  stream.cols3.forEach((t,ci)=>{ const x=marginL+ci*xStep+nw/2, anchor=ci===0?'end':(ci===ncol-1?'start':'middle'), tx=ci===0?x+nw/2:(ci===ncol-1?x-nw/2:x); o+=`<text class="colhead" x="${tx}" y="16" text-anchor="${anchor}">${t}</text>`; });
-  L.forEach((l,i)=>{ const w=Math.max(l.v*k,0.8), x0=l.s.x+nw, x1=l.t.x, xm=(x0+x1)/2, y0=l.sy, y1=l.ty;
-    o+=`<path class="link" data-i="${i}" d="M${x0},${y0} C${xm},${y0} ${xm},${y1} ${x1},${y1} L${x1},${y1+w} C${xm},${y1+w} ${xm},${y0+w} ${x0},${y0+w} Z" fill="${l.s.col===0?l.s.color:'#c3c2b7'}" opacity="0.42" style="mix-blend-mode:multiply"></path>`; });
-  Object.values(nodes).forEach(n=>{ o+=`<rect class="node" data-id="${esc(n.id)}" x="${n.x}" y="${n.y}" width="${nw}" height="${n.h}" rx="3" fill="${n.col===0?n.color:'#52514e'}"></rect>`;
-    if (n.h<2 && n.col!==0) return; const cy=n.y+n.h/2, lx=n.col===0?n.x-8:n.x+nw+8, an=n.col===0?'end':'start', big=n.h>=22;
-    o+=`<text class="nlabel" x="${lx}" y="${big?cy-2:cy+4}" text-anchor="${an}">${esc(n.name)}</text>`; if(big) o+=`<text class="nval" x="${lx}" y="${cy+13}" text-anchor="${an}">${fmt(n.v)} t · ${pct(n.v,total)}</text>`; });
-  sv.setAttribute('viewBox',`0 0 ${W} ${H}`); sv.innerHTML=o;
-  const showT=(html,e)=>{ tip2.innerHTML=html; tip2.style.opacity=1; const r=wrap.getBoundingClientRect(); let x=e.clientX-r.left+12; if(x+tip2.offsetWidth>r.width) x=e.clientX-r.left-tip2.offsetWidth-12; tip2.style.left=x+'px'; tip2.style.top=(e.clientY-r.top+12)+'px'; };
-  sv.querySelectorAll('.link').forEach(p=>{ const l=L[+p.dataset.i]; p.addEventListener('mousemove',e=>{ sv.classList.add('dim'); p.classList.add('hl'); showT(`<strong>${fmt(l.v)} t</strong> · ${pct(l.v,total)}<br>${esc(l.s.name)} → ${esc(l.t.name)}`,e); }); p.addEventListener('mouseleave',()=>{ sv.classList.remove('dim'); p.classList.remove('hl'); tip2.style.opacity=0; }); });
-  sv.querySelectorAll('.node').forEach(r=>{ const n=nodes[r.dataset.id]; r.addEventListener('mousemove',e=>{ sv.classList.add('dim'); [...n.out,...n.inn].forEach(l=>sv.querySelector(`.link[data-i="${L.indexOf(l)}"]`).classList.add('hl')); showT(`<strong>${fmt(n.v)} t</strong> · ${pct(n.v,total)}<br>${esc(n.name)}`,e); });
-    r.addEventListener('mouseleave',()=>{ sv.classList.remove('dim'); sv.querySelectorAll('.link.hl').forEach(p=>p.classList.remove('hl')); tip2.style.opacity=0; }); });
-  $('questions').innerHTML = '<b>Think about it</b><ol>' + stream.qs.map(q=>`<li>${q}</li>`).join('') + '</ol>';
-}
-
-drawLocation();
-pickStream(0);
+ti = 1; pickTask(0);
 })();
 </script>
 <script src="../mobile.js"></script>
