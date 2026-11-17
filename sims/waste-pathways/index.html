@@ -72,6 +72,12 @@
   .nval { font-size: 11.5px; fill: var(--text2); }
   .dim .link { opacity: .12 !important; }
   .dim .link.hl { opacity: .75 !important; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 12px 0; }
+  .stat { border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+  .stat .v { font-size: 21px; font-weight: 700; }
+  .stat .l { font-size: 12.5px; color: var(--text2); }
+  .chart-wrap2 { position: relative; }
+  #locChart, #locChart2 { display: block; width: 100%; height: auto; }
   .foot { font-size: 12.5px; color: var(--text2); }
   .foot a { color: var(--text2); }
   .sr-only { position:absolute!important; width:1px!important; height:1px!important; overflow:hidden!important; clip:rect(0 0 0 0)!important; white-space:nowrap!important; }
@@ -83,6 +89,21 @@
   <a class="back" href="../../">&larr; All class simulations</a>
   <h1>Where does Fresno County's waste go? Build a graph</h1>
   <p class="sub">Real 2020–2025 data from CalRecycle. Pick a waste stream and a data table, then build your own graph from a blank canvas: choose the chart type, the axes, the colors and the labels. Use <b>Check my graph</b> to see if it communicates clearly.</p>
+
+  <div class="card" id="explore">
+    <h2>Explore first: how much of the waste ends up in a landfill?</h2>
+    <div class="f" style="grid-template-columns:110px 1fr;max-width:520px;margin-top:6px">
+      <label for="locSel"><b>Location</b></label>
+      <select id="locSel"></select>
+    </div>
+    <p class="desc" id="locDesc"></p>
+    <div class="stats-row" id="locStats"></div>
+    <div class="chart-wrap2" id="locWrap"><svg id="locChart" role="img" aria-labelledby="locTitle"></svg><div class="tip" id="tip3"></div></div>
+    <h3 id="locTitle2" style="margin-top:14px"></h3>
+    <div class="chart-wrap2" id="loc2Wrap"><svg id="locChart2" role="img" aria-labelledby="locTitle2"></svg><div class="tip" id="tip4"></div></div>
+    <p class="hint" id="locNote"></p>
+    <details><summary>Show these numbers as a table</summary><div class="tablewrap"><table id="locTable"></table></div></details>
+  </div>
 
   <div class="card">
     <h2><span class="step">1</span>Pick a waste stream</h2>
@@ -200,7 +221,7 @@
   <p class="foot">
     Sources: CalRecycle Recycling and Disposal Reporting System <a href="https://www2.calrecycle.ca.gov/RecyclingDisposalReporting/Reports/JurisdictionDisposalAndBeneficial" target="_blank" rel="noopener">Report 2</a> (disposal by destination) and
     <a href="https://www2.calrecycle.ca.gov/RecyclingDisposalReporting/Reports/RecyclingCompostingRelatedOutflows" target="_blank" rel="noopener">Report 11</a> (recycling and composting outflows from Fresno County facilities), pulled Nov 2026;
-    <a href="https://www2.calrecycle.ca.gov/Docs/Publications/137472" target="_blank" rel="noopener">2021 Statewide Waste Characterization Study</a>.
+    <a href="https://www2.calrecycle.ca.gov/Docs/Publications/137472" target="_blank" rel="noopener">2021 Statewide Waste Characterization Study</a>; population from the <a href="https://dof.ca.gov/Forecasting/Demographics/estimates-e1/" target="_blank" rel="noopener">CA Department of Finance E-1 estimates</a> (Jan 1, 2025); California's 6.2 lb/person/day from CalRecycle's <a href="https://calrecycle.ca.gov/stateofreport" target="_blank" rel="noopener">State of Disposal and Recycling, 2024</a>; the 2.7 lb/person/day level tied to the 75% recycling goal as reported by <a href="https://resource-recycling.com/?p=15055" target="_blank" rel="noopener">Resource Recycling</a>.
     Trash flows under 50 tons are left out of the city-to-landfill table. Recycling streams are measured where facilities send material, so a ton can be counted more than once as it moves between facilities.
   </p>
 </div>
@@ -265,6 +286,21 @@ const FLOWS = [
  ['Huron',A,106],['Kingsburg',AV,67],['Fresno (city)','Recology Hay Road',65],['Fresno-Unincorporated','Potrero Hills Landfill',57],['Orange Cove','Woodville Landfill',56],['Fowler',FM,55],['Fresno (city)','Simi Valley Landfill',55],['Orange Cove',BW,54],['Reedley',AV,51]
 ];
 
+// DOF E-1 population, January 1, 2025
+const POP = {'Clovis':129570,'Coalinga':17622,'Firebaugh':8703,'Fowler':7705,'Fresno (city)':560474,'Huron':6957,'Kerman':17481,'Kingsburg':13358,
+  'Mendota':12829,'Orange Cove':9752,'Parlier':14726,'Reedley':26690,'San Joaquin':3672,'Sanger':27130,'Selma':24593,'Fresno-Unincorporated':160734};
+const COUNTY_POP = 1041996;
+const CA_PPD = 6.2;      // CalRecycle, State of Disposal and Recycling, 2024
+const GOAL_PPD = 2.7;    // per-person disposal level tied to the state's 75% recycling goal
+const ppd = (tons, pop) => tons*2000/pop/365;
+const FATE = [ // Fresno County 2025, approximate
+  ['Landfill (trash)', 1052320, '#52514e'],
+  ['Composted or reused organics', 380827, '#1baf7a'],
+  ['Recycled (paper, metal, glass, plastic)', 267091, '#2a78d6'],
+  ['Reused construction rock & debris', 90528, '#eda100'],
+  ['Bulky items recycled or reused', 4991, '#e87ba4']
+];
+
 const C = (key,label,type) => ({key,label,type}); // type: cat | ord | num
 const TONS = C('tons','Tons','num');
 function rowsFrom(arr, keys){ return arr.map(a=>{const o={}; keys.forEach((k,i)=>o[k]=a[i]); return o;}); }
@@ -282,6 +318,12 @@ const STREAMS = [
     { name:'Trash from each city to each landfill, 2025', desc:'Every 2025 flow of 50 tons or more: which city sent trash to which landfill.',
       cols:[C('city','City','cat'),C('landfill','Landfill','cat'),C('county','Landfill county','cat'),TONS],
       rows: FLOWS.map(([c,f,t])=>({city:c,landfill:f,county:FAC_COUNTY[f],tons:t})) },
+    { name:'Trash per person by location, 2025', desc:'Each location\'s 2025 trash, its population (CA Dept. of Finance, Jan 2025), and pounds of trash per person per day.',
+      cols:[C('city','Location','cat'),C('tons','Tons landfilled','num'),C('pop','Residents','num'),C('ppd','Pounds per person per day','num')],
+      rows: Object.keys(JDATA).map(c=>({city:c, tons:JDATA[c][5], pop:POP[c], ppd:Math.round(ppd(JDATA[c][5],POP[c])*100)/100})) },
+    { name:'Where all of Fresno County\'s waste ends up, 2025 (approximate)', desc:'Fresno County trash landfilled, compared with what county facilities sent to be composted, recycled or reused.',
+      cols:[C('fate','Pathway','cat'),TONS],
+      rows: FATE.map(f=>({fate:f[0], tons:f[1]})) },
     { name:'Who makes California\'s trash? (statewide, 2021)', desc:'California\'s disposed waste by source sector, from CalRecycle\'s 2021 study. Industrial businesses are counted in "commercial."',
       cols:[C('sector','Sector','cat'),TONS],
       rows: rowsFrom([['Commercial & multifamily',19206354],['Single-family homes',12810213],['Self-haul (mostly construction)',7862416]],['sector','tons']) },
@@ -364,6 +406,77 @@ const STREAMS = [
   STREAMS[0].links = Object.entries(L).map(([k,v])=>{const [a,b]=k.split('|'); return [a,b,v];});
   STREAMS[3].links = STREAMS[3].datasets[0].rows.map(r=>['0:'+r.material,'1:'+r.dest,r.tons]);
 })();
+
+/* ===================== LOCATION EXPLORER ===================== */
+const locSel = $('locSel');
+[['__county','Fresno County (all locations)'], ...Object.keys(JDATA).sort((a,b)=>a.localeCompare(b)).map(c=>[c,c])].forEach(([v,l])=>{ const o=document.createElement('option'); o.value=v; o.textContent=l; locSel.appendChild(o); });
+locSel.addEventListener('change', drawLocation);
+function tipOn(el, wrap, tipEl, html){
+  el.addEventListener('mousemove', e=>{ tipEl.innerHTML=html; tipEl.style.opacity=1; const r=wrap.getBoundingClientRect(); let x=e.clientX-r.left+12; if(x+tipEl.offsetWidth>r.width) x=e.clientX-r.left-tipEl.offsetWidth-12; tipEl.style.left=x+'px'; tipEl.style.top=(e.clientY-r.top+12)+'px'; });
+  el.addEventListener('mouseleave', ()=>tipEl.style.opacity=0);
+}
+function hbars(svgEl, wrapEl, tipEl, rows, unit, opts){
+  // rows: [label, value, color, note]
+  const W=900, rowH=34, mL=opts.mL||230, mR=110, H=rows.length*rowH+30;
+  const max = Math.max(...rows.map(r=>r[1]))*1.05;
+  let o = '';
+  const step = niceStep(max/4); for (let t=0; t<=max; t+=step){ const x=mL+(W-mL-mR)*t/max; o+=`<line x1="${x}" x2="${x}" y1="4" y2="${H-24}" stroke="#e6e5df"/><text x="${x}" y="${H-8}" text-anchor="middle" font-size="12" fill="#52514e">${fmt(t)}</text>`; }
+  rows.forEach(([lab,v,col,note],i)=>{ const y=8+i*rowH, w=Math.max((W-mL-mR)*v/max,2);
+    o+=`<text x="${mL-10}" y="${y+18}" text-anchor="end" font-size="13" fill="#0b0b0b" ${opts.bold===i?'font-weight="700"':''}>${esc(lab)}</text>`;
+    o+=`<rect class="hb" data-i="${i}" x="${mL}" y="${y+4}" width="${w}" height="${rowH-12}" rx="4" fill="${col}"/>`;
+    o+=`<text x="${mL+w+8}" y="${y+18}" font-size="12.5" fill="#52514e">${opts.fmt? opts.fmt(v) : fmt(v)}</text>`; });
+  svgEl.setAttribute('viewBox',`0 0 ${W} ${H}`); svgEl.innerHTML=o;
+  svgEl.querySelectorAll('.hb').forEach(r=>{ const row=rows[+r.dataset.i]; tipOn(r, wrapEl, tipEl, `<strong>${opts.fmt? opts.fmt(row[1]) : fmt(row[1])}${unit}</strong><br>${esc(row[0])}${row[3]? '<br>'+esc(row[3]):''}`); });
+}
+function drawLocation(){
+  const loc = locSel.value, chart=$('locChart'), wrap=$('locWrap'), t3=$('tip3');
+  let stats=[], table='';
+  if (loc==='__county'){
+    const tot = FATE.reduce((a,f)=>a+f[1],0), land=FATE[0][1];
+    $('locDesc').textContent = 'Everything Fresno County threw away (landfill) compared with what facilities in the county sent to be composted, recycled or reused in 2025. The bar shows the share of each pathway.';
+    stats = [[pct(land,tot),'went to a landfill'],[pct(tot-land,tot),'composted, recycled or reused'],[fmt(land)+' t','trash landfilled'],[ppd(land,COUNTY_POP).toFixed(1)+' lb','of trash per person per day']];
+    // 100% stacked bar
+    const W=900, H=118, x0=10, bw=W-20; let x=x0, o='';
+    FATE.forEach(([lab,v,col],i)=>{ const w=bw*v/tot-(i<FATE.length-1?2:0);
+      o+=`<rect class="seg" data-i="${i}" x="${x}" y="10" width="${Math.max(w,1)}" height="54" rx="4" fill="${col}"/>`;
+      if (w>60) o+=`<text x="${x+8}" y="43" font-size="14" font-weight="700" fill="${inkOn(col)}">${pct(v,tot)}</text>`;
+      x+=w+2; });
+    let lx=10, ly=92; FATE.forEach(([lab,v,col],i)=>{ const tw=textW(lab+' '+pct(v,tot),12.5)+34; if(lx+tw>W){ lx=10; ly+=20; } o+=`<rect x="${lx}" y="${ly-10}" width="12" height="12" rx="3" fill="${col}"/><text x="${lx+18}" y="${ly}" font-size="12.5" fill="#52514e">${esc(lab)} ${pct(v,tot)}</text>`; lx+=tw; });
+    chart.setAttribute('viewBox',`0 0 ${W} ${ly+10}`); chart.innerHTML=o;
+    chart.querySelectorAll('.seg').forEach(r=>{ const f=FATE[+r.dataset.i]; tipOn(r, wrap, t3, `<strong>${fmt(f[1])} t</strong> · ${pct(f[1],tot)}<br>${esc(f[0])}`); });
+    // second chart: per-person by city
+    $('locTitle2').textContent = 'Pounds of trash per person per day, 2025, by location';
+    const rows = Object.keys(JDATA).map(c=>[c, ppd(JDATA[c][5], POP[c]), '#2a78d6']).sort((a,b)=>b[1]-a[1]);
+    rows.push(['Fresno County overall', ppd(land,COUNTY_POP), '#52514e', 'all locations combined']);
+    rows.push(['California average (2024)', CA_PPD, '#a9a79f', 'CalRecycle statewide figure']);
+    rows.push(['Level needed for 75% recycling', GOAL_PPD, '#1baf7a', "state's goal, as pounds per person per day"]);
+    hbars($('locChart2'), $('loc2Wrap'), $('tip4'), rows, ' lb/person/day', {fmt:v=>v.toFixed(1), mL:250});
+    $('locNote').innerHTML = 'Approximate. Trash tons are counted by the city they came from. Composting and recycling tons are counted where a Fresno County facility sent material out, so they can include some material from other counties, can count a ton twice if it moved between two facilities, and miss Fresno County material processed elsewhere. California tracks recycling by facility, not by city, so the landfill vs. recycling split exists only for the county as a whole.';
+    table = '<tr><th>Pathway (Fresno County, 2025)</th><th class="n">Tons</th><th class="n">Share</th></tr>' + FATE.map(f=>`<tr><td>${esc(f[0])}</td><td class="n">${fmt(f[1])}</td><td class="n">${pct(f[1],tot)}</td></tr>`).join('')
+      + '<tr><th>Location</th><th class="n">Trash 2025 (t)</th><th class="n">Lb/person/day</th></tr>' + rows.map(r=>`<tr><td>${esc(r[0])}</td><td class="n">${JDATA[r[0]]? fmt(JDATA[r[0]][5]) : (r[0]==='Fresno County overall'? fmt(land) : '')}</td><td class="n">${r[1].toFixed(1)}</td></tr>`).join('');
+  } else {
+    const t = JDATA[loc][5], pop = POP[loc], rate = ppd(t,pop), cRate = ppd(1052320, COUNTY_POP);
+    const yrs = JDATA[loc];
+    $('locDesc').textContent = `${loc}: how much trash each person sends to a landfill, compared with the county, the state, and the level needed to reach California's 75% recycling goal. The lower the number, the more is being kept out of landfills.`;
+    const diff = rate - cRate;
+    stats = [[rate.toFixed(1)+' lb','of trash per person per day'],[fmt(t)+' t','landfilled in 2025'],[fmt(pop),'residents (Jan 2025)'],
+      [(diff>=0?'+':'')+diff.toFixed(1)+' lb', diff>=0? 'more than the county average' : 'less than the county average']];
+    const rows = [[loc, rate, '#2a78d6', fmt(t)+' t ÷ '+fmt(pop)+' people'],['Fresno County overall', cRate, '#52514e','all locations combined'],['California average (2024)', CA_PPD, '#a9a79f','CalRecycle statewide figure'],['Level needed for 75% recycling', GOAL_PPD, '#1baf7a',"state's goal, as pounds per person per day"]];
+    hbars(chart, wrap, t3, rows, ' lb/person/day', {fmt:v=>v.toFixed(1), mL:250, bold:0});
+    // second chart: where this city's trash went
+    const dest = {}; FLOWS.filter(f=>f[0]===loc).forEach(([c,f,v])=>{ dest[f]=(dest[f]||0)+v; });
+    const drows = Object.entries(dest).sort((a,b)=>b[1]-a[1]).map(([f,v])=>[`${f} (${FAC_COUNTY[f]} Co.)`, v, FAC_COUNTY[f]==='Fresno'?'#2a78d6':'#eb6834', FAC_COUNTY[f]==='Fresno'?'inside Fresno County':'outside Fresno County']);
+    const tot = drows.reduce((a,r)=>a+r[1],0), out = drows.filter(r=>!r[0].includes('(Fresno Co.)')).reduce((a,r)=>a+r[1],0);
+    stats.push([pct(out,tot), 'of its trash left Fresno County']);
+    $('locTitle2').textContent = `Where ${loc}'s trash went in 2025 (tons; blue = inside Fresno County, orange = outside)`;
+    hbars($('locChart2'), $('loc2Wrap'), $('tip4'), drows, ' t', {mL:330});
+    $('locNote').innerHTML = `Pounds per person = tons landfilled × 2,000 ÷ residents ÷ 365. Trash from businesses counts too, so places with many stores, offices or industry (or few residents) score higher. California tracks recycling by facility, not by city, so a landfill vs. recycling split is shown only for the whole county (choose "Fresno County"). ${loc==='Coalinga'?'Coalinga\'s population includes a state prison and state hospital. ':''}${(()=>{ const avg=yrs.slice(0,5).reduce((a,b)=>a+b,0)/5; return yrs[5] < 0.6*avg ? `<b>Look closely:</b> ${esc(loc)}'s 2025 trash (${fmt(yrs[5])} t) is far below its 2020–2024 average (${fmt(avg)} t). A drop this large can be real, but it can also mean haulers credited some of its trash to a neighboring area. Check the trend in the table before drawing conclusions.` : ''; })()}`;
+    table = '<tr><th>Year</th><th class="n">Trash landfilled (t)</th></tr>' + YEARS.map((y,i)=>`<tr><td>${y}</td><td class="n">${fmt(yrs[i])}</td></tr>`).join('')
+      + '<tr><th>2025 destination</th><th class="n">Tons</th></tr>' + drows.map(r=>`<tr><td>${esc(r[0])}</td><td class="n">${fmt(r[1])}</td></tr>`).join('');
+  }
+  $('locStats').innerHTML = stats.map(([v,l])=>`<div class="stat"><div class="v">${v}</div><div class="l">${l}</div></div>`).join('');
+  $('locTable').innerHTML = table;
+}
 
 /* ===================== STATE ===================== */
 let si = 0, di = 0;
@@ -671,6 +784,8 @@ function check(S){
   // summing years
   if (hasYear && S.x!=='year' && S.g!=='year' && S.fCol!=='year' && $('agg').value==='sum')
     warn('<b>You are adding six years together.</b> Each value is the total for 2020–2025. Use "Show only: Year" to pick one year, put Year on the X axis, or color by Year.');
+  if (S.y==='ppd' && $('agg').value==='sum' && S.x!=='city') warn('<b>Rates can\'t be added.</b> Pounds per person per day is a rate; adding rates from different places gives a meaningless number. Use "Average them," or put Location on the X axis.');
+  if (S.y==='pop') warn('<b>Check your Y.</b> You are graphing residents, not waste. Is that what you meant to compare?');
   // zero baseline
   if ((type==='column'||type==='bar'||type==='pie') && !$('zero').checked && !$('logY').checked) warn('<b>Bars should start at 0.</b> A bar\'s length stands for the amount, so cutting off the bottom makes small differences look huge.');
   if ((type==='line'||type==='points') && !$('zero').checked) ok('Not starting a line chart at 0 is fine, as long as the axis numbers make that clear.');
@@ -750,6 +865,7 @@ function drawSankey(){
   $('questions').innerHTML = '<b>Think about it</b><ol>' + stream.qs.map(q=>`<li>${q}</li>`).join('') + '</ol>';
 }
 
+drawLocation();
 pickStream(0);
 })();
 </script>
