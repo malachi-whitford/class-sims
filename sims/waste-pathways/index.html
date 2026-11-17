@@ -28,7 +28,7 @@
   :focus-visible { outline: 3px solid #1557b0; outline-offset: 2px; }
   .desc { font-size: 14.5px; color: var(--text2); margin: 6px 0 0; }
   .task { background: #eef4fb; border: 1px solid #c9dcf3; border-radius: 10px; padding: 10px 14px; font-size: 14.5px; margin-top: 8px; }
-  .builder { display: grid; grid-template-columns: 320px 1fr; gap: 16px; align-items: start; }
+  .builder { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
   @media (max-width: 900px) { .builder { grid-template-columns: 1fr; } }
   .panel { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; }
   fieldset { border: 0; border-top: 1px solid var(--line); margin: 0; padding: 10px 0 6px; }
@@ -64,6 +64,42 @@
   .tablewrap { max-height: 300px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; margin-top: 6px; }
   details { margin-top: 10px; }
   summary { cursor: pointer; font-weight: 650; font-size: 14.5px; }
+  .tiles { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tile { font: inherit; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 8px; border: 1px solid #b9bcc1; background: #fff; color: var(--text); cursor: grab; touch-action: none; user-select: none; }
+  .tile:hover { background: var(--soft); }
+  .tile.armed { outline: 3px solid #1557b0; outline-offset: 1px; background: #eef4fb; }
+  .tile.on { border-color: var(--text); box-shadow: inset 0 0 0 1px var(--text); }
+  .tile svg { flex: none; }
+  .tchip { display: inline-block; min-width: 26px; text-align: center; font-size: 10.5px; font-weight: 700; border-radius: 5px; padding: 1px 4px; background: #e8eaed; color: #3a3d42; }
+  .tchip.num { background: #dcefe4; color: #1d5a35; } .tchip.ord { background: #e6e1f7; color: #3e2f86; }
+  .swatch { width: 26px; height: 26px; border-radius: 6px; border: 2px solid #fff; box-shadow: 0 0 0 1px #b9bcc1; cursor: grab; touch-action: none; }
+  .pal { display: inline-flex; gap: 0; border-radius: 6px; overflow: hidden; }
+  .pal i { width: 10px; height: 18px; display: block; }
+  .stage { display: grid; grid-template-columns: 58px minmax(0,1fr) 150px; grid-template-rows: auto 1fr auto; gap: 8px; }
+  .zone { border: 2px dashed #b9bcc1; border-radius: 10px; background: #fafbfc; padding: 6px 8px; font-size: 13px; color: var(--text2); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 44px; cursor: pointer; }
+  .zone .zl { font-weight: 700; color: var(--text2); font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  .ztop { grid-column: 2 / 4; grid-row: 1; }
+  .stage, .zone, .tile { user-select: none; -webkit-user-select: none; }
+  body.dragging { cursor: grabbing; user-select: none; -webkit-user-select: none; }
+  .stage > #chartWrap { grid-column: 2; grid-row: 2; }
+  .zleft { grid-column: 1; grid-row: 2; flex-direction: column; justify-content: center; text-align: center; }
+  .zleft .zl { writing-mode: vertical-rl; transform: rotate(180deg); }
+  .zleft .zc { writing-mode: vertical-rl; transform: rotate(180deg); }
+  .zbottom { grid-column: 2; grid-row: 3; justify-content: center; }
+  .zside { grid-column: 3; grid-row: 2; display: flex; flex-direction: column; gap: 8px; }
+  .zside .zone { flex: 1; flex-direction: column; justify-content: center; align-items: flex-start; }
+  .zone.filled { border-style: solid; border-color: #6b6a65; background: #fff; }
+  .zone.ok { border-color: #1d7a3a; background: #eefaf2; }
+  .zone.no { opacity: .45; }
+  .zone.hover { border-color: #1557b0; background: #e3eefc; }
+  .dropchart.ok { outline: 3px dashed #1d7a3a; outline-offset: 2px; }
+  .dropchart.hover { outline: 3px solid #1557b0; }
+  .pill { display: inline-flex; align-items: center; gap: 4px; background: var(--text); color: #fff; border-radius: 999px; padding: 3px 4px 3px 10px; font-size: 12.5px; font-weight: 600; }
+  .pill button { font: inherit; border: 0; background: rgba(255,255,255,.2); color: #fff; border-radius: 50%; width: 20px; height: 20px; line-height: 18px; cursor: pointer; padding: 0; }
+  .zleft .pill { padding: 10px 3px 4px; }
+  #fVal { width: auto; max-width: 160px; }
+  .ghost { position: fixed; pointer-events: none; z-index: 50; opacity: .9; transform: translate(-50%,-50%) rotate(-3deg); box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+  @media (max-width: 700px){ .stage { grid-template-columns: 44px minmax(0,1fr); } .zside { grid-column: 1 / 3; grid-row: 4; flex-direction: row; } .ztop { grid-column: 1 / 3; } }
   .foot { font-size: 12.5px; color: var(--text2); }
   .foot a { color: var(--text2); }
   .sr-only { position:absolute!important; width:1px!important; height:1px!important; overflow:hidden!important; clip:rect(0 0 0 0)!important; white-space:nowrap!important; }
@@ -96,77 +132,25 @@
   </div>
 
   <div class="builder">
-    <div class="panel" id="controls">
+    <div class="panel" id="toolbox">
+      <p class="hint" style="margin:0 0 8px">Drag a tile onto the graph, or tap a tile and then tap where it goes.</p>
       <fieldset>
-        <legend>Chart type</legend>
-        <div class="f"><label for="type">Type</label>
-          <select id="type">
-            <option value="">— choose —</option>
-            <option value="column">Column (vertical bars)</option>
-            <option value="bar">Bar (horizontal bars)</option>
-            <option value="line">Line</option>
-            <option value="area">Area (filled line)</option>
-            <option value="points">Points / scatter</option>
-            <option value="pie">Pie</option>
-          </select></div>
+        <legend>1. Chart type <span class="hint">(drop on the graph)</span></legend>
+        <div class="tiles" id="typeTiles"></div>
       </fieldset>
       <fieldset>
-        <legend>What goes where</legend>
-        <div class="f"><label for="xSel" id="xLbl">X axis</label><select id="xSel"></select></div>
-        <div class="f"><label for="ySel" id="yLbl">Y axis</label><select id="ySel"></select></div>
-        <div class="f"><label for="gSel">Color by</label><select id="gSel"></select></div>
-        <div class="f"><label for="shSel">Shape by</label><select id="shSel"></select></div>
-        <div class="f"><label for="szSel">Size by</label><select id="szSel"></select></div>
-        <p class="hint">Shape and size apply to points.</p>
+        <legend>2. Data columns <span class="hint">(drop on an axis, Color, Shape, Size or Filter)</span></legend>
+        <div class="tiles" id="varTiles"></div>
+        <p class="hint"><span class="tchip">Abc</span> category &nbsp; <span class="tchip">Yr</span> year &nbsp; <span class="tchip">#</span> number</p>
       </fieldset>
       <fieldset>
-        <legend>Filter &amp; combine</legend>
-        <div class="f"><label for="fCol">Show only</label>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><select id="fCol" aria-label="Filter column"></select><select id="fVal" aria-label="Filter value"></select></div></div>
-        <div class="f"><label for="agg">Combine rows</label>
-          <select id="agg"><option value="sum">Add them up (sum)</option><option value="mean">Average them</option><option value="max">Largest value</option></select></div>
-        <div class="f"><label for="sort">Order</label>
-          <select id="sort"><option value="data">As in the table</option><option value="desc">Largest first</option><option value="asc">Smallest first</option><option value="az">A to Z</option></select></div>
-        <div class="f"><label for="topN">Categories</label>
-          <select id="topN"><option value="0">Show all</option><option value="3">Top 3 + Other</option><option value="5">Top 5 + Other</option><option value="8">Top 8 + Other</option></select></div>
-        <div class="f"><label for="valMode">Show values as</label>
-          <select id="valMode"><option value="raw">Amounts</option><option value="pct">Percent of total</option></select></div>
-        <div class="f" id="barModeRow"><label for="barMode">Groups</label>
-          <select id="barMode"><option value="grouped">Side by side</option><option value="stacked">Stacked</option></select></div>
+        <legend>3. Colors <span class="hint">(drop a color on the graph; a palette on Color)</span></legend>
+        <div class="tiles" id="colorTiles"></div>
+        <div class="tiles" id="paletteTiles" style="margin-top:6px"></div>
       </fieldset>
       <fieldset>
-        <legend>Axes</legend>
-        <div class="checks">
-          <label><input type="checkbox" id="zero" checked> Value axis starts at 0</label>
-          <label><input type="checkbox" id="grid" checked> Gridlines</label>
-          <label><input type="checkbox" id="logY"> Log scale</label>
-          <label><input type="checkbox" id="rotate"> Tilt X labels</label>
-          <label><input type="checkbox" id="swap"> Swap X and Y</label>
-          <label><input type="checkbox" id="trend"> Trend line</label>
-        </div>
-        <div class="f" style="margin-top:6px"><label for="yMax">Axis max</label><input type="text" id="yMax" placeholder="auto (or type a number)" inputmode="numeric"></div>
-      </fieldset>
-      <fieldset>
-        <legend>Marks &amp; color</legend>
-        <div class="checks">
-          <label><input type="checkbox" id="showLines" checked> Lines</label>
-          <label><input type="checkbox" id="showPoints" checked> Points</label>
-          <label><input type="checkbox" id="dataLabels"> Data labels</label>
-          <label><input type="checkbox" id="showLegend" checked> Legend</label>
-        </div>
-        <div class="f" style="margin-top:6px"><label for="color">Color</label>
-          <div style="display:flex;gap:8px;align-items:center"><input type="color" id="color" value="#2a78d6"><span class="hint" style="margin:0">used when not coloring by a column</span></div></div>
-        <div class="f"><label for="palette">Palette</label>
-          <select id="palette"><option value="bold">Bold (distinct hues)</option><option value="blues">Blues (light to dark)</option><option value="earth">Earth tones</option><option value="gray">Grays</option></select></div>
-        <div class="f"><label for="shape">Point shape</label>
-          <select id="shape"><option value="circle">Circle</option><option value="square">Square</option><option value="triangle">Triangle</option><option value="diamond">Diamond</option><option value="star">Star</option></select></div>
-        <div class="f"><label for="psize">Point size</label><input type="range" id="psize" min="2" max="14" value="6"></div>
-        <div class="f"><label for="lwidth">Line width</label><input type="range" id="lwidth" min="1" max="8" value="2"></div>
-        <div class="f"><label for="dash">Line style</label>
-          <select id="dash"><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option><option value="bygroup">Different for each group</option></select></div>
-        <div class="f"><label for="opacity">Opacity</label><input type="range" id="opacity" min="20" max="100" value="100"></div>
-        <div class="f"><label for="bgSel">Background</label>
-          <select id="bgSel"><option value="light">White</option><option value="dark">Dark</option></select></div>
+        <legend>4. Point shapes <span class="hint">(drop on the graph)</span></legend>
+        <div class="tiles" id="shapeTiles"></div>
       </fieldset>
       <fieldset>
         <legend>Labels</legend>
@@ -176,14 +160,77 @@
         <div class="f"><label for="source">Source note</label><input type="text" id="source" placeholder="Where did the data come from?"></div>
         <div class="f"><label for="sname">Your name</label><input type="text" id="sname"></div>
       </fieldset>
+      <details>
+        <summary>More options</summary>
+        <fieldset>
+          <legend>Combine &amp; arrange</legend>
+          <div class="f"><label for="agg">Combine rows</label>
+            <select id="agg"><option value="sum">Add them up (sum)</option><option value="mean">Average them</option><option value="max">Largest value</option></select></div>
+          <div class="f"><label for="sort">Order</label>
+            <select id="sort"><option value="data">As in the table</option><option value="desc">Largest first</option><option value="asc">Smallest first</option><option value="az">A to Z</option></select></div>
+          <div class="f"><label for="topN">Categories</label>
+            <select id="topN"><option value="0">Show all</option><option value="3">Top 3 + Other</option><option value="5">Top 5 + Other</option><option value="8">Top 8 + Other</option></select></div>
+          <div class="f"><label for="valMode">Show values as</label>
+            <select id="valMode"><option value="raw">Amounts</option><option value="pct">Percent of total</option></select></div>
+          <div class="f" id="barModeRow"><label for="barMode">Groups</label>
+            <select id="barMode"><option value="grouped">Side by side</option><option value="stacked">Stacked</option></select></div>
+        </fieldset>
+        <fieldset>
+          <legend>Axes</legend>
+          <div class="checks">
+            <label><input type="checkbox" id="zero" checked> Value axis starts at 0</label>
+            <label><input type="checkbox" id="grid" checked> Gridlines</label>
+            <label><input type="checkbox" id="logY"> Log scale</label>
+            <label><input type="checkbox" id="rotate"> Tilt X labels</label>
+            <label><input type="checkbox" id="swap"> Swap X and Y</label>
+            <label><input type="checkbox" id="trend"> Trend line</label>
+          </div>
+          <div class="f" style="margin-top:6px"><label for="yMax">Axis max</label><input type="text" id="yMax" placeholder="auto (or type a number)" inputmode="numeric"></div>
+        </fieldset>
+        <fieldset>
+          <legend>Marks</legend>
+          <div class="checks">
+            <label><input type="checkbox" id="showLines" checked> Lines</label>
+            <label><input type="checkbox" id="showPoints" checked> Points</label>
+            <label><input type="checkbox" id="dataLabels"> Data labels</label>
+            <label><input type="checkbox" id="showLegend" checked> Legend</label>
+          </div>
+          <div class="f" style="margin-top:6px"><label for="color">Custom color</label><input type="color" id="color" value="#2a78d6"></div>
+          <div class="f"><label for="psize">Point size</label><input type="range" id="psize" min="2" max="14" value="6"></div>
+          <div class="f"><label for="lwidth">Line width</label><input type="range" id="lwidth" min="1" max="8" value="2"></div>
+          <div class="f"><label for="dash">Line style</label>
+            <select id="dash"><option value="solid">Solid</option><option value="dashed">Dashed</option><option value="dotted">Dotted</option><option value="bygroup">Different for each group</option></select></div>
+          <div class="f"><label for="opacity">Opacity</label><input type="range" id="opacity" min="20" max="100" value="100"></div>
+          <div class="f"><label for="bgSel">Background</label>
+            <select id="bgSel"><option value="light">White</option><option value="dark">Dark</option></select></div>
+        </fieldset>
+      </details>
+      <!-- the drag-and-drop tiles set these hidden fields -->
+      <div hidden>
+        <select id="type"><option value=""></option><option value="column"></option><option value="bar"></option><option value="line"></option><option value="area"></option><option value="points"></option><option value="pie"></option></select>
+        <select id="xSel"></select><select id="ySel"></select><select id="gSel"></select><select id="shSel"></select><select id="szSel"></select><select id="fCol"></select>
+        <select id="palette"><option value="bold"></option><option value="blues"></option><option value="earth"></option><option value="gray"></option></select>
+        <select id="shape"><option value="circle"></option><option value="square"></option><option value="triangle"></option><option value="diamond"></option><option value="star"></option><option value="cross"></option></select>
+      </div>
     </div>
 
     <div>
-      <div class="panel chartcard" id="chartWrap">
-        <svg id="graph" role="img" aria-label="Your graph"></svg>
-        <div class="tip" id="tip"></div>
-        <p class="sr-only" id="graphDesc" aria-live="polite"></p>
+      <div class="stage">
+        <div class="zone ztop" data-zone="fCol" tabindex="0" role="button" aria-label="Filter drop zone"><span class="zl">Filter</span><span class="zc" id="z_fCol"></span><select id="fVal" aria-label="Filter value"></select></div>
+        <div class="zone zleft" data-zone="left" tabindex="0" role="button" aria-label="Left axis drop zone"><span class="zl" id="zl_left">Y axis</span><span class="zc" id="z_left"></span></div>
+        <div class="panel chartcard dropchart" id="chartWrap" data-zone="chart">
+          <svg id="graph" role="img" aria-label="Your graph"></svg>
+          <div class="tip" id="tip"></div>
+          <p class="sr-only" id="graphDesc" aria-live="polite"></p>
+        </div>
+        <div class="zside">
+          <div class="zone" data-zone="gSel" tabindex="0" role="button" aria-label="Color drop zone"><span class="zl">Color</span><span class="zc" id="z_gSel"></span><span class="zc2" id="z_pal"></span></div>
+          <div class="zone" data-zone="shSel" tabindex="0" role="button" aria-label="Shape drop zone"><span class="zl">Shape</span><span class="zc" id="z_shSel"></span></div>
+          <div class="zone" data-zone="szSel" tabindex="0" role="button" aria-label="Size drop zone"><span class="zl">Size</span><span class="zc" id="z_szSel"></span></div>
+        </div>
+        <div class="zone zbottom" data-zone="bottom" tabindex="0" role="button" aria-label="Bottom axis drop zone"><span class="zl" id="zl_bottom">X axis</span><span class="zc" id="z_bottom"></span></div>
       </div>
+      <p class="hint" id="dropMsg" aria-live="polite" style="min-height:18px;margin:6px 0 0"></p>
       <div class="btns">
         <button class="btn primary" id="checkBtn">Check my graph</button>
         <button class="btn" id="pngBtn">Download as image (PNG)</button>
@@ -330,7 +377,7 @@ function pickTask(t){
   $('feedback').hidden = true; render();
 }
 function pickDataset(j, keep){
-  di = +j; const d = ds(); $('dsDesc').innerHTML = esc(d.desc) + (d.est? '<span class="est">ESTIMATED</span>' : '');
+  di = +j; const d = ds(); buildVarTiles(); $('dsDesc').innerHTML = esc(d.desc) + (d.est? '<span class="est">ESTIMATED</span>' : '');
   const nonNum = d.cols.filter(c=>c.type!=='num'), num = d.cols.filter(c=>c.type==='num');
   opt($('xSel'), [['','— choose —'], ...d.cols.map(c=>[c.key,c.label])]);
   opt($('ySel'), [['','— choose —'], ...num.map(c=>[c.key,c.label]), ['__count','Number of rows (count)']]);
@@ -602,8 +649,9 @@ function render(){
   svg.innerHTML = o;
   $('barModeRow').style.display = (type==='column'||type==='bar'||type==='area') ? '' : 'none';
   const horizNow = (type==='bar') !== ($('swap').checked && type!=='pie');
-  $('xLbl').textContent = isPie ? 'Slices' : (horizNow ? 'Categories (Y)' : 'X axis');
-  $('yLbl').textContent = isPie ? 'Slice size' : (horizNow ? 'Values (X)' : 'Y axis');
+  $('zl_left').textContent = isPie ? 'Slice size' : (horizNow ? 'Y axis · categories' : 'Y axis');
+  $('zl_bottom').textContent = isPie ? 'Slices' : (horizNow ? 'X axis · values' : 'X axis');
+  syncZones();
   $('xlabL').textContent = horizNow ? 'Category label' : 'X axis label';
   $('ylabL').textContent = horizNow ? 'Value label' : 'Y axis label';
   svg.querySelectorAll('[data-m]').forEach(el=>{
@@ -616,6 +664,112 @@ function render(){
   $('graphDesc').textContent = ready ? `${type} chart of ${$('ySel').selectedOptions[0].text} by ${S.xCol.label}${S.gKey?', colored by '+colOf(S.gKey).label:''}${S.shKey?', shaped by '+colOf(S.shKey).label:''}.` : 'Blank graph.';
   if (!$('feedback').hidden) check(S);
 }
+
+/* ===================== DRAG & DROP ===================== */
+const TYPE_TILES = [
+ ['column','Column','<rect x="2" y="8" width="4" height="8" rx="1"/><rect x="8" y="3" width="4" height="13" rx="1"/><rect x="14" y="6" width="4" height="10" rx="1"/>'],
+ ['bar','Bar','<rect x="2" y="2" width="14" height="4" rx="1"/><rect x="2" y="8" width="9" height="4" rx="1"/><rect x="2" y="14" width="5" height="3" rx="1"/>'],
+ ['line','Line','<polyline points="2,14 7,8 12,11 18,3" fill="none" stroke="currentColor" stroke-width="2"/>'],
+ ['area','Area','<path d="M2,16 L2,12 L7,7 L12,10 L18,4 L18,16Z" opacity=".55"/><polyline points="2,12 7,7 12,10 18,4" fill="none" stroke="currentColor" stroke-width="2"/>'],
+ ['points','Points','<circle cx="4" cy="12" r="2"/><circle cx="9" cy="6" r="2"/><circle cx="13" cy="10" r="2"/><circle cx="17" cy="4" r="2"/>'],
+ ['pie','Pie','<path d="M10,10 L10,2 A8,8 0 1,1 3.1,14 Z"/><path d="M9,9 L2.2,12.6 A8,8 0 0,1 9,1Z" opacity=".5"/>']
+];
+const SWATCHES = ['#2a78d6','#eb6834','#1baf7a','#eda100','#e87ba4','#008300','#6250d6','#e34948','#52514e','#0b0b0b'];
+const SHAPE_NAMES = {circle:'Circle',square:'Square',triangle:'Triangle',diamond:'Diamond',star:'Star',cross:'Cross'};
+const PAL_NAMES = {bold:'Bold hues', blues:'Blues (low→high)', earth:'Earth tones', gray:'Grays'};
+function tileHTML(kind, value, inner, label){ return `<button type="button" class="tile" data-kind="${kind}" data-value="${esc(value)}" aria-label="${esc(label)}">${inner}</button>`; }
+function buildStaticTiles(){
+  $('typeTiles').innerHTML = TYPE_TILES.map(([v,l,ic])=>tileHTML('type', v, `<svg width="20" height="18" viewBox="0 0 20 18" fill="currentColor" aria-hidden="true">${ic}</svg>${l}`, l+' chart')).join('');
+  $('colorTiles').innerHTML = SWATCHES.map(c=>`<button type="button" class="tile swatch" data-kind="color" data-value="${c}" style="background:${c};padding:0" aria-label="Color ${c}"></button>`).join('');
+  $('paletteTiles').innerHTML = Object.keys(PALETTES).map(k=>tileHTML('palette', k, `<span class="pal">${PALETTES[k].slice(0,6).map(c=>`<i style="background:${c}"></i>`).join('')}</span>${PAL_NAMES[k]}`, 'Palette '+PAL_NAMES[k])).join('');
+  $('shapeTiles').innerHTML = Object.keys(SHAPE_NAMES).map(k=>tileHTML('shape', k, `<svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">${marker(k,9,9,5.5,'#3a3d42','#fff',1)}</svg>${SHAPE_NAMES[k]}`, SHAPE_NAMES[k]+' shape')).join('');
+}
+function buildVarTiles(){
+  const cols = ds().cols.map(c=>[c.key, c.label, c.type]).concat([['__count','Number of rows (count)','num']]);
+  $('varTiles').innerHTML = cols.map(([k,l,t])=>tileHTML('var', k, `<span class="tchip ${t}">${t==='num'?'#':t==='ord'?'Yr':'Abc'}</span>${esc(l)}`, l+' column').replace('data-kind="var"', `data-kind="var" data-vtype="${t}"`)).join('');
+}
+const isHoriz = () => ($('type').value==='bar') !== ($('swap').checked && $('type').value!=='pie');
+const targetOf = zone => zone==='left' ? (isHoriz() ? 'xSel' : 'ySel') : zone==='bottom' ? (isHoriz() ? 'ySel' : 'xSel') : zone;
+function labelOfVar(k){ if (!k) return ''; if (k==='__count') return 'Number of rows'; const c=colOf(k); return c? c.label : k; }
+function accept(zone, t){
+  const kind=t.dataset.kind, v=t.dataset.value, vt=t.dataset.vtype;
+  if (zone==='chart') return ['type','color','shape','palette'].includes(kind) ? {ok:true} : {ok:false, msg:'Drop data columns on an axis, Color, Shape, Size or Filter.'};
+  if (kind==='palette') return zone==='gSel' ? {ok:true} : {ok:false, msg:'Drop a palette on Color.'};
+  if (kind!=='var') return {ok:false, msg:'Drop chart types, colors and shapes on the graph itself.'};
+  const tgt = targetOf(zone);
+  if (tgt==='ySel' && vt!=='num') return {ok:false, msg:`The value axis needs a number (#). "${labelOfVar(v)}" is not a number; try the other axis or Color.`};
+  if (tgt==='xSel' && v==='__count') return {ok:false, msg:'A count goes on the value axis.'};
+  if ((tgt==='gSel'||tgt==='shSel'||tgt==='fCol') && vt==='num') return {ok:false, msg:`${zone==='fCol'?'Filter':zone==='gSel'?'Color':'Shape'} needs a category or year, not a number. Try Size for numbers.`};
+  if (tgt==='szSel' && vt!=='num') return {ok:false, msg:'Size needs a number (#).'};
+  if (tgt==='szSel' && v==='__count') return {ok:false, msg:'Size needs a number column.'};
+  return {ok:true};
+}
+function applyDrop(zone, t){
+  const a = accept(zone, t); if (!a.ok){ $('dropMsg').textContent = a.msg; return; }
+  const kind=t.dataset.kind, v=t.dataset.value;
+  if (kind==='type') $('type').value = v;
+  else if (kind==='color') $('color').value = v;
+  else if (kind==='shape') $('shape').value = v;
+  else if (kind==='palette') $('palette').value = v;
+  else { const tgt = targetOf(zone); $(tgt).value = v; if (tgt==='fCol') fillFilterVals(); }
+  const what = kind==='var' ? labelOfVar(v) : kind==='type' ? v+' chart' : kind==='palette' ? PAL_NAMES[v]+' palette' : kind==='shape' ? SHAPE_NAMES[v]+' points' : 'color';
+  $('dropMsg').textContent = `Placed: ${what}.`;
+  render();
+}
+function clearZone(zone){ const tgt = targetOf(zone); $(tgt).value=''; if (tgt==='fCol') fillFilterVals(); if (zone==='gSel') {} render(); }
+function pill(text, zone){ return `<span class="pill">${esc(text)}<button type="button" data-clear="${zone}" aria-label="Remove ${esc(text)}">×</button></span>`; }
+function syncZones(){
+  const zones = {left: targetOf('left'), bottom: targetOf('bottom'), gSel:'gSel', shSel:'shSel', szSel:'szSel', fCol:'fCol'};
+  Object.entries(zones).forEach(([z,tgt])=>{ const v=$(tgt).value; const el=$('z_'+z); el.innerHTML = v ? pill(labelOfVar(v), z) : `<span>drop here</span>`; el.closest('.zone').classList.toggle('filled', !!v); });
+  $('fVal').style.display = $('fCol').value ? '' : 'none';
+  $('z_pal').innerHTML = $('gSel').value ? `<span class="pal">${PALETTES[$('palette').value].slice(0,6).map(c=>`<i style="background:${c}"></i>`).join('')}</span>` : '';
+  document.querySelectorAll('.tile').forEach(t=>{
+    const k=t.dataset.kind, v=t.dataset.value; let on=false;
+    if (k==='type') on = $('type').value===v; else if (k==='color') on = $('color').value.toLowerCase()===v.toLowerCase(); else if (k==='shape') on = $('shape').value===v; else if (k==='palette') on = $('palette').value===v;
+    else if (k==='var') on = ['xSel','ySel','gSel','shSel','szSel','fCol'].some(id=>$(id).value===v);
+    t.classList.toggle('on', on); t.setAttribute('aria-pressed', on);
+  });
+}
+let drag=null, armed=null, justDragged=false;
+const zonesEls = () => [...document.querySelectorAll('[data-zone]')];
+function markZones(t){ zonesEls().forEach(z=>{ const a=accept(z.dataset.zone, t); z.classList.toggle('ok', a.ok); z.classList.toggle('no', !a.ok); }); }
+function unmarkZones(){ zonesEls().forEach(z=>z.classList.remove('ok','no','hover')); }
+function setArmed(t){ if (armed) armed.classList.remove('armed'); armed = t; if (t){ t.classList.add('armed'); markZones(t); $('dropMsg').textContent = 'Now tap or click where it goes (green outline).'; } else unmarkZones(); }
+document.addEventListener('pointerdown', e=>{ const t=e.target.closest('.tile'); if(!t || e.button>0) return; e.preventDefault(); drag={t, x:e.clientX, y:e.clientY, started:false}; });
+document.addEventListener('pointermove', e=>{
+  if (!drag) return;
+  if (!drag.started){ if (Math.hypot(e.clientX-drag.x, e.clientY-drag.y) < 6) return; drag.started=true; setArmed(null); document.body.classList.add('dragging');
+    const g = drag.t.cloneNode(true); g.classList.add('ghost'); g.classList.remove('on'); document.body.appendChild(g); drag.g=g; markZones(drag.t); }
+  e.preventDefault();
+  lastY = e.clientY; drag.g.style.left=e.clientX+'px'; drag.g.style.top=e.clientY+'px';
+  const el = document.elementFromPoint(e.clientX, e.clientY), z = el && el.closest('[data-zone]');
+  zonesEls().forEach(zz=>zz.classList.toggle('hover', zz===z && zz.classList.contains('ok')));
+}, {passive:false});
+document.addEventListener('pointerup', e=>{
+  if (!drag) return; const d=drag; drag=null;
+  if (!d.started) { d.t.focus(); return; }
+  document.body.classList.remove('dragging'); d.g.remove(); justDragged = true; setTimeout(()=>justDragged=false, 50);
+  const el = document.elementFromPoint(e.clientX, e.clientY), z = el && el.closest('[data-zone]');
+  unmarkZones();
+  if (z) applyDrop(z.dataset.zone, d.t); else $('dropMsg').textContent = 'Drop it on the graph or on one of the dashed boxes.';
+});
+document.addEventListener('mousedown', e=>{ if (e.target.closest('.tile')) e.preventDefault(); });
+document.addEventListener('selectstart', e=>{ if (drag) e.preventDefault(); });
+let lastY = 0; setInterval(()=>{ if (!drag || !drag.started) return; if (lastY > innerHeight-60) scrollBy(0, 14); else if (lastY < 60) scrollBy(0, -14); }, 30);
+document.addEventListener('pointercancel', ()=>{ if (drag && drag.g) drag.g.remove(); drag=null; document.body.classList.remove('dragging'); unmarkZones(); });
+document.addEventListener('click', e=>{
+  const clr = e.target.closest('[data-clear]'); if (clr){ e.stopPropagation(); clearZone(clr.dataset.clear); $('dropMsg').textContent='Removed.'; return; }
+  const t = e.target.closest('.tile'); if (t){ if (justDragged) return; setArmed(armed===t ? null : t); return; }
+  const z = e.target.closest('[data-zone]');
+  if (z && armed && !e.target.closest('select')){ const a=armed; setArmed(null); applyDrop(z.dataset.zone, a); }
+});
+document.addEventListener('keydown', e=>{
+  if (e.key==='Escape' && armed){ setArmed(null); $('dropMsg').textContent=''; }
+  const z = e.target.closest && e.target.closest('.zone'); if (z && armed && (e.key==='Enter' || e.key===' ') && e.target===z){ e.preventDefault(); const a=armed; setArmed(null); applyDrop(z.dataset.zone, a); }
+});
+$('chartWrap').tabIndex = 0;
+$('chartWrap').addEventListener('keydown', e=>{ if (armed && (e.key==='Enter'||e.key===' ')){ e.preventDefault(); const a=armed; setArmed(null); applyDrop('chart', a); } });
+buildStaticTiles();
 
 /* ===================== FEEDBACK ===================== */
 function check(S){
@@ -655,6 +809,7 @@ function check(S){
     warn('<b>You are adding six years together.</b> Each value is the 2020–2025 total. Use "Show only: Year," put Year on X, or color by Year.');
   if (yCol && yCol.rate && S.agg==='sum' && dup) warn(`<b>${yCol.label} can't be added up.</b> Adding rates or counts from several rows gives a meaningless number. Use "Average them" or "Largest value."`);
   if (yCol && yCol.rate && S.valMode==='pct') warn(`<b>Percent of a percent.</b> ${yCol.label} is already a rate; showing it as "percent of total" is confusing.`);
+  if (!S.xNum && type!=='pie' && !((type==='bar') !== $('swap').checked) && !$('rotate').checked && S.order.length>6 && S.order.some(x=>String(x).length>9)) warn('<b>Crowded labels.</b> The category names overlap. Try a Bar chart (labels go on the side), or "Tilt X labels" under More options.');
   // axis
   if ((type==='column'||type==='bar'||type==='area') && !$('zero').checked && !$('logY').checked) warn('<b>Bars and areas should start at 0.</b> Their length or area stands for the amount, so cutting off the bottom exaggerates differences.');
   if ($('logY').checked) warn('<b>Log scale.</b> Each gridline is 10× the one below. Useful when values range from tiny to huge, but say so in the axis label.');
