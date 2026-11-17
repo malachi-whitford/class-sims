@@ -406,8 +406,13 @@ function shape(){
     agg:$('agg').value, fCol:$('fCol').value, fVal:$('fVal').value, sort:$('sort').value, topN:+$('topN').value, barMode:$('barMode').value, valMode:$('valMode').value };
   let rows = ds().rows;
   if (S.fCol) rows = rows.filter(r=>String(valOf(r,S.fCol))===S.fVal);
+  // graph right away: fill in whatever hasn't been chosen yet
+  if (!S.type && (S.x || S.y)) { S.type = 'points'; S.autoType = true; }
+  if (S.x && !S.y) { S.y = '__count'; S.autoY = true; }
+  if (S.y && !S.x) { S.x = '__row'; S.autoX = true; }
   if (!S.x || !S.y) return S;
-  S.xCol = S.x==='__count' ? {key:'__count', label:'Number of rows', type:'cat'} : colOf(S.x);
+  rows = rows.map((r,i)=>Object.assign({__row: i+1}, r));
+  S.xCol = S.x==='__count' ? {key:'__count', label:'Number of rows', type:'cat'} : S.x==='__row' ? {key:'__row', label:'Row number', type:'ord'} : colOf(S.x);
   S.xNum = S.xCol.type==='num' && (S.type==='points' || S.type==='line' || S.type==='area');
   const yC = colAny(S.y); S.yCol = yC;
   S.yCat = yC.type==='cat';
@@ -501,6 +506,10 @@ function render(){
   const swap = $('swap').checked && !isPie;
   const horiz = (type==='bar') !== swap;   // categories on vertical axis
   const ready = type && S.x && S.y && S.order && S.order.length;
+  if (ready && (S.autoType || S.autoX || S.autoY)){
+    const bits = []; if (S.autoType) bits.push('points (no chart type chosen yet)'); if (S.autoY) bits.push('Y = number of rows (nothing on Y yet)'); if (S.autoX) bits.push('X = row number (nothing on X yet)');
+    o += `<text x="${W/2}" y="54" text-anchor="middle" font-size="11.5" font-style="italic" fill="${T.ph}">Showing ${esc(bits.join(' · '))}</text>`;
+  }
   const pal = PALETTES[$('palette').value];
   const gIndex = n => Math.max(0, S.gNames ? S.gNames.indexOf(n) : 0);
   const colorFor = s => S.gKey ? pal[gIndex(s.g) % pal.length] : $('color').value;
@@ -533,7 +542,7 @@ function render(){
     const catLabels = ready && !S.xNum ? S.order.map(String) : [];
     const maxCatW = catLabels.reduce((m,s)=>Math.max(m,textW(s,12)),0);
     const rot = $('rotate').checked;
-    let mL = 84, mR = legendOn ? 200 : 30, mT = 56, mB = 72;
+    let mL = 84, mR = legendOn ? 200 : 30, mT = (S.autoType||S.autoX||S.autoY) ? 70 : 56, mB = 72;
     if (ready && S.yCat && !((type==='bar') !== ($('swap').checked))) mL = Math.max(84, Math.min(240, S.yCats.reduce((m,c)=>Math.max(m,textW(c,12)),0)+28));
     if (horiz && !S.xNum) mL = Math.max(90, Math.min(260, maxCatW + 26));
     else if (rot && !S.xNum) mB = Math.max(72, Math.min(180, maxCatW*0.75 + 44));
@@ -575,7 +584,7 @@ function render(){
     if (horiz){ o += `<text x="${mL+pw/2}" y="${mT+ph+46}" text-anchor="middle" font-size="14" font-weight="600">${valLab}</text><text transform="translate(18 ${mT+ph/2}) rotate(-90)" text-anchor="middle" font-size="14" font-weight="600">${catLab}</text>`; }
     else { o += `<text x="${mL+pw/2}" y="${BASEH-24}" text-anchor="middle" font-size="14" font-weight="600">${catLab}</text><text transform="translate(20 ${mT+ph/2}) rotate(-90)" text-anchor="middle" font-size="14" font-weight="600">${valLab}</text>`; }
     if (!ready){
-      const msg = !type ? 'Choose a chart type to begin' : (!S.x ? 'Choose what goes on the X axis' : (!S.y ? 'Choose what goes on the Y axis' : 'No rows match your filter'));
+      const msg = (!S.x && !S.y) ? 'Drag a data column onto the graph to start' : 'No rows match your filter';
       o += `<text x="${mL+pw/2}" y="${mT+ph/2}" text-anchor="middle" font-size="16" fill="${T.ph}">${msg}</text>`;
     } else {
       if (!S.xNum) S.order.forEach((x,i)=>{ const xs=String(x);
@@ -676,7 +685,7 @@ function render(){
       tip.style.opacity=1; const r=$('chartWrap').getBoundingClientRect(); let x=e.clientX-r.left+12; if (x+tip.offsetWidth>r.width) x=e.clientX-r.left-tip.offsetWidth-12; tip.style.left=x+'px'; tip.style.top=(e.clientY-r.top+12)+'px'; });
     el.addEventListener('mouseleave', ()=>tip.style.opacity=0);
   });
-  $('graphDesc').textContent = ready ? `${type} chart of ${$('ySel').selectedOptions[0].text} by ${S.xCol.label}${S.gKey?', colored by '+colAny(S.gKey).label:''}${S.shKey?', shaped by '+colAny(S.shKey).label:''}.` : 'Blank graph.';
+  $('graphDesc').textContent = ready ? `${type} chart of ${S.yCol.label} by ${S.xCol.label}${S.gKey?', colored by '+colAny(S.gKey).label:''}${S.shKey?', shaped by '+colAny(S.shKey).label:''}.` : 'Blank graph.';
   if (!$('feedback').hidden) check(S);
 }
 
@@ -787,7 +796,10 @@ function check(S){
   S = S || shape();
   const out=[]; const ok=m=>out.push(['ok',m]), warn=m=>out.push(['warn',m]);
   const d=ds(), type=S.type;
-  if (!type || !S.x || !S.y){ warn('<b>Not finished.</b> Pick a chart type, an X axis and a Y axis first.'); return show(out); }
+  if (!S.x || !S.y){ warn('<b>Not started.</b> Drag a data column onto the graph.'); return show(out); }
+  if (S.autoType) warn('<b>No chart type chosen.</b> The graph is showing points for now; drag a chart type onto the graph.');
+  if (S.autoY) warn('<b>Nothing on the Y axis.</b> The graph is counting rows for now; drag a number (#) onto the Y axis.');
+  if (S.autoX) warn('<b>Nothing on the X axis.</b> The graph is using row numbers for now; drag a column onto the X axis.');
   const title=$('title').value.trim(), xlab=$('xlab').value.trim(), ylab=$('ylab').value.trim(), src=$('source').value.trim();
   const xOrd = S.xCol.type==='ord', xNum = S.xCol.type==='num', yCol = S.y==='__count' ? null : colOf(S.y);
   const hasYear = d.cols.some(c=>c.key==='year');
