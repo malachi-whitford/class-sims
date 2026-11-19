@@ -5,6 +5,13 @@
    Each drawing is SVG on a 160 x 90 canvas.
    ===================================================================== */
 const THUMBS = {
+"sims/species-distribution/": `
+  <rect x="0" y="0" width="160" height="90" fill="#f2eedf"/>
+  <path d="M84 0 C70 20 96 34 80 52 C68 66 92 78 86 90 L118 90 C124 76 104 66 112 52 C124 34 104 20 112 0Z" fill="#86c07a"/>
+  <path d="M94 0 C86 20 104 34 94 52 C86 66 102 78 98 90 L108 90 C112 76 98 66 102 52 C110 34 98 20 102 0Z" fill="#1f7a5c"/>
+  <path d="M110 0 C104 22 118 40 108 60 C102 74 112 84 110 90" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <g fill="#111" stroke="#fff" stroke-width="1.6"><circle cx="96" cy="16" r="4"/><circle cx="100" cy="40" r="4"/><circle cx="92" cy="62" r="4"/><circle cx="104" cy="78" r="4"/><circle cx="88" cy="30" r="4"/></g>
+  <g fill="#666"><circle cx="20" cy="18" r="1.4"/><circle cx="40" cy="50" r="1.4"/><circle cx="58" cy="26" r="1.4"/><circle cx="26" cy="72" r="1.4"/><circle cx="140" cy="20" r="1.4"/><circle cx="146" cy="64" r="1.4"/><circle cx="64" cy="76" r="1.4"/><circle cx="130" cy="44" r="1.4"/></g>`,
 "sims/osmosis/": `
   <rect x="22" y="14" width="116" height="64" rx="4" fill="#fff" stroke="#0f5e57" stroke-width="2.5"/>
   <rect x="24" y="44" width="54" height="32" fill="#9fd8e8"/><rect x="82" y="30" width="54" height="46" fill="#9fd8e8"/>

@@ -227,6 +227,14 @@ const ITEMS = [
     tags: ["commons", "sustainability", "Hardin", "Ostrom", "overgrazing"]
   },
   {
+    title: "Species Distribution Models: How MaxEnt Works",
+    where: ["ecology/conservation"],
+    type: "sim",
+    url: "sims/species-distribution/",
+    desc: "Map where American pikas could live in a Sierra Nevada landscape from a handful of presence records. Watch MaxEnt compare records to background climates, then test it against the true habitat: overfitting, sampling bias, background choice, and a +3 °C future.",
+    tags: ["SDM", "MaxEnt", "niche model", "climate change", "pika"]
+  },
+  {
     title: "Fresno County Waste: Build Your Own Graphs",
     where: ["ecology/conservation"],
     type: "sim",
