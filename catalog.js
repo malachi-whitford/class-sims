@@ -231,8 +231,8 @@ const ITEMS = [
     where: ["ecology/conservation"],
     type: "sim",
     url: "sims/species-distribution/",
-    desc: "Run a full species distribution model for California blue oak in seven steps: clean GBIF-style records, screen correlated climate variables, set the background, split training and testing data, fit MaxEnt, evaluate with AUC and thresholds, and project to a warmer future. Check every choice against the true range.",
-    tags: ["SDM", "MaxEnt", "multicollinearity", "AUC", "climate change", "blue oak"]
+    desc: "Run a full species distribution model for blue oak with real data (GBIF records and WorldClim climate) in seven steps: clean a messy download, screen correlated climate variables, set the background, split training and testing data, fit MaxEnt, evaluate with AUC and thresholds, and project to a warmer future.",
+    tags: ["SDM", "MaxEnt", "GBIF", "WorldClim", "multicollinearity", "blue oak"]
   },
   {
     title: "Fresno County Waste: Build Your Own Graphs",
