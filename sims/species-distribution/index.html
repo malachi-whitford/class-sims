@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Species Distribution Models: How MaxEnt Works</title>
+<title>Species Distribution Models: A MaxEnt Analysis, Step by Step</title>
 <style>
 :root{--bg:#f4f6f8;--card:#fff;--text:#1d2530;--muted:#5d6877;--line:#cfd6df;--accent:#1f6fbf;--soft:#eef2f6;--good:#1d7a3a;--bad:#b3261e;
 --s1:#2a78d6;--s2:#d4561f;--s3:#178f64;--s4:#b07800;--s5:#c2477a;--s6:#6250d6;
@@ -12,140 +12,286 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 --s1:#5a9cf0;--s2:#f07a45;--s3:#2fc08b;--s4:#e0a82a;--s5:#e67aa6;--s6:#9a8cf0;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
-.wrap{max-width:1150px;margin:0 auto}
+.wrap{max-width:1200px;margin:0 auto}
 a{color:var(--accent)}
 .back{font-size:.82rem;text-decoration:none}
 h1{font-size:1.45rem;margin:4px 0 4px}
 h2{font-size:1.05rem;margin:0 0 8px}
-h3{font-size:.95rem;margin:14px 0 4px}
-p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem}
+h3{font-size:.95rem;margin:12px 0 4px}
+p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem;max-width:900px}
+nav.tabs{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:8px 0 12px}
+nav.tabs button{font:inherit;font-size:.8rem;font-weight:600;padding:7px 6px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;text-align:left;line-height:1.2;min-height:48px}
+nav.tabs button b{display:block;font-size:.7rem;color:var(--muted);font-weight:700;letter-spacing:.03em;text-transform:uppercase}
+nav.tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+nav.tabs button.on b{color:rgba(255,255,255,.85)}
+@media(max-width:820px){nav.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:460px){nav.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+section.panel{display:none}
+section.panel.on{display:block}
+.vpanel{display:none}
+.vpanel.on{display:block}
 .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-.layout{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px;align-items:start}
+.layout{display:grid;grid-template-columns:280px minmax(0,1fr);gap:12px;align-items:start}
 .layout>.card{margin-bottom:0}
 .layout>*{min-width:0}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
+.top{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:12px;align-items:start}
+.top>*{min-width:0}
+.top>.card{margin-bottom:0}
+.side{display:flex;flex-direction:column;gap:10px}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
 .grid2>.card{margin-bottom:0}
+#viz{margin-top:12px}
 button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;min-height:34px}
 button:hover{border-color:var(--accent)}
 button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+select{font:inherit;font-size:.85rem;padding:5px 6px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);min-height:34px;max-width:100%}
 .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
 .muted{color:var(--muted)}
 .small{font-size:.82rem}
+.ctrl p{font-size:.86rem;margin:6px 0}
 .ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
-.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums}
-.ctrl .hint{font-size:.75rem;color:var(--muted);margin:2px 0 4px}
-.ctrl h3:first-child{margin-top:0}
+.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums;min-width:2.5em;text-align:right}
+.ctrl .hint{font-size:.76rem;color:var(--muted);margin:2px 0 4px}
+.ctrl h2{font-size:1rem;margin-bottom:4px}
 .ctrl h3{border-top:1px solid var(--line);padding-top:10px}
-.ctrl h3.first{border-top:none;padding-top:0;margin-top:0}
+.ctrl .next{width:100%;margin-top:12px}
 input[type=range]{width:100%;accent-color:var(--accent)}
-input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px;flex:none}
-.ctrl label.check{display:flex;justify-content:flex-start;gap:8px;align-items:center;font-size:.86rem;margin:8px 0}
-.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 10px}
-.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
-.tile .k{font-size:.76rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tile .v{font-size:1.3rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px;flex:none;margin:0}
+.ctrl label.check{display:flex;justify-content:flex-start;gap:8px;align-items:flex-start;font-size:.85rem;margin:7px 0}
+.ctrl label.check span small{display:block;color:var(--muted);font-size:.74rem}
+.vars label.check{align-items:center}
+.vars .tag{margin-left:auto;font-size:.7rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 12px;height:64px;overflow:hidden}
+.tile .k{font-size:.74rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .v{font-size:1.25rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
 .tile .v small{font-size:.75rem;font-weight:600;color:var(--muted)}
-@media(max-width:620px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .chart svg{width:100%;height:auto;display:block;touch-action:manipulation}
-.chart text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
+.chart text,svg.mat text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
 .chart .ax{stroke:var(--line)}
 .chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
 .chart .lab{fill:var(--text);font-weight:600}
-.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);margin:6px 0 2px}
+svg.mat{width:100%;height:auto;display:block}
+svg.mat rect.cell{cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);margin:6px 0 2px;min-height:1.3em}
 .legend span{display:flex;align-items:center;gap:5px}
+.legend span.off{display:none}
+#mapLeg{min-height:2.7em}
+@media(max-width:620px){#mapLeg{min-height:4em}}
 .sw{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
-.msg{font-size:.9rem;background:var(--soft);border-left:4px solid var(--accent);border-radius:6px;padding:8px 12px;margin:0 0 12px;min-height:3.2em}
+.msg{font-size:.86rem;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:10px 12px;min-height:13em}
 .msg.warn{border-left-color:var(--s4)}
 .seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
 .seg button{flex:1 1 auto;font-size:.82rem;padding:6px 8px}
 .seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 .stage{position:relative}
-canvas{display:block;width:100%;height:auto;border-radius:8px;background:var(--soft);touch-action:manipulation}
-#map{aspect-ratio:720/480}
-#env{aspect-ratio:520/430}
-.badge{position:absolute;left:10px;top:10px;border-radius:999px;padding:4px 12px;font-size:.8rem;font-weight:700;background:rgba(0,0,0,.62);color:#fff;font-variant-numeric:tabular-nums;pointer-events:none}
+canvas{display:block;width:100%;height:auto;border-radius:8px;touch-action:manipulation}
+#map{aspect-ratio:576/648;max-width:600px;margin:0 auto}
+.badge{position:absolute;left:10px;bottom:10px;border-radius:999px;padding:4px 12px;font-size:.78rem;font-weight:700;background:rgba(0,0,0,.62);color:#fff;font-variant-numeric:tabular-nums;pointer-events:none;width:11.5em;text-align:center}
+.maphead{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;min-height:36px}
+.maphead .seg{margin:0;flex:1 1 auto}
 .cbar{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);margin-top:8px}
+.cbar span{width:6.5em;flex:none}
+.cbar span:last-child{text-align:right}
 .cbar i{flex:1;height:12px;border-radius:4px;display:block;border:1px solid var(--line)}
-.paperstrip{font-size:.88rem;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--s4);border-radius:10px;padding:10px 14px;margin-bottom:12px}
-.paperstrip .cite{color:var(--muted);font-size:.8rem;margin-top:4px}
-.steps{counter-reset:st;margin:0;padding:0;list-style:none}
-.steps li{counter-increment:st;position:relative;padding:7px 0 7px 34px;border-top:1px solid var(--line);font-size:.9rem}
-.steps li:first-child{border-top:none}
-.steps li::before{content:counter(st);position:absolute;left:0;top:7px;width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.species{padding:0;overflow:hidden}
+.species svg{width:100%;height:110px;display:block}
+.species div{padding:8px 12px 10px}
+.species p{margin:0;font-size:.82rem}
+table.t{border-collapse:collapse;width:100%;font-size:.85rem}
+table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left}
+table.t th{background:var(--soft);font-weight:600}
+table.t td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+table.t tr.dim td{color:var(--muted);opacity:.6}
+table.t tr.tot td{font-weight:700}
+.bar{height:10px;border-radius:3px;background:var(--accent);display:block}
+.bad{color:var(--bad);font-weight:700}
+.ok{color:var(--good);font-weight:700}
+.note{font-size:.84rem;background:var(--soft);border-radius:8px;padding:8px 10px;margin:8px 0 0}
 .formula{font-family:Georgia,'Times New Roman',serif;font-size:1rem;background:var(--soft);border-radius:8px;padding:6px 10px;margin:6px 0;overflow-x:auto}
+.cite{color:var(--muted);font-size:.78rem;margin:0}
+@media(max-width:1120px){.top{grid-template-columns:minmax(0,1fr)} .side{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px} .side .species{grid-column:1/-1} .msg{min-height:10em}}
 @media(max-width:820px){.layout{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:620px){.side{display:flex}.msg{min-height:12em}}
 @media(max-width:520px){.grid2{grid-template-columns:1fr} body{padding:10px}}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) .seg button.on,:root:not([data-theme="light"]) .steps li::before{color:#0d1b2a}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) .seg button.on,:root:not([data-theme="light"]) nav.tabs button.on{color:#0d1b2a}
+  :root:not([data-theme="light"]) nav.tabs button.on b{color:#0d1b2a}}
 </style>
 <!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
 </head>
 <body>
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
-<h1>Species Distribution Models: How MaxEnt Works</h1>
-<p class="sub">Biologists have found a species at a handful of places. Where else could it live? MaxEnt answers by comparing the climate at those places with the climate available across the landscape, then painting every place by how much it resembles the sites where the species was found.</p>
-<div class="paperstrip">The species is the American pika (<i>Ochotona princeps</i>), a small rabbit relative of high Sierra talus slopes that overheats easily. The landscape is a made-up slice of the southern Sierra Nevada, from the Central Valley over the crest to the dry east side. Because we built this world, we know where pikas <b>really</b> can live, so you can check the model against the truth, which real biologists never get to do.
-  <div class="cite">Method: Phillips, S. J., R. P. Anderson, &amp; R. E. Schapire (2006). Maximum entropy modeling of species geographic distributions. <i>Ecological Modelling</i> 190: 231–259. Elith, J., et al. (2011). A statistical explanation of MaxEnt for ecologists. <i>Diversity and Distributions</i> 17: 43–57.</div></div>
+<h1>Species Distribution Models: A MaxEnt Analysis, Step by Step</h1>
+<p class="sub">Run a full species distribution model for blue oak, from raw records to a climate-change map, the same way a published study would. Because this California is simulated, you can check every choice against the oak's <b>true</b> range, which real biologists never get to see.</p>
+
+<nav class="tabs" aria-label="Analysis steps">
+  <button data-tab="s1" class="on"><b>Step 1</b>Records</button>
+  <button data-tab="s2"><b>Step 2</b>Climate variables</button>
+  <button data-tab="s3"><b>Step 3</b>Study area</button>
+  <button data-tab="s4"><b>Step 4</b>Train &amp; test</button>
+  <button data-tab="s5"><b>Step 5</b>Fit the model</button>
+  <button data-tab="s6"><b>Step 6</b>Evaluate</button>
+  <button data-tab="s7"><b>Step 7</b>Project</button>
+</nav>
 
 <div class="layout">
   <div class="card ctrl">
-    <h3 class="first">1. Presence records</h3>
-    <div class="row"><button class="primary" id="newSurvey">New survey</button></div>
-    <label for="nRec">Number of records <span class="val" id="nRecV"></span></label><input type="range" id="nRec" min="5" max="150" step="1" value="40" data-nobox>
-    <label class="check"><input type="checkbox" id="bias"> <span>Most records come from people near roads and trails</span></label>
+    <section class="panel on" id="s1">
+      <h2>1. Get and clean the records</h2>
+      <p>Records come from herbaria, surveys, and apps like iNaturalist, usually downloaded from GBIF. Raw downloads are messy: repeat records, typos that drop a point in the ocean, and trees planted in yards and parks far from where the species grows wild.</p>
+      <label for="nRec">Raw records downloaded <span class="val" id="nRecV"></span></label><input type="range" id="nRec" min="20" max="250" step="5" value="90" data-nobox>
+      <label class="check"><input type="checkbox" id="bias"> <span>Most records come from people near highways<small>Sampling bias: people record oaks where they drive.</small></span></label>
+      <div class="row"><button id="newSurvey">New download</button></div>
+      <h3>Cleaning</h3>
+      <label class="check"><input type="checkbox" id="cDup"> <span>Remove duplicates<small>Two records in the same 10 km cell count once.</small></span></label>
+      <label class="check"><input type="checkbox" id="cSea"> <span>Remove records in the ocean<small>Coordinate typos. MaxEnt would drop them anyway (no climate data).</small></span></label>
+      <label class="check"><input type="checkbox" id="cCult"> <span>Remove cultivated trees<small>Oaks planted in cities tell you about watering, not climate.</small></span></label>
+      <label class="check"><input type="checkbox" id="cThin"> <span>Spatial thinning (keep 1 per 30 km)<small>Thins clusters so heavily sampled places don't dominate.</small></span></label>
+      <button class="primary next" data-go="s2">Next: climate variables →</button>
+    </section>
 
-    <h3>2. Background (area the species can reach)</h3>
-    <div class="seg" id="bgSel" role="group" aria-label="Background area"><button data-v="all" class="on">Whole region</button><button data-v="buf">Within 20 km of records</button></div>
-    <label class="check"><input type="checkbox" id="showBg" checked> <span>Show background points</span></label>
+    <section class="panel" id="s2">
+      <h2>2. Choose climate variables</h2>
+      <p>Studies start from a set of climate layers like WorldClim's 19 "bioclim" variables. Many of them measure nearly the same thing. Annual temperature and July temperature both rise as you go downhill, so they are <b>correlated</b>.</p>
+      <p>Correlated predictors (<b>multicollinearity</b>) make the model split credit between them unpredictably. The response curves become hard to read, and the projection can go wrong when climate change breaks the relationship between them. A common rule is to keep only variables with |r| &lt; 0.7, choosing the one that makes more biological sense from each correlated pair.</p>
+      <div class="vars" id="varList"></div>
+      <div class="row"><button id="varAll">Select all</button><button id="varSuggest">Suggest a set (|r| &lt; 0.7)</button></div>
+      <p class="hint">Tap a square in the correlation matrix to see that pair plotted.</p>
+      <button class="primary next" data-go="s3">Next: study area →</button>
+    </section>
 
-    <h3>3. Model complexity</h3>
-    <div class="seg" id="featSel" role="group" aria-label="Feature types"><button data-v="L">Linear</button><button data-v="LQ">+ Quadratic</button><button data-v="LQH" class="on">+ Hinge</button></div>
-    <p class="hint">Feature types are the shapes a response curve is allowed to take: straight lines, hills, or flexible bends.</p>
-    <label for="beta">Regularization multiplier (β) <span class="val" id="betaV"></span></label><input type="range" id="beta" min="0.1" max="5" step="0.1" value="1" data-d="1" data-nobox>
-    <p class="hint">Low β lets the model chase every record. High β forces a smoother, simpler model.</p>
+    <section class="panel" id="s3">
+      <h2>3. Define the study area and background</h2>
+      <p>MaxEnt has no absences. Instead it compares the records with <b>background points</b>, a random sample of the area the species could have reached. The background answers "what climates were available?"</p>
+      <p>Where you draw that area matters. Too big, and the model learns easy differences (oaks aren't in the Mojave). Too small, and it can't learn what limits the species.</p>
+      <div class="seg" id="bgSel" role="group" aria-label="Background area"><button data-v="all" class="on">All of California</button><button data-v="buf">Within 50 km of records</button></div>
+      <label class="check"><input type="checkbox" id="showBg" checked> <span>Show background points</span></label>
+      <button class="primary next" data-go="s4">Next: train &amp; test →</button>
+    </section>
 
-    <h3>4. Project</h3>
-    <div class="seg" id="climSel" role="group" aria-label="Climate"><button data-v="now" class="on">Today's climate</button><button data-v="fut">Future (+3 °C)</button></div>
+    <section class="panel" id="s4">
+      <h2>4. Split into training and testing records</h2>
+      <p>To judge the model honestly, hold some records back. The model is built from the <b>training</b> records and scored on the <b>testing</b> records it never saw.</p>
+      <div class="seg" id="splitSel" role="group" aria-label="How to split"><button data-v="rand" class="on">Random 75 / 25</button><button data-v="block">Spatial blocks</button></div>
+      <p class="hint">Random split: testing records sit right next to training records, so the test is easy. Spatial blocks: whole 200 km squares are held out, which tests whether the model works in places it hasn't seen. That is a tougher, more honest check.</p>
+      <div class="row"><button id="newSplit">New split</button></div>
+      <button class="primary next" data-go="s5">Next: fit the model →</button>
+    </section>
+
+    <section class="panel" id="s5">
+      <h2>5. Fit the model</h2>
+      <p>MaxEnt finds the climates that are more common at the training records than in the background. Out of all maps that match the records' averages, it picks the most spread-out one (<i>maximum entropy</i>), assuming nothing more than the data show.</p>
+      <div class="formula">suitability ∝ e<sup>λ₁f₁ + λ₂f₂ + …</sup></div>
+      <h3>Feature types</h3>
+      <div class="seg" id="featSel" role="group" aria-label="Feature types"><button data-v="L">Linear</button><button data-v="LQ">+ Quadratic</button><button data-v="LQH" class="on">+ Hinge</button></div>
+      <p class="hint">Features are the shapes a response curve may take: straight lines, hills, or flexible bends.</p>
+      <label for="beta">Regularization multiplier (β) <span class="val" id="betaV"></span></label><input type="range" id="beta" min="0.1" max="5" step="0.1" value="1" data-d="1" data-nobox>
+      <p class="hint">β penalizes complexity. Low β lets the model chase every record (overfitting). High β forces a simpler model. Studies often test several β values and pick the best.</p>
+      <button class="primary next" data-go="s6">Next: evaluate →</button>
+    </section>
+
+    <section class="panel" id="s6">
+      <h2>6. Evaluate and threshold</h2>
+      <p><b>AUC</b> asks: if you pick one record and one background point, how often does the record score higher? 0.5 is a coin flip, 1 is perfect. Compare <b>training</b> AUC with <b>testing</b> AUC: a big gap means overfitting.</p>
+      <p>Managers often want a yes/no map, so we pick a <b>threshold</b>. Above it the place is called suitable, below it unsuitable.</p>
+      <div class="seg" id="thrSel" role="group" aria-label="Threshold rule"><button data-v="p10" class="on">10th percentile training</button><button data-v="sss">Max sensitivity + specificity</button></div>
+      <p class="hint">10th percentile: 90% of training records fall above the cutoff. Max sensitivity + specificity: the cutoff that best separates records from background.</p>
+      <button class="primary next" data-go="s7">Next: project →</button>
+    </section>
+
+    <section class="panel" id="s7">
+      <h2>7. Project to a future climate</h2>
+      <p>Feed the same model a future climate (here, July 3.5 °C warmer and January 2 °C warmer, about what models give for California late this century under high emissions) and compare the maps.</p>
+      <p>Watch for <b>extrapolation</b>: future climates hotter than anything in the background. The model has never seen them, so MaxEnt <i>clamps</i> them to the most extreme value it saw. Treat those areas with caution.</p>
+      <p class="hint">Try models that use Elevation, or Annual temperature instead of July temperature. Elevation won't warm, so the model can't see the change at all.</p>
+    </section>
   </div>
 
   <div>
-    <div class="tiles">
-      <div class="tile"><div class="k">Features in use</div><div class="v" id="tFeat">–</div></div>
-      <div class="tile"><div class="k">Test AUC (new survey)</div><div class="v" id="tAuc">–</div></div>
-      <div class="tile"><div class="k">Match to true habitat</div><div class="v" id="tMatch">–</div></div>
-      <div class="tile"><div class="k" id="tAreaK">Suitable area</div><div class="v" id="tArea">–</div></div>
-    </div>
-    <div class="card">
-      <div class="seg" id="viewSel" role="group" aria-label="Map layer"><button data-v="model" class="on">Model prediction</button><button data-v="truth">True habitat</button><button data-v="T">Summer temperature</button><button data-v="P">Precipitation</button></div>
-      <div class="stage"><canvas id="map" width="720" height="480"></canvas><span class="badge" id="badge"></span></div>
-      <div class="cbar" aria-hidden="true"><span id="cbLo"></span><i id="cbGrad"></i><span id="cbHi"></span></div>
-      <div class="legend" id="mapLeg"></div>
-      <p class="sr-only" id="mapSR"></p>
-    </div>
-    <div class="msg" id="msg"></div>
-    <div class="grid2">
-      <div class="card"><h2>What the model sees: climate space</h2><canvas id="env" width="520" height="430"></canvas>
-        <div class="legend" id="envLeg"></div>
-        <p class="small muted">Every map cell is a point here, placed by its temperature and rainfall instead of its location. MaxEnt never sees the map, only this. It looks for climates that are more common among the records than in the background.</p></div>
-      <div class="card chart"><h2>Response curves</h2>
-        <div class="seg" id="rcSel" role="group" aria-label="Response curve variable"><button data-v="T" class="on">Summer temperature</button><button data-v="P">Precipitation</button></div>
-        <div class="legend" id="rcLeg"></div><svg id="rc" role="img"></svg>
-        <p class="small muted" id="rcNote"></p></div>
+    <div class="top">
+      <div class="card">
+        <div class="maphead"><div class="seg" id="viewSel" role="group" aria-label="Map layer"></div><select id="mapVar" aria-label="Variable shown on the map" style="display:none"></select></div>
+        <div class="stage"><canvas id="map" width="576" height="648"></canvas><span class="badge" id="badge" aria-hidden="true"></span></div>
+        <div class="cbar" aria-hidden="true"><span id="cbLo"></span><i id="cbGrad"></i><span id="cbHi"></span></div>
+        <div class="legend" id="mapLeg" aria-hidden="true" data-steady></div>
+      </div>
+      <div class="side">
+        <div class="card species">
+          <svg viewBox="0 30 240 170" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe6f5"/><stop offset="1" stop-color="#f4efe0"/></linearGradient></defs>
+            <rect y="0" width="240" height="200" fill="url(#sky)"/>
+            <path d="M0 150 C40 128 80 132 120 142 C160 152 200 128 240 136 V200 H0Z" fill="#e2c27a"/>
+            <path d="M0 168 C50 154 110 160 160 170 C200 178 220 166 240 168 V200 H0Z" fill="#d4ad5c"/>
+            <path d="M112 160 C114 140 110 124 102 108 M116 160 C118 138 124 120 138 104 M114 132 C104 124 92 120 80 116" stroke="#6b5b4e" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <path d="M104 162 h22 l-3 -26 h-16z" fill="#6b5b4e"/>
+            <g fill="#7f9f97"><circle cx="78" cy="98" r="24"/><circle cx="104" cy="78" r="30"/><circle cx="140" cy="84" r="28"/><circle cx="164" cy="104" r="20"/><circle cx="120" cy="104" r="24"/><circle cx="92" cy="110" r="18"/></g>
+            <g fill="#9cb8b0"><circle cx="98" cy="70" r="14"/><circle cx="134" cy="74" r="13"/><circle cx="72" cy="92" r="10"/></g>
+            <g fill="#5f807a" opacity=".7"><circle cx="150" cy="110" r="10"/><circle cx="112" cy="114" r="12"/></g>
+            <g transform="translate(196 170)"><ellipse cx="0" cy="6" rx="7" ry="10" fill="#a87a3c"/><path d="M-8 -1 q8 -10 16 0 q-8 4 -16 0z" fill="#7a5a2c"/><path d="M0 -6 v-5" stroke="#7a5a2c" stroke-width="2"/></g>
+          </svg>
+          <div><p><b>Blue oak</b> <i>(Quercus douglasii)</i>. Found only in California, in a ring of golden foothills around the Central Valley. It needs hot summers and moderate winter rain, so it avoids the cool coast, the high mountains, and the deserts.</p></div>
+        </div>
+        <div class="tiles">
+          <div class="tile"><div class="k">Records used</div><div class="v" id="tRec">–</div></div>
+          <div class="tile"><div class="k">Variables</div><div class="v" id="tVar">–</div></div>
+          <div class="tile"><div class="k">AUC train / test</div><div class="v" id="tAuc">–</div></div>
+          <div class="tile"><div class="k" id="tAreaK">Suitable today</div><div class="v" id="tArea">–</div></div>
+        </div>
+        <div class="msg" id="msg" data-steady></div>
+      </div>
     </div>
 
-    <div class="card" style="margin-top:12px">
-      <h2>How MaxEnt builds the map</h2>
-      <ol class="steps">
-        <li><b>Presence records.</b> Places where the species was seen. There are no absences: a blank spot might be unsuitable, or nobody looked.</li>
-        <li><b>Background.</b> Thousands of random points from the area the species could reach. They describe what climates are <i>available</i>, not where the species is absent.</li>
-        <li><b>Compare.</b> For each climate, MaxEnt asks: is it more common at the records than in the background? Out of every map that matches the records' averages (their mean temperature, mean rainfall, and so on), it picks the one that is most spread out, the <i>maximum entropy</i> one, so it assumes nothing the data do not support.
-          <div class="formula">suitability ∝ e<sup>λ₁f₁ + λ₂f₂ + λ₃f₃ + …</sup></div>
-          Each <i>f</i> is a feature (temperature, temperature², a hinge…) and each λ is a weight the model learns.</li>
-        <li><b>Regularize.</b> The match to the records is allowed to be loose, by an amount set by β. Features that do not earn their keep get a weight of exactly zero and drop out.</li>
-        <li><b>Project.</b> Feed the same equation new climate layers, such as a future climate, to get a new map. Climates hotter than anything in the background are clamped to the hottest value the model saw.</li>
-      </ol>
+    <div id="viz">
+      <div class="vpanel on" data-step="s1">
+        <div class="card"><h2>Cleaning the download</h2><div id="cleanTbl" data-steady></div>
+          <p class="note">Red ✕ marks on the map are records removed by cleaning. Turn on the bias option and compare thinning on and off.</p></div>
+      </div>
+      <div class="vpanel" data-step="s2">
+        <div class="grid2">
+          <div class="card"><h2>Correlation matrix (Pearson r)</h2><svg class="mat" id="mat" role="img"></svg>
+            <div class="legend"><span><i class="sw" style="background:#b3261e"></i>|r| ≥ 0.7, too similar</span><span><i class="sw" style="background:#e8b4a8"></i>moderate</span><span><i class="sw" style="background:#eef2f6;border:1px solid var(--line)"></i>weak</span></div></div>
+          <div class="card"><h2 id="pairH">Pair</h2><canvas id="pair" width="420" height="330" role="img"></canvas>
+            <div id="vifTbl" style="margin-top:10px" data-steady></div></div>
+        </div>
+      </div>
+      <div class="vpanel" data-step="s3">
+        <div class="card"><h2>Records vs background in climate space</h2>
+          <div class="row small">Across: <select id="axX" aria-label="Horizontal axis variable"></select> Up: <select id="axY" aria-label="Vertical axis variable"></select></div>
+          <canvas id="env" width="620" height="400" role="img"></canvas>
+          <div class="legend"><span><i class="dot" style="background:#1b1b1b;box-shadow:0 0 0 2px #fff,0 0 0 3px #333"></i>Record</span><span><i class="dot" style="background:#777;width:7px;height:7px"></i>Background point</span></div>
+          <p class="small muted">Each map cell becomes a point placed by its climate. The model's whole job is to find where the dark records sit within the grey cloud of available climates.</p></div>
+      </div>
+      <div class="vpanel" data-step="s4">
+        <div class="card"><h2>Training and testing records</h2><div id="splitTbl" data-steady></div>
+          <p class="note">On the map, filled black dots are training records and orange dots are testing records. In spatial-block mode, the shaded squares are held out.</p></div>
+      </div>
+      <div class="vpanel" data-step="s5">
+        <div class="grid2">
+          <div class="card chart"><h2>Response curves</h2><div class="row small">Variable: <select id="rcVar" aria-label="Response curve variable"></select></div>
+            <div class="legend"><span><i class="sw" style="height:3px;background:var(--accent)"></i>Model</span><span id="rcTrueLeg"><i class="sw" style="background:transparent;border:2px dashed var(--muted)"></i>True response (hidden from model)</span><span><i class="sw" style="background:rgba(128,128,128,.35)"></i>Outside background</span></div>
+            <svg id="rc" role="img"></svg><p class="small muted" id="rcNote"></p></div>
+          <div class="card chart"><h2>Which variables matter? (permutation importance)</h2><svg id="imp" role="img"></svg>
+            <p class="small muted">Shuffle one variable's values and see how much training AUC drops. A big drop means the model leans on that variable. In this simulated world, only July temperature and annual precipitation truly limit blue oak.</p></div>
+        </div>
+      </div>
+      <div class="vpanel" data-step="s6">
+        <div class="grid2">
+          <div class="card chart"><h2>ROC curve</h2>
+            <div class="legend"><span><i class="sw" style="height:3px;background:var(--accent)"></i>Training</span><span><i class="sw" style="height:3px;background:#e8740c"></i>Testing</span><span><i class="sw" style="background:transparent;border:2px dashed var(--muted)"></i>Random (AUC 0.5)</span></div>
+            <svg id="roc" role="img"></svg></div>
+          <div class="card"><h2>Scorecard</h2><div id="evalTbl" data-steady></div></div>
+        </div>
+      </div>
+      <div class="vpanel" data-step="s7">
+        <div class="grid2">
+          <div class="card chart"><h2>Suitable area, today vs future</h2><svg id="areaChart" role="img"></svg></div>
+          <div class="card"><h2>What changed?</h2><div id="projTbl" data-steady></div></div>
+        </div>
+      </div>
     </div>
+    <p class="cite" style="margin-top:12px">The climate layers and the "true range" are simplified stand-ins built for teaching, not real climate data or the mapped range of blue oak. Method: Phillips, S. J., R. P. Anderson, &amp; R. E. Schapire (2006). Maximum entropy modeling of species geographic distributions. <i>Ecological Modelling</i> 190: 231–259. Elith, J., et al. (2011). A statistical explanation of MaxEnt for ecologists. <i>Diversity and Distributions</i> 17: 43–57. Dormann, C. F., et al. (2013). Collinearity: a review of methods to deal with it. <i>Ecography</i> 36: 27–46.</p>
   </div>
 </div>
 </div>
@@ -154,6 +300,7 @@ canvas{display:block;width:100%;height:auto;border-radius:8px;background:var(--s
 /* ---------- shared helpers ---------- */
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function niceTicks(lo,hi,n=5){const span=hi-lo||1;let step=Math.pow(10,Math.floor(Math.log10(span/n)));const err=span/n/step;if(err>=7.5)step*=10;else if(err>=3.5)step*=5;else if(err>=1.5)step*=2;const out=[];for(let v=Math.ceil(lo/step-1e-9)*step;v<=hi+1e-9;v+=step)out.push(+v.toFixed(10));return out}
 function fmtTick(v){const a=Math.abs(v);if(a>=10000)return(v/1000)+'k';if(a>=1||a===0)return+v.toFixed(2)+'';return+v.toPrecision(2)+''}
 let _clip=0;
@@ -176,319 +323,564 @@ function chart(svg,o){
   s+='</g>';
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;
 }
-function legend(el,items){el.innerHTML=items.map(([c,t,kind])=>`<span>${kind==='dot'?`<i class="dot" style="background:${c};box-shadow:0 0 0 2px #fff,0 0 0 3px #333"></i>`:kind==='bg'?`<i class="dot" style="background:${c};width:7px;height:7px"></i>`:kind==='dash'?`<i class="sw" style="background:transparent;border:2px dashed ${c}"></i>`:`<i class="sw" style="background:${c}"></i>`}${t}</span>`).join('')}
+/* legend with a fixed set of items; items not in use are hidden but keep their space, so nothing below jumps */
+function legend(el,items){
+  if(!el.__built){el.innerHTML=items.map(([c,t,kind])=>`<span>${kind==='dot'?`<i class="dot" style="background:${c};box-shadow:0 0 0 2px #fff,0 0 0 3px #333"></i>`:kind==='bg'?`<i class="dot" style="background:${c};width:7px;height:7px"></i>`:kind==='dash'?`<i class="sw" style="background:transparent;border:2px dashed ${c}"></i>`:kind==='line'?`<i class="sw" style="height:3px;border-radius:2px;background:${c}"></i>`:`<i class="sw" style="background:${c}"></i>`}${t}</span>`).join('');el.__built=true}
+  [...el.children].forEach((s,k)=>s.classList.toggle('off',items[k][3]===false));
+}
 function seg(id,fn){const el=document.getElementById(id);$$('button',el).forEach(b=>{b.setAttribute('aria-pressed',b.classList.contains('on')?'true':'false');b.onclick=()=>{if(b.classList.contains('on'))return;$$('button',el).forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-pressed',x===b?'true':'false')});fn(b.dataset.v)}})}
-const segVal=id=>$('#'+id+' button.on').dataset.v;
 
-/* ---------- seeded random ---------- */
+/* ---------- seeded random + smooth noise ---------- */
 function rng(seed){let s=seed>>>0;return()=>{s=(s+0x6D2B79F5)>>>0;let t=s;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296}}
 function vnoise(r,gw,gh,sc){const cw=Math.ceil(gw/sc)+2,ch=Math.ceil(gh/sc)+2,g=[];for(let i=0;i<cw*ch;i++)g.push(r()*2-1);
   const sm=t=>t*t*(3-2*t);return(x,y)=>{const gx=x/sc,gy=y/sc,ix=Math.floor(gx),iy=Math.floor(gy),fx=sm(gx-ix),fy=sm(gy-iy);
   const a=g[iy*cw+ix],b=g[iy*cw+ix+1],c=g[(iy+1)*cw+ix],d=g[(iy+1)*cw+ix+1];return a+(b-a)*fx+(c-a)*fy+(a-b-c+d)*fx*fy}}
 
-/* ---------- the landscape: 120 x 80 cells, each 2 km x 2 km ---------- */
-const GW=120,GH=80,N=GW*GH,KM=2,CELL_KM2=KM*KM,WARM=3;
-const elev=new Float32Array(N),T0=new Float32Array(N),P0=new Float32Array(N),T1=new Float32Array(N),shade=new Float32Array(N);
-const crestX=y=>84+6*Math.sin(y/13)+3*Math.sin(y/5.3);
+/* ---------- California on a 10 km grid ---------- */
+const LON0=-124.6,LAT0=42.1,KX=89,KY=111,KM=10,GW=96,GH=108,N=GW*GH,CELL_KM2=KM*KM,WARM=3;
+const lonOf=x=>LON0+(x+.5)*KM/KX, latOf=y=>LAT0-(y+.5)*KM/KY;
+const gx=lon=>(lon-LON0)*KX/KM, gy=lat=>(LAT0-lat)*KY/KM;   // fractional grid coordinates
+const CA=[[-124.21,42],[-120,42],[-120,39],[-114.63,35],[-114.6,34.9],[-114.13,34.27],[-114.43,34.08],[-114.53,33.6],[-114.73,33],[-114.72,32.72],[-117.12,32.53],
+ [-117.25,32.75],[-117.25,33],[-117.4,33.25],[-117.7,33.48],[-117.95,33.63],[-118.29,33.71],[-118.41,33.9],[-118.53,34.04],[-118.8,34],[-119.2,34.15],[-119.6,34.4],[-120,34.46],[-120.47,34.45],[-120.64,34.57],
+ [-120.6,35],[-120.86,35.4],[-121.3,35.66],[-121.9,36.3],[-121.95,36.55],[-121.8,36.8],[-122,36.96],[-122.4,37.2],[-122.5,37.5],[-122.51,37.78],[-122.75,37.9],[-123,38],[-123,38.3],[-123.3,38.55],
+ [-123.7,38.95],[-123.8,39.45],[-123.85,39.85],[-124.1,40.1],[-124.4,40.44],[-124.2,40.75],[-124.1,41],[-124.15,41.4],[-124.2,41.75],[-124.21,42]];
+function inPoly(lon,lat){let c=false;for(let i=0,j=CA.length-1;i<CA.length;j=i++){const[xi,yi]=CA[i],[xj,yj]=CA[j];if((yi>lat)!==(yj>lat)&&lon<(xj-xi)*(lat-yi)/(yj-yi)+xi)c=!c}return c}
+/* mountain ranges: [lon, lat, height km] along the crest; widths in km (west side, east side) */
+const RANGES=[
+ {p:[[-121.5,40.5,2.3],[-120.9,39.8,2.3],[-120.25,39,2.7],[-119.7,38.3,3.1],[-119.3,37.75,3.4],[-118.75,37.1,3.8],[-118.35,36.55,4],[-118.25,35.9,2.8],[-118.5,35.2,1.6]],w:60,e:20,name:'sierra'},
+ {p:[[-121.6,40.6,1.9],[-121.9,41.2,2],[-122,42,1.8]],w:40,e:40},
+ {p:[[-122.19,41.41,4.2],[-122.2,41.4,4.2]],w:16,e:16},
+ {p:[[-123.8,41.9,1.6],[-123.4,41.3,1.9],[-123,40.8,1.8],[-122.8,40.3,1.4]],w:50,e:45},
+ {p:[[-123.9,40.3,1.2],[-123.4,39.6,1.3],[-122.9,39,1.4],[-122.5,38.5,0.9],[-122.2,38,0.5]],w:30,e:30},
+ {p:[[-122,37.4,0.9],[-121.6,36.9,1],[-121.2,36.3,1.4],[-120.7,35.7,1.1],[-120.3,35.1,1.2],[-120,34.7,1.3]],w:26,e:26},
+ {p:[[-121.75,37.7,1],[-121.2,36.9,1.2],[-120.6,36.2,1.1],[-120.1,35.6,1],[-119.6,35.1,1.3]],w:22,e:22},
+ {p:[[-120.2,34.6,1.4],[-119.4,34.6,1.8],[-118.8,34.7,1.8],[-118.1,34.32,2.2],[-117.6,34.27,2.6],[-116.9,34.15,3],[-116.5,34.1,1.6]],w:18,e:18},
+ {p:[[-116.7,33.8,2.6],[-116.6,33.4,1.7],[-116.5,32.9,1.6],[-116.3,32.6,1.4]],w:24,e:24},
+ {p:[[-118.3,37.9,3.2],[-118.1,37.3,3.4],[-117.9,36.6,2.8]],w:14,e:14},
+ {p:[[-117.2,36.4,2.4],[-117.1,35.9,2]],w:12,e:12}];
+function crestLon(lat){const p=RANGES[0].p;if(lat>=p[0][1])return p[0][0];for(let k=1;k<p.length;k++)if(lat>=p[k][1]){const u=(lat-p[k][1])/(p[k-1][1]-p[k][1]);return p[k][0]+u*(p[k-1][0]-p[k][0])}return -118.5}
+let DSM=null;const INSIDE=new Uint8Array(N),elev=new Float32Array(N),T0=new Float32Array(N),P0=new Float32Array(N),T1=new Float32Array(N),shade=new Float32Array(N),coastD=new Float32Array(N);
 (function build(){
-  const R=rng(7),n1=vnoise(R,GW,GH,14),n2=vnoise(R,GW,GH,6),n3=vnoise(R,GW,GH,3);
-  for(let y=0;y<GH;y++){const cx=crestX(y);for(let x=0;x<GW;x++){const i=y*GW+x;
-    let e;if(x<=cx){const u=Math.max(0,(x-12)/(cx-12));e=0.08+3.6*Math.pow(u,1.35)}else{const u=(x-cx)/(GW-cx);e=3.7-2.4*Math.min(1,u*1.6)}
-    e+=0.45*n1(x,y)+0.22*n2(x,y)+0.08*n3(x,y);if(x<14)e*=0.3;e=Math.max(0.05,e);elev[i]=e;
-    T0[i]=27.5-5.6*e+3*(y/GH-0.5);                       // mean July temperature, °C (cooler up high and to the north)
-    let p=230+420*Math.min(e,2.6);                          // rain and snow rise up the west slope...
-    if(x>cx){const u=(x-cx)/(GW-cx);p*=Math.max(0.25,1-u*2.2)} // ...then drop in the rain shadow
-    P0[i]=p*(1.18-0.4*(y/GH))+60*n2(x+50,y);               // wetter to the north
+  const R=rng(11),n1=vnoise(R,GW,GH,9),n2=vnoise(R,GW,GH,4);
+  const kmx=x=>x*KM, kmy=y=>y*KM;
+  const desert=new Float32Array(N);
+  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const i=y*GW+x,lon=lonOf(x),lat=latOf(y);INSIDE[i]=inPoly(lon,lat)?1:0;
+    let base=0.05,des=0;
+    if(lat<39&&lon>crestLon(lat)||(lat<35.2&&lat>34.25&&lon>-118.2)||(lat<=34.25&&lon>-116.3)){des=1;base=Math.max(0.15,0.95-0.24*Math.max(0,lon+117.2))}
+    else if(lat>40&&lon>-121.4)base=1.4;
+    desert[i]=des;
+    let h=base;
+    RANGES.forEach(r=>{const px=kmx(gx(lon)),py=kmy(gy(lat));let best=1e9,hh=0,side=1;
+      for(let k=1;k<r.p.length;k++){const a=r.p[k-1],b=r.p[k],ax=kmx(gx(a[0])),ay=kmy(gy(a[1])),bx=kmx(gx(b[0])),by=kmy(gy(b[1])),vx=bx-ax,vy=by-ay;
+        const t=clamp(((px-ax)*vx+(py-ay)*vy)/(vx*vx+vy*vy||1),0,1),dx=ax+t*vx-px,dy=ay+t*vy-py,d=Math.hypot(dx,dy);
+        if(d<best){best=d;hh=a[2]+t*(b[2]-a[2]);side=(vx*(py-ay)-vy*(px-ax))>0?1:-1}}
+      const w=side>0?r.w:r.e;h=Math.max(h,hh*Math.exp(-Math.pow(best/w,1.4)))});
+    const dep=(lo,la,rad,depth)=>{const d=Math.hypot((lon-lo)*KX,(lat-la)*KY);if(d<rad)h=Math.min(h,depth+(h-depth)*Math.pow(d/rad,2))};
+    dep(-115.7,33.05,70,0);dep(-116.85,36.3,28,0);
+    h+=0.09*n1(x,y)*Math.min(1,h*2)+0.05*n2(x,y)*Math.min(1,h*2);
+    elev[i]=Math.max(0,h)}
+  // smooth the desert mask so climate changes gradually
+  let ds=desert;for(let pass=0;pass<4;pass++){const o=new Float32Array(N);for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){let s=0,c=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=GW||yy>=GH)continue;s+=ds[yy*GW+xx];c++}o[y*GW+x]=s/c}ds=o}
+  DSM=ds;
+  // distance to the ocean (cells west of the coast in each row)
+  const ocean=[];for(let y=0;y<GH;y++){let first=-1;for(let x=0;x<GW;x++)if(INSIDE[y*GW+x]){first=x;break}for(let x=0;x<(first<0?GW:first);x++)ocean.push([x,y])}
+  for(let i=0;i<N;i++){if(!INSIDE[i])continue;const x=i%GW,y=(i/GW)|0;let b=1e9;for(const o of ocean){const d=(o[0]-x)**2+(o[1]-y)**2;if(d<b)b=d}coastD[i]=Math.sqrt(b)*KM}
+  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const i=y*GW+x,lat=latOf(y),e=elev[i];
+    // July mean temperature: cool ocean air near the coast, hotter inland and in the deserts, cooler with height
+    T0[i]=16.5+12.5*(1-Math.exp(-coastD[i]/45))+4*ds[i]-6.2*e+0.45*(lat-37)*clamp((coastD[i]-40)/60,0,1);
+    // yearly precipitation: wetter to the north, more on windward slopes, less in rain shadows
+    let up=0;for(let k=1;k<=20&&x-k>=0;k++)up=Math.max(up,elev[i-k]);
+    const shadow=1/(1+1.1*Math.max(0,up-e));
+    P0[i]=250*Math.exp(0.23*(lat-32.7))*shadow*(1+0.55*Math.min(e,2.8))*(1-0.55*ds[i]);
     T1[i]=T0[i]+WARM;
-  }}
-  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const i=y*GW+x;
-    const dx=(elev[y*GW+Math.min(GW-1,x+1)]-elev[y*GW+Math.max(0,x-1)]),dy=(elev[Math.min(GH-1,y+1)*GW+x]-elev[Math.max(0,y-1)*GW+x]);
-    shade[i]=Math.max(0.72,Math.min(1.12,1+(-dx*0.9-dy*0.6)))}
+    const xe=elev[y*GW+Math.min(GW-1,x+1)]-elev[y*GW+Math.max(0,x-1)],ye=elev[Math.min(GH-1,y+1)*GW+x]-elev[Math.max(0,y-1)*GW+x];
+    shade[i]=clamp(1+(-xe*0.55-ye*0.4),0.72,1.15)}
 })();
-/* the species' real requirements (hidden from the model): cool summers, enough snow and rain */
-const trueSuit=(T,P)=>1/(1+Math.exp((T-13)/0.9))/(1+Math.exp(-(P-650)/110));
+const CELLS=[];for(let i=0;i<N;i++)if(INSIDE[i])CELLS.push(i);
+/* blue oak's real requirements (hidden from the model): hot summers, moderate rain */
+const sg=z=>1/(1+Math.exp(-z));
+const trueSuit=(T,P)=>sg((T-21)/0.8)*sg((28.2-T)/0.7)*sg((P-380)/55)*sg((1150-P)/110);
 const TRUE0=new Float32Array(N),TRUE1=new Float32Array(N);
-for(let i=0;i<N;i++){TRUE0[i]=trueSuit(T0[i],P0[i]);TRUE1[i]=trueSuit(T1[i],P0[i])}
+CELLS.forEach(i=>{TRUE0[i]=trueSuit(T0[i],P0[i]);TRUE1[i]=trueSuit(T1[i],P0[i])});
 
-/* roads and trails (where people, and so records, concentrate) */
+/* highways (records pile up along roads) and cities */
 const ROADS=[
-  {pts:[[0,28],[20,30],[40,26],[60,31],[75,27],[crestX(27),27],[100,30],[119,32]],trail:false},
-  {pts:[[0,60],[25,58],[45,62],[62,57]],trail:false},
-  {pts:[[62,57],[70,52],[78,48],[crestX(46)+1,46]],trail:true},
-  {pts:[[75,27],[80,18],[86,11]],trail:true}];
+ [[-122.4,42],[-122.4,40.6],[-122.2,39.5],[-121.75,38.7],[-121.3,37.9],[-120.5,36.8],[-119.4,35.3],[-118.8,34.85],[-118.4,34.1],[-117.6,33.6],[-117.2,32.75]],
+ [[-121.5,38.6],[-121,37.65],[-120.5,37.3],[-119.8,36.75],[-119.3,36.3],[-119,35.37],[-118.8,34.85]],
+ [[-124.2,41.75],[-124.1,40.8],[-123.8,40.1],[-123.35,39.4],[-122.7,38.45],[-122.45,37.75],[-121.9,37.3],[-121.65,36.68],[-120.66,35.28],[-120.2,34.6],[-119.7,34.42],[-118.4,34.1]],
+ [[-122.4,37.8],[-121.5,38.6],[-120.2,39.3],[-120,39.5]],
+ [[-117.3,34.1],[-117,34.9],[-115.4,35.6],[-114.95,35.95]],
+ [[-117.3,34.05],[-116.5,33.82],[-114.6,33.6]]];
+const CITIES=[['Redding',-122.39,40.59,'r'],['Sacramento',-121.49,38.58,'r'],['San Francisco',-122.42,37.77,'l'],['Fresno–Clovis',-119.72,36.8,'r'],['Los Angeles',-118.24,34.05,'l'],['San Diego',-117.16,32.72,'l']];
 const roadDist=new Float32Array(N);
-(function(){const segs=[];ROADS.forEach(r=>{for(let k=1;k<r.pts.length;k++)segs.push([r.pts[k-1],r.pts[k]])});
-  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){let best=1e9;const px=x+.5,py=y+.5;
-    segs.forEach(([a,b])=>{const vx=b[0]-a[0],vy=b[1]-a[1],t=Math.max(0,Math.min(1,((px-a[0])*vx+(py-a[1])*vy)/(vx*vx+vy*vy))),dx=a[0]+t*vx-px,dy=a[1]+t*vy-py;best=Math.min(best,Math.hypot(dx,dy))});
-    roadDist[y*GW+x]=best}})();
+(function(){const segs=[];ROADS.forEach(r=>{for(let k=1;k<r.length;k++)segs.push([[gx(r[k-1][0]),gy(r[k-1][1])],[gx(r[k][0]),gy(r[k][1])]])});
+  CELLS.forEach(i=>{let best=1e9;const px=i%GW+.5,py=((i/GW)|0)+.5;
+    segs.forEach(([a,b])=>{const vx=b[0]-a[0],vy=b[1]-a[1],t=clamp(((px-a[0])*vx+(py-a[1])*vy)/(vx*vx+vy*vy),0,1);best=Math.min(best,Math.hypot(a[0]+t*vx-px,a[1]+t*vy-py))});
+    roadDist[i]=best})})();
 
-/* independent test survey: unbiased records from the true habitat, plus random places */
-const TEST=(function(){const R=rng(991),cum=new Float64Array(N);let s=0;for(let i=0;i<N;i++){s+=TRUE0[i];cum[i]=s}
-  const pick=()=>{const u=R()*s;let lo=0,hi=N-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<u)lo=m+1;else hi=m}return lo};
-  const pres=[],rand=[];for(let k=0;k<300;k++)pres.push(pick());
-  // surveyors also checked 300 mountain talus patches (above ~1,600 m) and found no pikas
-  const cand=[];for(let i=0;i<N;i++)if(elev[i]>1.6&&R()<1-TRUE0[i])cand.push(i);
-  for(let k=0;k<300;k++)rand.push(cand[Math.floor(R()*cand.length)]);return{pres,rand}})();
+
+/* ---------- climate variables (a teaching stand-in for WorldClim bioclim layers) ---------- */
+const VARS=[
+ {id:'tann',name:'Annual mean temperature',short:'Annual temp',unit:'°C',kind:'T',bio:'BIO1'},
+ {id:'tjul',name:'July mean temperature',short:'July temp',unit:'°C',kind:'T',bio:'like BIO10'},
+ {id:'tjan',name:'January mean temperature',short:'Jan temp',unit:'°C',kind:'T',bio:'like BIO11'},
+ {id:'pann',name:'Annual precipitation',short:'Annual precip',unit:'mm',kind:'P',bio:'BIO12'},
+ {id:'pwin',name:'Winter precipitation',short:'Winter precip',unit:'mm',kind:'P',bio:'BIO19'},
+ {id:'psum',name:'Summer precipitation',short:'Summer precip',unit:'mm',kind:'P',bio:'BIO18'},
+ {id:'elev',name:'Elevation',short:'Elevation',unit:'m',kind:'E',bio:'not climate'}];
+const NV=VARS.length,VI={};VARS.forEach((v,k)=>VI[v.id]=k);
+const ENV0=VARS.map(()=>new Float32Array(N)),ENV1=VARS.map(()=>new Float32Array(N));
+const FUT={tann:2.75,tjul:3.5,tjan:2};
+(function(){const R=rng(77),na=vnoise(R,GW,GH,5),nb=vnoise(R,GW,GH,7),nc=vnoise(R,GW,GH,3);
+  CELLS.forEach(i=>{const x=i%GW,y=(i/GW)|0,lon=lonOf(x),lat=latOf(y),e=elev[i],ds=DSM[i];
+    const tjul=T0[i],tjan=12.5-0.55*(lat-33)-3*(1-Math.exp(-coastD[i]/80))-5.4*e+1.5*ds+0.4*nc(x,y);
+    const mon=ds*clamp((lon+117.6)/2,0,1)*clamp((36.2-lat)/2,0,1);
+    const v=[ (tjul+tjan)/2+0.6*na(x,y), tjul, tjan, P0[i], P0[i]*0.58*(1+0.07*nb(x,y)), 0.008*P0[i]+45*mon+18*clamp((lat-39.5)/1.5,0,1)*clamp((lon+121.8)/1,0,1)+6+5*na(x+20,y)+4*e, e*1000];
+    v.forEach((val,k)=>{ENV0[k][i]=val;ENV1[k][i]=val+(FUT[VARS[k].id]||0)})});
+  CELLS.forEach(i=>{TRUE1[i]=trueSuit(ENV1[VI.tjul][i],ENV1[VI.pann][i])});
+})();
+const VMIN=[],VMAX=[];VARS.forEach((v,k)=>{let a=1e9,b=-1e9;CELLS.forEach(i=>{a=Math.min(a,ENV0[k][i]);b=Math.max(b,ENV0[k][i])});VMIN[k]=a;VMAX[k]=b});
+/* correlation matrix across California */
+const CORR=(function(){const n=CELLS.length,m=VARS.map((_,k)=>{let s=0;CELLS.forEach(i=>s+=ENV0[k][i]);return s/n}),C=[];
+  for(let a=0;a<NV;a++){C[a]=[];for(let b=0;b<NV;b++){let sab=0,saa=0,sbb=0;CELLS.forEach(i=>{const da=ENV0[a][i]-m[a],db=ENV0[b][i]-m[b];sab+=da*db;saa+=da*da;sbb+=db*db});C[a][b]=sab/Math.sqrt(saa*sbb)}}return C})();
+function invert(A){const n=A.length,M=A.map((r,i)=>[...r,...A.map((_,j)=>i===j?1:0)]);
+  for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;[M[c],M[p]]=[M[p],M[c]];const d=M[c][c];if(Math.abs(d)<1e-12)return null;
+    for(let j=0;j<2*n;j++)M[c][j]/=d;for(let r=0;r<n;r++)if(r!==c){const f=M[r][c];for(let j=0;j<2*n;j++)M[r][j]-=f*M[c][j]}}return M.map(r=>r.slice(n))}
+
+/* independent field survey near oak country (only used for the "truth check") */
+const SURVEY=(function(){const R=rng(991),pres=[],abs=[];
+  const near=new Uint8Array(N);CELLS.forEach(i=>{if(TRUE0[i]<.5)return;const x0=i%GW,y0=(i/GW)|0;for(let y=y0-6;y<=y0+6;y++)for(let x=x0-6;x<=x0+6;x++){if(x<0||y<0||x>=GW||y>=GH)continue;if((x-x0)**2+(y-y0)**2<=36)near[y*GW+x]=1}});
+  const pick=w=>{let s=0;const cum=CELLS.map(i=>s+=w(i));return()=>{const u=R()*s;let lo=0,hi=cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<u)lo=m+1;else hi=m}return CELLS[lo]}};
+  const pp=pick(i=>TRUE0[i]),pa=pick(i=>near[i]?1-TRUE0[i]:0);for(let k=0;k<300;k++){pres.push(pp());abs.push(pa())}return{pres,abs}})();
 
 /* ---------- state ---------- */
-const S={seed:1,nRec:40,bias:false,bg:'all',feat:'LQH',beta:1,clim:'now',view:'model',rc:'T',showBg:true};
-let REC=[],BG=[],ACC=null,MOD=null,FIT=null;
-
-function sampleRecords(){
-  const R=rng(S.seed*7919+(S.bias?1:0)),w=new Float64Array(N);let s=0;
-  for(let i=0;i<N;i++){w[i]=TRUE0[i]*(S.bias?(0.02+Math.exp(-roadDist[i]/1.6)):1);s+=w[i]}
-  const cum=new Float64Array(N);let c=0;for(let i=0;i<N;i++){c+=w[i];cum[i]=c}
-  const set=new Set();let tries=0;
-  while(set.size<S.nRec&&tries<5000){tries++;const u=R()*s;let lo=0,hi=N-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<u)lo=m+1;else hi=m}set.add(lo)}
-  REC=[...set];
+const S={step:'s1',seed:1,nRaw:90,bias:false,cDup:false,cSea:false,cCult:false,cThin:false,vars:new Set(VARS.map(v=>v.id)),bg:'all',showBg:true,split:'rand',splitSeed:1,feat:'LQH',beta:1,thr:'p10',
+  layer:{s1:'terrain',s2:'var',s3:'terrain',s4:'terrain',s5:'model',s6:'model',s7:'future'},mapVar:'tjul',pair:[VI.tann,VI.tjul],axX:VI.tjul,axY:VI.pann,rcVar:null};
+let RAW=[],USED=[],REMOVED=[],COUNTS=null,TRAIN=[],TEST=[],BG=[],ACC=null,MOD=null,FIT=null,ST=null,SV=[];
+const nearestInside=(lon,lat)=>{let b=-1,bd=1e9;CELLS.forEach(i=>{const d=(i%GW-gx(lon))**2+(((i/GW)|0)-gy(lat))**2;if(d<bd){bd=d;b=i}});return b};
+const CULT_SITES=[['Los Angeles',-118.3,34.05],['San Francisco',-122.44,37.76],['San Diego',-117.15,32.75],['Palm Springs',-116.54,33.83],['Monterey',-121.85,36.6],['Eureka',-124.12,40.8],['Barstow',-117.02,34.9]].map(c=>[c[0],nearestInside(c[1],c[2])]);
+function download(){
+  const R=rng(S.seed*7919+(S.bias?1:0));
+  const nSea=Math.max(2,Math.round(S.nRaw*0.03)),nCult=Math.max(3,Math.round(S.nRaw*0.045)),nOk=S.nRaw-nSea-nCult;
+  let s=0;const cum=new Float64Array(CELLS.length);CELLS.forEach((i,k)=>{s+=TRUE0[i]*(S.bias?(0.015+Math.exp(-roadDist[i]/0.8)):1);cum[k]=s});
+  RAW=[];for(let n=0;n<nOk;n++){const u=R()*s;let lo=0,hi=cum.length-1;while(lo<hi){const m=(lo+hi)>>1;if(cum[m]<u)lo=m+1;else hi=m}RAW.push({c:CELLS[lo],kind:'ok'})}
+  for(let n=0;n<nCult;n++){const site=CULT_SITES[Math.floor(R()*CULT_SITES.length)];RAW.splice(Math.floor(R()*RAW.length),0,{c:site[1],kind:'cult',where:site[0]})}
+  for(let n=0;n<nSea;n++){const y=12+Math.floor(R()*(GH-24));let first=0;while(first<GW&&!INSIDE[y*GW+first])first++;const x=Math.max(0,first-2-Math.floor(R()*5));RAW.splice(Math.floor(R()*RAW.length),0,{c:y*GW+x,kind:'sea'})}
+}
+function clean(){
+  let cur=RAW.slice();const rem=[],cnt={raw:cur.length,dup:0,sea:0,cult:0,thin:0,auto:0};
+  if(S.cDup){const seen=new Set(),k=[];cur.forEach(r=>{if(seen.has(r.c)){rem.push({...r,why:'dup'});cnt.dup++}else{seen.add(r.c);k.push(r)}});cur=k}
+  if(S.cSea){cur=cur.filter(r=>{if(r.kind==='sea'){rem.push({...r,why:'sea'});cnt.sea++;return false}return true})}
+  if(S.cCult){cur=cur.filter(r=>{if(r.kind==='cult'){rem.push({...r,why:'cult'});cnt.cult++;return false}return true})}
+  if(S.cThin){const k=[];cur.forEach(r=>{const x=r.c%GW,y=(r.c/GW)|0;if(k.some(q=>(q.c%GW-x)**2+(((q.c/GW)|0)-y)**2<9)){rem.push({...r,why:'thin'});cnt.thin++}else k.push(r)});cur=k}
+  cur=cur.filter(r=>{if(!INSIDE[r.c]){rem.push({...r,why:'auto'});cnt.auto++;return false}return true});
+  USED=cur;REMOVED=rem;cnt.used=cur.length;COUNTS=cnt;
+}
+function split(){
+  const R=rng(S.splitSeed*31+7),recs=USED.map(r=>r.c);
+  let test=[],train=[];
+  if(S.split==='block'){recs.forEach(c=>{const bx=Math.floor((c%GW)/20),by=Math.floor(((c/GW)|0)/20);((bx+2*by+S.splitSeed)%4===0?test:train).push(c)})}
+  if(S.split!=='block'||test.length<2||train.length<4){const sh=recs.slice();for(let k=sh.length-1;k>0;k--){const j=Math.floor(R()*(k+1));[sh[k],sh[j]]=[sh[j],sh[k]]}const nt=Math.max(1,Math.round(sh.length*0.25));test=sh.slice(0,nt);train=sh.slice(nt)}
+  TRAIN=train;TEST=test;
 }
 function buildBackground(){
   ACC=new Uint8Array(N);
-  if(S.bg==='all')ACC.fill(1);
-  else{const r=20/KM,r2=r*r;REC.forEach(i=>{const x0=i%GW,y0=(i/GW)|0;for(let y=Math.max(0,Math.floor(y0-r));y<=Math.min(GH-1,Math.ceil(y0+r));y++)for(let x=Math.max(0,Math.floor(x0-r));x<=Math.min(GW-1,Math.ceil(x0+r));x++){if((x-x0)**2+(y-y0)**2<=r2)ACC[y*GW+x]=1}})}
-  const cells=[];for(let i=0;i<N;i++)if(ACC[i])cells.push(i);
-  const R=rng(4242);for(let k=cells.length-1;k>0;k--){const j=Math.floor(R()*(k+1));[cells[k],cells[j]]=[cells[j],cells[k]]}
-  BG=cells.slice(0,2000);
+  if(S.bg==='all')CELLS.forEach(i=>ACC[i]=1);
+  else{const r=5,r2=r*r;USED.forEach(u=>{const i=u.c,x0=i%GW,y0=(i/GW)|0;for(let y=Math.max(0,y0-r);y<=Math.min(GH-1,y0+r);y++)for(let x=Math.max(0,x0-r);x<=Math.min(GW-1,x0+r);x++){const j=y*GW+x;if(INSIDE[j]&&(x-x0)**2+(y-y0)**2<=r2)ACC[j]=1}})}
+  const cells=CELLS.filter(i=>ACC[i]);const R=rng(4242);for(let k=cells.length-1;k>0;k--){const j=Math.floor(R()*(k+1));[cells[k],cells[j]]=[cells[j],cells[k]]}
+  BG=cells.slice(0,2500);
 }
 
-/* ---------- features ---------- */
-const KN=10; // hinge knots per variable
+/* ---------- MaxEnt ---------- */
+const KN=8;
 function makeModel(){
-  let tmin=1e9,tmax=-1e9,pmin=1e9,pmax=-1e9;
-  BG.forEach(i=>{tmin=Math.min(tmin,T0[i]);tmax=Math.max(tmax,T0[i]);pmin=Math.min(pmin,P0[i]);pmax=Math.max(pmax,P0[i])});
-  const names=[],cls=[];
-  const add=(n,c)=>{names.push(n);cls.push(c)};
-  add('T','L');add('P','L');
-  if(S.feat!=='L'){add('T²','Q');add('P²','Q')}
-  if(S.feat==='LQH'){for(let v=0;v<2;v++)for(let k=1;k<=KN;k++){add((v?'P':'T')+' hinge↑'+k,'H');add((v?'P':'T')+' hinge↓'+k,'H')}}
-  const nf=names.length;
-  const feats=(T,P,out)=>{const t=Math.min(1,Math.max(0,(T-tmin)/(tmax-tmin))),p=Math.min(1,Math.max(0,(P-pmin)/(pmax-pmin)));
-    let j=0;out[j++]=t;out[j++]=p;
-    if(S.feat!=='L'){out[j++]=t*t;out[j++]=p*p}
-    if(S.feat==='LQH'){for(let v=0;v<2;v++){const x=v?p:t;for(let k=1;k<=KN;k++){const kn=k/(KN+1);out[j++]=x>kn?(x-kn)/(1-kn):0;out[j++]=x<kn?(kn-x)/kn:0}}}
-    return out};
-  return{tmin,tmax,pmin,pmax,nf,names,cls,feats};
+  SV=VARS.map((v,k)=>k).filter(k=>S.vars.has(VARS[k].id));
+  const lo=SV.map(k=>Math.min(...BG.map(i=>ENV0[k][i]))),hi=SV.map(k=>Math.max(...BG.map(i=>ENV0[k][i])));
+  const per=1+(S.feat!=='L'?1:0)+(S.feat==='LQH'?2*KN:0),cls=[];
+  SV.forEach(()=>{cls.push('L');if(S.feat!=='L')cls.push('Q');if(S.feat==='LQH')for(let k=0;k<2*KN;k++)cls.push('H')});
+  const feats=(vals,out)=>{let j=0;for(let a=0;a<SV.length;a++){const x=clamp((vals[a]-lo[a])/((hi[a]-lo[a])||1),0,1);out[j++]=x;if(S.feat!=='L')out[j++]=x*x;
+      if(S.feat==='LQH')for(let k=1;k<=KN;k++){const kn=k/(KN+1);out[j++]=x>kn?(x-kn)/(1-kn):0;out[j++]=x<kn?(kn-x)/kn:0}}return out};
+  return{SV:SV.slice(),lo,hi,nf:cls.length,cls,feats,key:S.feat+'|'+SV.join(',')};
 }
-
-/* ---------- fitting: L1-regularized maximum entropy, by proximal gradient steps ---------- */
+const vbuf=new Float64Array(NV),fbuf=new Float64Array(256);
+const valsAt=(c,E)=>{for(let a=0;a<MOD.SV.length;a++)vbuf[a]=E[MOD.SV[a]][c];return vbuf};
 function startFit(){
-  const M=makeModel(),nf=M.nf,nb=BG.length,m=REC.length;
+  if(!S.vars.size||TRAIN.length<2){FIT=null;MOD=null;return}
+  const M=makeModel(),nf=M.nf,nb=BG.length,m=TRAIN.length;MOD=M;
   const FB=new Float32Array(nb*nf),tmp=new Float64Array(nf);
-  BG.forEach((c,k)=>{M.feats(T0[c],P0[c],tmp);for(let j=0;j<nf;j++)FB[k*nf+j]=tmp[j]});
+  BG.forEach((c,k)=>{M.feats(valsAt(c,ENV0),tmp);for(let j=0;j<nf;j++)FB[k*nf+j]=tmp[j]});
   const mu=new Float64Array(nf),sd=new Float64Array(nf);
-  REC.forEach(c=>{M.feats(T0[c],P0[c],tmp);for(let j=0;j<nf;j++){mu[j]+=tmp[j]/m;sd[j]+=tmp[j]*tmp[j]/m}});
-  const reg=new Float64Array(nf);
-  const clsMult={L:m<10?1:m<30?0.5:0.25,Q:m<10?1:m<30?0.5:0.25,H:0.5};
-  for(let j=0;j<nf;j++){const s=Math.sqrt(Math.max(0,sd[j]-mu[j]*mu[j]));reg[j]=S.beta*clsMult[M.cls[j]]*Math.max(s,1/Math.sqrt(m))/Math.sqrt(m)}
-  MOD=M;
-  FIT={M,FB,mu,reg,nb,nf,lam:new Float64Array(nf),y:new Float64Array(nf),tk:1,eta:1,iter:0,maxIter:220,done:false,H:0,logZ:0,q:new Float64Array(nb)};
-  evalFit(FIT.lam);
+  TRAIN.forEach(c=>{M.feats(valsAt(c,ENV0),tmp);for(let j=0;j<nf;j++){mu[j]+=tmp[j]/m;sd[j]+=tmp[j]*tmp[j]/m}});
+  const reg=new Float64Array(nf),cm={L:m<10?1:m<30?0.5:0.25,Q:m<10?1:m<30?0.5:0.25,H:0.5};
+  for(let j=0;j<nf;j++){const s=Math.sqrt(Math.max(0,sd[j]-mu[j]*mu[j]));reg[j]=S.beta*cm[M.cls[j]]*Math.max(s,1/Math.sqrt(m))/Math.sqrt(m)}
+  const warm=FIT&&FIT.M.key===M.key;
+  const lam=warm?Float64Array.from(FIT.lam):new Float64Array(nf);
+  FIT={M,FB,mu,reg,nb,nf,lam,y:Float64Array.from(lam),tk:1,eta:1,iter:0,maxIter:warm?90:200,done:false,H:0,logZ:0};
+  evalFit();
 }
-function lossAt(F,lam,wantGrad){
-  const{FB,nb,nf,mu}=F;let mx=-1e9;const sc=new Float64Array(nb);
+function lossAt(lam,wantGrad){
+  const{FB,nb,nf,mu}=FIT;let mx=-1e9;const sc=new Float64Array(nb);
   for(let k=0;k<nb;k++){let s=0;const o=k*nf;for(let j=0;j<nf;j++)s+=lam[j]*FB[o+j];sc[k]=s;if(s>mx)mx=s}
   let Z=0;for(let k=0;k<nb;k++){sc[k]=Math.exp(sc[k]-mx);Z+=sc[k]}
   const logZ=mx+Math.log(Z);let dot=0;for(let j=0;j<nf;j++)dot+=lam[j]*mu[j];
   const out={loss:logZ-dot,logZ};
-  if(wantGrad){const g=new Float64Array(nf);for(let k=0;k<nb;k++){const q=sc[k]/Z,o=k*nf;for(let j=0;j<nf;j++)g[j]+=q*FB[o+j]}for(let j=0;j<nf;j++)g[j]-=mu[j];out.g=g;out.q=sc.map(v=>v/Z)}
+  if(wantGrad){const g=new Float64Array(nf);let H=0;for(let k=0;k<nb;k++){const q=sc[k]/Z,o=k*nf;if(q>0)H-=q*Math.log(q);for(let j=0;j<nf;j++)g[j]+=q*FB[o+j]}for(let j=0;j<nf;j++)g[j]-=mu[j];out.g=g;out.H=H}
   return out}
-function evalFit(lam){const F=FIT,r=lossAt(F,lam,true);F.logZ=r.logZ;let H=0;r.q.forEach(q=>{if(q>0)H-=q*Math.log(q)});F.H=H}
+function evalFit(){const r=lossAt(FIT.lam,true);FIT.logZ=r.logZ;FIT.H=r.H}
 function fitStep(){
   const F=FIT,{nf,reg}=F;if(F.done)return;
-  const base=lossAt(F,F.y,true);let eta=F.eta*1.5,nl,next;
-  for(let bt=0;bt<30;bt++){
-    next=new Float64Array(nf);
+  const base=lossAt(F.y,true);let eta=F.eta*1.5,next;
+  for(let bt=0;bt<30;bt++){next=new Float64Array(nf);
     for(let j=0;j<nf;j++){const v=F.y[j]-eta*base.g[j],t=eta*reg[j];next[j]=v>t?v-t:v<-t?v+t:0}
-    nl=lossAt(F,next,false).loss;let q=base.loss;
-    for(let j=0;j<nf;j++){const d=next[j]-F.y[j];q+=base.g[j]*d+d*d/(2*eta)}
+    const nl=lossAt(next,false).loss;let q=base.loss;for(let j=0;j<nf;j++){const d=next[j]-F.y[j];q+=base.g[j]*d+d*d/(2*eta)}
     if(nl<=q+1e-12)break;eta*=0.5}
-  F.eta=eta;
-  const tk1=(1+Math.sqrt(1+4*F.tk*F.tk))/2;
-  for(let j=0;j<nf;j++){F.y[j]=next[j]+((F.tk-1)/tk1)*(next[j]-F.lam[j])}
-  F.lam=next;F.tk=tk1;F.iter++;
-  if(F.iter>=F.maxIter){F.done=true}
+  F.eta=eta;const tk1=(1+Math.sqrt(1+4*F.tk*F.tk))/2;
+  for(let j=0;j<nf;j++)F.y[j]=next[j]+((F.tk-1)/tk1)*(next[j]-F.lam[j]);
+  F.lam=next;F.tk=tk1;F.iter++;if(F.iter>=F.maxIter)F.done=true;
 }
-/* MaxEnt "cloglog" output: 0–1 suitability */
-const fbuf=new Float64Array(64);
-function predict(T,P){const F=FIT;if(!F)return 0;F.M.feats(T,P,fbuf);let s=0;for(let j=0;j<F.nf;j++)s+=F.lam[j]*fbuf[j];
-  return 1-Math.exp(-Math.exp(F.H+s-F.logZ))}
+function predictVals(vals){const F=FIT;if(!F)return 0;F.M.feats(vals,fbuf);let s=0;for(let j=0;j<F.nf;j++)s+=F.lam[j]*fbuf[j];return 1-Math.exp(-Math.exp(F.H+s-F.logZ))}
+const PRED0=new Float32Array(N),PRED1=new Float32Array(N),EXTRAP=new Uint8Array(N);
+function predictAll(){if(!FIT){PRED0.fill(0);PRED1.fill(0);return}
+  CELLS.forEach(i=>{PRED0[i]=predictVals(valsAt(i,ENV0));const v=valsAt(i,ENV1);PRED1[i]=predictVals(v);let ex=0;for(let a=0;a<MOD.SV.length;a++)if(v[a]>MOD.hi[a]+1e-6||v[a]<MOD.lo[a]-1e-6)ex=1;EXTRAP[i]=ex})}
 
 /* ---------- evaluation ---------- */
 function auc(pos,neg){const a=pos.map(v=>[v,1]).concat(neg.map(v=>[v,0])).sort((x,y)=>x[0]-y[0]);
-  let r=0,i=0,rs=0;while(i<a.length){let j=i;while(j<a.length&&a[j][0]===a[i][0])j++;const avg=(i+j+1)/2;for(let k=i;k<j;k++)if(a[k][1])rs+=avg;i=j}
-  const np=pos.length,nn=neg.length;return(rs-np*(np+1)/2)/(np*nn)}
-let PRED0=new Float32Array(N),PRED1=new Float32Array(N);
-function predictAll(){for(let i=0;i<N;i++){PRED0[i]=predict(T0[i],P0[i]);PRED1[i]=predict(T1[i],P0[i])}}
+  let i=0,rs=0;while(i<a.length){let j=i;while(j<a.length&&a[j][0]===a[i][0])j++;const avg=(i+j+1)/2;for(let k=i;k<j;k++)if(a[k][1])rs+=avg;i=j}
+  const np=pos.length,nn=neg.length;return np&&nn?(rs-np*(np+1)/2)/(np*nn):NaN}
+function roc(pos,neg){const th=[...new Set(pos.concat(neg))].sort((a,b)=>b-a),pts=[[0,0]];th.forEach(t=>{pts.push([neg.filter(v=>v>=t).length/neg.length,pos.filter(v=>v>=t).length/pos.length])});pts.push([1,1]);
+  const out=[pts[0]];const step=Math.max(1,Math.floor(pts.length/250));for(let k=1;k<pts.length;k+=step)out.push(pts[k]);out.push([1,1]);return out}
 function stats(){
-  const tr=auc(REC.map(i=>PRED0[i]),BG.map(i=>PRED0[i])),te=auc(TEST.pres.map(i=>PRED0[i]),TEST.rand.map(i=>PRED0[i]));
-  let a0=0,a1=0,t0=0,t1=0,hot=0;for(let i=0;i<N;i++){if(PRED0[i]>=.5)a0++;if(PRED1[i]>=.5)a1++;if(TRUE0[i]>=.5)t0++;if(TRUE1[i]>=.5)t1++;if(T1[i]>MOD.tmax)hot++}
+  const pTr=TRAIN.map(i=>PRED0[i]),pTe=TEST.map(i=>PRED0[i]),pBg=BG.map(i=>PRED0[i]);
+  const tr=auc(pTr,pBg),te=auc(pTe,pBg);
+  const srt=pTr.slice().sort((a,b)=>a-b),p10=srt[Math.floor(srt.length*0.1)]||0;
+  let sss=0.5,best=-1;srt.forEach(t=>{const se=pTr.filter(v=>v>=t).length/pTr.length,sp=pBg.filter(v=>v<t).length/pBg.length;if(se+sp>best){best=se+sp;sss=t}});
+  const thr=S.thr==='p10'?p10:sss,om=pTe.filter(v=>v<thr).length/Math.max(1,pTe.length);
+  let a0=0,a1=0,t0=0,t1=0,ex=0,sx=0,sy=0,sxx=0,syy=0,sxy=0;const n=CELLS.length;
+  CELLS.forEach(i=>{if(PRED0[i]>=thr)a0++;if(PRED1[i]>=thr)a1++;if(TRUE0[i]>=.5)t0++;if(TRUE1[i]>=.5)t1++;if(EXTRAP[i])ex++;const x=PRED0[i],y=TRUE0[i];sx+=x;sy+=y;sxx+=x*x;syy+=y*y;sxy+=x*y});
+  const r=(sxy-sx*sy/n)/Math.sqrt((sxx-sx*sx/n)*(syy-sy*sy/n)||1);
+  let fx=0,fy=0,fxx=0,fyy=0,fxy=0;CELLS.forEach(i=>{const x=PRED1[i],y=TRUE1[i];fx+=x;fy+=y;fxx+=x*x;fyy+=y*y;fxy+=x*y});const rf=(fxy-fx*fy/n)/Math.sqrt((fxx-fx*fx/n)*(fyy-fy*fy/n)||1);
+  const sv=auc(SURVEY.pres.map(i=>PRED0[i]),SURVEY.abs.map(i=>PRED0[i]));
+  // permutation importance on training AUC
+  const R=rng(5),rows=TRAIN.concat(BG),nt=TRAIN.length,imp=[];
+  MOD.SV.forEach((k,a)=>{const col=rows.map(c=>ENV0[k][c]);for(let q=col.length-1;q>0;q--){const j=Math.floor(R()*(q+1));[col[q],col[j]]=[col[j],col[q]]}
+    const pr=rows.map((c,q)=>{const v=valsAt(c,ENV0);v[a]=col[q];return predictVals(v)});imp.push(Math.max(0,tr-auc(pr.slice(0,nt),pr.slice(nt))))});
+  const is=imp.reduce((a,b)=>a+b,0)||1;
   let nz=0;FIT.lam.forEach(v=>{if(v!==0)nz++});
-  let sx=0,sy=0,sxx=0,syy=0,sxy=0;for(let i=0;i<N;i++){const x=PRED0[i],y=TRUE0[i];sx+=x;sy+=y;sxx+=x*x;syy+=y*y;sxy+=x*y}
-  const r=(sxy-sx*sy/N)/Math.sqrt((sxx-sx*sx/N)*(syy-sy*sy/N)),match=Math.max(0,r)*Math.max(0,r);
-  return{tr,te,match,a0:a0*CELL_KM2,a1:a1*CELL_KM2,t0:t0*CELL_KM2,t1:t1*CELL_KM2,nz,hot}
+  return{SV:MOD.SV.slice(),tr,te,thr,p10,sss,om,a0:a0*CELL_KM2,a1:a1*CELL_KM2,t0:t0*CELL_KM2,t1:t1*CELL_KM2,ex:ex/n,match:Math.max(0,r)**2,matchF:Math.max(0,rf)**2,sv,nz,imp:imp.map(v=>v/is),rocTr:roc(pTr,pBg),rocTe:roc(pTe,pBg)}
 }
 
-/* ---------- drawing ---------- */
+/* ---------- map ---------- */
 const RAMP={
-  suit:[[0,[244,240,226]],[.25,[214,230,178]],[.5,[128,190,120]],[.75,[38,130,96]],[1,[8,72,64]]],
-  T:[[0,[44,94,170]],[.35,[150,190,220]],[.55,[242,236,214]],[.8,[232,150,90]],[1,[178,52,38]]],
-  P:[[0,[205,170,120]],[.3,[236,222,190]],[.6,[150,196,222]],[1,[30,84,160]]]};
-function ramp(st,t){t=Math.max(0,Math.min(1,t));for(let k=1;k<st.length;k++)if(t<=st[k][0]){const[a,ca]=st[k-1],[b,cb]=st[k],u=(t-a)/(b-a);return ca.map((v,i)=>v+(cb[i]-v)*u)}return st[st.length-1][1]}
+  suit:[[0,[246,241,226]],[.2,[233,224,170]],[.45,[176,204,128]],[.7,[82,150,104]],[1,[22,88,78]]],
+  T:[[0,[44,94,170]],[.3,[150,190,220]],[.5,[242,236,214]],[.75,[232,150,90]],[1,[170,44,34]]],
+  P:[[0,[214,180,128]],[.15,[236,222,190]],[.4,[160,204,222]],[1,[26,74,150]]],
+  E:[[0,[150,184,124]],[.1,[198,208,146]],[.3,[216,194,146]],[.55,[176,146,114]],[.8,[160,156,152]],[1,[248,248,248]]]};
+function ramp(st,t){t=clamp(t,0,1);for(let k=1;k<st.length;k++)if(t<=st[k][0]){const[a,ca]=st[k-1],[b,cb]=st[k],u=(t-a)/(b-a);return ca.map((v,i)=>v+(cb[i]-v)*u)}return st[st.length-1][1]}
 const rampCSS=st=>'linear-gradient(90deg,'+st.map(([t,c])=>`rgb(${c.map(Math.round)}) ${t*100}%`).join(',')+')';
+const CAT={kept:[47,125,91],lost:[217,130,43],gained:[59,116,196],none:[241,238,227],yes:[47,125,91],ext:[138,92,194]};
+const LAYERS={terrain:'Terrain',truth:'True range',var:'Climate layer',model:'Model prediction',binary:'Suitable / not',future:'Future prediction',change:'Change',extrap:'Extrapolation',truthF:'True range (future)'};
+const STEP_LAYERS={s1:['terrain','truth'],s2:['var','truth'],s3:['terrain','truth'],s4:['terrain','truth'],s5:['model','truth'],s6:['model','binary','truth'],s7:['future','change','extrap','truthF']};
 const off=document.createElement('canvas');off.width=GW;off.height=GH;const offx=off.getContext('2d');const img=offx.createImageData(GW,GH);
 const mapC=$('#map'),mx=mapC.getContext('2d'),SC=mapC.width/GW;
+const PX=lon=>gx(lon)*SC, PY=lat=>gy(lat)*SC;
+function caPath(ctx){ctx.beginPath();CA.forEach(([lo,la],k)=>k?ctx.lineTo(PX(lo),PY(la)):ctx.moveTo(PX(lo),PY(la)));ctx.closePath()}
+const cellXY=c=>[(c%GW+.5)*SC,(((c/GW)|0)+.5)*SC];
+function cellColor(i,L){
+  const thr=ST?ST.thr:0.5;
+  switch(L){
+    case'terrain':return ramp(RAMP.E,elev[i]/4.2);
+    case'truth':return ramp(RAMP.suit,TRUE0[i]);
+    case'truthF':return ramp(RAMP.suit,TRUE1[i]);
+    case'var':{const k=VI[S.mapVar],v=VARS[k];return ramp(RAMP[v.kind],(ENV0[k][i]-VMIN[k])/(VMAX[k]-VMIN[k]))}
+    case'model':return ramp(RAMP.suit,PRED0[i]);
+    case'future':return ramp(RAMP.suit,PRED1[i]);
+    case'binary':return PRED0[i]>=thr?CAT.yes:CAT.none;
+    case'change':{const a=PRED0[i]>=thr,b=PRED1[i]>=thr;return a&&b?CAT.kept:a?CAT.lost:b?CAT.gained:CAT.none}
+    case'extrap':return EXTRAP[i]?CAT.ext:ramp(RAMP.suit,PRED1[i]*0.6);
+  }}
 function drawMap(){
-  const fut=S.clim==='fut',TT=fut?T1:T0;
-  for(let i=0;i<N;i++){let c,v;
-    if(S.view==='model'){v=fut?PRED1[i]:PRED0[i];c=ramp(RAMP.suit,v)}
-    else if(S.view==='truth'){v=fut?TRUE1[i]:TRUE0[i];c=ramp(RAMP.suit,v)}
-    else if(S.view==='T'){c=ramp(RAMP.T,(TT[i]-4)/28)}
-    else c=ramp(RAMP.P,(P0[i]-100)/1500);
-    const sh=shade[i],o=i*4;img.data[o]=c[0]*sh;img.data[o+1]=c[1]*sh;img.data[o+2]=c[2]*sh;img.data[o+3]=255}
+  const L=S.layer[S.step],st=S.step;
+  for(let i=0;i<N;i++){const c=INSIDE[i]?cellColor(i,L):[226,226,220],sh=INSIDE[i]?shade[i]:1,o=i*4;img.data[o]=c[0]*sh;img.data[o+1]=c[1]*sh;img.data[o+2]=c[2]*sh;img.data[o+3]=255}
+  for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const i=y*GW+x;if(INSIDE[i])continue;const nb=[i+1,i-1,i+GW,i-GW].find(j=>j>=0&&j<N&&INSIDE[j]&&Math.abs((j%GW)-x)<=1);if(nb!==undefined)for(let k=0;k<3;k++)img.data[i*4+k]=img.data[nb*4+k]}
   offx.putImageData(img,0,0);
-  mx.imageSmoothingEnabled=true;mx.clearRect(0,0,mapC.width,mapC.height);mx.drawImage(off,0,0,mapC.width,mapC.height);
-  // outside the background area (buffer mode): grey veil
-  if(S.bg==='buf'&&ACC){mx.fillStyle='rgba(40,46,56,.42)';for(let y=0;y<GH;y++)for(let x=0;x<GW;x++)if(!ACC[y*GW+x])mx.fillRect(x*SC,y*SC,SC+.5,SC+.5);
-    mx.strokeStyle='rgba(255,255,255,.9)';mx.lineWidth=1.5;mx.beginPath();
-    for(let y=0;y<GH;y++)for(let x=0;x<GW;x++){const i=y*GW+x;if(!ACC[i])continue;
-      if(x+1>=GW||!ACC[i+1]){mx.moveTo((x+1)*SC,y*SC);mx.lineTo((x+1)*SC,(y+1)*SC)}
-      if(x===0||!ACC[i-1]){mx.moveTo(x*SC,y*SC);mx.lineTo(x*SC,(y+1)*SC)}
-      if(y+1>=GH||!ACC[i+GW]){mx.moveTo(x*SC,(y+1)*SC);mx.lineTo((x+1)*SC,(y+1)*SC)}
-      if(y===0||!ACC[i-GW]){mx.moveTo(x*SC,y*SC);mx.lineTo((x+1)*SC,y*SC)}}
-    mx.stroke()}
-  // crest
-  mx.setLineDash([6,5]);mx.strokeStyle='rgba(40,40,40,.55)';mx.lineWidth=1.5;mx.beginPath();for(let y=0;y<=GH;y++){const x=crestX(y)*SC;y?mx.lineTo(x,y*SC):mx.moveTo(x,0)}mx.stroke();mx.setLineDash([]);
-  // roads and trails
-  ROADS.forEach(r=>{mx.beginPath();r.pts.forEach((p,k)=>k?mx.lineTo(p[0]*SC,p[1]*SC):mx.moveTo(p[0]*SC,p[1]*SC));
-    if(r.trail){mx.setLineDash([3,4]);mx.strokeStyle='rgba(90,50,20,.95)';mx.lineWidth=2}else{mx.strokeStyle='rgba(255,255,255,.9)';mx.lineWidth=5;mx.stroke();mx.strokeStyle='rgba(120,70,30,.95)';mx.lineWidth=2.2}
-    mx.stroke();mx.setLineDash([])});
-  // background points
-  if(S.showBg){mx.fillStyle='rgba(30,30,30,.55)';BG.forEach((c,k)=>{if(k%2)return;const x=(c%GW+.5)*SC,y=(((c/GW)|0)+.5)*SC;mx.fillRect(x-1.2,y-1.2,2.4,2.4)})}
-  // records
-  REC.forEach(c=>{const x=(c%GW+.5)*SC,y=(((c/GW)|0)+.5)*SC;mx.beginPath();mx.arc(x,y,5,0,7);mx.fillStyle='#111';mx.fill();mx.lineWidth=2;mx.strokeStyle='#fff';mx.stroke()});
-  // labels
-  const lab=(t,x,y,al='left')=>{mx.font='600 15px system-ui,Arial,sans-serif';mx.textAlign=al;mx.lineWidth=4;mx.strokeStyle='rgba(255,255,255,.85)';mx.strokeText(t,x,y);mx.fillStyle='#222';mx.fillText(t,x,y)};
-  lab('Central Valley',10,mapC.height-14);lab('Sierra crest',crestX(4)*SC-8,22,'right');lab('East side',mapC.width-10,mapC.height-14,'right');
-  // scale bar
-  const sb=20/KM*SC,bx=mapC.width-sb-14,by=30;mx.fillStyle='rgba(255,255,255,.85)';mx.fillRect(bx-6,by-18,sb+12,26);mx.fillStyle='#222';mx.fillRect(bx,by,sb,4);mx.font='600 12px system-ui,Arial,sans-serif';mx.textAlign='center';mx.fillText('20 km',bx+sb/2,by-5);
-  // colour bar + legend
-  const st=S.view==='T'?RAMP.T:S.view==='P'?RAMP.P:RAMP.suit;$('#cbGrad').style.background=rampCSS(st);
-  const lo={model:'Unsuitable 0',truth:'Unsuitable 0',T:'4 °C',P:'100 mm'},hi={model:'1 Suitable',truth:'1 Suitable',T:'32 °C',P:'1600 mm'};
-  $('#cbLo').textContent=lo[S.view];$('#cbHi').textContent=hi[S.view];
-  const L=[['#111','Presence record','dot']];if(S.showBg)L.push(['rgba(30,30,30,.7)','Background point','bg']);L.push(['#7a461e','Road']);L.push(['#7a461e','Trail','dash']);if(S.bg==='buf')L.push(['rgba(40,46,56,.6)','Outside background area']);
-  legend($('#mapLeg'),L);
+  const W=mapC.width,H=mapC.height;
+  mx.clearRect(0,0,W,H);mx.fillStyle='#bcd7e8';mx.fillRect(0,0,W,H);
+  mx.fillStyle='#e4e2da';mx.beginPath();mx.moveTo(PX(-124.21),PY(42));mx.lineTo(W,PY(42.3));mx.lineTo(W,H);mx.lineTo(PX(-117.12),PY(32.53));mx.lineTo(PX(-114.72),PY(32.72));mx.lineTo(PX(-114.63),PY(35));mx.lineTo(PX(-120),PY(39));mx.lineTo(PX(-120),PY(42));mx.closePath();mx.fill();
+  mx.fillRect(0,0,W,PY(42));mx.fillRect(PX(-118),PY(32.53),W,H);
+  mx.save();caPath(mx);mx.clip();mx.imageSmoothingEnabled=!['binary','change','extrap'].includes(L);mx.drawImage(off,0,0,W,H);
+  const showBuf=S.bg==='buf'&&ACC&&st>='s3';
+  if(showBuf){mx.fillStyle='rgba(40,46,56,.42)';CELLS.forEach(i=>{if(!ACC[i])mx.fillRect((i%GW)*SC,((i/GW)|0)*SC,SC+.6,SC+.6)})}
+  if(st==='s4'&&S.split==='block'){for(let by=0;by*20<GH;by++)for(let bx=0;bx*20<GW;bx++){if((bx+2*by+S.splitSeed)%4===0){mx.fillStyle='rgba(232,116,12,.18)';mx.fillRect(bx*20*SC,by*20*SC,20*SC,20*SC)}}
+    mx.strokeStyle='rgba(60,60,60,.45)';mx.lineWidth=1;for(let k=0;k*20<=GW;k++){mx.beginPath();mx.moveTo(k*20*SC,0);mx.lineTo(k*20*SC,H);mx.stroke()}for(let k=0;k*20<=GH;k++){mx.beginPath();mx.moveTo(0,k*20*SC);mx.lineTo(W,k*20*SC);mx.stroke()}}
+  mx.restore();
+  caPath(mx);mx.lineWidth=1.6;mx.strokeStyle='rgba(60,60,60,.75)';mx.stroke();
+  if(showBuf){mx.strokeStyle='rgba(255,255,255,.95)';mx.lineWidth=1.6;mx.beginPath();
+    CELLS.forEach(i=>{if(!ACC[i])return;const x=i%GW,y=(i/GW)|0,e=j=>j>=0&&j<N&&ACC[j];
+      if(!e(i+1)){mx.moveTo((x+1)*SC,y*SC);mx.lineTo((x+1)*SC,(y+1)*SC)}if(!e(i-1)){mx.moveTo(x*SC,y*SC);mx.lineTo(x*SC,(y+1)*SC)}
+      if(!e(i+GW)){mx.moveTo(x*SC,(y+1)*SC);mx.lineTo((x+1)*SC,(y+1)*SC)}if(!e(i-GW)){mx.moveTo(x*SC,y*SC);mx.lineTo((x+1)*SC,y*SC)}});mx.stroke()}
+  const roadA=st==='s1'?.9:.45;
+  ROADS.forEach(r=>{mx.beginPath();r.forEach(([lo,la],k)=>k?mx.lineTo(PX(lo),PY(la)):mx.moveTo(PX(lo),PY(la)));mx.lineJoin='round';mx.strokeStyle=`rgba(255,255,255,${roadA*.9})`;mx.lineWidth=3.4;mx.stroke();mx.strokeStyle=`rgba(150,60,40,${roadA})`;mx.lineWidth=1.5;mx.stroke()});
+  if(st==='s3'&&S.showBg){mx.fillStyle='rgba(25,25,25,.5)';BG.forEach((c,k)=>{if(k%2)return;const[x,y]=cellXY(c);mx.fillRect(x-1.1,y-1.1,2.2,2.2)})}
+  const dot=(c,fill,r)=>{const[x,y]=cellXY(c);mx.beginPath();mx.arc(x,y,r||4.4,0,7);mx.fillStyle=fill;mx.fill();mx.lineWidth=1.7;mx.strokeStyle='#fff';mx.stroke()};
+  const cross=c=>{const[x,y]=cellXY(c);mx.lineWidth=4;mx.strokeStyle='#fff';mx.beginPath();mx.moveTo(x-4,y-4);mx.lineTo(x+4,y+4);mx.moveTo(x+4,y-4);mx.lineTo(x-4,y+4);mx.stroke();mx.lineWidth=2.2;mx.strokeStyle='#c4271b';mx.stroke()};
+  if(st==='s1'){REMOVED.forEach(r=>cross(r.c));USED.forEach(r=>dot(r.c,'#1b1b1b'))}
+  else if(st==='s4'||st==='s5'||st==='s6'){TRAIN.forEach(c=>dot(c,'#1b1b1b'));TEST.forEach(c=>dot(c,'#e8740c',4.8))}
+  else if(st!=='s7'||S.layer.s7!=='extrap')USED.forEach(r=>dot(r.c,'#1b1b1b',st==='s7'?3.2:4.4));
+  const lab=(t,x,y,al,f)=>{mx.font=f||'600 12px system-ui,Arial,sans-serif';mx.textAlign=al||'left';mx.lineJoin='round';mx.lineWidth=4;mx.strokeStyle='rgba(255,255,255,.85)';mx.strokeText(t,x,y);mx.fillStyle='#1f2933';mx.fillText(t,x,y)};
+  CITIES.forEach(([n,lo,la,al])=>{const x=PX(lo),y=PY(la);mx.fillStyle='#fff';mx.fillRect(x-3.5,y-3.5,7,7);mx.strokeStyle='#222';mx.lineWidth=1.4;mx.strokeRect(x-3.5,y-3.5,7,7);lab(n,x+(al==='l'?-8:8),y+4,al==='l'?'right':'left')});
+  const it='italic 600 13px Georgia,serif';
+  lab('Pacific Ocean',PX(-123.9),PY(35.6),'left',it);lab('Sierra Nevada',PX(-118.95),PY(37.25),'left',it);lab('Central',PX(-121.1),PY(37.55),'left',it);lab('Valley',PX(-120.95),PY(37.3),'left',it);
+  lab('Mojave Desert',PX(-116.6),PY(35.1),'left',it);lab('Coast Ranges',PX(-121.75),PY(36.15),'left',it);
+  const sb=100/KM*SC,bx=W-sb-16,by=H-22;mx.fillStyle='rgba(255,255,255,.85)';mx.fillRect(bx-8,by-20,sb+16,30);mx.fillStyle='#222';mx.fillRect(bx,by,sb,4);mx.font='600 12px system-ui,Arial,sans-serif';mx.textAlign='center';mx.fillText('100 km',bx+sb/2,by-6);
+  mx.beginPath();mx.moveTo(W-30,24);mx.lineTo(W-38,44);mx.lineTo(W-30,39);mx.lineTo(W-22,44);mx.closePath();mx.fillStyle='#222';mx.fill();mx.fillText('N',W-30,18);
+  // colour bar
+  let grad,lo,hi;const solid=(a)=>'linear-gradient(90deg,'+a.map((c,k)=>`rgb(${c}) ${k/a.length*100}% ${(k+1)/a.length*100}%`).join(',')+')';
+  if(L==='terrain'){grad=rampCSS(RAMP.E);lo='0 m';hi='4,200 m'}
+  else if(L==='var'){const k=VI[S.mapVar],v=VARS[k];grad=rampCSS(RAMP[v.kind]);const f=x=>v.unit==='mm'||v.unit==='m'?Math.round(x).toLocaleString():x.toFixed(0);lo=f(VMIN[k])+' '+v.unit;hi=f(VMAX[k])+' '+v.unit}
+  else if(L==='binary'){grad=solid([CAT.none,CAT.yes]);lo='Unsuitable';hi='Suitable'}
+  else if(L==='change'){grad=solid([CAT.lost,CAT.kept,CAT.gained]);lo='Lost';hi='Gained'}
+  else if(L==='extrap'){grad=solid([[200,214,170],CAT.ext]);lo='Within data';hi='Extrapolated'}
+  else{grad=rampCSS(RAMP.suit);lo='Unsuitable';hi='Suitable'}
+  $('#cbGrad').style.background=grad;$('#cbLo').textContent=lo;$('#cbHi').textContent=hi;
+  const tt=st==='s4'||st==='s5'||st==='s6';legend($('#mapLeg'),[['#1b1b1b','Record','dot',!tt&&!(st==='s7'&&L==='extrap')],['#1b1b1b','Training record','dot',tt],['#e8740c','Testing record','dot',st==='s4'||st==='s5'||st==='s6'],['#c4271b','Removed record','sw',st==='s1'],
+    ['rgba(25,25,25,.7)','Background point','bg',st==='s3'&&S.showBg],['rgb(150,60,40)','Highway','line'],['rgba(40,46,56,.6)','Outside background','sw',!!showBuf],['rgb(217,130,43)','Lost','sw',L==='change'],['rgb(47,125,91)','Kept','sw',L==='change'],['rgb(59,116,196)','Gained','sw',L==='change']]);
+  mapC.setAttribute('aria-label',describeMap(L));
 }
-const envC=$('#env'),ex=envC.getContext('2d');
-const EB={tmin:4,tmax:32,pmin:50,pmax:1700,l:58,r:12,t:12,b:46};
-function drawEnv(){
-  const W=envC.width,H=envC.height,pw=W-EB.l-EB.r,ph=H-EB.t-EB.b,X=v=>EB.l+(v-EB.tmin)/(EB.tmax-EB.tmin)*pw,Y=v=>EB.t+ph-(v-EB.pmin)/(EB.pmax-EB.pmin)*ph;
-  const dark=matchMedia('(prefers-color-scheme: dark)').matches,ink=dark?'#e7ecf2':'#1d2530',mut=dark?'#9aa6b4':'#5d6877',grid=dark?'#38424f':'#cfd6df';
-  ex.clearRect(0,0,W,H);
-  // model suitability shading in climate space
-  const nx=70,ny=60,cw=pw/nx,ch=ph/ny;
-  for(let a=0;a<nx;a++)for(let b=0;b<ny;b++){const T=EB.tmin+(a+.5)/nx*(EB.tmax-EB.tmin),P=EB.pmin+(b+.5)/ny*(EB.pmax-EB.pmin);
-    const c=ramp(RAMP.suit,predict(T,P));ex.fillStyle=`rgb(${c[0]|0},${c[1]|0},${c[2]|0})`;ex.fillRect(EB.l+a*cw,EB.t+ph-(b+1)*ch,cw+.6,ch+.6)}
-  // grid + axes
-  ex.strokeStyle='rgba(0,0,0,.12)';ex.lineWidth=1;ex.font='12px system-ui,Arial,sans-serif';ex.fillStyle=mut;
-  niceTicks(EB.tmin,EB.tmax,6).forEach(v=>{const x=X(v);ex.beginPath();ex.moveTo(x,EB.t);ex.lineTo(x,EB.t+ph);ex.stroke();ex.textAlign='center';ex.fillText(v,x,EB.t+ph+16)});
-  niceTicks(EB.pmin,EB.pmax,5).forEach(v=>{const y=Y(v);ex.beginPath();ex.moveTo(EB.l,y);ex.lineTo(EB.l+pw,y);ex.stroke();ex.textAlign='right';ex.fillText(v,EB.l-6,y+4)});
-  ex.strokeStyle=grid;ex.strokeRect(EB.l,EB.t,pw,ph);
-  ex.fillStyle=ink;ex.font='600 12px system-ui,Arial,sans-serif';ex.textAlign='center';ex.fillText('Mean July temperature (°C)',EB.l+pw/2,H-8);
-  ex.save();ex.translate(14,EB.t+ph/2);ex.rotate(-Math.PI/2);ex.fillText('Annual precipitation (mm)',0,0);ex.restore();
-  // training range (clamping) marker
-  ex.setLineDash([4,4]);ex.strokeStyle='rgba(40,40,40,.6)';ex.lineWidth=1.3;ex.strokeRect(X(MOD.tmin),Y(MOD.pmax),X(MOD.tmax)-X(MOD.tmin),Y(MOD.pmin)-Y(MOD.pmax));ex.setLineDash([]);
-  // future climate cloud
-  if(S.clim==='fut'){ex.fillStyle='rgba(214,86,31,.55)';for(let k=0;k<N;k+=5){ex.fillRect(X(T1[k])-1,Y(P0[k])-1,2,2)}}
-  // background cloud
-  if(S.showBg){ex.fillStyle='rgba(30,30,30,.45)';BG.forEach(c=>ex.fillRect(X(T0[c])-1,Y(P0[c])-1,2.2,2.2))}
-  // records
-  REC.forEach(c=>{ex.beginPath();ex.arc(X(T0[c]),Y(P0[c]),4.2,0,7);ex.fillStyle='#111';ex.fill();ex.lineWidth=1.6;ex.strokeStyle='#fff';ex.stroke()});
-  const L=[['#111','Presence record','dot']];if(S.showBg)L.push(['rgba(30,30,30,.7)','Background point','bg']);if(S.clim==='fut')L.push(['rgba(214,86,31,.9)','Future climate of each place','bg']);L.push(['#555','Range of climates in the background','dash']);
-  legend($('#envLeg'),L);
+function describeMap(L){
+  const base='Map of California';
+  const d={terrain:'shaded terrain: Coast Ranges along the coast, Central Valley in the middle, Sierra Nevada to the east, deserts in the southeast',
+    truth:'the true blue oak range: a ring of foothills around the Central Valley in the inner Coast Ranges and western Sierra Nevada foothills',
+    truthF:'the true range under a warmer climate: smaller and shifted upslope and north',
+    var:'the '+VARS[VI[S.mapVar]].name.toLowerCase()+' layer',model:'the model\'s predicted suitability',future:'the model\'s predicted suitability under the future climate',
+    binary:'suitable versus unsuitable at the chosen threshold',change:'places lost, kept, and gained as suitable habitat by the future',extrap:'places where the future climate is outside anything in the background (extrapolation)'}[L];
+  return `${base} showing ${d}. ${USED.length} presence records shown.`;
 }
-function drawRC(){
-  const v=S.rc,col=css('--accent'),truc=css('--muted');
-  const recT=REC.map(i=>T0[i]),recP=REC.map(i=>P0[i]),med=a=>{const s=[...a].sort((x,y)=>x-y);return s[Math.floor(s.length/2)]};
-  const fixT=med(recT),fixP=med(recP),pts=[],tru=[];
-  const lo=v==='T'?4:50,hi=v==='T'?32:1700;
-  for(let k=0;k<=160;k++){const x=lo+(hi-lo)*k/160;const T=v==='T'?x:fixT,P=v==='T'?fixP:x;pts.push([x,predict(T,P)]);tru.push([x,trueSuit(T,P)])}
-  const rects=[{x0:lo,x1:v==='T'?MOD.tmin:MOD.pmin,color:'#888'},{x0:v==='T'?MOD.tmax:MOD.pmax,x1:hi,color:'#888'}];
-  chart($('#rc'),{xmin:lo,xmax:hi,ymin:0,ymax:1.02,w:520,h:330,xlab:v==='T'?'Mean July temperature (°C)':'Annual precipitation (mm)',ylab:'Suitability (0–1)',
-    rects,series:[{pts:tru,color:truc,dash:'6 5',width:2},{pts,color:col,width:2.8}],ticks:(v==='T'?recT:recP).map(x=>({x,color:css('--text')}))});
-  legend($('#rcLeg'),[[col,'Model'],[truc,'True response (hidden from model)','dash'],['rgba(128,128,128,.4)','Outside background climates (clamped)']]);
-  $('#rcNote').textContent=v==='T'?`Precipitation held at ${Math.round(fixP)} mm (the median record). Tick marks along the bottom are the records.`:`Temperature held at ${fixT.toFixed(1)} °C (the median record). Tick marks along the bottom are the records.`;
-  $('#rc').setAttribute('aria-label',`Response curve for ${v==='T'?'temperature':'precipitation'}: model suitability ${describeCurve(pts)}; true response ${describeCurve(tru)}.`);
-}
-function describeCurve(pts){let best=pts[0];pts.forEach(p=>{if(p[1]>best[1])best=p});const unit=S.rc==='T'?' °C':' mm';return `peaks at ${best[1].toFixed(2)} near ${S.rc==='T'?best[0].toFixed(1):Math.round(best[0])}${unit}`}
 
-/* ---------- readouts ---------- */
-let ST=null;
-const fmtA=v=>v>=1000?(v/1000).toFixed(1)+'k':String(v);
+/* ---------- step visuals ---------- */
+const fmtA=v=>v>=1000?(v/1000).toFixed(v>=10000?0:1)+'k':String(v);
+function renderClean(){
+  const c=COUNTS,max=c.raw,row=(lab,n,on,minus=true)=>`<tr class="${on?'':'dim'}"><td>${lab}</td><td class="n">${on?(minus&&n?'−'+n:n):'off'}</td><td style="width:40%"><i class="bar" style="width:${on?n/max*100:0}%;background:${minus?'#c4271b':'var(--accent)'}"></i></td></tr>`;
+  $('#cleanTbl').innerHTML=`<table class="t"><tr><th>Step</th><th class="n">Records</th><th></th></tr>
+   <tr><td>Raw download</td><td class="n">${c.raw}</td><td><i class="bar" style="width:100%"></i></td></tr>
+   ${row('Duplicates (same 10 km cell)',c.dup,S.cDup)}${row('In the ocean (coordinate errors)',c.sea,S.cSea)}${row('Cultivated (planted) trees',c.cult,S.cCult)}${row('Spatial thinning',c.thin,S.cThin)}
+   <tr class="${c.auto?'':'dim'}"><td>Dropped by MaxEnt (no climate data)</td><td class="n">${c.auto?'−'+c.auto:'0'}</td><td><i class="bar" style="width:${c.auto/max*100}%;background:#c4271b"></i></td></tr>
+   <tr class="tot"><td>Records used</td><td class="n">${c.used}</td><td><i class="bar" style="width:${c.used/max*100}%"></i></td></tr></table>`;
+}
+function corrColor(r){const a=Math.abs(r);return a>=.7?'#b3261e':a>=.4?'#e8b4a8':'#eef2f6'}
+function renderMatrix(){
+  const n=NV,cs=44,L=104,T=86,W=L+cs*n+40,H=T+cs*n+4;let s='';
+  VARS.forEach((v,k)=>{const sel=S.vars.has(v.id);
+    s+=`<text x="${L-6}" y="${T+k*cs+cs/2+4}" text-anchor="end" style="${sel?'fill:var(--text);font-weight:700':''}">${v.short}</text>`;
+    s+=`<text transform="translate(${L+k*cs+cs/2+4} ${T-6}) rotate(-50)" style="${sel?'fill:var(--text);font-weight:700':''}">${v.short}</text>`});
+  for(let a=0;a<n;a++)for(let b=0;b<n;b++){const r=CORR[a][b],sel=S.vars.has(VARS[a].id)&&S.vars.has(VARS[b].id),pk=(S.pair[0]===a&&S.pair[1]===b)||(S.pair[0]===b&&S.pair[1]===a);
+    s+=`<rect class="cell" data-a="${a}" data-b="${b}" x="${L+b*cs+1}" y="${T+a*cs+1}" width="${cs-2}" height="${cs-2}" rx="4" fill="${a===b?'#d9dee5':corrColor(r)}" opacity="${sel||a===b?1:.35}" stroke="${pk?'var(--text)':'none'}" stroke-width="2.5"/>`;
+    s+=`<text x="${L+b*cs+cs/2}" y="${T+a*cs+cs/2+4}" text-anchor="middle" style="fill:${Math.abs(r)>=.7&&a!==b?'#fff':'#1d2530'};font-size:11px;font-weight:600;pointer-events:none;opacity:${sel||a===b?1:.5}">${a===b?'':r.toFixed(2).replace('0.','.').replace('-0.','−.')}</text>`}
+  const svg=$('#mat');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;
+  $$('rect.cell',svg).forEach(r=>r.onclick=()=>{const a=+r.dataset.a,b=+r.dataset.b;if(a===b)return;S.pair=[a,b];renderMatrix();renderPair()});
+  const pairs=[];for(let a=0;a<n;a++)for(let b=a+1;b<n;b++)if(Math.abs(CORR[a][b])>=.7)pairs.push(`${VARS[a].short} and ${VARS[b].short} (r = ${CORR[a][b].toFixed(2)})`);
+  svg.setAttribute('aria-label','Correlation matrix of the seven variables. Pairs with |r| of 0.7 or more: '+pairs.join('; ')+'.');
+}
+const pairC=$('#pair'),pcx=pairC.getContext('2d');
+function scatter(cv,ctx,ka,kb,opt){
+  const W=cv.width,H=cv.height,m={l:58,r:12,t:12,b:44},pw=W-m.l-m.r,ph=H-m.t-m.b,va=VARS[ka],vb=VARS[kb];
+  const X=v=>m.l+(v-VMIN[ka])/(VMAX[ka]-VMIN[ka])*pw,Y=v=>m.t+ph-(v-VMIN[kb])/(VMAX[kb]-VMIN[kb])*ph;
+  const dark=matchMedia('(prefers-color-scheme: dark)').matches,ink=dark?'#e7ecf2':'#1d2530',mut=dark?'#9aa6b4':'#5d6877';
+  ctx.clearRect(0,0,W,H);ctx.fillStyle=dark?'#262f3a':'#eef2f6';ctx.fillRect(m.l,m.t,pw,ph);
+  ctx.font='11px system-ui,Arial,sans-serif';ctx.fillStyle=mut;ctx.strokeStyle=dark?'rgba(255,255,255,.08)':'rgba(0,0,0,.08)';
+  niceTicks(VMIN[ka],VMAX[ka],5).forEach(v=>{const x=X(v);if(x<m.l-1||x>m.l+pw+1)return;ctx.beginPath();ctx.moveTo(x,m.t);ctx.lineTo(x,m.t+ph);ctx.stroke();ctx.textAlign='center';ctx.fillText(fmtTick(v),x,m.t+ph+15)});
+  niceTicks(VMIN[kb],VMAX[kb],5).forEach(v=>{const y=Y(v);if(y<m.t-1||y>m.t+ph+1)return;ctx.beginPath();ctx.moveTo(m.l,y);ctx.lineTo(m.l+pw,y);ctx.stroke();ctx.textAlign='right';ctx.fillText(fmtTick(v),m.l-5,y+4)});
+  ctx.fillStyle=ink;ctx.font='600 12px system-ui,Arial,sans-serif';ctx.textAlign='center';ctx.fillText(`${va.name} (${va.unit})`,m.l+pw/2,H-8);
+  ctx.save();ctx.translate(14,m.t+ph/2);ctx.rotate(-Math.PI/2);ctx.fillText(`${vb.name} (${vb.unit})`,0,0);ctx.restore();
+  ctx.fillStyle=dark?'rgba(220,220,220,.35)':'rgba(40,40,40,.32)';(opt.bg||[]).forEach(c=>ctx.fillRect(X(ENV0[ka][c])-1,Y(ENV0[kb][c])-1,2,2));
+  (opt.rec||[]).forEach(c=>{ctx.beginPath();ctx.arc(X(ENV0[ka][c]),Y(ENV0[kb][c]),4,0,7);ctx.fillStyle='#1b1b1b';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle='#fff';ctx.stroke()});
+  if(opt.r!=null){const t=`r = ${opt.r.toFixed(2)}`;ctx.font='700 14px system-ui,Arial,sans-serif';ctx.textAlign='left';ctx.fillStyle=Math.abs(opt.r)>=.7?'#b3261e':ink;ctx.fillText(t,m.l+10,m.t+20)}
+}
+const PAIRBG=CELLS.filter((_,k)=>k%3===0);
+function renderPair(){const[a,b]=S.pair;$('#pairH').textContent=`${VARS[a].short} vs ${VARS[b].short}`;
+  scatter(pairC,pcx,a,b,{bg:PAIRBG,r:CORR[a][b]});
+  pairC.setAttribute('aria-label',`Scatter plot of ${VARS[a].name} against ${VARS[b].name} across California, correlation r = ${CORR[a][b].toFixed(2)}.`);
+  renderVIF()}
+function renderVIF(){
+  const sel=VARS.map((v,k)=>k).filter(k=>S.vars.has(VARS[k].id));const inv=sel.length>1?invert(sel.map(a=>sel.map(b=>CORR[a][b]))):null;
+  let h='<table class="t"><tr><th>Variable</th><th>Most similar selected</th><th class="n">VIF</th></tr>';
+  VARS.forEach((v,k)=>{const on=S.vars.has(v.id);let mate='—',vif='—',bad=false;
+    if(on){let br=0,bm=-1;sel.forEach(o=>{if(o!==k&&Math.abs(CORR[k][o])>br){br=Math.abs(CORR[k][o]);bm=o}});if(bm>=0){mate=`${VARS[bm].short} (${CORR[k][bm].toFixed(2)})`;bad=br>=.7}
+      if(inv){const val=inv[sel.indexOf(k)][sel.indexOf(k)];vif=val>99?'>99':val.toFixed(1);bad=bad||val>10}else vif='1.0'}
+    h+=`<tr class="${on?'':'dim'}"><td>${v.short}</td><td>${on?`<span class="${bad?'bad':''}">${mate}</span>`:'not used'}</td><td class="n ${bad?'bad':''}">${vif}</td></tr>`});
+  $('#vifTbl').innerHTML=h+'</table><p class="small muted" style="margin:6px 0 0">VIF (variance inflation factor) measures how well the other selected variables predict this one. Above 10 is a common warning sign.</p>';
+}
+const envC=$('#env'),ecx=envC.getContext('2d');
+function renderEnv(){scatter(envC,ecx,S.axX,S.axY,{bg:S.showBg?BG:[],rec:USED.map(r=>r.c)});
+  envC.setAttribute('aria-label',`Climate space: ${VARS[S.axX].name} across, ${VARS[S.axY].name} up. Grey background points show available climates; ${USED.length} records cluster in a narrower part of the cloud.`)}
+function renderSplit(){
+  $('#splitTbl').innerHTML=`<table class="t"><tr><th></th><th class="n">Records</th><th>Used for</th></tr>
+   <tr><td><i class="dot" style="background:#1b1b1b;display:inline-block;margin-right:6px"></i>Training</td><td class="n">${TRAIN.length}</td><td>Building the model</td></tr>
+   <tr><td><i class="dot" style="background:#e8740c;display:inline-block;margin-right:6px"></i>Testing</td><td class="n">${TEST.length}</td><td>Scoring the model (held back)</td></tr>
+   <tr><td>Method</td><td class="n"></td><td>${S.split==='rand'?'Random 75 / 25':'Spatial blocks'}</td></tr></table>`}
+function renderRC(){
+  const sel=$('#rcVar');const opts=(MOD?MOD.SV:[]).map(k=>`<option value="${k}">${VARS[k].name}</option>`).join('');
+  if(sel.__o!==opts){sel.innerHTML=opts;sel.__o=opts}if(MOD&&(S.rcVar==null||!MOD.SV.includes(+S.rcVar)))S.rcVar=MOD.SV.includes(VI.tjul)?VI.tjul:MOD.SV[0];
+  if(!MOD){$('#rc').innerHTML='';return}
+  sel.value=S.rcVar;const k=+S.rcVar,a=MOD.SV.indexOf(k),v=VARS[k];
+  const med=kk=>{const s=TRAIN.map(c=>ENV0[kk][c]).sort((x,y)=>x-y);return s[Math.floor(s.length/2)]};
+  const base=MOD.SV.map(med),pts=[],tru=[],lo=VMIN[k],hi=VMAX[k];
+  const truthOK=k===VI.tjul||k===VI.pann,mj=med(VI.tjul),mp=med(VI.pann);
+  for(let q=0;q<=160;q++){const x=lo+(hi-lo)*q/160,vals=Float64Array.from(base);vals[a]=x;pts.push([x,predictVals(vals)]);if(truthOK)tru.push([x,k===VI.tjul?trueSuit(x,mp):trueSuit(mj,x)])}
+  chart($('#rc'),{xmin:lo,xmax:hi,ymin:0,ymax:1.02,w:520,h:300,xlab:`${v.name} (${v.unit})`,ylab:'Suitability (0–1)',
+    rects:[{x0:lo,x1:MOD.lo[a],color:'#888'},{x0:MOD.hi[a],x1:hi,color:'#888'}],
+    series:(truthOK?[{pts:tru,color:css('--muted'),dash:'6 5',width:2}]:[]).concat([{pts,color:css('--accent'),width:2.8}]),ticks:TRAIN.map(c=>({x:ENV0[k][c],color:css('--text')}))});
+  $('#rcTrueLeg').style.visibility=truthOK?'visible':'hidden';
+  $('#rcNote').textContent=truthOK?'Other variables held at their median among training records. Ticks along the bottom are training records.':'Other variables held at their median among training records. This variable does not limit blue oak in this simulated world, so there is no true curve.';
+  let best=pts[0];pts.forEach(p=>{if(p[1]>best[1])best=p});
+  $('#rc').setAttribute('aria-label',`Response curve for ${v.name}: model suitability peaks at ${best[1].toFixed(2)} near ${best[0].toFixed(0)} ${v.unit}.`);
+}
+function renderImp(){
+  if(!ST){return}const SVs=ST.SV;const W=520,rows=SVs.length,H=34+rows*30,L=120;let s='';
+  SVs.forEach((k,a)=>{const v=ST.imp[a],y=14+a*30,w=(W-L-60)*v;s+=`<text x="${L-8}" y="${y+15}" text-anchor="end" style="fill:var(--text)">${VARS[k].short}</text><rect x="${L}" y="${y}" width="${Math.max(1,w)}" height="20" rx="3" fill="${k===VI.tjul||k===VI.pann?'var(--accent)':'#8a96a6'}"/><text x="${L+w+6}" y="${y+15}">${Math.round(v*100)}%</text>`});
+  const svg=$('#imp');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;
+  svg.setAttribute('aria-label','Permutation importance: '+SVs.map((k,a)=>`${VARS[k].short} ${Math.round(ST.imp[a]*100)}%`).join(', '));
+}
+function renderROC(){if(!ST)return;
+  chart($('#roc'),{xmin:0,xmax:1,ymin:0,ymax:1,w:420,h:360,ml:50,xlab:'Fraction of background called suitable',ylab:'Fraction of records called suitable',
+    series:[{pts:[[0,0],[1,1]],color:css('--muted'),dash:'5 5',width:1.5},{pts:ST.rocTr,color:css('--accent'),width:2.6},{pts:ST.rocTe,color:'#e8740c',width:2.6}]});
+  $('#roc').setAttribute('aria-label',`ROC curves. Training AUC ${ST.tr.toFixed(2)}, testing AUC ${ST.te.toFixed(2)}.`)}
+function renderEval(){if(!ST)return;const s=ST,gap=s.tr-s.te;
+  $('#evalTbl').innerHTML=`<table class="t">
+   <tr><td>Training AUC</td><td class="n">${s.tr.toFixed(3)}</td></tr>
+   <tr><td>Testing AUC</td><td class="n">${s.te.toFixed(3)}</td></tr>
+   <tr><td>Gap (training − testing)</td><td class="n ${gap>0.03?'bad':'ok'}">${gap.toFixed(3)}</td></tr>
+   <tr><td>Threshold (${S.thr==='p10'?'10th percentile':'max sens + spec'})</td><td class="n">${s.thr.toFixed(2)}</td></tr>
+   <tr><td>Testing records missed (omission)</td><td class="n ${s.om>0.2?'bad':''}">${Math.round(s.om*100)}%</td></tr>
+   <tr><td>Suitable area</td><td class="n">${fmtA(s.a0)} km²</td></tr>
+   <tr><th colspan="2">Truth check (only possible in a simulation)</th></tr>
+   <tr><td>Map matches true range</td><td class="n">${Math.round(s.match*100)}%</td></tr>
+   <tr><td>AUC on a real presence/absence survey</td><td class="n">${s.sv.toFixed(3)}</td></tr></table>
+   <p class="small muted" style="margin:6px 0 0">${S.thr==='p10'?'With the 10th percentile rule, about 10% of training records fall below the cutoff by design, so testing omission near 10% is expected. Much higher means the model doesn\'t transfer.':'This rule balances catching records against calling the whole background suitable.'}</p>`}
+function renderProj(){if(!ST)return;const s=ST,mx_=Math.max(s.a0,s.a1,s.t0,s.t1)*1.15||1,W=460,H=250,L=56,bw=70;let svg='';
+  const bars=[['Model today',s.a0,'var(--accent)'],['Model future',s.a1,'#e8740c'],['True today',s.t0,'#8a96a6'],['True future',s.t1,'#c9a26a']];
+  niceTicks(0,mx_,4).forEach(v=>{const y=H-36-(v/mx_)*(H-56);svg+=`<line class="grid" x1="${L}" x2="${W-10}" y1="${y}" y2="${y}"/><text x="${L-6}" y="${y+4}" text-anchor="end">${fmtA(v)}</text>`});
+  bars.forEach(([n,v,c],k)=>{const x=L+16+k*(bw+28),h=(v/mx_)*(H-56),y=H-36-h;svg+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" rx="3" fill="${c}"/><text x="${x+bw/2}" y="${y-5}" text-anchor="middle" style="fill:var(--text);font-weight:600">${fmtA(v)}</text><text x="${x+bw/2}" y="${H-18}" text-anchor="middle">${n}</text>`});
+  svg+=`<text class="lab" transform="translate(14 ${(H-36)/2+10}) rotate(-90)" text-anchor="middle">km²</text>`;
+  const el=$('#areaChart');el.setAttribute('viewBox',`0 0 ${W} ${H}`);el.innerHTML=svg;el.setAttribute('aria-label',bars.map(b=>`${b[0]} ${fmtA(b[1])} square km`).join(', '));
+  const ch=s.a0?Math.round((s.a1-s.a0)/s.a0*100):0,tch=s.t0?Math.round((s.t1-s.t0)/s.t0*100):0;
+  const notes=[];if(MOD.SV.includes(VI.elev))notes.push('This model uses <b>Elevation</b>, which won\'t change in the future, so part of the model can\'t "feel" the warming.');
+  if(!MOD.SV.includes(VI.tjul)&&MOD.SV.some(k=>VARS[k].kind==='T'))notes.push('July temperature (what really limits the oak here) is not in the model. A correlated stand-in is doing its job. That works today but can mislead when the variables warm by different amounts in the future.');
+  if(!MOD.SV.some(k=>VARS[k].kind==='T'))notes.push('No temperature variable is in the model, so warming can\'t change the prediction at all.');
+  $('#projTbl').innerHTML=`<table class="t"><tr><td><b>Future map matches true future range</b></td><td class="n ${s.matchF<.6?'bad':'ok'}">${Math.round(s.matchF*100)}%</td></tr><tr><td>Model: change in suitable area</td><td class="n ${ch<0?'bad':''}">${ch>0?'+':''}${ch}%</td></tr>
+    <tr><td>Truth: change in suitable area</td><td class="n">${tch>0?'+':''}${tch}%</td></tr>
+    <tr><td>Area where the future climate is outside the background (extrapolation)</td><td class="n">${Math.round(s.ex*100)}%</td></tr></table>
+    ${notes.length?'<p class="note">'+notes.join(' ')+'</p>':'<p class="note">Same model, new climate layers. Low foothills get too hot, so suitable climate shifts upslope into the Sierra and north. Use the Change layer to see where.</p>'}`}
+
+/* ---------- tiles + messages ---------- */
 function tiles(){
-  $('#tFeat').innerHTML=FIT?`${ST?ST.nz:'–'}<small> of ${FIT.nf}</small>`:'–';
-  $('#tAuc').textContent=ST?ST.te.toFixed(2):'…';
-  $('#tMatch').textContent=ST?Math.round(ST.match*100)+'%':'…';
-  const fut=S.clim==='fut';$('#tAreaK').textContent=fut?'Suitable area: future':'Suitable area: today';
-  $('#tArea').innerHTML=ST?`${fmtA(fut?ST.a1:ST.a0)}<small> km²</small>`:'…';
+  $('#tRec').innerHTML=`${USED.length}<small> of ${RAW.length}</small>`;
+  const sel=[...S.vars].map(id=>VI[id]);let hi=0;sel.forEach(a=>sel.forEach(b=>{if(a!==b)hi=Math.max(hi,Math.abs(CORR[a][b]))}));
+  $('#tVar').innerHTML=`${sel.length}<small> of ${NV}${hi>=.7?' · <span class="bad">correlated</span>':''}</small>`;
+  if(!ST)return;
+  $('#tAuc').textContent=`${ST.tr.toFixed(2)} / ${ST.te.toFixed(2)}`;
+  const fut=S.step==='s7';$('#tAreaK').textContent=fut?'Suitable in future':'Suitable today';
+  $('#tArea').innerHTML=`${fmtA(fut?ST.a1:ST.a0)}<small> km²</small>`;
 }
 function message(){
-  const el=$('#msg');if(!ST){el.textContent='Fitting the model…';return}
-  const s=ST,out=[];let warn=false;
-  if(S.clim==='fut'){const ch=s.a0?Math.round((s.a1-s.a0)/s.a0*100):0,tch=s.t0?Math.round((s.t1-s.t0)/s.t0*100):0;
-    out.push(`Same equation, warmer climate layers: the model's suitable area changes from ${fmtA(s.a0)} to ${fmtA(s.a1)} km² (${ch>0?'+':''}${ch}%). The true habitat changes ${tch>0?'+':''}${tch}%. Pikas can only retreat upslope, and the mountain gets narrower near the top.`);
-    if(s.hot>0)out.push(`${Math.round(s.hot/N*100)}% of the future map (mostly the valley floor) is hotter than anywhere in today's background, so the model clamps those values: it is guessing beyond its data. That hardly matters for a cold-loving pika, but it would for a species of hot places.`)}
-  if(S.bias){out.push('Records cluster near roads and trails. The model can\'t tell "pikas like it here" from "people walk here," so climates along the roads look better than they are and remote peaks look worse.');warn=true}
-  if(S.bg==='buf')out.push('The background is only the area near the records, so the model compares pika sites to similar mountain climates nearby. It learns less about why the valley is unsuitable, and its map outside the outlined area is an extrapolation.');
-  const pm=Math.round(s.match*100);
-  if(S.beta<0.6&&S.feat!=='L'&&s.match<0.9){out.push(`With low β the model uses ${s.nz} features to chase these ${REC.length} records: patchy hot spots around single records and a bumpy response curve. That is overfitting: the map matches the true habitat ${pm}%. Raise β back to 1 and compare.`);warn=true}
-  else if(s.match<0.85&&!S.bias){out.push(`The map matches the true habitat only ${pm}%. With so few or such clumped records, the model can't pin down where pikas live.`);warn=true}
-  if(!out.length)out.push(`The map matches the true habitat ${pm}%. Test AUC ${s.te.toFixed(2)}: in a new, unbiased survey of mountain talus patches, given one patch with pikas and one without, the model ranks the pika site higher ${Math.round(s.te*100)}% of the time. Compare the model map to the true habitat to see where it still misses.`);
+  const el=$('#msg'),out=[];let warn=false;const c=COUNTS;
+  if(!S.vars.size){el.className='msg warn';el.textContent='Select at least one climate variable in step 2.';return}
+  if(S.step==='s1'){
+    out.push(`${c.raw} raw records → ${c.used} used.`);
+    if(!S.cSea){out.push(`${RAW.filter(r=>r.kind==='sea').length} records sit in the ocean, typos in their coordinates.`);warn=true}
+    if(!S.cCult){out.push(`${RAW.filter(r=>r.kind==='cult').length} are planted oaks in places like ${[...new Set(RAW.filter(r=>r.kind==='cult').map(r=>r.where))].slice(0,3).join(', ')}. They would teach the model that cool coastal cities or deserts suit blue oak.`);warn=true}
+    if(S.bias&&!S.cThin){out.push('Records bunch along I-5, 99, and 101. Spatial thinning evens them out.');warn=true}
+    if(!warn)out.push('The records are clean. On to choosing climate variables.')}
+  else if(S.step==='s2'){const sel=[...S.vars].map(id=>VI[id]),pairs=[];sel.forEach(a=>sel.forEach(b=>{if(a<b&&Math.abs(CORR[a][b])>=.7)pairs.push(`${VARS[a].short}–${VARS[b].short} (${CORR[a][b].toFixed(2)})`)}));
+    if(pairs.length){out.push(`${pairs.length} selected pair${pairs.length>1?'s are':' is'} strongly correlated, including ${pairs.slice(0,3).join(', ')}${pairs.length>3?', and more':''}. Drop one variable from each pair, keeping the one that makes more biological sense for the oak.`);warn=true}
+    else out.push(`No selected pair has |r| ≥ 0.7. Each of these ${sel.length} variables brings different information.`);
+    if(S.vars.has('elev'))out.push('Elevation isn\'t climate. It stands in for temperature today but won\'t change when the climate warms.')}
+  else if(S.step==='s3'){out.push(`${BG.length.toLocaleString()} background points ${S.bg==='all'?'across all of California':'within 50 km of the records'}.`);
+    out.push(S.bg==='all'?'The model will easily learn that oaks avoid the deserts and the high Sierra, which inflates AUC.':'The model compares oak sites with similar foothill climates nearby, a harder and more local question. AUC usually drops, but that doesn\'t mean the model is worse.')}
+  else if(S.step==='s4'){out.push(`${TRAIN.length} training and ${TEST.length} testing records.`);
+    if(S.split==='block')out.push('Whole regions are held out, so the test asks: does the model work somewhere new?');else out.push('Testing records are scattered among training records, so the test is fairly easy.')}
+  else if(!ST){out.push('Fitting the model…')}
+  else if(S.step==='s5'){out.push(`MaxEnt kept ${ST.nz} of ${FIT.nf} features; the rest got a weight of zero.`);
+    const top=ST.SV.map((k,a)=>[k,ST.imp[a]]).sort((a,b)=>b[1]-a[1])[0];out.push(`It leans most on ${VARS[top[0]].name.toLowerCase()} (${Math.round(top[1]*100)}% importance).`);
+    if(S.beta<0.6&&S.feat!=='L'){out.push('Low β: look for bumpy response curves and hot spots around single records. That is overfitting.');warn=true}
+    if(MOD.SV.length>1){const pairs=[];MOD.SV.forEach(a=>MOD.SV.forEach(b=>{if(a<b&&Math.abs(CORR[a][b])>=.7)pairs.push([a,b])}));if(pairs.length){out.push(`Correlated variables (like ${VARS[pairs[0][0]].short} and ${VARS[pairs[0][1]].short}) split the credit, so importance and curves are hard to interpret.`);warn=true}}}
+  else if(S.step==='s6'){const gap=ST.tr-ST.te;out.push(`Training AUC ${ST.tr.toFixed(2)}, testing AUC ${ST.te.toFixed(2)}.`);
+    if(gap>0.03){out.push('The model scores clearly worse on records it never saw: it\'s overfit. Raise β or use simpler features in step 5.');warn=true}else out.push('Training and testing scores are close, so the model generalizes.');
+    out.push(`At the threshold of ${ST.thr.toFixed(2)}, ${Math.round(ST.om*100)}% of testing records are missed. Truth check: the map matches the real range ${Math.round(ST.match*100)}%.`)}
+  else if(S.step==='s7'){const ch=ST.a0?Math.round((ST.a1-ST.a0)/ST.a0*100):0,tch=ST.t0?Math.round((ST.t1-ST.t0)/ST.t0*100):0;
+    const fm=Math.round(ST.matchF*100);out.push(`The future map matches the true future range ${fm}% (today's map: ${Math.round(ST.match*100)}%).`);
+    if(ST.matchF<0.6){out.push('The projection is off. Check your choices: stand-in or correlated variables (step 2), biased or few records (step 1), and low β (step 5) can all look fine today and still project badly.');warn=true}
+    else out.push(`Suitable area changes ${ch>0?'+':''}${ch}% in the model and ${tch>0?'+':''}${tch}% in the truth.`);
+    if(ST.ex>0.02)out.push(`${Math.round(ST.ex*100)}% of the state gets a climate outside anything in the background. The Extrapolation layer shows where.`)}
   el.className='msg'+(warn?' warn':'');el.textContent=out.join(' ');
 }
-function describeMap(){
-  const fut=S.clim==='fut',names={model:'model prediction',truth:'true habitat',T:'mean July temperature',P:'annual precipitation'};
-  let t=`Map of a ${GW*KM} by ${GH*KM} km slice of the southern Sierra Nevada, Central Valley on the left (west), crest near the right, dry east side at the far right. Showing ${names[S.view]}${fut&&S.view!=='P'?' under a climate 3 °C warmer':''}. ${REC.length} presence records`;
-  if(S.view==='model'||S.view==='truth')t+=`. High suitability is a band along the upper west slope just below the crest${fut?', shifted upslope and smaller':''}.`;else t+='.';
-  if(S.bias)t+=' Records are clustered along the roads and trails.';
-  if(S.bg==='buf')t+=' Areas more than 20 km from any record are greyed out as outside the background.';
-  mapC.setAttribute('aria-label',t);
-  envC.setAttribute('aria-label',`Climate space scatter plot: temperature on the horizontal axis, precipitation on the vertical. Background points form a broad diagonal cloud from hot, dry valley to cool, wet mountains, with a cool, dry arm for the east side. Presence records sit in the cool, wet corner, below about 13 °C and above about 600 mm.${ST?' Model shading is highest there.':''}`);
-}
 
-/* ---------- animation loop: watch the model learn ---------- */
+/* ---------- step switching ---------- */
+function setLayers(){
+  const el=$('#viewSel'),ls=STEP_LAYERS[S.step];
+  el.innerHTML=ls.map(l=>`<button data-v="${l}" class="${S.layer[S.step]===l?'on':''}">${LAYERS[l]}</button>`).join('');
+  seg('viewSel',v=>{S.layer[S.step]=v;$('#mapVar').style.display=S.step==='s2'?'':'none';$('#mapVar').style.visibility=v==='var'?'visible':'hidden';drawMap()});
+  $('#mapVar').style.display=S.step==='s2'?'':'none';$('#mapVar').style.visibility=S.layer[S.step]==='var'?'visible':'hidden';
+}
+function renderStep(){
+  $$('.vpanel').forEach(p=>p.classList.toggle('on',p.dataset.step===S.step));
+  setLayers();drawMap();tiles();message();
+  ({s1:renderClean,s2:()=>{renderMatrix();renderPair()},s3:renderEnv,s4:renderSplit,s5:()=>{renderRC();renderImp()},s6:()=>{renderROC();renderEval()},s7:renderProj})[S.step]();
+}
+function goStep(id){const b=$(`nav.tabs button[data-tab="${id}"]`);if(b)b.click()}
+$$('nav.tabs button').forEach(b=>b.onclick=()=>{$$('nav.tabs button').forEach(x=>x.classList.toggle('on',x===b));$$('section.panel').forEach(p=>p.classList.toggle('on',p.id===b.dataset.tab));S.step=b.dataset.tab;renderStep();try{history.replaceState(null,'','#'+S.step)}catch(e){}});
+$$('.next').forEach(b=>b.onclick=()=>{goStep(b.dataset.go);const n=$('nav.tabs');if(n.getBoundingClientRect().top<0)n.scrollIntoView({behavior:'smooth'})});
+
+/* ---------- pipeline + animation ---------- */
 let raf=0;
 function frame(){
-  raf=0;if(!FIT)return;
+  raf=0;if(!FIT){predictAll();renderStep();return}
   for(let k=0;k<3&&!FIT.done;k++)fitStep();
-  evalFit(FIT.lam);predictAll();
-  $('#badge').textContent=FIT.done?'Model fitted':`Fitting… step ${FIT.iter} of ${FIT.maxIter}`;
-  if(FIT.done){ST=stats();tiles();message();describeMap()}else{let nz=0;FIT.lam.forEach(v=>{if(v!==0)nz++});$('#tFeat').innerHTML=`${nz}<small> of ${FIT.nf}</small>`}
-  drawMap();drawEnv();drawRC();
+  evalFit();predictAll();
+  $('#badge').textContent=FIT.done?'Model fitted':`Fitting… ${String(Math.round(FIT.iter/FIT.maxIter*100)).padStart(3,' ')}%`;
+  if(FIT.done){ST=stats();renderStep()}
+  else if(['s5','s6','s7'].includes(S.step)){drawMap();if(S.step==='s5')renderRC()}
   if(!FIT.done)raf=requestAnimationFrame(frame);
 }
-function refit(resample){
-  if(resample)sampleRecords();buildBackground();startFit();ST=null;
-  predictAll();tiles();message();drawMap();drawEnv();drawRC();describeMap();
+/* from: 'download' | 'clean' | 'split' | 'bg' | 'fit' */
+function run(from){
+  const order=['download','clean','split','bg','fit'],i=order.indexOf(from);
+  if(i<=0)download();if(i<=1)clean();if(i<=2)split();if(i<=3)buildBackground();startFit();
+  if(!FIT){ST=null}
+  renderStep();
   if(!raf)raf=requestAnimationFrame(frame);
 }
-function redraw(){if(FIT&&FIT.done){ST=stats();tiles();message()}drawMap();drawEnv();drawRC();describeMap()}
 
 /* ---------- controls ---------- */
 const nRec=$('#nRec'),beta=$('#beta');
 function showVals(){$('#nRecV').textContent=nRec.value;$('#betaV').textContent=(+beta.value).toFixed(1)}
-let deb=0,pendRes=false;const later=res=>{pendRes=pendRes||res;clearTimeout(deb);deb=setTimeout(()=>{const r=pendRes;pendRes=false;refit(r)},180)};
-nRec.addEventListener('input',()=>{showVals();S.nRec=+nRec.value;later(true)});
-beta.addEventListener('input',()=>{showVals();S.beta=+beta.value;later(false)});
-$('#bias').addEventListener('change',e=>{S.bias=e.target.checked;refit(true)});
-$('#showBg').addEventListener('change',e=>{S.showBg=e.target.checked;redraw()});
-$('#newSurvey').onclick=()=>{S.seed++;refit(true)};
-seg('bgSel',v=>{S.bg=v;refit(false)});
-seg('featSel',v=>{S.feat=v;refit(false)});
-seg('climSel',v=>{S.clim=v;redraw()});
-seg('viewSel',v=>{S.view=v;redraw()});
-seg('rcSel',v=>{S.rc=v;drawRC()});
-showVals();refit(true);
-matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',redraw);
+let deb=0,pend=null;const order=['download','clean','split','bg','fit'];
+const later=from=>{if(pend===null||order.indexOf(from)<order.indexOf(pend))pend=from;clearTimeout(deb);deb=setTimeout(()=>{const f=pend;pend=null;run(f)},160)};
+nRec.addEventListener('input',()=>{showVals();S.nRaw=+nRec.value;later('download')});
+beta.addEventListener('input',()=>{showVals();S.beta=+beta.value;later('fit')});
+$('#bias').addEventListener('change',e=>{S.bias=e.target.checked;run('download')});
+$('#newSurvey').onclick=()=>{S.seed++;run('download')};
+['cDup','cSea','cCult','cThin'].forEach(id=>$('#'+id).addEventListener('change',e=>{S[id]=e.target.checked;run('clean')}));
+$('#varList').innerHTML=VARS.map(v=>`<label class="check"><input type="checkbox" data-var="${v.id}" checked> <span>${v.name}<small>${v.bio}</small></span></label>`).join('');
+$$('#varList input').forEach(cb=>cb.addEventListener('change',()=>{cb.checked?S.vars.add(cb.dataset.var):S.vars.delete(cb.dataset.var);renderMatrix();renderVIF();later('fit')}));
+function setVars(ids){S.vars=new Set(ids);$$('#varList input').forEach(cb=>cb.checked=S.vars.has(cb.dataset.var));renderMatrix();renderVIF();later('fit')}
+$('#varAll').onclick=()=>setVars(VARS.map(v=>v.id));
+$('#varSuggest').onclick=()=>{const pri=['tjul','pann','tjan','psum','tann','pwin','elev'],keep=[];pri.forEach(id=>{if(keep.every(k=>Math.abs(CORR[VI[id]][VI[k]])<.7))keep.push(id)});setVars(keep)};
+$('#mapVar').innerHTML=VARS.map(v=>`<option value="${v.id}">${v.name}</option>`).join('');$('#mapVar').value=S.mapVar;
+$('#mapVar').onchange=e=>{S.mapVar=e.target.value;drawMap()};
+['axX','axY'].forEach(id=>{const s=$('#'+id);s.innerHTML=VARS.map((v,k)=>`<option value="${k}">${v.name}</option>`).join('');s.value=S[id];s.onchange=()=>{S[id]=+s.value;renderEnv()}});
+$('#rcVar').onchange=e=>{S.rcVar=+e.target.value;renderRC()};
+$('#showBg').addEventListener('change',e=>{S.showBg=e.target.checked;drawMap();renderEnv()});
+seg('bgSel',v=>{S.bg=v;run('bg')});
+seg('splitSel',v=>{S.split=v;run('split')});
+$('#newSplit').onclick=()=>{S.splitSeed++;run('split')};
+seg('featSel',v=>{S.feat=v;run('fit')});
+seg('thrSel',v=>{S.thr=v;if(FIT&&FIT.done){ST=stats()}renderStep()});
+$('#msg').textContent='Loading…';
+showVals();
+const h0=location.hash.slice(1);
+run('download');
+if(/^s[1-7]$/.test(h0))goStep(h0);
+matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',renderStep);
 </script>
 <!--SIM-NOTICE-->
 <style>
@@ -517,7 +909,7 @@ html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-p
 </script>
 <!--/SIM-NOTICE-->
 <script>
-window.A11Y = {css:'',live:['#msg'],hidden:['.cbar']};
+window.A11Y = {tabsLabel:'Analysis steps',css:'',live:['#msg'],hidden:['.cbar']};
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
 <style id="a11y-css">

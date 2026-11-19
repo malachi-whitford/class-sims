@@ -227,12 +227,12 @@ const ITEMS = [
     tags: ["commons", "sustainability", "Hardin", "Ostrom", "overgrazing"]
   },
   {
-    title: "Species Distribution Models: How MaxEnt Works",
+    title: "Species Distribution Models: A MaxEnt Analysis",
     where: ["ecology/conservation"],
     type: "sim",
     url: "sims/species-distribution/",
-    desc: "Map where American pikas could live in a Sierra Nevada landscape from a handful of presence records. Watch MaxEnt compare records to background climates, then test it against the true habitat: overfitting, sampling bias, background choice, and a +3 °C future.",
-    tags: ["SDM", "MaxEnt", "niche model", "climate change", "pika"]
+    desc: "Run a full species distribution model for California blue oak in seven steps: clean GBIF-style records, screen correlated climate variables, set the background, split training and testing data, fit MaxEnt, evaluate with AUC and thresholds, and project to a warmer future. Check every choice against the true range.",
+    tags: ["SDM", "MaxEnt", "multicollinearity", "AUC", "climate change", "blue oak"]
   },
   {
     title: "Fresno County Waste: Build Your Own Graphs",

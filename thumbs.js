@@ -6,12 +6,12 @@
    ===================================================================== */
 const THUMBS = {
 "sims/species-distribution/": `
-  <rect x="0" y="0" width="160" height="90" fill="#f2eedf"/>
-  <path d="M84 0 C70 20 96 34 80 52 C68 66 92 78 86 90 L118 90 C124 76 104 66 112 52 C124 34 104 20 112 0Z" fill="#86c07a"/>
-  <path d="M94 0 C86 20 104 34 94 52 C86 66 102 78 98 90 L108 90 C112 76 98 66 102 52 C110 34 98 20 102 0Z" fill="#1f7a5c"/>
-  <path d="M110 0 C104 22 118 40 108 60 C102 74 112 84 110 90" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="4 3"/>
-  <g fill="#111" stroke="#fff" stroke-width="1.6"><circle cx="96" cy="16" r="4"/><circle cx="100" cy="40" r="4"/><circle cx="92" cy="62" r="4"/><circle cx="104" cy="78" r="4"/><circle cx="88" cy="30" r="4"/></g>
-  <g fill="#666"><circle cx="20" cy="18" r="1.4"/><circle cx="40" cy="50" r="1.4"/><circle cx="58" cy="26" r="1.4"/><circle cx="26" cy="72" r="1.4"/><circle cx="140" cy="20" r="1.4"/><circle cx="146" cy="64" r="1.4"/><circle cx="64" cy="76" r="1.4"/><circle cx="130" cy="44" r="1.4"/></g>`,
+  <rect x="0" y="0" width="160" height="90" fill="#cfe3ef"/>
+  <path d="M46.7 4.9 L75.4 4.9 L75.4 30.5 L112.1 64.6 L112.3 65.5 L115.5 70.9 L113.5 72.5 L112.8 76.6 L111.4 81.7 L111.5 84.1 L95.1 85.7 L94.2 83.9 L94.2 81.7 L93.2 79.6 L91.1 77.6 L89.4 76.3 L87.1 75.7 L86.3 74.0 L85.5 72.8 L83.6 73.2 L80.9 71.9 L78.2 69.8 L75.4 69.3 L72.2 69.3 L71.1 68.3 L71.3 64.6 L69.6 61.2 L66.5 59.0 L62.4 53.5 L62.1 51.4 L63.1 49.3 L61.8 47.9 L59.0 45.9 L58.3 43.3 L58.3 40.9 L56.6 39.9 L54.9 39.0 L54.9 36.5 L52.9 34.3 L50.1 30.9 L49.5 26.6 L49.1 23.2 L47.4 21.1 L45.4 18.2 L46.7 15.5 L47.4 13.4 L47.1 10.0 L46.7 7.0 L46.7 4.9Z" fill="#efe6cf" stroke="#5a5a5a" stroke-width="1.2"/>
+  <path d="M59.7 11.7 L57.7 20.2 L60.4 28.8 L64.5 36.5 L67.2 42.4 L71.3 49.3 L75.4 56.1 L80.2 62.1" fill="none" stroke="#3f8f68" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>
+  <path d="M66.5 19.4 L68.6 27.9 L72.0 36.5 L75.4 44.1 L80.2 51.8 L83.6 60.4" fill="none" stroke="#3f8f68" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".85"/>
+  <g fill="#111" stroke="#fff" stroke-width="1.2"><circle cx="59" cy="17" r="2.6"/><circle cx="69" cy="34" r="2.6"/><circle cx="76" cy="46" r="2.6"/><circle cx="69" cy="51" r="2.6"/></g>
+  <g transform="translate(122 22)"><circle cx="0" cy="0" r="9" fill="#7f9f97"/><circle cx="8" cy="3" r="7" fill="#7f9f97"/><circle cx="-7" cy="4" r="6" fill="#9cb8b0"/><rect x="-1.5" y="6" width="4" height="12" fill="#6b5b4e"/></g>`,
 "sims/osmosis/": `
   <rect x="22" y="14" width="116" height="64" rx="4" fill="#fff" stroke="#0f5e57" stroke-width="2.5"/>
   <rect x="24" y="44" width="54" height="32" fill="#9fd8e8"/><rect x="82" y="30" width="54" height="46" fill="#9fd8e8"/>
