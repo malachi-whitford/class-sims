@@ -49,6 +49,21 @@
       "_note": "Photographer not named on the page; credited to the post's authors. Converted from WebP to JPG; otherwise unchanged."
     },
     {
+      "file": "p_corn_acid_commons.jpg",
+      "nutrient": "P",
+      "nutrient_name": "phosphorus",
+      "source": "Wikimedia Commons",
+      "source_url": "https://commons.wikimedia.org/wiki/File:2005_1214_0928_Hlokozi_-_Acid-induced_P_deficiency.jpg",
+      "host": "corn (Zea mays L.)",
+      "description": "Acid-induced phosphorus deficiency in young corn (Hlokozi): purple coloring on the older, lower leaves. In acid soil, phosphate binds to iron and aluminum, so plants cannot take it up even when it is present.",
+      "photographer": null,
+      "organization": null,
+      "license": null,
+      "license_url": null,
+      "credit": null,
+      "_note": "Author and license still needed from the Commons page ('Use this file' gives the attribution line)."
+    },
+    {
       "file": "fe_5407854.jpg",
       "nutrient": "Fe",
       "nutrient_name": "iron",
