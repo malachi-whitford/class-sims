@@ -1,0 +1,57 @@
+{
+  "_about": "Photos of nutrient deficiency symptoms from Bugwood Images (bugwood.org), used for non-commercial education with credit. Cite each as: Photographer, Organization, Bugwood.org. Fields set to null still need filling in from each image's page (photographer, organization, license).",
+  "images": [
+    {
+      "file": "fe_5407854.jpg",
+      "nutrient": "Fe",
+      "nutrient_name": "iron",
+      "bugwood_number": "5407854",
+      "source_url": "https://www.forestryimages.org/browse/image/5407854",
+      "host": null,
+      "symptom": "Interveinal chlorosis on young leaves; veins stay green",
+      "photographer": null,
+      "organization": null,
+      "license": null,
+      "credit": null
+    },
+    {
+      "file": "k_5626945.jpg",
+      "nutrient": "K",
+      "nutrient_name": "potassium",
+      "bugwood_number": "5626945",
+      "source_url": "https://www.forestryimages.org/browse/image/5626945",
+      "host": "soybean",
+      "symptom": "Yellowing and browning along leaf margins on older (lower) leaves",
+      "photographer": null,
+      "organization": null,
+      "license": null,
+      "credit": null
+    },
+    {
+      "file": "zn_5368761.jpg",
+      "nutrient": "Zn",
+      "nutrient_name": "zinc",
+      "bugwood_number": "5368761",
+      "source_url": "https://www.ipmimages.org/browse/detail.cfm?imgnum=5368761",
+      "host": "corn",
+      "symptom": "Pale bands on leaves, stunted plant with short internodes",
+      "photographer": null,
+      "organization": null,
+      "license": null,
+      "credit": null
+    },
+    {
+      "file": "ca_5077026.jpg",
+      "nutrient": "Ca",
+      "nutrient_name": "calcium",
+      "bugwood_number": "5077026",
+      "source_url": "https://www.forestryimages.org/browse/image/5077026",
+      "host": "cabbage",
+      "symptom": "Tipburn: brown, dead margins on young inner leaves",
+      "photographer": null,
+      "organization": null,
+      "license": null,
+      "credit": null
+    }
+  ]
+}
