@@ -1,5 +1,5 @@
 {
-  "_about": "Photos of nutrient deficiency symptoms used for non-commercial education. Bugwood images: the citation (Photographer, Organization, Bugwood.org) must accompany each image wherever it is shown. Wikimedia Commons images: credit as Author, License, via Wikimedia Commons, with a link to the license. Fields set to null still need filling in.",
+  "_about": "Photos of nutrient deficiency symptoms used for non-commercial education. Bugwood images: the citation (Photographer, Organization, Bugwood.org) must accompany each image wherever it is shown. Wikimedia Commons and UMN Extension images: credit as given in 'credit', with a link to the license. Fields set to null still need filling in.",
   "images": [
     {
       "file": "n_phaseolus_commons.jpg",
@@ -15,6 +15,38 @@
       "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
       "credit": "Rasbak, CC BY-SA 3.0, via Wikimedia Commons",
       "_note": "Resized from the original to 1024 px on the long side; otherwise unchanged."
+    },
+    {
+      "file": "n_corn_umn.jpg",
+      "nutrient": "N",
+      "nutrient_name": "nitrogen",
+      "description": "Nitrogen deficient corn: yellowing in a V down the midrib of the lower (older) leaves, starting at the tip.",
+      "source": "University of Minnesota Extension, Minnesota Crop News",
+      "source_url": "https://blog-crop-news.extension.umn.edu/2017/05/4-key-nutrient-deficiencies-to-scout.html",
+      "host": "corn (Zea mays L.)",
+      "photographer": null,
+      "organization": "University of Minnesota Extension",
+      "authors": "Daniel Kaiser and Fabian Fernandez",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Daniel Kaiser and Fabian Fernandez, University of Minnesota Extension, CC BY-SA 4.0",
+      "_note": "Photographer not named on the page; credited to the post's authors. Converted from WebP to JPG; otherwise unchanged."
+    },
+    {
+      "file": "p_corn_umn.jpg",
+      "nutrient": "P",
+      "nutrient_name": "phosphorus",
+      "description": "Phosphorus deficient corn: purple leaves and stems on young plants.",
+      "source": "University of Minnesota Extension, Minnesota Crop News",
+      "source_url": "https://blog-crop-news.extension.umn.edu/2017/05/4-key-nutrient-deficiencies-to-scout.html",
+      "host": "corn (Zea mays L.)",
+      "photographer": null,
+      "organization": "University of Minnesota Extension",
+      "authors": "Daniel Kaiser and Fabian Fernandez",
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+      "credit": "Daniel Kaiser and Fabian Fernandez, University of Minnesota Extension, CC BY-SA 4.0",
+      "_note": "Photographer not named on the page; credited to the post's authors. Converted from WebP to JPG; otherwise unchanged."
     },
     {
       "file": "fe_5407854.jpg",
