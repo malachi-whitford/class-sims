@@ -159,7 +159,7 @@ button.primary:disabled{opacity:.45;cursor:not-allowed}
 <p class="sub">Practice diagnosing real plants. For each photo, note where the signs show up and which signs you see, then pick the nutrient that is short. Use the key at the bottom if you get stuck.</p>
 <div class="idgrid">
   <div class="card photocard">
-    <div class="progress"><span id="idProg"></span><a id="idBig" href="#" target="_blank" rel="noopener">Open full-size photo</a></div>
+    <div class="progress"><span id="idProg"></span><a id="idBig" href="#" target="_blank" rel="noopener" hidden>Open full-size photo</a></div>
     <div class="photobox"><img id="idImg" alt=""></div>
     <p class="credit" id="idCredit"></p>
   </div>
@@ -1068,7 +1068,7 @@ function load(){
   done=false;sel={loc:null,signs:new Set(),nut:null};$('idCard').classList.remove('done');
   [...locBtns,...sigBtns,...nutBtns].forEach(b=>{press(b,false);b.disabled=false;b.classList.remove('good','bad','miss','meh');const m=b.querySelector('.mk');if(m)m.remove();});
   const img=$('idImg');img.src='images/'+p.f;img.alt='Photo '+(pos+1)+': a '+p.host+' plant showing signs of a nutrient deficiency.';
-  $('idBig').href='images/'+p.f;
+  $('idBig').href='images/'+p.f;$('idBig').hidden=true;
   $('idCredit').innerHTML=creditHTML(p);
   $('idProg').innerHTML='Photo <b>'+(pos+1)+'</b> of '+deck.length+' · '+p.host;
   $('idFb').hidden=true;$('idFb').className='fb';$('idFb').innerHTML='';
@@ -1089,7 +1089,7 @@ function submit(){
   score.t++;if(nOK)score.n++;if(lOK)score.l++;if(sOK)score.s++;setScore();
 
   [...locBtns,...sigBtns,...nutBtns].forEach(b=>b.disabled=true);
-  $('idCard').classList.add('done');
+  $('idCard').classList.add('done');$('idBig').hidden=false;
   locBtns.forEach(b=>{if(b.dataset.id===ans.loc)mark(b,'good','✓');else if(b.dataset.id===sel.loc)mark(b,'bad','✗');});
   sigBtns.forEach(b=>{const id=b.dataset.id,on=sel.signs.has(id);
     if(p.must.includes(id))mark(b,on?'good':'miss',on?'✓':'(missed)');
