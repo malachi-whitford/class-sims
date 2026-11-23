@@ -108,6 +108,21 @@
       "license": "CC BY 3.0",
       "license_url": "https://creativecommons.org/licenses/by/3.0/",
       "credit": "David B. Langston, University of Georgia, Bugwood.org"
+    },
+    {
+      "file": "mg_1402097.jpg",
+      "nutrient": "Mg",
+      "nutrient_name": "magnesium",
+      "bugwood_number": "1402097",
+      "source_url": "https://www.ipmimages.org/browse/detail.cfm?imgnum=1402097",
+      "bugwood_subject": "magnesium deficiency",
+      "host": "flue-cured tobacco (Nicotiana tabacum (flue-cured type) L.)",
+      "description": "Magnesium deficiency (\"sand drown\"), mostly on sandy soils after heavy rain. Lower leaves lose green color first, starting at the tips and margins and moving toward the base and center; tissue between the veins turns chlorotic while the veins stay green. In extreme cases lower leaves turn almost white and symptoms move up the plant. High K and/or Ca on low-Mg soils can make it worse.",
+      "photographer": "R.J. Reynolds Tobacco Company",
+      "organization": "R.J. Reynolds Tobacco Company",
+      "license": "CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "credit": "R.J. Reynolds Tobacco Company, R.J. Reynolds Tobacco Company, Bugwood.org"
     }
   ]
 }
