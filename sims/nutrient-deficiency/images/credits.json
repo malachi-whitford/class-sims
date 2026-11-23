@@ -1,5 +1,5 @@
 {
-  "_about": "Photos of nutrient deficiency symptoms from Bugwood Images (bugwood.org), used for non-commercial education with credit. Cite each as: Photographer, Organization, Bugwood.org. Fields set to null still need filling in from each image's page (photographer, organization, license).",
+  "_about": "Photos of nutrient deficiency symptoms from Bugwood Images (bugwood.org), used for non-commercial education. Bugwood requires the citation (Photographer, Organization, Bugwood.org) to accompany each image wherever it is shown. Fields set to null still need filling in.",
   "images": [
     {
       "file": "fe_5407854.jpg",
@@ -7,12 +7,14 @@
       "nutrient_name": "iron",
       "bugwood_number": "5407854",
       "source_url": "https://www.forestryimages.org/browse/image/5407854",
-      "host": null,
-      "symptom": "Interveinal chlorosis on young leaves; veins stay green",
-      "photographer": null,
-      "organization": null,
-      "license": null,
-      "credit": null
+      "bugwood_subject": "iron deficiency",
+      "host": "blueberry (Genus Vaccinium L.)",
+      "description": "Close-up of interveinal chlorosis due to iron deficiency",
+      "photographer": "John Hartman",
+      "organization": "University of Kentucky",
+      "license": "CC BY-NC 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc/3.0/",
+      "credit": "John Hartman, University of Kentucky, Bugwood.org"
     },
     {
       "file": "k_5626945.jpg",
@@ -20,25 +22,30 @@
       "nutrient_name": "potassium",
       "bugwood_number": "5626945",
       "source_url": "https://www.forestryimages.org/browse/image/5626945",
-      "host": "soybean",
-      "symptom": "Yellowing and browning along leaf margins on older (lower) leaves",
-      "photographer": null,
-      "organization": null,
-      "license": null,
-      "credit": null
+      "bugwood_subject": "potassium deficiency",
+      "host": "soybean (Glycine max (L.) Merr.)",
+      "description": "Yellowing and browning along leaf margins on older leaves",
+      "photographer": "Daren Mueller",
+      "organization": "Iowa State University",
+      "license": "CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "credit": "Daren Mueller, Iowa State University, Bugwood.org"
     },
     {
       "file": "zn_5368761.jpg",
       "nutrient": "Zn",
       "nutrient_name": "zinc",
       "bugwood_number": "5368761",
-      "source_url": "https://www.ipmimages.org/browse/detail.cfm?imgnum=5368761",
-      "host": "corn",
-      "symptom": "Pale bands on leaves, stunted plant with short internodes",
-      "photographer": null,
-      "organization": null,
+      "source_url": null,
+      "bugwood_subject": "nutrient deficiency",
+      "host": "corn (Zea mays L.)",
+      "description": "Shortening of internodes and light streaking of leaves followed by a broad stripe of bleached tissue on each side of the midrib; leaf edges and stalk interiors at the nodes sometimes purplish. Zinc deficiency.",
+      "photographer": "Diane Perkins",
+      "organization": "University of Kentucky",
       "license": null,
-      "credit": null
+      "license_url": null,
+      "credit": "Diane Perkins, University of Kentucky, Bugwood.org",
+      "_note": "Details copied from the page for image 5368762, from the same series. The downloaded photo is 5368761; confirm its photographer and license on its own page."
     },
     {
       "file": "ca_5077026.jpg",
@@ -46,12 +53,14 @@
       "nutrient_name": "calcium",
       "bugwood_number": "5077026",
       "source_url": "https://www.forestryimages.org/browse/image/5077026",
-      "host": "cabbage",
-      "symptom": "Tipburn: brown, dead margins on young inner leaves",
-      "photographer": null,
-      "organization": null,
-      "license": null,
-      "credit": null
+      "bugwood_subject": "calcium deficiency",
+      "host": "cabbage (Brassica oleracea var. capitata L.)",
+      "description": "Calcium deficiency in cabbage: characteristic tip burn at the tips and edges of the leaves; leaves become deformed and the head will not form without supplemental calcium.",
+      "photographer": "David B. Langston",
+      "organization": "University of Georgia",
+      "license": "CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/",
+      "credit": "David B. Langston, University of Georgia, Bugwood.org"
     }
   ]
 }
