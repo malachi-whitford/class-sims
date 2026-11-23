@@ -56,12 +56,11 @@
       "source_url": "https://commons.wikimedia.org/wiki/File:2005_1214_0928_Hlokozi_-_Acid-induced_P_deficiency.jpg",
       "host": "corn (Zea mays L.)",
       "description": "Acid-induced phosphorus deficiency in young corn (Hlokozi): purple coloring on the older, lower leaves. In acid soil, phosphate binds to iron and aluminum, so plants cannot take it up even when it is present.",
-      "photographer": null,
+      "photographer": "Alandmanson",
       "organization": null,
-      "license": null,
-      "license_url": null,
-      "credit": null,
-      "_note": "Author and license still needed from the Commons page ('Use this file' gives the attribution line)."
+      "license": "CC0",
+      "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "credit": "Alandmanson, CC0, via Wikimedia Commons"
     },
     {
       "file": "fe_5407854.jpg",
@@ -101,12 +100,11 @@
       "source_url": "https://commons.wikimedia.org/wiki/File:Potassium_deficiency_in_potatoes.jpg",
       "host": "potato (Solanum tuberosum)",
       "description": "Potassium deficiency in potato: leaf margins turn brown and dry (marginal scorch) and curl, while the leaf centers stay green.",
-      "photographer": null,
+      "photographer": "Simranpreetsidhu",
       "organization": null,
-      "license": null,
-      "license_url": null,
-      "credit": null,
-      "_note": "Author and license still needed from the Commons page ('Use this file' gives the attribution line)."
+      "license": "CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+      "credit": "Simranpreetsidhu, CC BY-SA 4.0, via Wikimedia Commons"
     },
     {
       "file": "zn_5368761.jpg",
@@ -147,12 +145,11 @@
       "source_url": "https://commons.wikimedia.org/wiki/File:Blossom_end_rot.JPG",
       "host": "tomato (Solanum lycopersicum)",
       "description": "Blossom end rot: a dark, sunken, leathery patch at the blossom end of the fruit, caused by too little calcium reaching the developing fruit.",
-      "photographer": null,
+      "photographer": "A13ean",
       "organization": null,
-      "license": null,
-      "license_url": null,
-      "credit": null,
-      "_note": "Author and license still needed from the Commons page ('Use this file' gives the attribution line)."
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "credit": "A13ean, CC BY-SA 3.0, via Wikimedia Commons"
     },
     {
       "file": "mg_1402097.jpg",
