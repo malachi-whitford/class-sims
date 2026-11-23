@@ -110,6 +110,21 @@
       "credit": "David B. Langston, University of Georgia, Bugwood.org"
     },
     {
+      "file": "ca_tomato_ber_commons.jpg",
+      "nutrient": "Ca",
+      "nutrient_name": "calcium",
+      "source": "Wikimedia Commons",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Blossom_end_rot.JPG",
+      "host": "tomato (Solanum lycopersicum)",
+      "description": "Blossom end rot: a dark, sunken, leathery patch at the blossom end of the fruit, caused by too little calcium reaching the developing fruit.",
+      "photographer": null,
+      "organization": null,
+      "license": null,
+      "license_url": null,
+      "credit": null,
+      "_note": "Author and license still needed from the Commons page ('Use this file' gives the attribution line)."
+    },
+    {
       "file": "mg_1402097.jpg",
       "nutrient": "Mg",
       "nutrient_name": "magnesium",
