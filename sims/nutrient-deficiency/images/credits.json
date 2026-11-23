@@ -79,6 +79,21 @@
       "credit": "Daren Mueller, Iowa State University, Bugwood.org"
     },
     {
+      "file": "k_potato_commons.jpg",
+      "nutrient": "K",
+      "nutrient_name": "potassium",
+      "source": "Wikimedia Commons",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Potassium_deficiency_in_potatoes.jpg",
+      "host": "potato (Solanum tuberosum)",
+      "description": "Potassium deficiency in potato: leaf margins turn brown and dry (marginal scorch) and curl, while the leaf centers stay green.",
+      "photographer": null,
+      "organization": null,
+      "license": null,
+      "license_url": null,
+      "credit": null,
+      "_note": "Author and license still needed from the Commons page ('Use this file' gives the attribution line)."
+    },
+    {
       "file": "zn_5368761.jpg",
       "nutrient": "Zn",
       "nutrient_name": "zinc",
