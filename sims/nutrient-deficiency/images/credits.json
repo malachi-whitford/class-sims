@@ -1,6 +1,21 @@
 {
-  "_about": "Photos of nutrient deficiency symptoms from Bugwood Images (bugwood.org), used for non-commercial education. Bugwood requires the citation (Photographer, Organization, Bugwood.org) to accompany each image wherever it is shown. Fields set to null still need filling in.",
+  "_about": "Photos of nutrient deficiency symptoms used for non-commercial education. Bugwood images: the citation (Photographer, Organization, Bugwood.org) must accompany each image wherever it is shown. Wikimedia Commons images: credit as Author, License, via Wikimedia Commons, with a link to the license. Fields set to null still need filling in.",
   "images": [
+    {
+      "file": "n_phaseolus_commons.jpg",
+      "nutrient": "N",
+      "nutrient_name": "nitrogen",
+      "source": "Wikimedia Commons",
+      "source_url": "https://commons.wikimedia.org/wiki/File:Phaseolus_vulgaris_nitrogen_deficiency.jpg",
+      "host": "common bean (Phaseolus vulgaris)",
+      "description": "Nitrogen deficiency in common bean: the whole plant is pale yellow-green next to healthy dark green plants, with the oldest (lowest) leaves palest.",
+      "photographer": "Rasbak",
+      "organization": null,
+      "license": "CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+      "credit": "Rasbak, CC BY-SA 3.0, via Wikimedia Commons",
+      "_note": "Resized from the original to 1024 px on the long side; otherwise unchanged."
+    },
     {
       "file": "fe_5407854.jpg",
       "nutrient": "Fe",
