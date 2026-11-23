@@ -49,12 +49,67 @@ button.tg.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .info ul{margin:0;padding-left:20px}
 .why{background:var(--bg);border-left:4px solid var(--c,#2f7d3a);border-radius:6px;padding:8px 10px;margin-top:6px}
 </style>
+<style id="identify-css">
+:root{--good:#1f7a4d;--bad:#b3261e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--good:#5cc28a;--bad:#ff8a80}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) .opt[aria-pressed="true"],:root:not([data-theme="light"]) .opt[aria-pressed="true"] small{color:#0f1a10}}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px;border-bottom:1px solid var(--line)}
+.tabbtn{font:inherit;font-weight:700;font-size:.95rem;padding:9px 16px;min-height:42px;border:1px solid var(--line);border-bottom:none;border-radius:10px 10px 0 0;background:var(--bg);color:var(--muted);cursor:pointer;margin-bottom:-1px}
+.tabbtn[aria-selected="true"]{background:var(--card);color:var(--text);border-bottom:1px solid var(--card)}
+.idgrid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;align-items:start}
+.photocard{position:sticky;top:8px}
+@media (max-width:820px){.idgrid{grid-template-columns:minmax(0,1fr)}.photocard{position:static}}
+.photobox{background:#0d1014;border-radius:8px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.photobox img{max-width:100%;max-height:100%;object-fit:contain;display:block}
+.credit{font-size:.78rem;color:var(--muted);margin:6px 2px 0;line-height:1.4}
+.credit a{color:inherit}
+.progress{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.85rem;color:var(--muted);margin-bottom:8px;flex-wrap:wrap}
+.progress b{color:var(--text)}
+.optgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-bottom:12px}
+.opt{font:inherit;font-size:.88rem;text-align:left;padding:7px 10px;border-radius:8px;border:2px solid var(--line);background:var(--bg);color:var(--text);cursor:pointer;min-height:42px;line-height:1.25}
+.opt small{display:block;font-size:.72rem;color:var(--muted);font-weight:400}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent);color:#fff}
+.opt[aria-pressed="true"] small{color:#fff}
+.opt:disabled,.chip:disabled{cursor:default}
+.opt .mk,.chip .mk{font-weight:800}
+.opt.good{border-color:var(--good);box-shadow:0 0 0 2px var(--good)}
+.opt.bad{border-color:var(--bad);box-shadow:0 0 0 2px var(--bad)}
+.opt.miss{border-color:var(--good);border-style:dashed}
+.chip.good{box-shadow:0 0 0 3px var(--good)}
+#idCard.done .opt[aria-pressed="true"]{background:var(--bg);color:var(--text)}
+#idCard.done .opt[aria-pressed="true"] small{color:var(--muted)}
+.opt.meh{border-color:var(--muted)}
+.chip.bad{box-shadow:0 0 0 3px var(--bad)}
+.idbtns{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:4px}
+button.primary{font:inherit;font-weight:700;padding:9px 18px;min-height:42px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:#fff;cursor:pointer}
+button.primary:disabled{opacity:.45;cursor:not-allowed}
+.hint{font-size:.82rem;color:var(--muted)}
+.fb{background:var(--bg);border-left:5px solid var(--line);border-radius:6px;padding:10px 12px;margin-top:12px}
+.fb.good{border-left-color:var(--good)}
+.fb.bad{border-left-color:var(--bad)}
+.fb h3{margin:0 0 6px;font-size:1.05rem}
+.fb p,.fb li{font-size:.9rem;line-height:1.45;margin:0 0 5px}
+.fb ul{margin:0 0 6px;padding-left:18px}
+.fb .ok{color:var(--good);font-weight:700}
+.fb .no{color:var(--bad);font-weight:700}
+.tiles3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 10px}
+.keybox{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
+.keybox summary{cursor:pointer;font-weight:700;font-size:.92rem;padding:4px 0}
+.keylist{list-style:none;margin:6px 0 0;padding:0;font-size:.84rem;line-height:1.4}
+.keylist li{display:flex;gap:8px;justify-content:space-between;padding:3px 0;border-bottom:1px dotted var(--line)}
+.keylist li .kc{flex:none;font-weight:700;width:2.4em}
+.keylist li .kt{flex:1}
+.keylist li .kg{flex:none;font-weight:700;color:var(--accent);text-align:right}
+.keylist li.pair{margin-top:4px}
+</style>
 <!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
 <style id="reflow-fix">.card,.grid>*,.layout>*{min-width:0}input[type=range]{max-width:100%}label{flex-wrap:wrap}.tablewrap{max-width:100%}</style>
 </head>
 <body>
 <div class="wrap">
 <h1>Plant Nutrient Deficiencies</h1>
+<div class="tabs" role="tablist" aria-label="Sim sections"><button type="button" class="tabbtn" role="tab" id="tabExplore" aria-selected="true" aria-controls="panelExplore">Explore deficiencies</button><button type="button" class="tabbtn" role="tab" id="tabIdentify" aria-selected="false" aria-controls="panelIdentify" tabindex="-1">Identify real plants</button></div>
+<div id="panelExplore" role="tabpanel" aria-labelledby="tabExplore">
 <p class="sub">Plants need 14 mineral nutrients from the soil. Pick one and starve the plant of it to see what the nutrient does, whether the plant can move it to new growth, and where the signs show up first.</p>
 
 <div class="simgrid">
@@ -99,6 +154,49 @@ button.tg.on{background:var(--accent);border-color:var(--accent);color:#fff}
   </div>
 </div>
 <p id="srDesc" class="sr-only" aria-live="polite" aria-atomic="true"></p>
+</div>
+<div id="panelIdentify" role="tabpanel" aria-labelledby="tabIdentify" hidden>
+<p class="sub">Practice diagnosing real plants. For each photo, note where the signs show up and which signs you see, then pick the nutrient that is short. Use the key at the bottom if you get stuck.</p>
+<div class="idgrid">
+  <div class="card photocard">
+    <div class="progress"><span id="idProg"></span><a id="idBig" href="#" target="_blank" rel="noopener">Open full-size photo</a></div>
+    <div class="photobox"><img id="idImg" alt=""></div>
+    <p class="credit" id="idCredit"></p>
+  </div>
+
+  <div class="card" id="idCard">
+    <div class="tiles3" aria-label="Score">
+      <div class="tile"><div class="k">Nutrient</div><div class="v" id="scN">0 / 0</div></div>
+      <div class="tile"><div class="k">Leaf age</div><div class="v" id="scL">0 / 0</div></div>
+      <div class="tile"><div class="k">Signs</div><div class="v" id="scS">0 / 0</div></div>
+    </div>
+
+    <span class="gl" id="glLoc">1. Where do the signs show up first?</span>
+    <div class="optgrid" id="idLoc" role="group" aria-labelledby="glLoc"></div>
+
+    <span class="gl" id="glSig">2. What signs do you see? (pick all that apply)</span>
+    <div class="optgrid" id="idSig" role="group" aria-labelledby="glSig"></div>
+
+    <span class="gl" id="glNutM">3. Which nutrient is deficient? Macronutrients</span>
+    <div class="chips" id="idMacro" role="group" aria-labelledby="glNutM"></div>
+    <span class="gl" id="glNutU">Micronutrients</span>
+    <div class="chips" id="idMicro" role="group" aria-labelledby="glNutU"></div>
+
+    <div class="idbtns">
+      <button type="button" class="primary" id="idSubmit" disabled>Submit</button>
+      <button type="button" class="primary" id="idNext" hidden>Next photo</button>
+      <span class="hint" id="idHint">Choose where the signs are and a nutrient to submit.</span>
+    </div>
+
+    <div id="idFb" class="fb" hidden tabindex="-1"></div>
+
+    <details class="keybox">
+      <summary>Nutrient deficiency key</summary>
+      <ul class="keylist" id="idKey"></ul>
+    </details>
+  </div>
+</div>
+</div>
 </div>
 
 <script>
@@ -814,6 +912,232 @@ function frame(now){
 }
 cur=0;update();snap();
 requestAnimationFrame(frame);
+})();
+</script>
+<script>
+/* ================= Tabs ================= */
+(function(){
+  var tabs=[document.getElementById('tabExplore'),document.getElementById('tabIdentify')];
+  var panels=[document.getElementById('panelExplore'),document.getElementById('panelIdentify')];
+  function show(i,focus){
+    tabs.forEach(function(t,j){var on=j===i;t.setAttribute('aria-selected',on?'true':'false');t.tabIndex=on?0:-1;panels[j].hidden=!on;});
+    if(focus)tabs[i].focus();
+    try{history.replaceState(null,'',i===1?'#identify':location.pathname+location.search);}catch(e){}
+    window.dispatchEvent(new Event('resize'));
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){show(i);});
+    t.addEventListener('keydown',function(e){
+      if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();show((i+1)%2,true);}
+      else if(e.key==='Home'){e.preventDefault();show(0,true);}else if(e.key==='End'){e.preventDefault();show(1,true);}
+    });
+  });
+  if(location.hash==='#identify')show(1);
+})();
+
+/* ================= Identify the deficiency (photo quiz) ================= */
+(function(){
+const $=id=>document.getElementById(id);
+
+/* Signs students can mark */
+const SIGNS=[
+ {id:'chl',t:'Chlorosis',d:'yellowing or pale green'},
+ {id:'nec',t:'Necrosis',d:'dead, brown tissue'},
+ {id:'ivc',t:'Interveinal chlorosis',d:'yellow between green veins'},
+ {id:'stu',t:'Stunted growth',d:'small plant or short internodes'},
+ {id:'wil',t:'Wilting',d:'drooping, limp leaves'},
+ {id:'sco',t:'Leaf scorch',d:'brown, dry edges or tips'},
+ {id:'pur',t:'Purpling / bronzing',d:'purple, red, or bronze color'}
+];
+const SIGN=Object.fromEntries(SIGNS.map(s=>[s.id,s]));
+
+/* Nutrients in the key. loc: where the key says the signs show first. path: route through the key. */
+const NUTS=[
+ {id:'N', name:'Nitrogen',  grp:'macro',col:'#5b4fd8',loc:'old',  path:'1a → 2a → 3a'},
+ {id:'P', name:'Phosphorus',grp:'macro',col:'#c2366b',loc:'old',  path:'1a → 2b → 4a'},
+ {id:'K', name:'Potassium', grp:'macro',col:'#b85f00',loc:'old',  path:'1a → 2b → 4b'},
+ {id:'Ca',name:'Calcium',   grp:'macro',col:'#2368b8',loc:'young',path:'1b → 5a → 6a'},
+ {id:'Mg',name:'Magnesium', grp:'macro',col:'#0e7c6b',loc:'old',  path:'1a → 2a → 3b'},
+ {id:'S', name:'Sulfur',    grp:'macro',col:'#8a6d00',loc:'young',path:'1b → 5b → 7a → 8a → 9a'},
+ {id:'Fe',name:'Iron',      grp:'micro',col:'#a8452a',loc:'young',path:'1b → 5b → 7a → 8b → 10b'},
+ {id:'Mn',name:'Manganese', grp:'micro',col:'#7b3f9e',loc:'young',path:'1b → 5b → 7a → 8b → 10a'},
+ {id:'Zn',name:'Zinc',      grp:'micro',col:'#4e6b85',loc:'young',path:'1b → 5b → 7b → 11a'},
+ {id:'B', name:'Boron',     grp:'micro',col:'#00727d',loc:'young',path:'1b → 5a → 6b'},
+ {id:'Cu',name:'Copper',    grp:'micro',col:'#8d4f1c',loc:'young',path:'1b → 5b → 7a → 8a → 9b'},
+ {id:'Mo',name:'Molybdenum',grp:'micro',col:'#6d4c41',loc:'young',path:'1b → 5b → 7b → 11b → 12b'},
+ {id:'Cl',name:'Chlorine',  grp:'micro',col:'#3949ab',loc:'young',path:'1b → 5b → 7b → 11b → 12a'}
+];
+const NUT=Object.fromEntries(NUTS.map(n=>[n.id,n]));
+const LOCS=[{id:'old',t:'Older (lower) leaves',d:'nutrient is mobile'},{id:'young',t:'Younger (newer) growth',d:'nutrient is immobile'}];
+
+/* Photos. must = signs clearly shown (missing one costs the point);
+   ok = signs that are arguable in this photo (no penalty either way).
+   Credits match images/credits.json. */
+const PHOTOS=[
+ {f:'n_phaseolus_commons.jpg',nut:'N',host:'common bean',must:['chl'],ok:['stu'],
+  note:'The whole bean plant is pale yellow-green, veins included, while the healthy plants beside it are dark green. The lowest, oldest leaves are the palest.',
+  credit:'Rasbak',lic:'CC BY-SA 3.0',licUrl:'https://creativecommons.org/licenses/by-sa/3.0',src:'https://commons.wikimedia.org/wiki/File:Phaseolus_vulgaris_nitrogen_deficiency.jpg',via:'Wikimedia Commons'},
+ {f:'n_corn_umn.jpg',nut:'N',host:'corn',must:['chl'],ok:['nec','sco'],
+  note:'The lower leaves are yellow, starting at the tip and running down the midrib in a V. The oldest leaves have died and dried, while the upper leaves are still green.',
+  credit:'Daniel Kaiser and Fabian Fernandez, University of Minnesota Extension',lic:'CC BY-SA 4.0',licUrl:'https://creativecommons.org/licenses/by-sa/4.0/',src:'https://blog-crop-news.extension.umn.edu/2017/05/4-key-nutrient-deficiencies-to-scout.html'},
+ {f:'p_corn_umn.jpg',nut:'P',host:'corn',must:['pur'],ok:['stu'],
+  note:'The leaves and stems of these young corn plants are purple-red. Phosphorus is mobile, so the purple shows on the older, lower leaves first.',
+  credit:'Daniel Kaiser and Fabian Fernandez, University of Minnesota Extension',lic:'CC BY-SA 4.0',licUrl:'https://creativecommons.org/licenses/by-sa/4.0/',src:'https://blog-crop-news.extension.umn.edu/2017/05/4-key-nutrient-deficiencies-to-scout.html'},
+ {f:'p_corn_acid_commons.jpg',nut:'P',host:'corn',must:['pur'],ok:['stu'],
+  note:'The lower leaves of these young corn plants are tinted purple. The soil here was acidic, which locks phosphate onto iron and aluminum so the roots cannot take it up even when it is present.',
+  credit:'Alandmanson',lic:'CC0',licUrl:'https://creativecommons.org/publicdomain/zero/1.0/',src:'https://commons.wikimedia.org/wiki/File:2005_1214_0928_Hlokozi_-_Acid-induced_P_deficiency.jpg',via:'Wikimedia Commons'},
+ {f:'k_5626945.jpg',nut:'K',host:'soybean',must:['chl'],ok:['nec','sco','ivc'],
+  note:'The older leaves are yellow along the edges and between the veins, with brown dead spots, while the top of the plant is still green. The key’s step 2b says “no yellowing,” but potassium-short leaves often yellow at the edges before they scorch.',
+  credit:'Daren Mueller, Iowa State University, Bugwood.org',lic:'CC BY 3.0',licUrl:'https://creativecommons.org/licenses/by/3.0/',src:'https://www.forestryimages.org/browse/image/5626945'},
+ {f:'k_potato_commons.jpg',nut:'K',host:'potato',must:['sco','nec'],ok:['chl','wil'],
+  note:'The leaf edges are brown, dry, and curled (marginal scorch) while the centers of the leaves are still green. That brown edge is the classic potassium sign.',
+  credit:'Simranpreetsidhu',lic:'CC BY-SA 4.0',licUrl:'https://creativecommons.org/licenses/by-sa/4.0',src:'https://commons.wikimedia.org/wiki/File:Potassium_deficiency_in_potatoes.jpg',via:'Wikimedia Commons'},
+ {f:'ca_5077026.jpg',nut:'Ca',host:'cabbage',must:['nec'],ok:['sco','chl'],
+  note:'The edges of the young inner leaves of the head are brown and dead (tipburn). Calcium is immobile, so the newest, fastest-growing leaves are hit, not the old outer ones.',
+  credit:'David B. Langston, University of Georgia, Bugwood.org',lic:'CC BY 3.0',licUrl:'https://creativecommons.org/licenses/by/3.0/',src:'https://www.forestryimages.org/browse/image/5077026'},
+ {f:'ca_tomato_ber_commons.jpg',nut:'Ca',host:'tomato',must:['nec'],ok:[],
+  note:'A dark, sunken, leathery patch at the blossom end of the fruit: blossom end rot. Calcium moves only in the xylem with water, so fast-growing fruit, which loses little water, can’t get enough.',
+  credit:'A13ean',lic:'CC BY-SA 3.0',licUrl:'https://creativecommons.org/licenses/by-sa/3.0',src:'https://commons.wikimedia.org/wiki/File:Blossom_end_rot.JPG',via:'Wikimedia Commons'},
+ {f:'mg_1402097.jpg',nut:'Mg',host:'tobacco',must:['ivc'],ok:['chl'],
+  note:'The tissue between the veins of this lower leaf has turned yellow while the veins stay green. The upper leaves are still dark green, because the plant moved magnesium out of the old leaf to feed new growth.',
+  credit:'R.J. Reynolds Tobacco Company, Bugwood.org',lic:'CC BY 3.0',licUrl:'https://creativecommons.org/licenses/by/3.0/',src:'https://www.ipmimages.org/browse/detail.cfm?imgnum=1402097'},
+ {f:'fe_5407854.jpg',nut:'Fe',host:'blueberry',must:['ivc'],ok:['chl'],
+  note:'The leaves are yellow-green between the veins while the veins stay dark green, and there are no brown spots. Iron is immobile, so this shows on the newest leaves.',
+  credit:'John Hartman, University of Kentucky, Bugwood.org',lic:'CC BY-NC 3.0',licUrl:'https://creativecommons.org/licenses/by-nc/3.0/',src:'https://www.forestryimages.org/browse/image/5407854'},
+ {f:'zn_5368761.jpg',nut:'Zn',host:'corn',must:['stu'],ok:['chl','ivc','pur','nec'],
+  note:'Short internodes make the plant look squat and bunched. There are bleached stripes on each side of the midrib, and some leaf edges are purplish.',
+  credit:'Diane Perkins, University of Kentucky, Bugwood.org',lic:null,licUrl:null,src:'https://www.ipmimages.org/browse/detail.cfm?imgnum=5368761'}
+];
+
+/* Key text, for the reference panel */
+const KEY=[
+ ['1a','Color change in older leaves','2'],['1b','Color change in younger (newer) leaves','5'],
+ ['2a','Leaf yellowing','3'],['2b','No leaf yellowing; usually bronzing or scorching','4'],
+ ['3a','Entire leaf yellow or turning yellow (light green); no difference between veins and blade','Nitrogen'],['3b','Interveinal yellowing','Magnesium'],
+ ['4a','Bronzing present','Phosphorus'],['4b','Browning and marginal scorching','Potassium'],
+ ['5a','Terminal bud dies','6'],['5b','Terminal bud does not die','7'],
+ ['6a','Leaves withered or twisted, sometimes with scorched tips; blossom end rot may occur in the fruit','Calcium'],['6b','Growing tips stunted and/or distorted; upper shoots may look like a “witches’ broom” as side shoots split and curl','Boron'],
+ ['7a','Leaves yellowing (maybe light green), sometimes turning white','8'],['7b','Leaves not yellowing','11'],
+ ['8a','Entire leaf yellowing','9'],['8b','Only part of the leaf yellowing, usually interveinal chlorosis','10'],
+ ['9a','Entire leaf yellowing, with young leaves yellowing first','Sulfur'],['9b','Leaves yellowing and likely to wilt despite water access','Copper'],
+ ['10a','Interveinal chlorosis with brown spotting in the yellow areas','Manganese'],['10b','Interveinal chlorosis without brown spotting','Iron'],
+ ['11a','Shortened internodes; may have discolored margins','Zinc'],['11b','No shortening of internodes','12'],
+ ['12a','Wilting and then chlorosis','Chlorine'],['12b','Wilting of young leaves and necrosis along margins','Molybdenum']
+];
+$('idKey').innerHTML=KEY.map(function(k){
+  var go=/^\d+$/.test(k[2])?'Go to '+k[2]:k[2];
+  return '<li'+(k[0].slice(-1)==='a'?' class="pair"':'')+'><span class="kc">'+k[0]+'</span><span class="kt">'+k[1]+'</span><span class="kg">'+go+'</span></li>';
+}).join('');
+
+/* Build controls */
+function optBtn(o){return '<button type="button" class="opt" aria-pressed="false" data-id="'+o.id+'"><span class="lab">'+o.t+'</span><small>'+o.d+'</small></button>';}
+$('idLoc').innerHTML=LOCS.map(optBtn).join('');
+$('idSig').innerHTML=SIGNS.map(optBtn).join('');
+function chip(n){return '<button type="button" class="chip" style="--c:'+n.col+'" aria-pressed="false" data-id="'+n.id+'" aria-label="'+n.name+'"><b>'+n.id+'</b><small>'+n.name+'</small></button>';}
+$('idMacro').innerHTML=NUTS.filter(n=>n.grp==='macro').map(chip).join('');
+$('idMicro').innerHTML=NUTS.filter(n=>n.grp==='micro').map(chip).join('');
+const locBtns=[...$('idLoc').querySelectorAll('.opt')];
+const sigBtns=[...$('idSig').querySelectorAll('.opt')];
+const nutBtns=[...document.querySelectorAll('#idMacro .chip,#idMicro .chip')];
+
+/* State */
+let deck=[],pos=0,sel,done=false;
+const score={n:0,l:0,s:0,t:0};
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function press(b,on){b.setAttribute('aria-pressed',on?'true':'false');b.classList.toggle('on',on&&b.classList.contains('chip'));}
+function canSubmit(){return sel.loc&&sel.nut;}
+function refresh(){
+  $('idSubmit').disabled=!canSubmit()||done;
+  $('idHint').textContent=done?'':canSubmit()?'Ready to submit.':!sel.loc&&!sel.nut?'Choose where the signs are and a nutrient to submit.':!sel.loc?'Choose where the signs show up first.':'Choose a nutrient.';
+}
+locBtns.forEach(b=>b.addEventListener('click',()=>{if(done)return;sel.loc=b.dataset.id;locBtns.forEach(x=>press(x,x===b));refresh();}));
+sigBtns.forEach(b=>b.addEventListener('click',()=>{if(done)return;const id=b.dataset.id;if(sel.signs.has(id))sel.signs.delete(id);else sel.signs.add(id);press(b,sel.signs.has(id));}));
+nutBtns.forEach(b=>b.addEventListener('click',()=>{if(done)return;sel.nut=b.dataset.id;nutBtns.forEach(x=>press(x,x===b));refresh();}));
+
+function creditHTML(p){
+  let s='Photo: <a href="'+p.src+'" target="_blank" rel="noopener">'+p.credit+'</a>';
+  if(p.lic)s+=', <a href="'+p.licUrl+'" target="_blank" rel="noopener">'+p.lic+'</a>';
+  if(p.via)s+=', via '+p.via;
+  return s;
+}
+function setScore(){
+  $('scN').textContent=score.n+' / '+score.t;$('scL').textContent=score.l+' / '+score.t;$('scS').textContent=score.s+' / '+score.t;
+}
+function load(){
+  const p=PHOTOS[deck[pos]];
+  done=false;sel={loc:null,signs:new Set(),nut:null};$('idCard').classList.remove('done');
+  [...locBtns,...sigBtns,...nutBtns].forEach(b=>{press(b,false);b.disabled=false;b.classList.remove('good','bad','miss','meh');const m=b.querySelector('.mk');if(m)m.remove();});
+  const img=$('idImg');img.src='images/'+p.f;img.alt='Photo '+(pos+1)+': a '+p.host+' plant showing signs of a nutrient deficiency.';
+  $('idBig').href='images/'+p.f;
+  $('idCredit').innerHTML=creditHTML(p);
+  $('idProg').innerHTML='Photo <b>'+(pos+1)+'</b> of '+deck.length+' · '+p.host;
+  $('idFb').hidden=true;$('idFb').className='fb';$('idFb').innerHTML='';
+  $('idSubmit').hidden=false;$('idNext').hidden=true;
+  refresh();
+  if(pos+1<deck.length){const pre=new Image();pre.src='images/'+PHOTOS[deck[pos+1]].f;}
+}
+function mark(b,cls,sym){b.classList.add(cls);const s=document.createElement('span');s.className='mk';s.textContent=' '+sym;b.querySelector('.lab,b').appendChild(s);}
+
+function submit(){
+  if(!canSubmit()||done)return;
+  done=true;
+  const p=PHOTOS[deck[pos]],ans=NUT[p.nut],pick=NUT[sel.nut];
+  const nOK=sel.nut===p.nut, lOK=sel.loc===ans.loc;
+  const missed=p.must.filter(s=>!sel.signs.has(s));
+  const extra=[...sel.signs].filter(s=>!p.must.includes(s)&&!p.ok.includes(s));
+  const sOK=!missed.length&&!extra.length;
+  score.t++;if(nOK)score.n++;if(lOK)score.l++;if(sOK)score.s++;setScore();
+
+  [...locBtns,...sigBtns,...nutBtns].forEach(b=>b.disabled=true);
+  $('idCard').classList.add('done');
+  locBtns.forEach(b=>{if(b.dataset.id===ans.loc)mark(b,'good','✓');else if(b.dataset.id===sel.loc)mark(b,'bad','✗');});
+  sigBtns.forEach(b=>{const id=b.dataset.id,on=sel.signs.has(id);
+    if(p.must.includes(id))mark(b,on?'good':'miss',on?'✓':'(missed)');
+    else if(on)mark(b,p.ok.includes(id)?'meh':'bad',p.ok.includes(id)?'(either way)':'✗');});
+  nutBtns.forEach(b=>{if(b.dataset.id===p.nut)b.classList.add('good');else if(b.dataset.id===sel.nut)b.classList.add('bad');});
+
+  const locName=l=>l==='old'?'older (lower) leaves':'younger (newer) growth';
+  const list=a=>a.map(s=>SIGN[s].t.toLowerCase()).join(', ');
+  let h='<h3>'+(nOK?'<span class="ok">✓ Correct:</span> '+ans.name+' deficiency':'<span class="no">✗ Not quite.</span> This is '+ans.name.toLowerCase()+' deficiency, not '+pick.name.toLowerCase()+'.')+'</h3>';
+  h+='<p><b>What to notice:</b> '+p.note+'</p><ul>';
+  h+='<li><b>Where:</b> '+(lOK?'<span class="ok">✓</span> ':'<span class="no">✗</span> ')+ans.name+' signs show on '+locName(ans.loc)+(ans.loc==='old'?', because it is mobile: the plant moves it out of old leaves to feed new growth.':(ans.id==='Zn'||ans.id==='Mo'?'. It is only partly mobile, so new growth runs short first.':', because it is immobile: once built into a leaf it stays there, so new growth depends on a steady supply from the roots.'))+'</li>';
+  let sg='<li><b>Signs:</b> '+(sOK?'<span class="ok">✓</span> ':'<span class="no">✗</span> ')+'The key sign'+(p.must.length>1?'s are ':' is ')+list(p.must)+'.';
+  if(missed.length)sg+=' You missed '+list(missed)+'.';
+  if(extra.length)sg+=' This photo doesn’t really show '+list(extra)+'.';
+  if(p.ok.length)sg+=' '+list(p.ok).replace(/^./,c=>c.toUpperCase())+' could go either way here.';
+  h+=sg+'</li>';
+  h+='<li><b>Key:</b> '+ans.path+' → '+ans.name+'</li>';
+  if(!nOK)h+='<li><b>Your pick:</b> '+pick.name+' would be '+pick.path+'.'+(pick.loc!==ans.loc?' It shows on '+locName(pick.loc)+' first, so check where the damage is.':'')+'</li>';
+  h+='</ul>';
+  const fb=$('idFb');fb.innerHTML=h;fb.className='fb '+(nOK?'good':'bad');fb.hidden=false;
+  $('idSubmit').hidden=true;$('idNext').hidden=false;
+  $('idNext').textContent=pos+1<deck.length?'Next photo':'See final score';
+  $('idHint').textContent='';
+  $('idNext').focus();
+  if(window.A11Y_say)window.A11Y_say((nOK?'Correct. ':'Not quite. ')+ans.name+' deficiency. '+p.note);
+}
+function finish(){
+  [...locBtns,...sigBtns,...nutBtns].forEach(b=>b.disabled=true);
+  const pct=Math.round(100*score.n/score.t);
+  const fb=$('idFb');
+  fb.className='fb '+(pct>=70?'good':'bad');
+  fb.innerHTML='<h3>Done! You identified '+score.n+' of '+score.t+' photos ('+pct+'%).</h3><p>Leaf age correct: '+score.l+' of '+score.t+'. Signs fully correct: '+score.s+' of '+score.t+'.</p><p>'+(pct===100?'Perfect run.':'Run through again; the photos come up in a new order.')+'</p>';
+  fb.hidden=false;
+  $('idNext').textContent='Start over';
+  $('idProg').innerHTML='All '+deck.length+' photos done';
+  $('idNext').focus();
+  if(window.A11Y_say)window.A11Y_say('Done. You identified '+score.n+' of '+score.t+' photos.');
+}
+function start(){score.n=score.l=score.s=score.t=0;setScore();deck=shuffle(PHOTOS.map((_,i)=>i));pos=0;load();}
+$('idSubmit').addEventListener('click',submit);
+$('idNext').addEventListener('click',()=>{
+  if($('idNext').textContent==='Start over'){start();return;}
+  pos++;
+  if(pos>=deck.length){finish();return;}
+  load();
+  $('idImg').scrollIntoView({block:'nearest'});
+});
+start();
 })();
 </script>
 <!--SIM-NOTICE-->
