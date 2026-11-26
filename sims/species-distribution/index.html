@@ -169,6 +169,25 @@ details.fold>div p{margin:4px 0;font-size:.84rem}
 }
 @media(max-width:520px){.figs2{grid-template-columns:1fr}}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button.on,:root:not([data-theme="light"]) section.step.done .sh .num,:root:not([data-theme="light"]) section.step.cur .sh .num,:root:not([data-theme="light"]) .ledger li.past .ln{color:#0d1b2a}}
+
+/* ---- tabs: the analysis | key concepts ---- */
+nav.tabs{display:flex;gap:6px;margin:0 0 14px;border-bottom:1px solid var(--line);padding:0 2px}
+nav.tabs button{font:inherit;font-size:.92rem;font-weight:600;padding:9px 16px;border:1px solid var(--line);border-bottom:0;border-radius:10px 10px 0 0;background:var(--soft);color:var(--muted);min-height:44px;margin-bottom:-1px}
+nav.tabs button.on{background:var(--card);color:var(--text);box-shadow:inset 0 3px 0 var(--accent)}
+.learn{max-width:1060px}
+.lead{font-size:.95rem;margin:0 0 14px;max-width:900px}
+.lcard{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 16px;scroll-margin-top:12px}
+.lcard h2{font-size:1.12rem;margin:0 0 8px}
+.lcard p{font-size:.93rem;margin:0 0 10px}
+.lgrid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;align-items:start;margin:10px 0}
+.lgrid>*{min-width:0}
+.lgrid .fig{margin:0 0 12px}
+.lgrid .ctl{margin:0}
+table.ref{min-width:680px}
+table.ref td{vertical-align:top;font-size:.82rem}
+table.ref td.live{font-weight:700;font-variant-numeric:tabular-nums}
+.goto{font-size:.76rem;padding:3px 8px;min-height:30px;white-space:nowrap}
+@media(max-width:820px){.lgrid{grid-template-columns:minmax(0,1fr)}.lcard{padding:14px 12px}nav.tabs button{flex:1 1 0;padding:8px 10px}}
 </style>
 <!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
 </head>
@@ -178,7 +197,9 @@ details.fold>div p{margin:4px 0;font-size:.84rem}
 <h1>Species Distribution Models: A MaxEnt Analysis, Step by Step</h1>
 <p class="sub">One complete species distribution model for blue oak (<i>Quercus douglasii</i>), built from real data: every blue oak record in GBIF and WorldClim climate layers for California. Read it top to bottom like a study. Each step works on what the step before produced, the map follows along as you scroll, and changing any choice re-runs everything after it.</p>
 <div id="liveMsg" class="sr-only"></div>
+<nav class="tabs" aria-label="Page sections"><button type="button" data-tab="tabAnalysis" class="on">The analysis</button><button type="button" data-tab="tabLearn">Key concepts</button></nav>
 
+<div class="tabpanel" id="tabAnalysis">
 <div class="analysis">
 
 <aside class="pane" id="pane" aria-label="Map and running results">
@@ -371,8 +392,107 @@ details.fold>div p{margin:4px 0;font-size:.84rem}
 
 </article>
 </div>
+</div>
 
-<p class="cite">Records: GBIF.org (19 November 2026) GBIF Occurrence Download <a href="https://doi.org/10.15468/dl.bchuqh">https://doi.org/10.15468/dl.bchuqh</a>. Climate: Fick, S. E., &amp; R. J. Hijmans (2017). WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. <i>International Journal of Climatology</i> 37: 4302–4315 (bioclim variables and elevation, averaged here to 5 arc-minutes). The future scenario is a simple +3 °C shift for teaching, not a climate-model projection. Method: Phillips, S. J., R. P. Anderson, &amp; R. E. Schapire (2006). Maximum entropy modeling of species geographic distributions. <i>Ecological Modelling</i> 190: 231–259. Elith, J., et al. (2011). A statistical explanation of MaxEnt for ecologists. <i>Diversity and Distributions</i> 17: 43–57. Dormann, C. F., et al. (2013). Collinearity: a review of methods to deal with it. <i>Ecography</i> 36: 27–46. Zizka, A., et al. (2019). CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases. <i>Methods in Ecology and Evolution</i> 10: 744–751. Muscarella, R., et al. (2014). ENMeval: an R package for conducting spatially independent evaluations and estimating optimal model complexity for Maxent ecological niche models. <i>Methods in Ecology and Evolution</i> 5: 1198–1205. Radosavljevic, A., &amp; R. P. Anderson (2014). Making better Maxent models of species distributions: complexity, overfitting and evaluation. <i>Journal of Biogeography</i> 41: 629–643. Liu, C., et al. (2005). Selecting thresholds of occurrence in the prediction of species distributions. <i>Ecography</i> 28: 385–393. Allouche, O., A. Tsoar, &amp; R. Kadmon (2006). Assessing the accuracy of species distribution models: prevalence, kappa and the true skill statistic (TSS). <i>Journal of Applied Ecology</i> 43: 1223–1232. Elith, J., M. Kearney, &amp; S. Phillips (2010). The art of modelling range-shifting species. <i>Methods in Ecology and Evolution</i> 1: 330–342 (MESS). The model here is a simplified MaxEnt written for teaching.</p>
+<div class="tabpanel" id="tabLearn" hidden>
+<div class="learn">
+<p class="lead">The analysis uses a handful of settings and scores again and again. Each card below takes one of them apart with a small demo. Where possible the demo uses the records, background, and model from your analysis tab, so what you see here is what's happening there. Change something in the analysis and these update too.</p>
+
+<!-- ===== FEATURES ===== -->
+<section class="lcard" id="L-feat" aria-labelledby="Lfh">
+  <h2 id="Lfh">Feature functions: the building blocks of a response curve</h2>
+  <p>MaxEnt can't draw any curve it likes. It builds each response curve out of <b>features</b>: simple functions of a climate variable. Each feature gets a weight, <b>λ</b> (lambda). The model adds up weight × feature for every feature, then raises <i>e</i> to that total. Positive weights push suitability up where the feature is large; negative weights push it down.</p>
+  <div class="formula">suitability ∝ e<sup>λ₁·x + λ₂·x² + λ₃·hinge(x) + …</sup></div>
+  <div class="lgrid">
+    <div class="ctl">
+      <div class="lbl">Weights</div>
+      <label class="sl" for="LlamL">Linear weight λ₁ <span class="val" id="LlamLv"></span></label><input type="range" id="LlamL" min="-6" max="6" step="0.5" value="3">
+      <label class="sl" for="LlamQ">Quadratic weight λ₂ <span class="val" id="LlamQv"></span></label><input type="range" id="LlamQ" min="-10" max="10" step="0.5" value="0">
+      <label class="sl" for="LlamH">Hinge weight λ₃ <span class="val" id="LlamHv"></span></label><input type="range" id="LlamH" min="-8" max="8" step="0.5" value="0">
+      <label class="sl" for="Lknot">Hinge knot position <span class="val" id="Lknotv"></span></label><input type="range" id="Lknot" min="0.05" max="0.95" step="0.05" value="0.6">
+      <div class="lbl" style="margin-top:10px">Try a shape</div>
+      <div class="row"><button type="button" data-fp="rise">Rising</button><button type="button" data-fp="hill">Hill</button><button type="button" data-fp="step">Threshold</button><button type="button" data-fp="fall">Falling</button></div>
+    </div>
+    <div>
+      <figure class="fig chart"><h3>The three kinds of feature</h3>
+        <div class="legend"><span><i class="sw" style="height:3px;background:var(--s1)"></i>Linear: x</span><span><i class="sw" style="height:3px;background:var(--s2)"></i>Quadratic: x²</span><span><i class="sw" style="height:3px;background:var(--s3)"></i>Hinge: flat, then rising</span></div>
+        <svg id="Lbasis" role="img" aria-label="The linear, quadratic and hinge feature functions across a variable scaled from 0 to 1."></svg></figure>
+      <figure class="fig chart"><h3>The response curve they add up to</h3><svg id="Lresp" role="img"></svg></figure>
+    </div>
+  </div>
+  <p class="small">A <b>linear</b> feature alone gives a curve that only rises or only falls. Add a <b>quadratic</b> with a negative weight and you get a hill: a best value in the middle. <b>Hinge</b> features are zero up to a knot and then rise in a straight line (MaxEnt also uses reverse hinges that fall before the knot). With many knots, hinges can bend the curve almost anywhere, which is why "+ Hinge" in step 5 fits the records most closely and overfits most easily. <span id="LfeatCount" data-steady></span></p>
+</section>
+
+<!-- ===== BETA ===== -->
+<section class="lcard" id="L-beta" aria-labelledby="Lbh">
+  <h2 id="Lbh">β, the regularization multiplier: how much wiggle to allow</h2>
+  <p>Every nonzero weight costs a penalty, and <b>β</b> sets how big that penalty is. With a small β, weights are cheap: the model keeps lots of features and its curve follows every bump in the training records, including bumps that are only noise. With a large β, only features that really earn their keep survive, so the curve is smooth. This demo fits a one-variable MaxEnt model to the training records and background from your analysis, so you can watch β work on real data.</p>
+  <div class="lgrid">
+    <div class="ctl">
+      <label class="sl" for="LbVar" style="display:block">Variable</label><select id="LbVar" style="width:100%"></select>
+      <label class="sl" for="Lbeta">β <span class="val" id="Lbetav"></span></label><input type="range" id="Lbeta" min="0.1" max="5" step="0.1" value="1">
+      <div class="tblwrap" id="LbTbl" data-steady style="margin-top:8px"></div>
+      <p class="hint">MaxEnt's default is β = 1. Studies usually compare a range, such as 0.5 to 4, and keep the one that predicts held-out records best (step 5 does this for the full model).</p>
+    </div>
+    <figure class="fig chart"><h3 id="LbH">Response curve</h3>
+      <div class="legend"><span><i class="sw" style="height:3px;background:var(--accent)"></i>Your β</span><span><i class="sw" style="background:transparent;border:2px dashed #c4271b"></i>β = 0.25</span><span><i class="sw" style="background:transparent;border:2px dashed var(--muted)"></i>β = 4</span><span><i class="sw" style="background:rgba(232,116,12,.35)"></i>Training records</span><span><i class="sw" style="background:rgba(120,120,120,.3)"></i>Background</span></div>
+      <svg id="Lbeta_svg" role="img"></svg>
+      <p class="small muted" style="margin:4px 0 0">Bars show where the training records (orange) and background points (grey) fall along this variable. The curve rises where records are more common than background.</p></figure>
+  </div>
+</section>
+
+<!-- ===== AUC / THRESHOLDS ===== -->
+<section class="lcard" id="L-auc" aria-labelledby="Lah">
+  <h2 id="Lah">AUC, thresholds, omission, and TSS</h2>
+  <p>A model gives every place a score. Records should score high and the background mostly low, but the two always overlap. <b>AUC</b> measures how well the scores separate the two groups, across every possible cutoff at once: it is the chance that a random record outscores a random background point. A <b>threshold</b> picks one cutoff to make a yes/no map, and the scores at that cutoff follow from it: <b>sensitivity</b> (records called suitable), <b>specificity</b> (background called unsuitable), <b>omission</b> (records missed = 1 − sensitivity), and <b>TSS</b> (sensitivity + specificity − 1).</p>
+  <div class="lgrid">
+    <div class="ctl">
+      <div class="lbl">Scores to use</div>
+      <div class="seg" id="LaMode" role="group" aria-label="Scores to use"><button type="button" data-v="toy" class="on">Made-up scores</button><button type="button" data-v="real">Your model's scores</button></div>
+      <div id="LsepWrap"><label class="sl" for="Lsep">How different records are from background <span class="val" id="Lsepv"></span></label><input type="range" id="Lsep" min="0" max="4" step="0.1" value="1.5"></div>
+      <label class="sl" for="Lthr">Threshold <span class="val" id="Lthrv"></span></label><input type="range" id="Lthr" min="0" max="1" step="0.01" value="0.5">
+      <div class="row"><button type="button" data-tp="mtp">MTP</button><button type="button" data-tp="p10">10th percentile</button><button type="button" data-tp="sss">Max SSS</button></div>
+      <div class="tblwrap" id="LaTbl" data-steady></div>
+      <p class="hint" id="LaNote" data-steady></p>
+    </div>
+    <div>
+      <figure class="fig chart"><h3>Scores of records and background</h3>
+        <div class="legend"><span><i class="sw" style="background:rgba(232,116,12,.6)"></i>Records</span><span><i class="sw" style="background:rgba(120,120,120,.45)"></i>Background</span><span><i class="sw" style="height:3px;background:var(--text)"></i>Threshold</span></div>
+        <svg id="LaHist" role="img"></svg></figure>
+      <figure class="fig chart"><h3>ROC curve (area under it = AUC)</h3><svg id="LaRoc" role="img"></svg></figure>
+    </div>
+  </div>
+  <p class="small">Slide the separation to 0 and AUC falls to 0.5: the model can't tell records from background. Then slide the threshold. Moving it up makes the map stricter: specificity rises, but more real records are missed (omission). No single cutoff is "right"; the rules in step 6 are different answers to how many records you're willing to miss. A commonly cited guide reads AUC above 0.9 as excellent and 0.7–0.9 as useful, but AUC also rises with a bigger background (step 6 shows the same model scoring differently against two backgrounds), so compare it only between models with the same background.</p>
+</section>
+
+<!-- ===== MESS ===== -->
+<section class="lcard" id="L-mess" aria-labelledby="Lmh">
+  <h2 id="Lmh">MESS: is this climate inside what the model learned?</h2>
+  <p>A model only knows the climates in its background. MESS (multivariate environmental similarity surface) scores a new value against that background, one variable at a time. Near the middle of the background the score approaches 100. At the edge of the background it reaches 0. Past the edge it goes negative, and the further out, the more negative. A map cell takes the lowest score of all its variables, so one unfamiliar variable is enough to flag it.</p>
+  <div class="lgrid">
+    <div class="ctl">
+      <label class="sl" for="LmVar" style="display:block">Variable</label><select id="LmVar" style="width:100%"></select>
+      <label class="sl" for="LmP">New climate value <span class="val" id="LmPv"></span></label><input type="range" id="LmP" min="0" max="1000" step="1" value="500">
+      <div class="row"><button type="button" data-mp="med">Typical</button><button type="button" data-mp="edge">At the edge</button><button type="button" data-mp="out">Beyond</button></div>
+      <div class="tblwrap" id="LmTbl" data-steady></div>
+    </div>
+    <figure class="fig chart"><h3 id="LmH">MESS score along one variable</h3>
+      <div class="legend"><span><i class="sw" style="height:3px;background:var(--s6)"></i>MESS score</span><span><i class="sw" style="background:rgba(120,120,120,.3)"></i>Background values</span><span><i class="dot" style="background:var(--text)"></i>Your value</span></div>
+      <svg id="LmSvg" role="img"></svg></figure>
+  </div>
+  <p class="small">In step 7, every temperature variable moves 3 °C warmer. For the hottest places in California, that pushes summer temperatures past anything in the background, so their MESS turns negative. MaxEnt still gives those places a score by <i>clamping</i>: treating the new value as if it were the hottest one it saw. Those predictions rest on no data, which is what the purple on the MESS map warns you about.</p>
+</section>
+
+<!-- ===== QUICK REFERENCE ===== -->
+<section class="lcard" id="L-ref" aria-labelledby="Lrh">
+  <h2 id="Lrh">Quick reference: every setting in the analysis</h2>
+  <p>What each setting controls, a usual starting point, and what your analysis is using right now.</p>
+  <div class="tblwrap" id="LrefTbl" data-steady></div>
+</section>
+</div>
+</div>
+
+<p class="cite">Records: GBIF.org (19 November 2026) GBIF Occurrence Download <a href="https://doi.org/10.15468/dl.bchuqh">https://doi.org/10.15468/dl.bchuqh</a>. Climate: Fick, S. E., &amp; R. J. Hijmans (2017). WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. <i>International Journal of Climatology</i> 37: 4302–4315 (bioclim variables and elevation, averaged here to 5 arc-minutes). The future scenario is a simple +3 °C shift for teaching, not a climate-model projection. Method: Phillips, S. J., R. P. Anderson, &amp; R. E. Schapire (2006). Maximum entropy modeling of species geographic distributions. <i>Ecological Modelling</i> 190: 231–259. Elith, J., et al. (2011). A statistical explanation of MaxEnt for ecologists. <i>Diversity and Distributions</i> 17: 43–57. Dormann, C. F., et al. (2013). Collinearity: a review of methods to deal with it. <i>Ecography</i> 36: 27–46. Zizka, A., et al. (2019). CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases. <i>Methods in Ecology and Evolution</i> 10: 744–751. Muscarella, R., et al. (2014). ENMeval: an R package for conducting spatially independent evaluations and estimating optimal model complexity for Maxent ecological niche models. <i>Methods in Ecology and Evolution</i> 5: 1198–1205. Radosavljevic, A., &amp; R. P. Anderson (2014). Making better Maxent models of species distributions: complexity, overfitting and evaluation. <i>Journal of Biogeography</i> 41: 629–643. Liu, C., et al. (2005). Selecting thresholds of occurrence in the prediction of species distributions. <i>Ecography</i> 28: 385–393. Allouche, O., A. Tsoar, &amp; R. Kadmon (2006). Assessing the accuracy of species distribution models: prevalence, kappa and the true skill statistic (TSS). <i>Journal of Applied Ecology</i> 43: 1223–1232. Elith, J., M. Kearney, &amp; S. Phillips (2010). The art of modelling range-shifting species. <i>Methods in Ecology and Evolution</i> 1: 330–342 (MESS). Swets, J. A. (1988). Measuring the accuracy of diagnostic systems. <i>Science</i> 240: 1285–1293 (AUC guide). The model here is a simplified MaxEnt written for teaching.</p>
 </div>
 
 
@@ -397,8 +517,10 @@ function chart(svg,o){
   s+=`<text class="lab" transform="translate(14 ${m.t+ph/2}) rotate(-90)" text-anchor="middle">${o.ylab||''}</text>`;
   s+=`<g clip-path="url(#${id})">`;
   (o.rects||[]).forEach(r=>{s+=`<rect x="${X(r.x0)}" y="${m.t}" width="${Math.max(0,X(r.x1)-X(r.x0))}" height="${ph}" fill="${r.color}" opacity="${r.opacity||.15}"/>`});
+  (o.bars||[]).forEach(b=>{const y0=Y(clamp(b.base!=null?b.base:0,o.ymin,o.ymax)),y1=Y(b.h);s+=`<rect x="${X(b.x0)}" y="${Math.min(y0,y1)}" width="${Math.max(0,X(b.x1)-X(b.x0)-0.5)}" height="${Math.abs(y0-y1)}" fill="${b.color}"/>`});
   (o.series||[]).forEach(se=>{const d=se.pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join('');
     s+=`<path d="${d}" fill="none" stroke="${se.color}" stroke-width="${se.width||2.4}" ${se.dash?`stroke-dasharray="${se.dash}"`:''} stroke-linejoin="round" stroke-linecap="round"/>`});
+  (o.dots||[]).forEach(d=>{s+=`<circle cx="${X(d.x)}" cy="${Y(d.y)}" r="${d.r||6}" fill="${d.color}" stroke="#fff" stroke-width="2"/>`});
   (o.ticks||[]).forEach(t=>{const x=X(t.x);s+=`<line x1="${x}" x2="${x}" y1="${m.t+ph}" y2="${m.t+ph-9}" stroke="${t.color}" stroke-width="1.6" opacity=".8"/>`});
   s+='</g>';
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;
@@ -500,10 +622,10 @@ function buildBackground(){
 
 /* ---------- MaxEnt ---------- */
 const KN=8;
-function makeModel(sv){
+function makeModel(sv,featArg){
+  const feat=featArg||S.feat;
   const lo=sv.map(k=>Math.min(...BG.map(i=>ENV0[k][i]))),hi=sv.map(k=>Math.max(...BG.map(i=>ENV0[k][i])));
-  const cls=[];sv.forEach(()=>{cls.push('L');if(S.feat!=='L')cls.push('Q');if(S.feat==='LQH')for(let k=0;k<2*KN;k++)cls.push('H')});
-  const feat=S.feat;
+  const cls=[];sv.forEach(()=>{cls.push('L');if(feat!=='L')cls.push('Q');if(feat==='LQH')for(let k=0;k<2*KN;k++)cls.push('H')});
   const feats=(vals,out)=>{let j=0;for(let a=0;a<sv.length;a++){const x=clamp((vals[a]-lo[a])/((hi[a]-lo[a])||1),0,1);out[j++]=x;if(feat!=='L')out[j++]=x*x;
       if(feat==='LQH')for(let k=1;k<=KN;k++){const kn=k/(KN+1);out[j++]=x>kn?(x-kn)/(1-kn):0;out[j++]=x<kn?(kn-x)/kn:0}}return out};
   return{SV:sv.slice(),lo,hi,nf:cls.length,cls,feats,key:feat+'|'+sv.join(',')};
@@ -949,10 +1071,149 @@ function methods(){
   el.innerHTML=s;
 }
 
+
+/* ---------- Key concepts tab ---------- */
+const LS={lamL:3,lamQ:0,lamH:0,knot:.6,bVar:VI.bio5,beta:1,mode:'toy',sep:1.5,thr:.5,mVar:VI.bio5,mP:null};
+let learnDirty=true;
+const learnOn=()=>!$('#tabLearn').hidden;
+const fmt1=v=>(+v).toFixed(1).replace('-','−');
+/* 1. feature functions */
+function renderFeat(){
+  const xs=[...Array(121)].map((_,i)=>i/120),k=LS.knot,hf=x=>x>k?(x-k)/(1-k):0;
+  chart($('#Lbasis'),{xmin:0,xmax:1,ymin:0,ymax:1.02,w:460,h:220,xlab:'Climate variable, scaled 0–1 across the background',ylab:'Feature value',
+    series:[{pts:xs.map(x=>[x,x]),color:css('--s1')},{pts:xs.map(x=>[x,x*x]),color:css('--s2')},{pts:xs.map(x=>[x,hf(x)]),color:css('--s3')}]});
+  const raw=xs.map(x=>LS.lamL*x+LS.lamQ*x*x+LS.lamH*hf(x)),mx=Math.max(...raw),ys=raw.map(v=>Math.exp(v-mx));
+  chart($('#Lresp'),{xmin:0,xmax:1,ymin:0,ymax:1.02,w:460,h:220,xlab:'Climate variable, scaled 0–1 across the background',ylab:'Relative suitability',series:[{pts:xs.map((x,i)=>[x,ys[i]]),color:css('--accent'),width:3}]});
+  let bi=0;ys.forEach((y,i)=>{if(y>ys[bi])bi=i});
+  $('#Lresp').setAttribute('aria-label',`Response curve from weights linear ${LS.lamL}, quadratic ${LS.lamQ}, hinge ${LS.lamH} with knot at ${LS.knot}: highest at ${xs[bi].toFixed(2)} on the scaled variable.`);
+  [['LlamL','lamL'],['LlamQ','lamQ'],['LlamH','lamH'],['Lknot','knot']].forEach(([id,k])=>{$('#'+id+'v').textContent=k==='knot'?(+LS[k]).toFixed(2):fmt1(LS[k])});
+  const nv=selIdx().length,per={L:1,LQ:2,LQH:2+2*KN}[S.feat];
+  $('#LfeatCount').textContent=nv?`In your analysis, ${nv} variable${nv>1?'s':''} × ${per} feature${per>1?'s':''} each (${FEAT_NAME[S.feat]}) = ${nv*per} features for MaxEnt to weigh${FIT&&FIT.done?`; β left ${nonzero(FIT)} of them with nonzero weights`:''}.`:'';
+}
+/* 2. β on a real one-variable model */
+let LB={key:null,ghosts:null,F:null,Fkey:null};
+function fit1(k,beta){
+  const M=makeModel([k],'LQH'),nf=M.nf,nb=BG.length,m=TRAIN.length,FB=new Float32Array(nb*nf),tmp=new Float64Array(nf),v=[0];
+  BG.forEach((c,i)=>{v[0]=ENV0[k][c];M.feats(v,tmp);for(let j=0;j<nf;j++)FB[i*nf+j]=tmp[j]});
+  const mu=new Float64Array(nf),m2=new Float64Array(nf);
+  TRAIN.forEach(c=>{v[0]=ENV0[k][c];M.feats(v,tmp);for(let j=0;j<nf;j++){mu[j]+=tmp[j]/m;m2[j]+=tmp[j]*tmp[j]/m}});
+  const F=newFit({M,FB,mu,m2,nb,nf,m,key:'L1'},beta,null);F.maxIter=600;while(!F.done)fitStep(F);evalFit(F);return F;
+}
+function hist(vals,lo,hi,nb){const h=new Array(nb).fill(0);vals.forEach(v=>{const b=Math.min(nb-1,Math.max(0,Math.floor((v-lo)/(hi-lo)*nb)));h[b]++});return h}
+function renderBeta(){
+  const svg=$('#Lbeta_svg');$('#Lbetav').textContent=(+LS.beta).toFixed(1);
+  if(TRAIN.length<4||BG.length<10){svg.innerHTML='';$('#LbTbl').innerHTML='<p class="small">Not enough training records in the analysis to fit a model. Loosen the cleaning in step 1.</p>';return}
+  const k=LS.bVar,v=VARS[k],dk=k+'|'+dataGen;
+  if(LB.key!==dk){LB.key=dk;LB.ghosts=[fit1(k,0.25),fit1(k,4)];LB.Fkey=null}
+  const fk=dk+'|'+LS.beta;if(LB.Fkey!==fk){LB.F=fit1(k,LS.beta);LB.Fkey=fk}
+  const lo=VMIN[k],hi=VMAX[k],xs=[...Array(161)].map((_,i)=>lo+(hi-lo)*i/160);
+  const curve=F=>xs.map(x=>[x,predictF(F,[x])]);
+  const nb=36,hr=hist(TRAIN.map(c=>ENV0[k][c]),lo,hi,nb),hb=hist(BG.map(c=>ENV0[k][c]),lo,hi,nb),mr=Math.max(...hr)||1,mb=Math.max(...hb)||1,w=(hi-lo)/nb;
+  const bars=[];hb.forEach((n,i)=>bars.push({x0:lo+i*w,x1:lo+(i+1)*w,h:n/mb*.95,color:'rgba(120,120,120,.28)'}));hr.forEach((n,i)=>bars.push({x0:lo+i*w,x1:lo+(i+1)*w,h:n/mr*.95,color:'rgba(232,116,12,.33)'}));
+  chart(svg,{xmin:lo,xmax:hi,ymin:0,ymax:1.02,w:520,h:300,xlab:`${v.code} ${v.name} (${v.unit})`,ylab:'Suitability (0–1)',bars,
+    series:[{pts:curve(LB.ghosts[0]),color:'#c4271b',dash:'5 4',width:1.6},{pts:curve(LB.ghosts[1]),color:css('--muted'),dash:'5 4',width:1.6},{pts:curve(LB.F),color:css('--accent'),width:3}]});
+  $('#LbH').textContent=`Response curve for ${v.code} alone`;
+  const sc=F=>{const p=c=>predictF(F,[ENV0[k][c]]),pBg=BG.map(p),tr=auc(TRAIN.map(p),pBg),te=auc(TEST.map(p),pBg);return{tr,te,nz:nonzero(F)}};
+  const G=[sc(LB.ghosts[0]),sc(LB.F),sc(LB.ghosts[1])],te=G[1].te,z=v=>Math.abs(v)<0.0005?0:v;
+  $('#LbTbl').innerHTML=`<table class="t tight"><tr><th></th><th class="n">β 0.25</th><th class="n">β ${(+LS.beta).toFixed(1)}</th><th class="n">β 4</th></tr>
+    <tr><td>Features kept</td>${G.map((g,i)=>`<td class="n">${i===1?'<b>':''}${g.nz}/${LB.F.nf}${i===1?'</b>':''}</td>`).join('')}</tr>
+    <tr><td>Training AUC</td>${G.map(g=>`<td class="n">${f3(g.tr)}</td>`).join('')}</tr>
+    <tr><td>Testing AUC</td>${G.map(g=>`<td class="n">${f3(g.te)}</td>`).join('')}</tr>
+    <tr><td>Gap</td>${G.map(g=>`<td class="n ${g.tr-g.te>0.02?'bad':''}">${f3(z(g.tr-g.te))}</td>`).join('')}</tr></table>
+    <p class="hint" style="min-height:4.6em">${TRAIN.length>1000?`With ${nf_(TRAIN.length)} training records, every feature has plenty of data behind it, so β barely changes the curve. Apply all the cleaning filters in step 1 (a few hundred records) and β matters much more.`:`With ${nf_(TRAIN.length)} training records, β makes a visible difference: compare the dashed curves.`} The penalty shrinks as records increase, which is why small datasets need regularization most.</p>`;
+  svg.setAttribute('aria-label',`One-variable MaxEnt response curve for ${v.name} at beta ${(+LS.beta).toFixed(1)}, keeping ${nonzero(LB.F)} of ${LB.F.nf} features; testing AUC ${f2(te)}. Dashed curves show beta 0.25 (wiggly) and beta 4 (smooth).`);
+}
+/* 3. AUC and thresholds */
+const TOY=(()=>{const R=rng(77),g=()=>{let u=0;while(!u)u=R();const v=R();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)};return{pos:[...Array(160)].map(g),neg:[...Array(900)].map(g)}})();
+const sig=z=>1/(1+Math.exp(-z));
+function aucData(){
+  if(LS.mode==='real'&&ST)return{pos:TEST.map(i=>PRED0[i]),neg:BG.map(i=>PRED0[i]),train:TRAIN.map(i=>PRED0[i]),real:true};
+  const s=LS.sep;const pos=TOY.pos.map(z=>sig(s/2+z*0.9)),neg=TOY.neg.map(z=>sig(-s/2+z*0.9));return{pos,neg,train:pos,real:false};
+}
+function renderAUC(){
+  const D=aucData(),t=LS.thr,nb=25;
+  $('#LsepWrap').style.visibility=D.real?'hidden':'visible';
+  const hp=hist(D.pos,0,1,nb).map(n=>n/D.pos.length),hn=hist(D.neg,0,1,nb).map(n=>n/D.neg.length),ym=Math.max(...hp,...hn)*1.1||1,bars=[];
+  hn.forEach((h,i)=>bars.push({x0:i/nb,x1:(i+1)/nb,h,color:'rgba(120,120,120,.4)'}));hp.forEach((h,i)=>bars.push({x0:i/nb,x1:(i+1)/nb,h,color:'rgba(232,116,12,.5)'}));
+  chart($('#LaHist'),{xmin:0,xmax:1,ymin:0,ymax:ym,w:460,h:220,xlab:'Model score (suitability)',ylab:'Share of group',bars,series:[{pts:[[t,0],[t,ym]],color:css('--text'),width:2.4}]});
+  const sens=D.pos.filter(v=>v>=t).length/D.pos.length,spec=D.neg.filter(v=>v<t).length/D.neg.length,A=auc(D.pos,D.neg);
+  chart($('#LaRoc'),{xmin:0,xmax:1,ymin:0,ymax:1,w:460,h:300,ml:50,xlab:'Background called suitable (1 − specificity)',ylab:'Records called suitable (sensitivity)',
+    series:[{pts:[[0,0],[1,1]],color:css('--muted'),dash:'5 5',width:1.5},{pts:roc(D.pos,D.neg),color:css('--accent'),width:2.6}],dots:[{x:1-spec,y:sens,color:'#e8740c'}]});
+  $('#Lthrv').textContent=t.toFixed(2);$('#Lsepv').textContent=LS.sep.toFixed(1);
+  $('#LaTbl').innerHTML=`<table class="t" style="margin-top:8px"><tr><td>AUC</td><td class="n"><b>${f3(A)}</b></td></tr><tr><td>Sensitivity (records above)</td><td class="n">${pct(sens)}</td></tr><tr><td>Specificity (background below)</td><td class="n">${pct(spec)}</td></tr><tr><td>Omission (records missed)</td><td class="n">${pct(1-sens)}</td></tr><tr><td>TSS</td><td class="n">${f2(sens+spec-1)}</td></tr></table>`;
+  $('#LaNote').textContent=D.real?`These are your model's scores: ${nf_(D.pos.length)} testing records against ${nf_(D.neg.length)} background points. The threshold buttons use your training records, just as step 6 does.`:(LS.mode==='real'?'Your model is still fitting; showing made-up scores for now.':'Made-up scores for 160 records and 900 background points.');
+  $('#LaHist').setAttribute('aria-label',`Histogram of scores for records and background with the threshold at ${t.toFixed(2)}.`);
+  $('#LaRoc').setAttribute('aria-label',`ROC curve with AUC ${f2(A)}; at threshold ${t.toFixed(2)}, sensitivity ${pct(sens)} and specificity ${pct(spec)}.`);
+}
+/* 4. MESS for one variable */
+function messOf(ref,p){const n=ref.length,lo=ref[0],hi=ref[n-1],span=(hi-lo)||1,f=below(ref,p)/n*100;return{f,s:f===0?(p-lo)/span*100:f<=50?2*f:f<100?2*(100-f):(hi-p)/span*100}}
+function renderMESSdemo(){
+  if(BG.length<10){$('#LmSvg').innerHTML='';return}
+  const k=LS.mVar,v=VARS[k],ref=Float64Array.from(BG.map(c=>ENV0[k][c])).sort(),lo=ref[0],hi=ref[ref.length-1],span=hi-lo||1,d0=lo-0.35*span,d1=hi+0.35*span;
+  if(LS.mP==null||LS.mP<d0||LS.mP>d1)LS.mP=ref[ref.length>>1];
+  $('#LmP').value=Math.round((LS.mP-d0)/(d1-d0)*1000);
+  const xs=[...Array(241)].map((_,i)=>d0+(d1-d0)*i/240),pts=xs.map(x=>[x,clamp(messOf(ref,x).s,-60,100)]);
+  const nb=30,h=hist(Array.from(ref),lo,hi,nb),mh=Math.max(...h)||1,w=(hi-lo)/nb,bars=h.map((n,i)=>({x0:lo+i*w,x1:lo+(i+1)*w,h:n/mh*95,base:0,color:'rgba(120,120,120,.28)'}));
+  const m=messOf(ref,LS.mP);
+  chart($('#LmSvg'),{xmin:d0,xmax:d1,ymin:-60,ymax:105,w:520,h:300,xlab:`${v.code} ${v.name} (${v.unit})`,ylab:'MESS score',bars,
+    series:[{pts:[[d0,0],[d1,0]],color:css('--muted'),width:1.2,dash:'4 4'},{pts,color:css('--s6'),width:2.6},{pts:[[LS.mP,-60],[LS.mP,105]],color:css('--text'),width:1.2,dash:'2 3'}],dots:[{x:LS.mP,y:clamp(m.s,-60,100),color:css('--text')}]});
+  $('#LmH').textContent=`MESS score along ${v.code}, against your background`;
+  $('#LmPv').textContent=`${fmt1(LS.mP)} ${v.unit}`;
+  $('#LmTbl').innerHTML=`<table class="t" style="margin-top:8px"><tr><td>Background below this value</td><td class="n">${m.f.toFixed(0)}%</td></tr><tr><td>Background range</td><td class="n">${fmt1(lo)} to ${fmt1(hi)}</td></tr><tr><td>MESS score</td><td class="n ${m.s<0?'bad':''}"><b>${m.s.toFixed(0).replace('-','−')}</b></td></tr><tr><td>Reading</td><td class="n">${m.s<0?'outside the data':m.s<10?'near the edge':'well inside'}</td></tr></table>`;
+  $('#LmSvg').setAttribute('aria-label',`MESS score for ${v.name}: ${fmt1(LS.mP)} ${v.unit} scores ${m.s.toFixed(0)}, ${m.s<0?'outside':'inside'} the background range of ${fmt1(lo)} to ${fmt1(hi)}.`);
+}
+/* 5. quick reference with live values */
+function renderRef(){
+  const sel=selIdx(),go=s=>`<button type="button" class="goto" data-goto="${s}">Step ${s.slice(1)}</button>`;
+  const rows=[
+    ['Record cleaning','Which records count as real, precise, wild, and independent','Remove bad coordinates, cultivated trees, and duplicates; thin clustered records',`${nf_(USED.length)} of ${nf_(COUNTS.raw)} records`,'s1'],
+    ['Predictor variables','What the model can know about each place','A few biologically sensible variables with |r| < 0.7 (or VIF < 10)',sel.length?`${sel.length} variables, max |r| ${f2(maxR(sel))}`:'none','s2'],
+    ['Background extent','Which climates count as "available"','The area the species could have reached; avoid huge areas it never could',S.bg==='all'?'All of California':'Within 50 km of records','s3'],
+    ['Background size','How well the available climates are sampled','MaxEnt software default: up to 10,000 points',`${nf_(BG.length)} points`,'s3'],
+    ['Train / test split','How honestly the model is tested','Hold out 20–30%; spatial blocks are stricter than random',`${nf_(TRAIN.length)} / ${nf_(TEST.length)} (${S.split==='rand'?'random':'spatial blocks'})`,'s4'],
+    ['Feature classes','Which curve shapes are allowed','MaxEnt picks automatically by sample size; hinge needs plenty of records',FEAT_NAME[S.feat],'s5'],
+    ['β (regularization multiplier)','How strongly extra features are penalized','Default 1; compare about 0.5–4 and keep the best on held-out data',`β = ${S.beta}`,'s5'],
+    ['Output (cloglog)','How raw scores become 0–1','Read as relative suitability, not true probability','cloglog','s5'],
+    ['Permutation importance','Which variables the model leans on','Interpret with care when variables are correlated',ST?(()=>{const t=ST.SV.map((k,a)=>[k,ST.imp[a]]).sort((a,b)=>b[1]-a[1])[0];return`${VARS[t[0]].code} (${pct(t[1])})`})():'…','s5'],
+    ['AUC','How well scores separate records from background','0.5 = random; compare only with the same background',ST?`test ${f3(ST.te)}, train ${f3(ST.tr)}`:'…','s6'],
+    ['Threshold rule','Where suitable starts on a yes/no map','10th percentile training presence is a common choice',ST?`${RULE_SHORT[S.thr]} = ${f2(ST.thr)}`:RULE_SHORT[S.thr],'s6'],
+    ['Omission rate','Share of testing records the map misses','Near the expected rate (about 10% for the 10th percentile rule)',ST?pct(ST.cur.om):'…','s6'],
+    ['TSS','Sensitivity + specificity − 1 at the cutoff','0 = random, 1 = perfect; background points underestimate it',ST?f2(ST.cur.tss):'…','s6'],
+    ['MESS','Where a projection extrapolates','Treat negative-MESS areas as unsupported',ST?`${pct(ST.nov)} of California novel`:'…','s7'],
+  ];
+  $('#LrefTbl').innerHTML=`<table class="t ref"><tr><th>Setting</th><th>What it controls</th><th>Usual starting point</th><th>Your analysis</th><th></th></tr>${rows.map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td><td class="live">${r[3]}</td><td>${go(r[4])}</td></tr>`).join('')}</table>`;
+  $$('#LrefTbl .goto').forEach(b=>b.onclick=()=>goStep(b.dataset.goto));
+}
+function renderLearn(){if(!learnOn()){learnDirty=true;return}learnDirty=false;renderFeat();renderBeta();renderAUC();renderMESSdemo();renderRef()}
+/* tabs */
+function showTab(id,noHash){
+  $$('nav.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===id));
+  $$('.tabpanel').forEach(p=>p.hidden=p.id!==id);
+  if(id==='tabLearn'){renderLearn();if(!noHash)try{history.replaceState(null,'','#concepts')}catch(e){}}
+  else{drawMap();pickCur();if(!noHash)try{history.replaceState(null,'','#'+CUR)}catch(e){}}
+}
+function goStep(s){showTab('tabAnalysis',true);const t=document.getElementById(s);if(t){t.scrollIntoView({block:'start'});try{history.replaceState(null,'','#'+s)}catch(e){}}setTimeout(pickCur,50)}
+function initLearn(){
+  $$('nav.tabs button').forEach(b=>b.onclick=()=>{if(!b.classList.contains('on'))showTab(b.dataset.tab)});
+  [['LlamL','lamL'],['LlamQ','lamQ'],['LlamH','lamH'],['Lknot','knot']].forEach(([id,k])=>$('#'+id).addEventListener('input',e=>{LS[k]=+e.target.value;renderFeat()}));
+  const FP={rise:[3,0,0,.6],hill:[8,-8,0,.6],step:[0,0,6,.6],fall:[-3,0,0,.6]};
+  $$('[data-fp]').forEach(b=>b.onclick=()=>{const p=FP[b.dataset.fp];[LS.lamL,LS.lamQ,LS.lamH,LS.knot]=p;$('#LlamL').value=p[0];$('#LlamQ').value=p[1];$('#LlamH').value=p[2];$('#Lknot').value=p[3];renderFeat()});
+  const opts=VARS.map((v,k)=>`<option value="${k}">${v.code} ${v.name}</option>`).join('');
+  $('#LbVar').innerHTML=opts;$('#LbVar').value=LS.bVar;$('#LbVar').onchange=e=>{LS.bVar=+e.target.value;renderBeta()};
+  let bt=0;$('#Lbeta').addEventListener('input',e=>{LS.beta=+(+e.target.value).toFixed(1);$('#Lbetav').textContent=LS.beta.toFixed(1);clearTimeout(bt);bt=setTimeout(renderBeta,90)});
+  seg('LaMode',v=>{LS.mode=v;renderAUC()});
+  $('#Lsep').addEventListener('input',e=>{LS.sep=+e.target.value;renderAUC()});
+  $('#Lthr').addEventListener('input',e=>{LS.thr=+e.target.value;renderAUC()});
+  $$('[data-tp]').forEach(b=>b.onclick=()=>{const D=aucData(),T=thresholds(D.train,D.neg);LS.thr=+T[b.dataset.tp].toFixed(2);$('#Lthr').value=LS.thr;renderAUC()});
+  $('#LmVar').innerHTML=opts;$('#LmVar').value=LS.mVar;$('#LmVar').onchange=e=>{LS.mVar=+e.target.value;LS.mP=null;renderMESSdemo()};
+  $('#LmP').addEventListener('input',e=>{const k=LS.mVar,ref=BG.map(c=>ENV0[k][c]),lo=Math.min(...ref),hi=Math.max(...ref),span=hi-lo||1,d0=lo-0.35*span,d1=hi+0.35*span;LS.mP=d0+(d1-d0)*(+e.target.value)/1000;renderMESSdemo()});
+  $$('[data-mp]').forEach(b=>b.onclick=()=>{const k=LS.mVar,ref=BG.map(c=>ENV0[k][c]).sort((a,b)=>a-b),lo=ref[0],hi=ref[ref.length-1];LS.mP=b.dataset.mp==='med'?ref[ref.length>>1]:b.dataset.mp==='edge'?hi:hi+0.2*(hi-lo);renderMESSdemo()});
+}
+
 /* ---------- rendering ---------- */
 function renderAll(){
   drawMap();renderClean();renderMatrix();renderPair();renderEnv();renderSplit();renderRC();renderImp();renderTune();renderROC();renderEval();renderProj();
-  messages();handoffs();strip();methods();
+  messages();handoffs();strip();methods();renderLearn();
 }
 
 /* ---------- pipeline + animation ---------- */
@@ -1002,6 +1263,7 @@ $('#copyMethods').onclick=()=>{const t=$('#methods').innerText;const done=ok=>{$
 $$('#ledger button').forEach(b=>b.onclick=()=>{const t=document.getElementById(b.dataset.jump);if(t){t.scrollIntoView({behavior:'smooth',block:'start'});try{history.replaceState(null,'','#'+b.dataset.jump)}catch(e){}}});
 /* the step whose heading has crossed a line a little above the middle of the screen is the current one */
 function pickCur(){
+  if($('#tabAnalysis').hidden)return;
   const narrow=matchMedia('(max-width:820px)').matches,pb=narrow?Math.max(0,$('#pane').getBoundingClientRect().bottom):0,line=pb+(innerHeight-pb)*0.35;
   let best=STEPS[0];STEPS.forEach(id=>{if(document.getElementById(id).getBoundingClientRect().top<=line)best=id});
   if(innerHeight+scrollY>=document.documentElement.scrollHeight-4)best=STEPS[STEPS.length-1];
@@ -1009,10 +1271,12 @@ function pickCur(){
 let scT=0;addEventListener('scroll',()=>{if(!scT)scT=setTimeout(()=>{scT=0;pickCur()},60)},{passive:true});addEventListener('resize',pickCur);
 $('#paneToggle').onclick=()=>{const p=$('#pane'),m=p.classList.toggle('min');$('#paneToggle').textContent=m?'Show map':'Hide map';$('#paneToggle').setAttribute('aria-expanded',m?'false':'true')};
 showVals();
+initLearn();
 run('clean');
 {const c=CUR;CUR=null;setCur(c)}
 const h0=location.hash.slice(1);
-if(/^(s[1-7]|methods-sec)$/.test(h0))setTimeout(()=>{const t=document.getElementById(h0);if(t)t.scrollIntoView();pickCur()},0);
+if(h0==='concepts')showTab('tabLearn',true);
+else if(/^(s[1-7]|methods-sec)$/.test(h0))setTimeout(()=>{const t=document.getElementById(h0);if(t)t.scrollIntoView();pickCur()},0);
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',renderAll);
 </script>
 
@@ -1043,7 +1307,7 @@ html.sim-paused *,html.sim-paused *::before,html.sim-paused *::after{animation-p
 </script>
 <!--/SIM-NOTICE-->
 <script>
-window.A11Y = {css:'',live:['#liveMsg'],hidden:['.cbar']};
+window.A11Y = {tabsLabel:'Page sections',css:'',live:['#liveMsg'],hidden:['.cbar']};
 </script>
 <!-- ===== Accessibility layer (WCAG 2.1 AA). Page-specific settings are in window.A11Y above. ===== -->
 <style id="a11y-css">
