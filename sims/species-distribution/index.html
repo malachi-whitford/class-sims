@@ -11,90 +11,104 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181e;--card:#1d242d;--text:#e7ecf2;--muted:#9aa6b4;--line:#38424f;--accent:#6ab0f3;--soft:#262f3a;--good:#5fd38a;--bad:#ff8a80;
 --s1:#5a9cf0;--s2:#f07a45;--s3:#2fc08b;--s4:#e0a82a;--s5:#e67aa6;--s6:#9a8cf0;color-scheme:dark}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.45}
-.wrap{max-width:1200px;margin:0 auto}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Arial,sans-serif;padding:16px;line-height:1.5}
+.wrap{max-width:1220px;margin:0 auto}
 a{color:var(--accent)}
 .back{font-size:.82rem;text-decoration:none}
 h1{font-size:1.45rem;margin:4px 0 4px}
-h2{font-size:1.05rem;margin:0 0 8px}
-h3{font-size:.95rem;margin:12px 0 4px}
-p.sub{margin:0 0 10px;color:var(--muted);font-size:.93rem;max-width:900px}
+h3{font-size:.95rem;margin:0 0 8px}
+p.sub{margin:0 0 14px;color:var(--muted);font-size:.93rem;max-width:900px}
 
-/* pinned strip: one chip per step, showing that step's current result */
-nav.strip{position:sticky;top:0;z-index:30;background:var(--bg);margin:6px -6px 16px;padding:6px;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;border-bottom:1px solid var(--line)}
-nav.strip button{font:inherit;text-align:left;padding:5px 8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);height:52px;min-width:0;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;justify-content:center;gap:1px}
-nav.strip button b{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:700}
-nav.strip button span{font-size:.84rem;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
-nav.strip button.on{border-color:var(--accent);box-shadow:inset 0 -3px 0 var(--accent)}
-@media(max-width:980px){nav.strip{display:flex;overflow-x:auto;scrollbar-width:thin;-webkit-overflow-scrolling:touch}nav.strip button{flex:0 0 132px}}
+/* ---- one analysis: the write-up on the left, one pinned map + running results on the right ---- */
+.analysis{display:grid;grid-template-columns:minmax(0,1fr) 430px;gap:20px;align-items:start}
+.pane{grid-column:2;grid-row:1;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;z-index:20}
+.story{grid-column:1;grid-row:1;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px 24px 6px}
+@media(max-width:1060px){.analysis{grid-template-columns:minmax(0,1fr) 360px}}
 
-section.step{scroll-margin-top:78px;margin:0 0 26px}
-.sh{display:flex;align-items:center;gap:10px;font-size:1.15rem;margin:0 0 6px}
-.sh .num{width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:.95rem;flex:none}
-p.intro{margin:0 0 10px;max-width:920px;font-size:.93rem}
-.handoff{margin:12px 0 0;padding:9px 12px;border-radius:10px;background:var(--soft);border:1px dashed var(--line);font-size:.88rem;min-height:3.1em}
-.handoff b{color:var(--accent)}
+.panehead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;min-height:36px;margin-bottom:8px}
+.pstep{font-size:.84rem;font-weight:700;flex:1 1 100%;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.pstep b{color:var(--accent)}
+.panehead .seg{margin:0;flex:1 1 auto;min-height:34px}
+.ptog{display:none}
+.stage{position:relative;width:fit-content;max-width:100%;margin:0 auto}
+#map{display:block;height:min(52vh,470px);width:auto;max-width:100%;aspect-ratio:576/656;border-radius:8px}
+.badge{position:absolute;left:8px;bottom:8px;border-radius:999px;padding:3px 10px;font-size:.74rem;font-weight:700;background:rgba(0,0,0,.62);color:#fff;font-variant-numeric:tabular-nums;pointer-events:none;width:10.8em;text-align:center}
+.cbar{display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(--muted);margin-top:6px}
+.cbar span{width:7.6em;flex:none}
+.cbar span:last-child{text-align:right}
+.cbar i{flex:1;height:10px;border-radius:4px;display:block;border:1px solid var(--line)}
+.mapleg{min-height:3.1em;font-size:.76rem}
+.ledger{list-style:none;margin:8px 0 0;padding:8px 0 0;border-top:1px solid var(--line)}
+.ledger h3{font-size:.74rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin:0 0 4px}
+.ledger ol{list-style:none;margin:0;padding:0}
+.ledger li{margin:0}
+.ledger button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:8px;align-items:center;width:100%;padding:4px 6px;border-radius:7px;cursor:pointer;font-size:.82rem;min-height:30px}
+.ledger button:hover{background:var(--soft)}
+.ledger button:focus-visible{outline:3px solid #1557b0}
+.ledger .ln{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;color:var(--muted)}
+.ledger .lk{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ledger .lv{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right}
+.ledger li.past .ln{background:var(--accent);border-color:var(--accent);color:#fff}
+.ledger li.cur button{background:var(--soft)}
+.ledger li.cur .ln{border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 3px rgba(31,111,191,.18)}
+.ledger li.cur .lk{color:var(--text);font-weight:600}
+.ledger li.later .lv{color:var(--muted);font-weight:600}
 
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-.layout,.layout2{display:grid;grid-template-columns:300px minmax(0,1fr);gap:12px;align-items:start}
-.layout>.card,.layout2>.card{margin-bottom:0}
-.layout>*,.layout2>*{min-width:0}
-.vis{display:flex;flex-direction:column;gap:12px;min-width:0}
-.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px}
-.grid2>.card{margin-bottom:0}
-.grid2>*{min-width:0}
+/* the write-up: steps strung on one line */
+section.step{position:relative;padding:0 0 22px 48px;scroll-margin-top:16px}
+section.step::before{content:'';position:absolute;left:15px;top:36px;bottom:0;width:2px;background:var(--line)}
+section.step.done::before{background:var(--accent);opacity:.55}
+section.step:last-of-type::before{display:none}
+.sh{display:flex;align-items:center;gap:14px;font-size:1.15rem;margin:0 0 8px -48px;line-height:1.25}
+.sh .num{width:32px;height:32px;border-radius:50%;border:2px solid var(--accent);background:var(--card);color:var(--accent);display:inline-flex;align-items:center;justify-content:center;font-size:.95rem;flex:none;position:relative;z-index:1}
+section.step.done .sh .num,section.step.cur .sh .num{background:var(--accent);color:#fff}
+.story p{font-size:.93rem;margin:0 0 10px}
+.ctl{background:var(--soft);border-radius:10px;padding:10px 12px;margin:10px 0}
+.ctl .lbl{font-size:.74rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:0 0 4px}
+.result{border-left:3px solid var(--accent);padding:4px 0 4px 12px;margin:12px 0;font-size:.92rem;min-height:5.2em}
+.result.warn{border-left-color:var(--s4)}
+.bridge{margin:16px 0 0;padding:10px 0 0;border-top:1px dashed var(--line);font-size:.93rem;min-height:3.4em}
+.bridge::before{content:'↓ ';color:var(--accent);font-weight:700}
+.bridge b{color:var(--text)}
+figure.fig{margin:14px 0;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--card)}
+.figs2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:14px 0}
+.figs2 figure.fig{margin:0}
+.figs2>*{min-width:0}
+
 button{font:inherit;font-size:.85rem;padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);cursor:pointer;min-height:34px}
 button:hover{border-color:var(--accent)}
-button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 select{font:inherit;font-size:.85rem;padding:5px 6px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--text);min-height:34px;max-width:100%}
 .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
 .muted{color:var(--muted)}
 .small{font-size:.82rem}
-.ctrl p{font-size:.86rem;margin:6px 0}
-.ctrl label{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:9px 0 1px}
-.ctrl label .val{font-weight:700;font-variant-numeric:tabular-nums;min-width:2.5em;text-align:right}
-.ctrl .hint{font-size:.76rem;color:var(--muted);margin:2px 0 4px}
-.ctrl h3{border-top:1px solid var(--line);padding-top:10px}
-.ctrl h3:first-child{border-top:0;padding-top:0;margin-top:0}
+.story p.small{font-size:.82rem}
+.hint{font-size:.78rem;color:var(--muted);margin:4px 0 2px}
+.ctl label.sl{display:flex;justify-content:space-between;gap:8px;font-size:.86rem;margin:8px 0 1px}
+.ctl label .val{font-weight:700;font-variant-numeric:tabular-nums;min-width:2.5em;text-align:right}
 input[type=range]{width:100%;accent-color:var(--accent)}
-input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px;flex:none;margin:0}
-.ctrl label.check{display:flex;justify-content:flex-start;gap:8px;align-items:flex-start;font-size:.85rem;margin:7px 0}
-.ctrl label.check span small{display:block;color:var(--muted);font-size:.76rem;line-height:1.35}
+input[type=checkbox]{accent-color:var(--accent);width:18px;height:18px;flex:none;margin:2px 0 0}
+label.check{display:flex;gap:8px;align-items:flex-start;font-size:.86rem;margin:6px 0}
+label.check span small{display:block;color:var(--muted);font-size:.77rem;line-height:1.35}
+.checks2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 16px}
 .vars label.check{padding:6px 0;border-bottom:1px solid var(--line);margin:0}
 .vars label.check:last-child{border-bottom:0}
-.vars label.check input{margin-top:2px}
-.vars .unit{font-weight:400;color:var(--muted);font-size:.76rem}
+.vars .unit{font-weight:400;color:var(--muted);font-size:.77rem}
 .chart svg{width:100%;height:auto;display:block;touch-action:manipulation}
 .chart text,svg.mat text{fill:var(--muted);font-size:12px;font-family:system-ui,Arial,sans-serif}
 .chart .ax{stroke:var(--line)}
 .chart .grid{stroke:var(--line);stroke-dasharray:2 3;opacity:.7}
 .chart .lab{fill:var(--text);font-weight:600}
-svg.mat{width:100%;height:auto;display:block}
+svg.mat{width:100%;height:auto;display:block;max-width:520px;margin:0 auto}
 svg.mat rect.cell{cursor:pointer}
 .legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.8rem;color:var(--muted);margin:6px 0 2px;min-height:1.3em}
 .legend span{display:flex;align-items:center;gap:5px}
 .legend span.off{display:none}
-.mapleg{min-height:4.4em}
-@media(max-width:620px){.mapleg{min-height:6em}}
 .sw{display:inline-block;width:12px;height:12px;border-radius:3px;flex:none}
 .dot{display:inline-block;width:10px;height:10px;border-radius:50%;flex:none}
-.msg{font-size:.86rem;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:10px 12px;min-height:9.5em;margin-top:12px}
-.msg.warn{border-left-color:var(--s4)}
-.carry{font-size:.86rem;background:var(--soft);border-radius:8px;padding:8px 10px;margin:8px 0;min-height:4.4em}
-.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
-.seg button{flex:1 1 auto;font-size:.82rem;padding:6px 8px}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+.seg button{flex:1 1 auto;font-size:.82rem;padding:5px 8px}
 .seg button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-.stage{position:relative}
 canvas{display:block;width:100%;height:auto;border-radius:8px;touch-action:manipulation}
-.mapcard canvas{aspect-ratio:576/656;max-width:560px;margin:0 auto}
-.badge{position:absolute;left:10px;bottom:10px;border-radius:999px;padding:4px 12px;font-size:.78rem;font-weight:700;background:rgba(0,0,0,.62);color:#fff;font-variant-numeric:tabular-nums;pointer-events:none;width:11.5em;text-align:center}
-.maphead{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;min-height:36px}
-.maphead .seg{margin:0;flex:1 1 auto}
-.maphead .cap{font-size:.86rem;font-weight:600}
-.cbar{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);margin-top:8px}
-.cbar span{width:7.5em;flex:none}
-.cbar span:last-child{text-align:right}
-.cbar i{flex:1;height:12px;border-radius:4px;display:block;border:1px solid var(--line)}
 table.t{border-collapse:collapse;width:100%;font-size:.85rem}
 table.t th,table.t td{padding:5px 8px;border-bottom:1px solid var(--line);text-align:left}
 table.t th{background:var(--soft);font-weight:600}
@@ -102,27 +116,59 @@ table.t td.n,table.t th.n{text-align:right;font-variant-numeric:tabular-nums;whi
 table.t tr.dim td{color:var(--muted);opacity:.6}
 table.t tr.tot td{font-weight:700}
 table.t tr.sel td{background:var(--soft);font-weight:700}
+#aucTbl tr.sel td{font-weight:inherit;box-shadow:inset 3px 0 0 var(--accent)}
 table.t.tight th,table.t.tight td{padding:5px 5px}
 table.t td button{min-height:30px;padding:3px 10px;font-size:.8rem}
 .tblwrap{overflow-x:auto}
 .bar{height:10px;border-radius:3px;background:var(--accent);display:block}
 .bad{color:var(--bad);font-weight:700}
 .ok{color:var(--good);font-weight:700}
-.note{font-size:.84rem;background:var(--soft);border-radius:8px;padding:8px 10px;margin:8px 0 0}
-.formula{font-family:Georgia,'Times New Roman',serif;font-size:1rem;background:var(--soft);border-radius:8px;padding:6px 10px;margin:6px 0;overflow-x:auto}
+.formula{font-family:Georgia,'Times New Roman',serif;font-size:1rem;background:var(--card);border-radius:8px;padding:6px 10px;margin:6px 0;overflow-x:auto;display:inline-block}
 details.fold{border:1px solid var(--line);border-radius:8px;margin:6px 0;background:var(--card)}
-details.fold summary{cursor:pointer;padding:7px 10px;font-size:.84rem;font-weight:600;min-height:34px;display:flex;align-items:center}
+details.fold summary{cursor:pointer;padding:6px 10px;font-size:.84rem;font-weight:600;min-height:34px;display:flex;align-items:center}
 details.fold summary::marker{content:''}
 details.fold summary::before{content:'▸';margin-right:7px;color:var(--accent);transition:transform .15s}
 details.fold[open] summary::before{transform:rotate(90deg)}
-details.fold>div{padding:0 10px 9px;font-size:.83rem}
-details.fold>div p{margin:4px 0}
-.folds{margin-top:10px}
-.methods p#methods{font-size:.95rem;line-height:1.6;min-height:16em;margin:0 0 10px}
-.cite{color:var(--muted);font-size:.78rem;margin:0}
-@media(max-width:820px){.layout,.layout2{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:520px){.grid2{grid-template-columns:1fr} body{padding:10px}}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) button.primary,:root:not([data-theme="light"]) .seg button.on,:root:not([data-theme="light"]) .sh .num{color:#0d1b2a}}
+details.fold>div{padding:0 10px 8px;font-size:.84rem}
+details.fold>div p{margin:4px 0;font-size:.84rem}
+.folds{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:0 10px;align-items:start;margin:10px 0}
+#methods{font-size:.95rem;line-height:1.65;min-height:37em}
+@media(max-width:820px){#methods{min-height:0}}
+.cite{color:var(--muted);font-size:.78rem;margin:14px 0 0}
+
+/* ---- phones and narrow tablets: the map pins to the top, small, beside the running results ---- */
+@media(max-width:820px){
+  body{padding:10px}
+  .analysis{display:block}
+  .pane{position:sticky;top:0;margin:0 -10px 12px;border-radius:0 0 12px 12px;border-width:0 0 1px;max-height:none;overflow:visible;padding:8px 10px;
+    display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"head head" "map led" "bar led";gap:4px 10px;align-items:start;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+  .panehead{grid-area:head;margin:0;min-height:32px;flex-wrap:nowrap}
+  .pstep{flex:0 0 auto;font-size:.72rem;max-width:42%}
+  .panehead .seg{flex-wrap:nowrap;overflow-x:auto;gap:4px}
+  .panehead .seg button{font-size:.72rem;padding:3px 6px;min-height:30px;flex:0 0 auto}
+  .ptog{display:inline-block;font-size:.72rem;padding:3px 8px;min-height:30px;margin-left:auto;flex:none}
+  .stage{grid-area:map;margin:0}
+  #map{height:27vh}
+  .cbar{grid-area:bar;font-size:.66rem;gap:4px;margin:0}
+  .cbar span{width:auto;max-width:4.6em;line-height:1.1}
+  .mapleg{display:none}
+  .ledger{grid-area:led;margin:0;padding:0;border:0}
+  .ledger h3{display:none}
+  .ledger button{grid-template-columns:16px minmax(0,1fr);gap:5px;padding:1px 4px;min-height:22px;font-size:.7rem}
+  .ledger .ln{width:15px;height:15px;font-size:.58rem;border-width:1px}
+  .ledger .lk{display:none}
+  .ledger .lv{text-align:left;overflow:hidden;text-overflow:ellipsis}
+  .pane.min .stage,.pane.min .cbar,.pane.min .ledger{display:none}
+  .pane.min{grid-template-areas:"head head"}
+  .story{padding:16px 12px 4px;border-radius:12px}
+  section.step{padding-left:34px;scroll-margin-top:calc(27vh + 70px)}
+  section.step::before{left:12px;top:30px}
+  .sh{margin-left:-34px;gap:10px;font-size:1.05rem}
+  .sh .num{width:26px;height:26px;font-size:.82rem}
+  .badge{font-size:.62rem;padding:2px 6px;width:auto;left:4px;bottom:4px}
+}
+@media(max-width:520px){.figs2{grid-template-columns:1fr}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .seg button.on,:root:not([data-theme="light"]) section.step.done .sh .num,:root:not([data-theme="light"]) section.step.cur .sh .num,:root:not([data-theme="light"]) .ledger li.past .ln{color:#0d1b2a}}
 </style>
 <!--SIM-LICENSE-HEAD--><link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/"><meta name="license" content="CC BY-NC-SA 4.0"><!--/SIM-LICENSE-HEAD-->
 </head>
@@ -130,234 +176,203 @@ details.fold>div p{margin:4px 0}
 <div class="wrap">
 <a class="back" href="../../">&larr; All class simulations</a>
 <h1>Species Distribution Models: A MaxEnt Analysis, Step by Step</h1>
-<p class="sub">Run one complete species distribution model for blue oak (<i>Quercus douglasii</i>) with real data: every blue oak record in GBIF and WorldClim climate layers for California. Each step hands its result to the next, the way a published study is built. Change anything and every step after it re-runs. The strip below keeps every step's result in view; tap a box to jump to that step.</p>
-
-<nav class="strip" id="strip" aria-label="Result of each step">
-  <button type="button" data-jump="s1"><b>1 · Records</b><span id="r1">–</span></button>
-  <button type="button" data-jump="s2"><b>2 · Variables</b><span id="r2">–</span></button>
-  <button type="button" data-jump="s3"><b>3 · Background</b><span id="r3">–</span></button>
-  <button type="button" data-jump="s4"><b>4 · Train / test</b><span id="r4">–</span></button>
-  <button type="button" data-jump="s5"><b>5 · Model</b><span id="r5">–</span></button>
-  <button type="button" data-jump="s6"><b>6 · Test AUC / TSS</b><span id="r6">–</span></button>
-  <button type="button" data-jump="s7"><b>7 · +3 °C</b><span id="r7">–</span></button>
-  <button type="button" data-jump="methods-sec"><b>Methods</b><span id="r8">–</span></button>
-</nav>
+<p class="sub">One complete species distribution model for blue oak (<i>Quercus douglasii</i>), built from real data: every blue oak record in GBIF and WorldClim climate layers for California. Read it top to bottom like a study. Each step works on what the step before produced, the map follows along as you scroll, and changing any choice re-runs everything after it.</p>
 <div id="liveMsg" class="sr-only"></div>
+
+<div class="analysis">
+
+<aside class="pane" id="pane" aria-label="Map and running results">
+  <div class="panehead">
+    <span class="pstep" id="paneStep" aria-live="off"></span>
+    <div class="seg" id="viewSel" role="group" aria-label="Map layer"></div>
+    <button type="button" class="ptog" id="paneToggle" aria-expanded="true" aria-controls="pane">Hide map</button>
+  </div>
+  <div class="stage"><canvas id="map" width="576" height="656" role="img"></canvas><span class="badge" id="badge" aria-hidden="true"></span></div>
+  <div class="cbar" aria-hidden="true"><span id="cbLo"></span><i id="cbGrad"></i><span id="cbHi"></span></div>
+  <div class="legend mapleg" id="mapLeg" aria-hidden="true" data-steady></div>
+  <div class="ledger"><h3 aria-hidden="true">Running results</h3>
+  <ol id="ledger" aria-label="Running results of the analysis">
+    <li data-s="s1"><button type="button" data-jump="s1"><span class="ln" aria-hidden="true">1</span><span class="lk">Records</span><span class="lv" id="r1">–</span></button></li>
+    <li data-s="s2"><button type="button" data-jump="s2"><span class="ln" aria-hidden="true">2</span><span class="lk">Variables</span><span class="lv" id="r2">–</span></button></li>
+    <li data-s="s3"><button type="button" data-jump="s3"><span class="ln" aria-hidden="true">3</span><span class="lk">Background</span><span class="lv" id="r3">–</span></button></li>
+    <li data-s="s4"><button type="button" data-jump="s4"><span class="ln" aria-hidden="true">4</span><span class="lk">Train / test</span><span class="lv" id="r4">–</span></button></li>
+    <li data-s="s5"><button type="button" data-jump="s5"><span class="ln" aria-hidden="true">5</span><span class="lk">Model</span><span class="lv" id="r5">–</span></button></li>
+    <li data-s="s6"><button type="button" data-jump="s6"><span class="ln" aria-hidden="true">6</span><span class="lk">Test AUC · TSS</span><span class="lv" id="r6">–</span></button></li>
+    <li data-s="s7"><button type="button" data-jump="s7"><span class="ln" aria-hidden="true">7</span><span class="lk">Suitable area at +3 °C</span><span class="lv" id="r7">–</span></button></li>
+    <li data-s="methods-sec"><button type="button" data-jump="methods-sec"><span class="ln" aria-hidden="true">✎</span><span class="lk">Methods</span><span class="lv" id="r8">–</span></button></li>
+  </ol></div>
+</aside>
+
+<article class="story" aria-label="The analysis">
 
 <!-- ================= STEP 1 ================= -->
 <section class="step" id="s1" aria-labelledby="s1h">
-  <h2 class="sh" id="s1h"><span class="num" aria-hidden="true">1</span>Get and clean the records</h2>
-  <p class="intro">This is a real download of every blue oak record in GBIF: iNaturalist observations, herbarium specimens, and survey data. Raw downloads are messy. Some records have no coordinates, some are misidentified trees in other states, some sit in botanical gardens, and thousands bunch up wherever people hike. Each cleaning step below removes one kind of problem; the map marks what it removed.</p>
-  <div class="layout">
-    <div class="card ctrl">
-      <h3>Cleaning</h3>
+  <h2 class="sh" id="s1h"><span class="num" aria-hidden="true">1</span>Start with the records</h2>
+  <p>Every analysis starts from where the species has been seen. This is a real download of every blue oak record in GBIF: iNaturalist observations, herbarium specimens, and survey data. Raw downloads are messy. Some records have no coordinates, some are misidentified trees in other states, some sit in botanical gardens, and thousands bunch up wherever people hike. Each filter below removes one kind of problem; the map marks what it removed with red crosses.</p>
+  <div class="ctl">
+    <div class="lbl">Cleaning filters</div>
+    <div class="checks2">
       <label class="check"><input type="checkbox" id="cOut"> <span>Remove records outside California<small>Blue oak only grows wild in California. Records from other states are planted trees or wrong IDs.</small></span></label>
       <label class="check"><input type="checkbox" id="cUnc"> <span>Remove fuzzy locations (&gt; 5 km)<small>The climate grid cells are about 8 km wide, so the location needs to be at least that precise.</small></span></label>
-      <label class="check"><input type="checkbox" id="cRnd"> <span>Remove rounded or centroid coordinates<small>Both coordinates given to 2 or fewer decimal places (a grid of 1 km or coarser). These usually come from a place name, town, or county center typed in later, not a GPS point at the tree.</small></span></label>
+      <label class="check"><input type="checkbox" id="cRnd"> <span>Remove rounded or centroid coordinates<small>Both coordinates given to 2 or fewer decimal places. These usually come from a place name, town, or county center typed in later, not a GPS point at the tree.</small></span></label>
       <label class="check"><input type="checkbox" id="cOld"> <span>Remove records before 1970<small>The climate layers average 1970–2000; old sites may have been cleared since.</small></span></label>
       <label class="check"><input type="checkbox" id="cCult"> <span>Remove cultivated trees<small>Arboretums, gardens, and planted trees tell you about watering, not climate.</small></span></label>
       <label class="check"><input type="checkbox" id="cDup"> <span>Remove duplicates<small>Keep one record per grid cell.</small></span></label>
       <label class="check"><input type="checkbox" id="cThin"> <span>Spatial thinning<small>No two records in neighboring grid cells (about 15 km apart). iNaturalist records cluster near cities and trails; thinning evens out that sampling bias.</small></span></label>
-      <div class="row"><button type="button" id="cleanAll">Apply all cleaning steps</button></div>
-      <div class="msg" id="m1" data-steady></div>
     </div>
-    <div class="vis">
-      <div class="grid2">
-        <div class="card mapcard" data-map="s1"></div>
-        <div class="card"><h2>Cleaning the download</h2><div class="tblwrap" id="cleanTbl" data-steady></div>
-          <p class="note">Red ✕ marks on the map are records removed by cleaning. Compare the map with thinning off and on: watch the clusters around the Bay Area and the Sierra foothills.</p></div>
-      </div>
-    </div>
+    <div class="row"><button type="button" id="cleanAll">Apply all cleaning filters</button></div>
   </div>
-  <p class="handoff" id="h1" data-steady></p>
+  <p class="result" id="m1" data-steady></p>
+  <figure class="fig"><h3>From download to usable records</h3><div class="tblwrap" id="cleanTbl" data-steady></div></figure>
+  <p class="bridge" id="h1" data-steady></p>
 </section>
 
 <!-- ================= STEP 2 ================= -->
 <section class="step" id="s2" aria-labelledby="s2h">
-  <h2 class="sh" id="s2h"><span class="num" aria-hidden="true">2</span>Choose climate variables</h2>
-  <p class="intro">These are real WorldClim "bioclim" variables (8 of the 19) plus elevation, for every 8 km cell in California. Many of them measure nearly the same thing: summer temperature and the hottest month's temperature both rise as you go downhill, so they are <b>correlated</b>. Correlated predictors (<b>multicollinearity</b>) make the model split credit between them unpredictably, the response curves become hard to read, and the projection can go wrong when climate change breaks the relationship between them. A common rule is to keep only variables with |r| &lt; 0.7, choosing the one that makes more biological sense from each correlated pair.</p>
-  <div class="layout2">
-    <div class="card ctrl">
-      <h3>Candidate variables</h3>
-      <div class="vars" id="varList"></div>
-      <div class="row"><button type="button" id="varAll">Select all</button><button type="button" id="varSuggest">Suggest a set (|r| &lt; 0.7)</button></div>
-      <p class="hint">"Suggest a set" keeps variables in order of how directly they should affect an oak (summer heat, rainfall, winter cold…), skipping any that correlate |r| ≥ 0.7 with one already kept. Tap a square in the matrix to plot that pair.</p>
-      <div class="msg" id="m2" data-steady></div>
-    </div>
-    <div class="grid2">
-      <div class="card"><h2>Correlation matrix (Pearson r)</h2><svg class="mat" id="mat" role="img"></svg>
-        <div class="legend"><span><i class="sw" style="background:#b3261e"></i>|r| ≥ 0.7, too similar</span><span><i class="sw" style="background:#e8b4a8"></i>moderate</span><span><i class="sw" style="background:#eef2f6;border:1px solid var(--line)"></i>weak</span></div></div>
-      <div class="card"><h2 id="pairH">Pair</h2><canvas id="pair" width="420" height="330" role="img"></canvas>
-        <div class="tblwrap" id="vifTbl" style="margin-top:10px" data-steady></div></div>
-    </div>
+  <h2 class="sh" id="s2h"><span class="num" aria-hidden="true">2</span>Describe each record's climate</h2>
+  <p>Each record sits in an 8 km grid cell, and each cell has real WorldClim values: 8 of the 19 "bioclim" variables plus elevation. The model can only learn from the variables you hand it. Many of them measure nearly the same thing: summer temperature and the hottest month's temperature both rise as you go downhill, so they are <b>correlated</b>. Correlated predictors (<b>multicollinearity</b>) make the model split credit between them unpredictably, blur the response curves in step 5, and can mislead the projection in step 7 when warming breaks the link between them. A common rule is to keep only variables with |r| &lt; 0.7, choosing the one that makes more biological sense from each correlated pair. The map now shows the first variable of the pair picked in the matrix, with the records on top.</p>
+  <div class="ctl">
+    <div class="lbl">Candidate variables</div>
+    <div class="vars" id="varList"></div>
+    <div class="row"><button type="button" id="varAll">Select all</button><button type="button" id="varSuggest">Suggest a set (|r| &lt; 0.7)</button></div>
+    <p class="hint">"Suggest a set" keeps variables in order of how directly they should affect an oak (summer heat, rainfall, winter cold…), skipping any that correlate |r| ≥ 0.7 with one already kept.</p>
   </div>
-  <p class="handoff" id="h2" data-steady></p>
+  <p class="result" id="m2" data-steady></p>
+  <div>
+    <figure class="fig"><h3>Correlation across California (Pearson r)</h3><svg class="mat" id="mat" role="img"></svg>
+      <div class="legend"><span><i class="sw" style="background:#b3261e"></i>|r| ≥ 0.7, too similar</span><span><i class="sw" style="background:#e8b4a8"></i>moderate</span><span><i class="sw" style="background:#eef2f6;border:1px solid var(--line)"></i>weak</span></div>
+      <p class="hint">Tap a square to plot that pair and map it.</p></figure>
+    <figure class="fig"><h3 id="pairH">Pair</h3><canvas id="pair" width="620" height="340" role="img" style="max-width:620px;margin:0 auto"></canvas></figure>
+  </div>
+  <figure class="fig"><h3>How redundant is each selected variable?</h3><div class="tblwrap" id="vifTbl" data-steady></div></figure>
+  <p class="bridge" id="h2" data-steady></p>
 </section>
 
 <!-- ================= STEP 3 ================= -->
 <section class="step" id="s3" aria-labelledby="s3h">
-  <h2 class="sh" id="s3h"><span class="num" aria-hidden="true">3</span>Define the study area and background</h2>
-  <p class="intro">MaxEnt has no absences. Instead it compares the records with <b>background points</b>, a random sample of the area the species could have reached. The background answers "what climates were available?" Where you draw that area matters. Too big, and the model learns easy differences (oaks aren't in the Mojave). Too small, and it can't learn what limits the species.</p>
-  <div class="layout">
-    <div class="card ctrl">
-      <h3>Background area</h3>
-      <div class="seg" id="bgSel" role="group" aria-label="Background area"><button type="button" data-v="all" class="on">All of California</button><button type="button" data-v="buf">Within 50 km of records</button></div>
-      <label class="check"><input type="checkbox" id="showBg" checked> <span>Show background points</span></label>
-      <div class="folds">
-        <details class="fold"><summary>Background points are not absences</summary><div><p>An absence says "we looked and it wasn't there." A background point only says "this climate existed in the study area." Some background points will land on blue oak woodland nobody recorded. MaxEnt therefore estimates how the records' climates differ from the available climates, not where the species is absent.</p></div></details>
-      </div>
-      <div class="msg" id="m3" data-steady></div>
-    </div>
-    <div class="vis">
-      <div class="grid2">
-        <div class="card mapcard" data-map="s3"></div>
-        <div class="card"><h2>Records vs background in climate space</h2>
-          <div class="row small">Across: <select id="axX" aria-label="Horizontal axis variable"></select> Up: <select id="axY" aria-label="Vertical axis variable"></select></div>
-          <canvas id="env" width="620" height="420" role="img"></canvas>
-          <div class="legend"><span><i class="dot" style="background:#1b1b1b;box-shadow:0 0 0 2px #fff,0 0 0 3px #333"></i>Record</span><span><i class="dot" style="background:#777;width:7px;height:7px"></i>Background point</span></div>
-          <p class="small muted">Each cell becomes a point placed by its climate. The model's whole job is to find where the dark records sit within the grey cloud of available climates.</p></div>
-      </div>
-    </div>
+  <h2 class="sh" id="s3h"><span class="num" aria-hidden="true">3</span>Decide what to compare them with</h2>
+  <p>Records only say where the oak was found, never where it was absent. So MaxEnt compares the records' climates with <b>background points</b>: a random sample of the area the species could have reached, answering "what climates were available?" Where you draw that area matters. Too big, and the model learns easy differences (oaks aren't in the Mojave). Too small, and it can't learn what limits the species.</p>
+  <div class="ctl">
+    <div class="lbl">Background area</div>
+    <div class="seg" id="bgSel" role="group" aria-label="Background area"><button type="button" data-v="all" class="on">All of California</button><button type="button" data-v="buf">Within 50 km of records</button></div>
+    <label class="check"><input type="checkbox" id="showBg" checked> <span>Show background points</span></label>
   </div>
-  <p class="handoff" id="h3" data-steady></p>
+  <p class="result" id="m3" data-steady></p>
+  <figure class="fig"><h3>Records inside the available climate</h3>
+    <div class="row small">Across: <select id="axX" aria-label="Horizontal axis variable"></select> Up: <select id="axY" aria-label="Vertical axis variable"></select></div>
+    <canvas id="env" width="620" height="400" role="img"></canvas>
+    <div class="legend"><span><i class="dot" style="background:#1b1b1b;box-shadow:0 0 0 2px #fff,0 0 0 3px #333"></i>Record</span><span><i class="dot" style="background:#777;width:7px;height:7px"></i>Background point</span></div>
+    <p class="small muted" style="margin:4px 0 0">Each cell becomes a point placed by its climate instead of its location. The model's whole job is to find where the dark records sit within the grey cloud.</p></figure>
+  <div class="folds"><details class="fold"><summary>Background points are not absences</summary><div><p>An absence says "we looked and it wasn't there." A background point only says "this climate existed in the study area." Some background points land on blue oak woodland nobody recorded. MaxEnt therefore estimates how the records' climates differ from the available climates, not where the species is absent.</p></div></details></div>
+  <p class="bridge" id="h3" data-steady></p>
 </section>
 
 <!-- ================= STEP 4 ================= -->
 <section class="step" id="s4" aria-labelledby="s4h">
-  <h2 class="sh" id="s4h"><span class="num" aria-hidden="true">4</span>Split into training and testing records</h2>
-  <p class="intro">To judge the model honestly, hold some records back. The model is built from the <b>training</b> records and scored in step 6 on the <b>testing</b> records it never saw.</p>
-  <div class="layout">
-    <div class="card ctrl">
-      <h3>How to split</h3>
-      <div class="seg" id="splitSel" role="group" aria-label="How to split"><button type="button" data-v="rand" class="on">Random 75 / 25</button><button type="button" data-v="block">Spatial blocks</button></div>
-      <p class="hint">Random split: testing records sit right next to training records, so the test is easy. Spatial blocks: whole squares about 150 km across are held out, which tests whether the model works in places it hasn't seen. That is a tougher, more honest check.</p>
-      <div class="row"><button type="button" id="newSplit">New split</button></div>
-      <div class="msg" id="m4" data-steady></div>
-    </div>
-    <div class="vis">
-      <div class="grid2">
-        <div class="card mapcard" data-map="s4"></div>
-        <div class="card"><h2>Training and testing records</h2><div class="tblwrap" id="splitTbl" data-steady></div>
-          <p class="note">On the map, filled black dots are training records and orange dots are testing records. In spatial-block mode, the shaded squares are held out.</p></div>
-      </div>
-    </div>
+  <h2 class="sh" id="s4h"><span class="num" aria-hidden="true">4</span>Hold some records back</h2>
+  <p>To judge the model honestly, some records must stay out of the fitting. The model is built from the <b>training</b> records and, in step 6, scored on the <b>testing</b> records it never saw. On the map, black dots are training records and orange dots are testing records.</p>
+  <div class="ctl">
+    <div class="lbl">How to split</div>
+    <div class="seg" id="splitSel" role="group" aria-label="How to split"><button type="button" data-v="rand" class="on">Random 75 / 25</button><button type="button" data-v="block">Spatial blocks</button></div>
+    <p class="hint">Random split: testing records sit right next to training records, so the test is easy. Spatial blocks: whole squares about 150 km across are held out (shaded on the map), which tests whether the model works in places it hasn't seen. That is a tougher, more honest check.</p>
+    <div class="row"><button type="button" id="newSplit">New split</button></div>
   </div>
-  <p class="handoff" id="h4" data-steady></p>
+  <p class="result" id="m4" data-steady></p>
+  <figure class="fig"><h3>Training and testing records</h3><div class="tblwrap" id="splitTbl" data-steady></div></figure>
+  <p class="bridge" id="h4" data-steady></p>
 </section>
 
 <!-- ================= STEP 5 ================= -->
 <section class="step" id="s5" aria-labelledby="s5h">
-  <h2 class="sh" id="s5h"><span class="num" aria-hidden="true">5</span>Fit and tune the model</h2>
-  <p class="intro">MaxEnt finds the climates that are more common at the training records than in the background. Out of all suitability maps that match the records' averages, it picks the most spread-out one (<i>maximum entropy</i>), assuming nothing more than the data show. Then it is worth trying several settings of β, because the best amount of smoothing differs for every species and dataset.</p>
-  <div class="layout">
-    <div class="card ctrl">
-      <h3>Model settings</h3>
-      <div class="formula">suitability ∝ e<sup>λ₁f₁ + λ₂f₂ + …</sup></div>
-      <p class="hint">Each f is a feature, each λ its weight.</p>
-      <div class="seg" id="featSel" role="group" aria-label="Feature types"><button type="button" data-v="L">Linear</button><button type="button" data-v="LQ">+ Quadratic</button><button type="button" data-v="LQH" class="on">+ Hinge</button></div>
-      <label for="beta">Regularization multiplier (β) <span class="val" id="betaV"></span></label><input type="range" id="beta" min="0.1" max="5" step="0.1" value="1" data-d="1" data-nobox>
-      <p class="hint">Low β lets the model chase every record (overfitting). High β forces a simpler, smoother model.</p>
-      <div class="folds">
-        <details class="fold"><summary>Features: linear, quadratic, hinge</summary><div><p>A feature is a transformed copy of a climate variable that the model can give a weight. <b>Linear</b> (x) lets suitability rise or fall steadily. <b>Quadratic</b> (x²) allows a hill: best in the middle, worse at both ends. <b>Hinge</b> features are flat up to a knot and then rise; with several knots the curve can bend almost any way. More feature types means more flexible curves and more risk of overfitting.</p></div></details>
-        <details class="fold"><summary>Weights (λ) and why some are zero</summary><div><p>Every feature gets a weight λ. Positive λ: suitability rises with that feature. Negative: it falls. Zero: the model ignores it. Regularization charges a cost for every nonzero weight, so a feature only keeps its weight if it improves the fit by more than its cost. That is why the model "keeps" only some of its features.</p></div></details>
-        <details class="fold"><summary>Regularization multiplier (β)</summary><div><p>β scales that cost. β = 1 is the MaxEnt default. Raising β makes every weight more expensive, so fewer features survive and the curves smooth out. Lowering it lets the model fit fine wiggles in the training records, which often don't hold for new records. Tuning β means fitting several versions and comparing them on held-out data.</p></div></details>
-        <details class="fold"><summary>Maximum entropy</summary><div><p>Entropy measures how spread out a distribution is. Many suitability maps could match the average climate of the training records. MaxEnt picks the one that is as even as possible across the background while still matching those averages (within the tolerance β allows). It makes no claim the records don't support.</p></div></details>
-        <details class="fold"><summary>The 0–1 output (cloglog)</summary><div><p>MaxEnt's raw output is a relative density: how much more likely each background cell is to hold a record than average, summing to 1 across the study area. The cloglog transform rescales it to a 0–1 score. It is best read as <i>relative</i> suitability, not a true probability of presence, because presence-only data can't tell how common the species really is.</p></div></details>
-        <details class="fold"><summary>Permutation importance</summary><div><p>Shuffle one variable's values among the training and background points, re-score the model, and see how much training AUC drops. A big drop means the model leans on that variable. Correlated variables can hide each other: shuffle one and the other still carries the signal.</p></div></details>
-      </div>
-      <div class="msg" id="m5" data-steady></div>
-    </div>
-    <div class="vis">
-      <div class="grid2">
-        <div class="card mapcard" data-map="s5"></div>
-        <div class="card chart"><h2>Response curves</h2><div class="row small">Variable: <select id="rcVar" aria-label="Response curve variable"></select></div>
-          <div class="legend"><span><i class="sw" style="height:3px;background:var(--accent)"></i>Model</span><span><i class="sw" style="background:rgba(128,128,128,.35)"></i>Outside background</span><span><i class="sw" style="width:2px;height:10px;background:var(--text)"></i>Training record</span></div>
-          <svg id="rc" role="img"></svg><p class="small muted">Suitability as this one variable changes, with every other variable held at its median across the training records.</p></div>
-      </div>
-      <div class="grid2">
-        <div class="card chart"><h2>Which variables matter? (permutation importance)</h2><svg id="imp" role="img"></svg>
-          <p class="small muted">How much training AUC drops when one variable is shuffled, as a share of the total drop.</p></div>
-        <div class="card"><h2>Tuning: compare β values</h2><div class="tblwrap" id="tuneTbl" data-steady></div>
-          <p class="small muted" style="margin:6px 0 0">Each β is fitted with the same records, background, variables, and features; only β changes. Omission uses the threshold rule chosen in step 6. Here the testing records from step 4 do double duty as the tuning check; published studies tune with separate cross-validation folds (or AICc) so the final test stays untouched.</p></div>
-      </div>
-    </div>
+  <h2 class="sh" id="s5h"><span class="num" aria-hidden="true">5</span>Fit the model, then tune it</h2>
+  <p>Now the training records meet the background. MaxEnt finds the climates that are more common at the records than in the background. Out of all suitability maps that match the records' averages, it picks the most spread-out one (<i>maximum entropy</i>), assuming nothing more than the data show. Watch the map fill in as it fits.</p>
+  <div class="ctl">
+    <div class="lbl">Model settings</div>
+    <div class="formula">suitability ∝ e<sup>λ₁f₁ + λ₂f₂ + …</sup></div> <span class="hint">each f is a feature, each λ its weight</span>
+    <div class="seg" id="featSel" role="group" aria-label="Feature types" style="margin-top:8px"><button type="button" data-v="L">Linear</button><button type="button" data-v="LQ">+ Quadratic</button><button type="button" data-v="LQH" class="on">+ Hinge</button></div>
+    <label class="sl" for="beta">Regularization multiplier (β) <span class="val" id="betaV"></span></label><input type="range" id="beta" min="0.1" max="5" step="0.1" value="1" data-d="1" data-nobox>
+    <p class="hint">Low β lets the model chase every record (overfitting). High β forces a simpler, smoother model.</p>
   </div>
-  <p class="handoff" id="h5" data-steady></p>
+  <div class="folds">
+    <details class="fold"><summary>Features: linear, quadratic, hinge</summary><div><p>A feature is a transformed copy of a climate variable that the model can give a weight. <b>Linear</b> (x) lets suitability rise or fall steadily. <b>Quadratic</b> (x²) allows a hill: best in the middle, worse at both ends. <b>Hinge</b> features are flat up to a knot and then rise; with several knots the curve can bend almost any way. More feature types means more flexible curves and more risk of overfitting.</p></div></details>
+    <details class="fold"><summary>Weights (λ) and why some are zero</summary><div><p>Every feature gets a weight λ. Positive λ: suitability rises with that feature. Negative: it falls. Zero: the model ignores it. Regularization charges a cost for every nonzero weight, so a feature only keeps its weight if it improves the fit by more than its cost. That is why the model "keeps" only some of its features.</p></div></details>
+    <details class="fold"><summary>Regularization multiplier (β)</summary><div><p>β scales that cost. β = 1 is the MaxEnt default. Raising β makes every weight more expensive, so fewer features survive and the curves smooth out. Lowering it lets the model fit fine wiggles in the training records, which often don't hold for new records. Tuning β means fitting several versions and comparing them on held-out data.</p></div></details>
+    <details class="fold"><summary>Maximum entropy</summary><div><p>Entropy measures how spread out a distribution is. Many suitability maps could match the average climate of the training records. MaxEnt picks the one that is as even as possible across the background while still matching those averages (within the tolerance β allows). It makes no claim the records don't support.</p></div></details>
+    <details class="fold"><summary>The 0–1 output (cloglog)</summary><div><p>MaxEnt's raw output is a relative density: how much more likely each background cell is to hold a record than average, summing to 1 across the study area. The cloglog transform rescales it to a 0–1 score. Read it as <i>relative</i> suitability, not a true probability of presence, because presence-only data can't tell how common the species really is.</p></div></details>
+    <details class="fold"><summary>Permutation importance</summary><div><p>Shuffle one variable's values among the training and background points, re-score the model, and see how much training AUC drops. A big drop means the model leans on that variable. Correlated variables can hide each other: shuffle one and the other still carries the signal.</p></div></details>
+  </div>
+  <p class="result" id="m5" data-steady></p>
+  <div class="figs2">
+    <figure class="fig chart"><h3>Response curve</h3><div class="row small">Variable: <select id="rcVar" aria-label="Response curve variable"></select></div>
+      <div class="legend"><span><i class="sw" style="height:3px;background:var(--accent)"></i>Model</span><span><i class="sw" style="background:rgba(128,128,128,.35)"></i>Outside background</span><span><i class="sw" style="width:2px;height:10px;background:var(--text)"></i>Training record</span></div>
+      <svg id="rc" role="img"></svg><p class="small muted" style="margin:4px 0 0">Suitability as this one variable changes, with every other variable held at its median across the training records.</p></figure>
+    <figure class="fig chart"><h3>Which variables matter? (permutation importance)</h3><svg id="imp" role="img"></svg>
+      <p class="small muted" style="margin:4px 0 0">How much training AUC drops when one variable is shuffled, as a share of the total drop.</p></figure>
+  </div>
+  <p>One fit is one guess at how smooth the model should be. To check that guess, the same model is refitted at four values of β with everything else held fixed: same records, background, variables, and features.</p>
+  <figure class="fig"><h3>Tuning: compare β values</h3><div class="tblwrap" id="tuneTbl" data-steady></div>
+    <p class="small muted" style="margin:6px 0 0">Omission uses the threshold rule chosen in step 6. Here the testing records from step 4 do double duty as the tuning check; published studies tune with separate cross-validation folds (or AICc) so the final test stays untouched.</p></figure>
+  <p class="bridge" id="h5" data-steady></p>
 </section>
 
 <!-- ================= STEP 6 ================= -->
 <section class="step" id="s6" aria-labelledby="s6h">
-  <h2 class="sh" id="s6h"><span class="num" aria-hidden="true">6</span>Evaluate and threshold</h2>
-  <p class="intro">Now unlock the testing records. <b>AUC</b> asks: if you pick one record and one background point, how often does the record score higher? 0.5 is a coin flip, 1 is perfect. A big gap between training and testing AUC means overfitting. Managers often want a yes/no map, so we also pick a <b>threshold</b>: above it a place is called suitable, below it unsuitable. That cutoff passes to step 7 unchanged.</p>
-  <div class="layout">
-    <div class="card ctrl">
-      <h3>Threshold rule</h3>
-      <div class="seg" id="thrSel" role="group" aria-label="Threshold rule"><button type="button" data-v="mtp">Minimum training presence</button><button type="button" data-v="p10" class="on">10th percentile training</button><button type="button" data-v="sss">Max sensitivity + specificity</button></div>
-      <div class="folds">
-        <details class="fold"><summary>Minimum training presence (MTP)</summary><div><p>The cutoff is the lowest score at any training record, so every training record counts as suitable. It gives the most generous map. One mislocated record with a low score drags the cutoff down for everyone.</p></div></details>
-        <details class="fold"><summary>10th percentile training presence</summary><div><p>The cutoff is the score that 10% of training records fall below. It allows for some bad records. By design about 10% of training records fall below it, so testing omission near 10% means the model transfers; much higher means it doesn't.</p></div></details>
-        <details class="fold"><summary>Max sensitivity + specificity</summary><div><p>Sensitivity is the share of training records called suitable. Specificity is the share of background points called unsuitable. This rule picks the cutoff where their sum is highest, the point that best separates records from background.</p></div></details>
-        <details class="fold"><summary>AUC and omission</summary><div><p>AUC uses every possible cutoff at once, so it doesn't depend on the threshold rule. Omission is the share of testing records that land below the chosen cutoff: places the oak really grows that the map calls unsuitable.</p></div></details>
-        <details class="fold"><summary>TSS (true skill statistic)</summary><div><p>TSS = sensitivity + specificity − 1, using the testing records and the background. 0 is no better than random, 1 is perfect. Because background points stand in for absences (and some are unrecorded oak sites), specificity is underestimated; compare TSS between models here rather than against other studies.</p></div></details>
-      </div>
-      <div class="msg" id="m6" data-steady></div>
-    </div>
-    <div class="vis">
-      <div class="grid2">
-        <div class="card mapcard" data-map="s6"></div>
-        <div class="card chart"><h2>ROC curve</h2>
-          <div class="legend"><span><i class="sw" style="height:3px;background:var(--accent)"></i>Training</span><span><i class="sw" style="height:3px;background:#e8740c"></i>Testing</span><span><i class="sw" style="background:transparent;border:2px dashed var(--muted)"></i>Random (AUC 0.5)</span></div>
-          <svg id="roc" role="img"></svg></div>
-      </div>
-      <div class="grid2">
-        <div class="card"><h2>AUC</h2><div class="tblwrap" id="aucTbl" data-steady></div></div>
-        <div class="card"><h2>Threshold rules compared</h2><div class="tblwrap" id="thrTbl" data-steady></div></div>
-      </div>
-    </div>
+  <h2 class="sh" id="s6h"><span class="num" aria-hidden="true">6</span>Test it, then draw a line</h2>
+  <p>Now unlock the testing records set aside in step 4. <b>AUC</b> asks: if you pick one record and one background point, how often does the record score higher? 0.5 is a coin flip, 1 is perfect. A big gap between training and testing AUC means overfitting.</p>
+  <div class="figs2">
+    <figure class="fig chart"><h3>ROC curve</h3>
+      <div class="legend"><span><i class="sw" style="height:3px;background:var(--accent)"></i>Training</span><span><i class="sw" style="height:3px;background:#e8740c"></i>Testing</span><span><i class="sw" style="background:transparent;border:2px dashed var(--muted)"></i>Random</span></div>
+      <svg id="roc" role="img"></svg></figure>
+    <figure class="fig"><h3>AUC</h3><div class="tblwrap" id="aucTbl" data-steady></div></figure>
   </div>
-  <p class="handoff" id="h6" data-steady></p>
+  <p>Managers usually want a yes/no map, so the 0–1 scores need a <b>threshold</b>: above it a place is called suitable, below it unsuitable. The map now shows that split. Whatever cutoff you choose here is carried, unchanged, into step 7.</p>
+  <div class="ctl">
+    <div class="lbl">Threshold rule</div>
+    <div class="seg" id="thrSel" role="group" aria-label="Threshold rule"><button type="button" data-v="mtp">Minimum training presence</button><button type="button" data-v="p10" class="on">10th percentile training</button><button type="button" data-v="sss">Max sensitivity + specificity</button></div>
+  </div>
+  <div class="folds">
+    <details class="fold"><summary>Minimum training presence (MTP)</summary><div><p>The cutoff is the lowest score at any training record, so every training record counts as suitable. It gives the most generous map. One mislocated record with a low score drags the cutoff down for everyone.</p></div></details>
+    <details class="fold"><summary>10th percentile training presence</summary><div><p>The cutoff is the score that 10% of training records fall below. It allows for some bad records. By design about 10% of training records fall below it, so testing omission near 10% means the model transfers; much higher means it doesn't.</p></div></details>
+    <details class="fold"><summary>Max sensitivity + specificity</summary><div><p>Sensitivity is the share of training records called suitable. Specificity is the share of background points called unsuitable. This rule picks the cutoff where their sum is highest, the point that best separates records from background.</p></div></details>
+    <details class="fold"><summary>Omission and TSS</summary><div><p>Omission is the share of testing records that land below the cutoff: places the oak really grows that the map calls unsuitable. TSS = sensitivity + specificity − 1, using the testing records and the background: 0 is no better than random, 1 is perfect. Because background points stand in for absences (and some are unrecorded oak sites), specificity is underestimated; compare TSS between models here rather than against other studies. AUC, by contrast, uses every possible cutoff at once, so it doesn't depend on the rule.</p></div></details>
+  </div>
+  <p class="result" id="m6" data-steady></p>
+  <figure class="fig"><h3>Threshold rules compared</h3><div class="tblwrap" id="thrTbl" data-steady></div></figure>
+  <p class="bridge" id="h6" data-steady></p>
 </section>
 
 <!-- ================= STEP 7 ================= -->
 <section class="step" id="s7" aria-labelledby="s7h">
-  <h2 class="sh" id="s7h"><span class="num" aria-hidden="true">7</span>Project to a future climate</h2>
-  <p class="intro">Feed the same model a future climate and compare the maps. Here we use a simple scenario: every temperature variable 3 °C warmer, rainfall unchanged, roughly the warming climate models project for California by late this century. Published studies use downscaled climate-model output (CMIP6) instead. Before trusting the future map, check where it <b>extrapolates</b>: places whose future climate is unlike anything the model learned from.</p>
-  <div class="layout">
-    <div class="card ctrl">
-      <h3>Carried from step 6</h3>
-      <p class="carry" id="carry7" data-steady></p>
-      <div class="folds">
-        <details class="fold"><summary>MESS: the extrapolation map</summary><div><p>A multivariate environmental similarity surface (MESS) compares each future cell with the training background, one variable at a time. Inside the background's range it scores how typical the value is (up to 100 at the median). Beyond the range the score goes negative: the farther outside, the more negative. A cell's MESS is its worst score across the variables, so one novel variable is enough to flag it. MESS checks each variable separately; it can miss new <i>combinations</i> of ordinary values.</p></div></details>
-        <details class="fold"><summary>Clamping</summary><div><p>When a future value is hotter than anything in the background, MaxEnt treats it as if it were the hottest value it saw. The response curve is held flat past the edge of the data. That avoids wild predictions, but it is a guess, so suitability in negative-MESS cells is unsupported by data.</p></div></details>
-      </div>
-      <p class="hint">Compare a model that includes Elevation with one that doesn't. Elevation won't warm, so it holds the prediction in place.</p>
-      <div class="msg" id="m7" data-steady></div>
-    </div>
-    <div class="vis">
-      <div class="grid2">
-        <div class="card mapcard" data-map="s7"></div>
-        <div class="card chart"><h2>Suitable area, today vs future</h2><svg id="areaChart" role="img"></svg>
-          <div class="tblwrap" id="projTbl" style="margin-top:10px" data-steady></div></div>
-      </div>
-      <div class="card"><h2>Reading the future map</h2>
-        <p class="small"><b>Suitable is not occupied.</b> A suitable cell has a climate like the places blue oak grows now. Whether oaks will actually grow there depends on things the model never saw: seeds have to get there (acorns mostly travel by gravity, scrub jays, and squirrels, a few hundred meters at a time), soils and fire have to allow it, the land can't be paved or farmed, and seedlings have to survive grazing and drought. Blue oaks live for centuries, so adult trees can persist in a "lost" cell long after new seedlings stop establishing there. Gained area is where conditions may open up, not where the species will be.</p>
-        <p class="small" style="margin-bottom:0"><b>Uncertainty.</b> This map is one model run under one scenario. Different climate models, emission paths, background choices, β values, and threshold rules each shift the result; the threshold rule alone can change today's suitable area a lot (compare the rules in step 6). Published projections run many climate models and report where they agree. Treat the change map as a direction and a magnitude to investigate, and treat purple MESS areas as guesses.</p></div>
-    </div>
+  <h2 class="sh" id="s7h"><span class="num" aria-hidden="true">7</span>Project it into a warmer California</h2>
+  <p>The last step feeds the same fitted model a future climate. Here the scenario is simple: every temperature variable 3 °C warmer, rainfall unchanged, roughly the warming climate models project for California by late this century. Published studies use downscaled climate-model output (CMIP6) instead. <span id="carry7" data-steady></span></p>
+  <p>Before trusting the future map, check where it <b>extrapolates</b>: places whose future climate is unlike anything in the step 3 background. Switch the map to <i>Extrapolation (MESS)</i> to see them in purple.</p>
+  <div class="folds">
+    <details class="fold"><summary>MESS: the extrapolation map</summary><div><p>A multivariate environmental similarity surface (MESS) compares each future cell with the training background, one variable at a time. Inside the background's range it scores how typical the value is (up to 100 at the median). Beyond the range the score goes negative: the farther outside, the more negative. A cell's MESS is its worst score across the variables, so one novel variable is enough to flag it. MESS checks each variable separately; it can miss new <i>combinations</i> of ordinary values.</p></div></details>
+    <details class="fold"><summary>Clamping</summary><div><p>When a future value is hotter than anything in the background, MaxEnt treats it as if it were the hottest value it saw: the response curve is held flat past the edge of the data. That avoids wild predictions, but it is a guess, so suitability in negative-MESS cells is unsupported by data.</p></div></details>
   </div>
-  <p class="handoff" id="h7" data-steady></p>
+  <p class="result" id="m7" data-steady></p>
+  <div class="figs2">
+    <figure class="fig chart"><h3>Suitable area, today vs +3 °C</h3><svg id="areaChart" role="img"></svg></figure>
+    <figure class="fig"><h3>What changed?</h3><div class="tblwrap" id="projTbl" data-steady></div></figure>
+  </div>
+  <p class="hint">Try a model with Elevation in step 2 and one without. Elevation won't warm, so it holds the prediction in place.</p>
+  <p><b>Suitable is not occupied.</b> A suitable cell has a climate like the places blue oak grows now. Whether oaks will actually grow there depends on things the model never saw: acorns have to get there (mostly by gravity, scrub jays, and squirrels, a few hundred meters at a time), soils and fire have to allow it, the land can't be paved or farmed, and seedlings have to survive grazing and drought. Blue oaks live for centuries, so adult trees can persist in a "lost" cell long after new seedlings stop establishing there. Gained area is where conditions may open up, not where the species will be.</p>
+  <p><b>Uncertainty.</b> This map is one model run under one scenario. Different climate models, emission paths, background choices, β values, and threshold rules each shift the result; the threshold rule alone can change today's suitable area a lot (compare the rules in step 6). Published projections run many climate models and report where they agree. Treat the change map as a direction and a magnitude to investigate, and treat purple MESS areas as guesses.</p>
+  <p class="bridge" id="h7" data-steady></p>
 </section>
 
 <!-- ================= METHODS ================= -->
-<section class="step methods" id="methods-sec" aria-labelledby="mh">
-  <h2 class="sh" id="mh"><span class="num" aria-hidden="true">✎</span>Methods, written from your choices</h2>
-  <div class="card">
-    <p id="methods" data-steady></p>
-    <div class="row"><button type="button" id="copyMethods">Copy methods text</button><span class="small muted" id="copyMsg" style="min-width:8em" aria-live="polite"></span></div>
-    <p class="small muted" style="margin:0">This paragraph rewrites itself as you change any step. It describes this teaching model; a real paper would also name the software version, the climate-model scenario, and the cross-validation scheme.</p>
-  </div>
+<section class="step" id="methods-sec" aria-labelledby="mh">
+  <h2 class="sh" id="mh"><span class="num" aria-hidden="true">✎</span>Methods, as you ran them</h2>
+  <p id="methods" data-steady></p>
+  <div class="row"><button type="button" id="copyMethods">Copy methods text</button><span class="small muted" id="copyMsg" style="min-width:8em" aria-live="polite"></span></div>
+  <p class="small muted">This paragraph rewrites itself whenever you change a step. It describes this teaching model; a real paper would also name the software version, the climate-model scenario, and the cross-validation scheme.</p>
 </section>
 
-<p class="cite" style="margin-top:12px">Records: GBIF.org (19 November 2026) GBIF Occurrence Download <a href="https://doi.org/10.15468/dl.bchuqh">https://doi.org/10.15468/dl.bchuqh</a>. Climate: Fick, S. E., &amp; R. J. Hijmans (2017). WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. <i>International Journal of Climatology</i> 37: 4302–4315 (bioclim variables and elevation, averaged here to 5 arc-minutes). The future scenario is a simple +3 °C shift for teaching, not a climate-model projection. Method: Phillips, S. J., R. P. Anderson, &amp; R. E. Schapire (2006). Maximum entropy modeling of species geographic distributions. <i>Ecological Modelling</i> 190: 231–259. Elith, J., et al. (2011). A statistical explanation of MaxEnt for ecologists. <i>Diversity and Distributions</i> 17: 43–57. Dormann, C. F., et al. (2013). Collinearity: a review of methods to deal with it. <i>Ecography</i> 36: 27–46. Zizka, A., et al. (2019). CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases. <i>Methods in Ecology and Evolution</i> 10: 744–751. Muscarella, R., et al. (2014). ENMeval: an R package for conducting spatially independent evaluations and estimating optimal model complexity for Maxent ecological niche models. <i>Methods in Ecology and Evolution</i> 5: 1198–1205. Radosavljevic, A., &amp; R. P. Anderson (2014). Making better Maxent models of species distributions: complexity, overfitting and evaluation. <i>Journal of Biogeography</i> 41: 629–643. Liu, C., et al. (2005). Selecting thresholds of occurrence in the prediction of species distributions. <i>Ecography</i> 28: 385–393. Allouche, O., A. Tsoar, &amp; R. Kadmon (2006). Assessing the accuracy of species distribution models: prevalence, kappa and the true skill statistic (TSS). <i>Journal of Applied Ecology</i> 43: 1223–1232. Elith, J., M. Kearney, &amp; S. Phillips (2010). The art of modelling range-shifting species. <i>Methods in Ecology and Evolution</i> 1: 330–342 (MESS). The model here is a simplified MaxEnt written for teaching.</p>
+</article>
+</div>
+
+<p class="cite">Records: GBIF.org (19 November 2026) GBIF Occurrence Download <a href="https://doi.org/10.15468/dl.bchuqh">https://doi.org/10.15468/dl.bchuqh</a>. Climate: Fick, S. E., &amp; R. J. Hijmans (2017). WorldClim 2: new 1-km spatial resolution climate surfaces for global land areas. <i>International Journal of Climatology</i> 37: 4302–4315 (bioclim variables and elevation, averaged here to 5 arc-minutes). The future scenario is a simple +3 °C shift for teaching, not a climate-model projection. Method: Phillips, S. J., R. P. Anderson, &amp; R. E. Schapire (2006). Maximum entropy modeling of species geographic distributions. <i>Ecological Modelling</i> 190: 231–259. Elith, J., et al. (2011). A statistical explanation of MaxEnt for ecologists. <i>Diversity and Distributions</i> 17: 43–57. Dormann, C. F., et al. (2013). Collinearity: a review of methods to deal with it. <i>Ecography</i> 36: 27–46. Zizka, A., et al. (2019). CoordinateCleaner: standardized cleaning of occurrence records from biological collection databases. <i>Methods in Ecology and Evolution</i> 10: 744–751. Muscarella, R., et al. (2014). ENMeval: an R package for conducting spatially independent evaluations and estimating optimal model complexity for Maxent ecological niche models. <i>Methods in Ecology and Evolution</i> 5: 1198–1205. Radosavljevic, A., &amp; R. P. Anderson (2014). Making better Maxent models of species distributions: complexity, overfitting and evaluation. <i>Journal of Biogeography</i> 41: 629–643. Liu, C., et al. (2005). Selecting thresholds of occurrence in the prediction of species distributions. <i>Ecography</i> 28: 385–393. Allouche, O., A. Tsoar, &amp; R. Kadmon (2006). Assessing the accuracy of species distribution models: prevalence, kappa and the true skill statistic (TSS). <i>Journal of Applied Ecology</i> 43: 1223–1232. Elith, J., M. Kearney, &amp; S. Phillips (2010). The art of modelling range-shifting species. <i>Methods in Ecology and Evolution</i> 1: 330–342 (MESS). The model here is a simplified MaxEnt written for teaching.</p>
 </div>
 
 
@@ -625,51 +640,55 @@ function tuneRows(){
 function tuneBest(rows){const done=rows.filter(x=>x.r);if(done.length<BETAS.length)return null;
   const mx=Math.max(...done.map(x=>x.r.te));return done.filter(x=>x.r.te>=mx-0.002).sort((a,b)=>a.gap-b.gap)[0]}
 
-/* ---------- maps (one per step) ---------- */
+/* ---------- one map that follows the analysis: it shows whichever step is on screen ---------- */
 const RAMP={
   suit:[[0,[246,241,226]],[.2,[233,224,170]],[.45,[176,204,128]],[.7,[82,150,104]],[1,[22,88,78]]],
   E:[[0,[150,184,124]],[.1,[198,208,146]],[.3,[216,194,146]],[.55,[176,146,114]],[.8,[160,156,152]],[1,[248,248,248]]],
+  T:[[0,[49,84,149]],[.25,[116,173,209]],[.5,[250,246,200]],[.75,[244,140,80]],[1,[165,20,38]]],
+  P:[[0,[245,236,205]],[.25,[199,226,180]],[.5,[110,190,190]],[.75,[44,127,184]],[1,[18,52,120]]],
   mess:[[0,[84,39,143]],[.3,[150,110,200]],[.499,[214,196,236]],[.5,[236,234,222]],[1,[134,168,128]]]};
 function ramp(st,t){t=clamp(t,0,1);for(let k=1;k<st.length;k++)if(t<=st[k][0]){const[a,ca]=st[k-1],[b,cb]=st[k],u=(t-a)/(b-a);return ca.map((v,i)=>v+(cb[i]-v)*u)}return st[st.length-1][1]}
 const rampCSS=st=>'linear-gradient(90deg,'+st.map(([t,c])=>`rgb(${c.map(Math.round)}) ${t*100}%`).join(',')+')';
 const CAT={kept:[47,125,91],lost:[217,130,43],gained:[59,116,196],none:[241,238,227],yes:[47,125,91]};
-const LAYERS={terrain:'Terrain',model:'Model prediction',binary:'Suitable / not',future:'Future prediction',change:'Change',mess:'Extrapolation (MESS)'};
-const STEP_LAYERS={s1:['terrain'],s3:['terrain'],s4:['terrain'],s5:['model','terrain'],s6:['binary','model'],s7:['future','change','mess']};
-const CAPTION={s1:'Raw and cleaned records on terrain',s3:'Background sample and study area',s4:'Training and testing records'};
-const MAP_STEPS=Object.keys(STEP_LAYERS);
-const MAPS={};
+const STEP_LAYERS={s1:['terrain'],s2:['clim0','clim1'],s3:['terrain'],s4:['terrain'],s5:['model','terrain'],s6:['binary','model'],s7:['future','change','mess']};
+const STEP_TITLE={s1:'Records, raw and cleaned',s2:'Climate at each record',s3:'Background sample',s4:'Training and testing records',s5:'Fitted model',s6:'Suitable / not at the cutoff',s7:'+3 °C projection','methods-sec':'+3 °C projection'};
+const layerName=L=>L==='clim0'||L==='clim1'?VARS[S.pair[L==='clim0'?0:1]].code+' '+VARS[S.pair[L==='clim0'?0:1]].short:{terrain:'Terrain',model:'Model prediction',binary:'Suitable / not',future:'Future prediction',change:'Change',mess:'Extrapolation (MESS)'}[L];
+const STEPS=['s1','s2','s3','s4','s5','s6','s7','methods-sec'];
+let CUR='s1';
+const mapStep=()=>CUR==='methods-sec'?'s7':CUR;
+const badgeVis=()=>{$('#badge').style.visibility=['s5','s6','s7'].includes(mapStep())?'visible':'hidden'};
+const mapC=$('#map'),mx=mapC.getContext('2d');
 const off=document.createElement('canvas');off.width=GW;off.height=GH;const offx=off.getContext('2d');const img=offx.createImageData(GW,GH);
 const OCEAN=[188,215,232],OTHER=[226,226,220];
+function climRamp(k){const v=VARS[k];return v.kind==='T'?RAMP.T:v.kind==='E'?RAMP.E:RAMP.P}
 function cellColor(i,L){
   const thr=ST?ST.thr:lastThr;
   switch(L){
     case'terrain':return ramp(RAMP.E,elev[i]/4);
+    case'clim0':case'clim1':{const k=S.pair[L==='clim0'?0:1];return ramp(climRamp(k),(ENV0[k][i]-VMIN[k])/((VMAX[k]-VMIN[k])||1))}
     case'model':return ramp(RAMP.suit,PRED0[i]);
     case'future':return ramp(RAMP.suit,PRED1[i]);
     case'binary':return PRED0[i]>=thr?CAT.yes:CAT.none;
     case'change':{const a=PRED0[i]>=thr,b=PRED1[i]>=thr;return a&&b?CAT.kept:a?CAT.lost:b?CAT.gained:CAT.none}
-    case'mess':{const m=MESS[i];return m<0?ramp(RAMP.mess,0.5+Math.max(m,-50)/100):ramp(RAMP.mess,0.5+Math.min(m,50)/100)}
+    case'mess':{const m=MESS[i];return ramp(RAMP.mess,0.5+clamp(m,-50,50)/100)}
   }}
-function initMaps(){
-  $$('.mapcard[data-map]').forEach(card=>{const st=card.dataset.map;
-    card.innerHTML=`<div class="maphead">${STEP_LAYERS[st].length>1?`<div class="seg" id="vs_${st}" role="group" aria-label="Map layer for step ${st.slice(1)}"></div>`:`<span class="cap">${CAPTION[st]}</span>`}</div>
-      <div class="stage"><canvas id="map_${st}" width="576" height="656" role="img"></canvas>${st==='s5'?'<span class="badge" id="badge" aria-hidden="true"></span>':''}</div>
-      <div class="cbar" aria-hidden="true"><span id="cbLo_${st}"></span><i id="cbGrad_${st}"></i><span id="cbHi_${st}"></span></div>
-      <div class="legend mapleg" id="leg_${st}" aria-hidden="true" data-steady></div>`;
-    const c=$('#map_'+st);MAPS[st]={c,x:c.getContext('2d')};
-    if(STEP_LAYERS[st].length>1){$('#vs_'+st).innerHTML=STEP_LAYERS[st].map(l=>`<button type="button" data-v="${l}" class="${S.layer[st]===l?'on':''}">${LAYERS[l]}</button>`).join('');seg('vs_'+st,v=>{S.layer[st]=v;drawMap(st)})}
-  });
+function setLayers(){
+  const st=mapStep(),ls=STEP_LAYERS[st],el=$('#viewSel');
+  if(!ls.includes(S.layer[st]))S.layer[st]=ls[0];
+  $('#paneStep').innerHTML=`<b>${CUR==='methods-sec'?'✎':'Step '+st.slice(1)}</b> · ${STEP_TITLE[CUR]}`;
+  el.innerHTML=ls.length>1?ls.map(l=>`<button type="button" data-v="${l}" class="${S.layer[st]===l?'on':''}">${layerName(l)}</button>`).join(''):'';
+  el.style.display=ls.length>1?'':'none';
+  if(ls.length>1)seg('viewSel',v=>{S.layer[mapStep()]=v;drawMap()});
 }
-const VISIBLE=new Set();
-function drawMap(st){
-  const mp=MAPS[st];if(!mp)return;const mapC=mp.c,mx=mp.x,SX=mapC.width/GW,SY=mapC.height/GH;
+function drawMap(){
+  const st=mapStep(),SX=mapC.width/GW,SY=mapC.height/GH;
   const PX=lon=>gx(lon)*SX, PY=lat=>gy(lat)*SY, cellXY=c=>[(c%GW+.5)*SX,(((c/GW)|0)+.5)*SY];
   const L=S.layer[st];
-  for(let i=0;i<N;i++){const c=INSIDE[i]?cellColor(i,L):LAND[i]?OTHER:OCEAN,sh=INSIDE[i]?shade[i]:1,o=i*4;img.data[o]=c[0]*sh;img.data[o+1]=c[1]*sh;img.data[o+2]=c[2]*sh;img.data[o+3]=255}
+  for(let i=0;i<N;i++){const c=INSIDE[i]?cellColor(i,L):LAND[i]?OTHER:OCEAN,sh=INSIDE[i]&&L!=='clim0'&&L!=='clim1'?shade[i]:1,o=i*4;img.data[o]=c[0]*sh;img.data[o+1]=c[1]*sh;img.data[o+2]=c[2]*sh;img.data[o+3]=255}
   offx.putImageData(img,0,0);
   const W=mapC.width,H=mapC.height;
   mx.clearRect(0,0,W,H);mx.imageSmoothingEnabled=!['binary','change'].includes(L);mx.drawImage(off,0,0,W,H);
-  const showBuf=S.bg==='buf'&&ACC_BUF&&st!=='s1';
+  const showBuf=S.bg==='buf'&&ACC_BUF&&st>='s3';
   if(showBuf){mx.fillStyle='rgba(40,46,56,.42)';CELLS.forEach(i=>{if(!ACC_BUF[i])mx.fillRect((i%GW)*SX,((i/GW)|0)*SY,SX+.6,SY+.6)})}
   if(st==='s4'&&S.split==='block'){for(let by=0;by*16<GH;by++)for(let bx=0;bx*20<GW;bx++){if((bx+2*by+S.splitSeed)%4===0){mx.fillStyle='rgba(232,116,12,.18)';mx.fillRect(bx*20*SX,by*16*SY,20*SX,16*SY)}}
     mx.strokeStyle='rgba(60,60,60,.45)';mx.lineWidth=1;for(let k=0;k*20<=GW;k++){mx.beginPath();mx.moveTo(k*20*SX,0);mx.lineTo(k*20*SX,H);mx.stroke()}for(let k=0;k*16<=GH;k++){mx.beginPath();mx.moveTo(0,k*16*SY);mx.lineTo(W,k*16*SY);mx.stroke()}}
@@ -688,7 +707,7 @@ function drawMap(st){
   const tt=st==='s4'||st==='s5'||st==='s6';
   if(st==='s1'){REMOVED.forEach(r=>{const[x,y]=recXY(r);if(x>=0&&x<=W&&y>=0&&y<=H)cross(x,y)});USED.forEach(r=>{const[x,y]=recXY(r);dot(x,y,'#1b1b1b')})}
   else if(tt){TRAIN.forEach(c=>{const[x,y]=cellXY(c);dot(x,y,'#1b1b1b')});TEST.forEach(c=>{const[x,y]=cellXY(c);dot(x,y,'#e8740c',R0+.4)})}
-  else if(st==='s3')USED.forEach(r=>{const[x,y]=cellXY(r.c);dot(x,y,'#1b1b1b')});
+  else if(st==='s2'||st==='s3')USED.forEach(r=>{const[x,y]=cellXY(r.c);dot(x,y,'#1b1b1b',st==='s2'?Math.min(R0,2.4):R0)});
   const lab=(t,x,y,al,f)=>{mx.font=f||'600 12px system-ui,Arial,sans-serif';mx.textAlign=al||'left';mx.lineJoin='round';mx.lineWidth=4;mx.strokeStyle='rgba(255,255,255,.85)';mx.strokeText(t,x,y);mx.fillStyle='#1f2933';mx.fillText(t,x,y)};
   CITIES.forEach(([n,lo,la,al])=>{const x=PX(lo),y=PY(la);mx.fillStyle='#fff';mx.fillRect(x-3.5,y-3.5,7,7);mx.strokeStyle='#222';mx.lineWidth=1.4;mx.strokeRect(x-3.5,y-3.5,7,7);lab(n,x+(al==='l'?-8:8),y+4,al==='l'?'right':'left')});
   const it='italic 600 13px Georgia,serif';
@@ -697,18 +716,27 @@ function drawMap(st){
   mx.beginPath();mx.moveTo(W-30,24);mx.lineTo(W-38,44);mx.lineTo(W-30,39);mx.lineTo(W-22,44);mx.closePath();mx.fillStyle='#222';mx.fill();mx.fillText('N',W-30,18);
   let grad,lo,hi;const solid=a=>'linear-gradient(90deg,'+a.map((c,k)=>`rgb(${c}) ${k/a.length*100}% ${(k+1)/a.length*100}%`).join(',')+')';
   if(L==='terrain'){grad=rampCSS(RAMP.E);lo='0 m';hi='4,000 m'}
+  else if(L==='clim0'||L==='clim1'){const k=S.pair[L==='clim0'?0:1],v=VARS[k];grad=rampCSS(climRamp(k));lo=`${fmtTick(+VMIN[k].toFixed(1))} ${v.unit}`;hi=`${fmtTick(+VMAX[k].toFixed(1))} ${v.unit}`}
   else if(L==='binary'){grad=solid([CAT.none,CAT.yes]);lo='Unsuitable';hi='Suitable'}
   else if(L==='change'){grad=solid([CAT.lost,CAT.kept,CAT.gained]);lo='Lost';hi='Gained'}
-  else if(L==='mess'){grad=rampCSS(RAMP.mess);lo='Novel (MESS < 0)';hi='Similar'}
+  else if(L==='mess'){grad=rampCSS(RAMP.mess);lo='Novel (< 0)';hi='Similar'}
   else{grad=rampCSS(RAMP.suit);lo='Unsuitable';hi='Suitable'}
-  $('#cbGrad_'+st).style.background=grad;$('#cbLo_'+st).textContent=lo;$('#cbHi_'+st).textContent=hi;
-  legend($('#leg_'+st),[['#1b1b1b','Record','dot',st==='s1'||st==='s3'],['#1b1b1b','Training record','dot',tt],['#e8740c','Testing record','dot',tt],['#c4271b','Removed record','sw',st==='s1'],
+  badgeVis();$('#cbGrad').style.background=grad;$('#cbLo').textContent=lo;$('#cbHi').textContent=hi;
+  legend($('#mapLeg'),[['#1b1b1b','Record','dot',['s1','s2','s3'].includes(st)],['#1b1b1b','Training record','dot',tt],['#e8740c','Testing record','dot',tt],['#c4271b','Removed record','sw',st==='s1'],
     ['rgba(25,25,25,.7)','Background point','bg',st==='s3'&&S.showBg],['rgb(150,60,40)','Highway','line'],['rgba(40,46,56,.6)','Outside background','sw',!!showBuf],['rgb(217,130,43)','Lost','sw',L==='change'],['rgb(47,125,91)','Kept','sw',L==='change'],['rgb(59,116,196)','Gained','sw',L==='change']]);
-  const d={terrain:'shaded terrain: Coast Ranges along the coast, Central Valley in the middle, Sierra Nevada to the east, deserts in the southeast',model:'the model\'s predicted suitability for blue oak today',future:'predicted suitability under the +3 °C scenario',binary:'suitable versus unsuitable at the step 6 cutoff',change:'places lost, kept, and gained as suitable by the future',mess:`extrapolation: cells whose future climate falls outside the training background are purple${ST?` (${pct(ST.nov)} of the state)`:''}`}[L];
-  const extra={s1:`${nf_(USED.length)} records kept, ${nf_(REMOVED.length)} removed by cleaning shown as red crosses.`,s3:`${nf_(BG.length)} background points ${S.bg==='all'?'across California':'within 50 km of records'}.`,s4:`${nf_(TRAIN.length)} training and ${nf_(TEST.length)} testing records.`,s5:`${nf_(TRAIN.length)} training and ${nf_(TEST.length)} testing records.`,s6:`${nf_(TRAIN.length)} training and ${nf_(TEST.length)} testing records.`,s7:''}[st];
-  mapC.setAttribute('aria-label',`Step ${st.slice(1)} map of California showing ${d}. ${extra}`);
+  const d=L==='clim0'||L==='clim1'?`${VARS[S.pair[L==='clim0'?0:1]].name} across California with the records on top`:{terrain:'shaded terrain: Coast Ranges along the coast, Central Valley in the middle, Sierra Nevada to the east, deserts in the southeast',model:'the model\'s predicted suitability for blue oak today',future:'predicted suitability under the +3 °C scenario',binary:'suitable versus unsuitable at the step 6 cutoff',change:'places lost, kept, and gained as suitable by the future',mess:`extrapolation: cells whose future climate falls outside the training background are purple${ST?` (${pct(ST.nov)} of the state)`:''}`}[L];
+  const extra={s1:`${nf_(USED.length)} records kept, ${nf_(REMOVED.length)} removed by cleaning shown as red crosses.`,s2:'',s3:`${nf_(BG.length)} background points ${S.bg==='all'?'across California':'within 50 km of records'}.`,s4:`${nf_(TRAIN.length)} training and ${nf_(TEST.length)} testing records.`,s5:`${nf_(TRAIN.length)} training and ${nf_(TEST.length)} testing records.`,s6:`${nf_(TRAIN.length)} training and ${nf_(TEST.length)} testing records.`,s7:''}[st];
+  mapC.setAttribute('aria-label',`Map for step ${st.slice(1)}, showing ${d}. ${extra}`);
 }
-const drawAllMaps=()=>MAP_STEPS.forEach(drawMap);
+/* move the analysis to a step: map, layer buttons, running results, and the line between steps */
+function setCur(id){
+  if(!STEPS.includes(id)||id===CUR)return;
+  const oldMap=mapStep();CUR=id;
+  const ci=STEPS.indexOf(CUR);
+  $$('section.step').forEach(s=>{const k=STEPS.indexOf(s.id);s.classList.toggle('done',k<ci);s.classList.toggle('cur',k===ci)});
+  $$('#ledger li').forEach(li=>{const k=STEPS.indexOf(li.dataset.s);li.className=k<ci?'past':k===ci?'cur':'later';const b=li.querySelector('button');k===ci?b.setAttribute('aria-current','step'):b.removeAttribute('aria-current')});
+  setLayers();drawMap();
+}
 
 /* ---------- step visuals ---------- */
 const fmtA=v=>v>=1000?(v/1000).toFixed(v>=10000?0:1)+'k':String(v);
@@ -732,7 +760,7 @@ function renderMatrix(){
     s+=`<rect class="cell" data-a="${a}" data-b="${b}" x="${L+b*cs+1}" y="${T+a*cs+1}" width="${cs-2}" height="${cs-2}" rx="4" fill="${a===b?'#d9dee5':corrColor(r)}" opacity="${sel||a===b?1:.35}" stroke="${pk?'var(--text)':'none'}" stroke-width="2.5"/>`;
     s+=`<text x="${L+b*cs+cs/2}" y="${T+a*cs+cs/2+4}" text-anchor="middle" style="fill:${Math.abs(r)>=.7&&a!==b?'#fff':'#1d2530'};font-size:11px;font-weight:600;pointer-events:none;opacity:${sel||a===b?1:.5}">${a===b?'':r.toFixed(2).replace('0.','.').replace('-.','−.')}</text>`}
   const svg=$('#mat');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;
-  $$('rect.cell',svg).forEach(r=>r.onclick=()=>{const a=+r.dataset.a,b=+r.dataset.b;if(a===b)return;S.pair=[a,b];renderMatrix();renderPair()});
+  $$('rect.cell',svg).forEach(r=>r.onclick=()=>{const a=+r.dataset.a,b=+r.dataset.b;if(a===b)return;S.pair=[a,b];renderMatrix();renderPair();if(mapStep()==='s2'){setLayers();drawMap()}});
   const pairs=[];for(let a=0;a<n;a++)for(let b=a+1;b<n;b++)if(Math.abs(CORR[a][b])>=.7)pairs.push(`${VARS[a].code} and ${VARS[b].code} (r = ${CORR[a][b].toFixed(2)})`);
   svg.setAttribute('aria-label','Correlation matrix of the nine variables across California. Pairs with |r| of 0.7 or more: '+pairs.join('; ')+'.');
 }
@@ -787,7 +815,7 @@ function renderRC(){
   $('#rc').setAttribute('aria-label',`Response curve for ${v.name}: model suitability peaks at ${best[1].toFixed(2)} near ${best[0].toFixed(0)} ${v.unit}.`);
 }
 function renderImp(){
-  if(!ST)return;const SVs=ST.SV,W=520,H=20+SVs.length*30,L=160;let s='';
+  if(!ST)return;const SVs=ST.SV,W=520,H=20+NV*30,L=160;let s='';
   SVs.forEach((k,a)=>{const v=ST.imp[a],y=10+a*30,w=(W-L-60)*v;s+=`<text x="${L-8}" y="${y+15}" text-anchor="end" style="fill:var(--text)">${VARS[k].code} ${VARS[k].short}</text><rect x="${L}" y="${y}" width="${Math.max(1,w)}" height="20" rx="3" fill="var(--accent)"/><text x="${L+w+6}" y="${y+15}">${Math.round(v*100)}%</text>`});
   const svg=$('#imp');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.innerHTML=s;
   svg.setAttribute('aria-label','Permutation importance: '+SVs.map((k,a)=>`${VARS[k].code} ${Math.round(ST.imp[a]*100)}%`).join(', '));
@@ -800,7 +828,7 @@ function renderTune(){
       <td class="n">${r?f3(r.te):'…'}</td><td class="n ${r&&x.gap>0.02?'bad':''}">${r?f3(x.gap):'…'}</td><td class="n">${r?pct(x.om):'…'}</td><td class="n">${r?`${r.nz}/${r.nf}`:'…'}</td>
       <td class="n"><button type="button" data-beta="${x.b}" ${x.b===cur?'disabled':''} aria-label="Use beta ${x.b}">${x.b===cur?'In use':'Use'}</button></td></tr>`});
   const pending=rows.some(x=>!x.r);
-  h+=`</table><p class="small" style="margin:6px 0 0;min-height:2.6em">${!FIT?'Select variables to fit a model.':pending?'Fitting the other β values in the background…':best?`★ Best by test AUC (ties go to the smaller training–testing gap): <b>β = ${best.b}</b>.${best.b!==cur?' Tap Use to switch the main model to it.':' The main model already uses it.'}`:''}</p>`;
+  h+=`</table><p class="small" style="margin:6px 0 0;min-height:4.5em">${!FIT?'Select variables to fit a model.':pending?'Fitting the other β values in the background…':best?`★ Best by test AUC (ties go to the smaller training–testing gap): <b>β = ${best.b}</b>.${best.b!==cur?' Tap Use to switch the main model to it.':' The main model already uses it.'}`:''}</p>`;
   $('#tuneTbl').innerHTML=h;
   $$('#tuneTbl button[data-beta]').forEach(b=>b.onclick=()=>{const v=+b.dataset.beta;beta.value=v;showVals();S.beta=v;later('fit')});
 }
@@ -813,9 +841,9 @@ function renderEval(){if(!ST)return;const s=ST,gap=s.tr-s.te,used=S.bg==='all';
    <tr><td>Training AUC</td><td class="n">${f3(s.tr)}</td></tr>
    <tr><td>Testing AUC</td><td class="n">${f3(s.te)}</td></tr>
    <tr><td>Gap (training − testing)</td><td class="n ${gap>0.02?'bad':'ok'}">${f3(gap)}</td></tr>
-   <tr class="${used?'sel':''}"><td>Testing AUC vs all-California background${used?' (used to fit)':''}</td><td class="n">${f3(s.aucAll)}</td></tr>
-   <tr class="${used?'':'sel'}"><td>Testing AUC vs 50 km background${used?'':' (used to fit)'}</td><td class="n">${f3(s.aucBuf)}</td></tr></table>
-   <p class="small muted" style="margin:6px 0 0">The last two rows score the <i>same</i> model on the <i>same</i> testing records. Only the background they are compared against changes. A big study area is full of easy contrasts (desert, alpine), so AUC rises without the model getting any better. Compare AUC only between models built on the same background.</p>`;
+   <tr class="${used?'sel':''}"><td>Testing AUC vs all-California background</td><td class="n">${f3(s.aucAll)}</td></tr>
+   <tr class="${used?'':'sel'}"><td>Testing AUC vs 50 km background</td><td class="n">${f3(s.aucBuf)}</td></tr></table>
+   <p class="small muted" style="margin:6px 0 0">The highlighted row is the background the model was fitted with. The last two rows score the <i>same</i> model on the <i>same</i> testing records. Only the background they are compared against changes. A big study area is full of easy contrasts (desert, alpine), so AUC rises without the model getting any better. Compare AUC only between models built on the same background.</p>`;
   let t=`<table class="t"><tr><th>Rule</th><th class="n">Cutoff</th><th class="n">Test omission</th><th class="n">TSS</th><th class="n">Suitable area</th></tr>`;
   ['mtp','p10','sss'].forEach(r=>{const x=s.rules[r];t+=`<tr class="${S.thr===r?'sel':''}"><td>${RULE_SHORT[r]}</td><td class="n">${f2(x.t)}</td><td class="n ${x.om>0.2?'bad':''}">${pct(x.om)}</td><td class="n">${f2(x.tss)}</td><td class="n">${fmtA(x.area)} km²</td></tr>`});
   $('#thrTbl').innerHTML=t+`</table><p class="small muted" style="margin:6px 0 0">The highlighted rule is the one in use; its cutoff passes to step 7. ${S.thr==='p10'?'With the 10th percentile rule, about 10% of training records fall below the cutoff by design, so testing omission near 10% is expected.':S.thr==='mtp'?'With MTP, no training record falls below the cutoff, so any testing omission comes from new places the model didn\'t learn.':'Max SSS balances catching records against calling the whole background suitable.'} With real data there is no "true" map to check against, so held-out testing records are the best evidence you have.</p>`}
@@ -870,30 +898,33 @@ function msgFor(st){
 }
 let lastTouched=null;
 function messages(){
-  ['s1','s2','s3','s4','s5','s6','s7'].forEach(st=>{const m=msgFor(st),el=$('#m'+st.slice(1));el.className='msg'+(m.warn?' warn':'');el.textContent=m.t;if(st===lastTouched)$('#liveMsg').textContent=m.t});
+  ['s1','s2','s3','s4','s5','s6','s7'].forEach(st=>{const m=msgFor(st),el=$('#m'+st.slice(1));el.className='result'+(m.warn?' warn':'');el.textContent=m.t;if(st===lastTouched)$('#liveMsg').textContent=m.t});
 }
+/* the sentence at the end of each step that carries its result into the next */
 function handoffs(){
   const sel=selIdx(),cells=new Set(USED.map(r=>r.c)).size,accN=ACC?CELLS.filter(i=>ACC[i]).length:0;
   const H=(id,h)=>{$('#'+id).innerHTML=h};
-  H('h1',`<b>Hands to step 2 →</b> ${nf_(USED.length)} records in ${nf_(cells)} grid cells, each with values for all ${NV} candidate variables.`);
-  H('h2',sel.length?`<b>Hands to step 3 →</b> ${sel.length} predictor${sel.length>1?'s':''}: ${sel.map(k=>VARS[k].code).join(', ')}. Highest remaining correlation |r| = ${f2(maxR(sel))}.`:'<b>Stopped:</b> no predictors selected, so steps 5–7 can\'t run.');
-  H('h3',`<b>Hands to step 4 →</b> ${nf_(BG.length)} background points drawn from ${nf_(accN)} cells (about ${fmtA(accN*CELL_KM2)} km²) ${S.bg==='all'?'covering all of California':'within 50 km of the records'}.`);
-  H('h4',`<b>Hands to step 5 →</b> ${nf_(TRAIN.length)} training records to build the model. The ${nf_(TEST.length)} testing records stay locked away until step 6.`);
-  H('h5',!FIT?'<b>Stopped:</b> no model to pass on.':FIT.done?`<b>Hands to step 6 →</b> a fitted model (β = ${S.beta}, ${FEAT_NAME[S.feat]} features, ${nonzero(FIT)} of ${FIT.nf} features kept) and a 0–1 suitability score for all ${nf_(CELLS.length)} cells.`:'<b>Fitting…</b> the suitability map passes to step 6 when the fit finishes.');
-  H('h6',ST?`<b>Hands to step 7 →</b> the cutoff ${f2(ST.thr)} (${RULE[S.thr]}). Step 7 reuses it unchanged, so today and the future are judged by the same yardstick.`:'<b>Waiting</b> for the model to finish fitting.');
-  H('h7',ST?`<b>Hands to the write-up →</b> today and future maps at the same cutoff, a ${(()=>{const ch=ST.a0?Math.round((ST.a1-ST.a0)/ST.a0*100):0;return sgn(ch)})()}% change in suitable area, and a MESS map of where the projection extrapolates.`:'<b>Waiting</b> for the model to finish fitting.');
-  $('#carry7').innerHTML=ST?`Cutoff <b>${f2(ST.thr)}</b> (${RULE[S.thr]}), used unchanged on today's and the future map. Change the rule in step 6 to see how it shifts.`:'Waiting for step 6…';
+  const ch=ST&&ST.a0?Math.round((ST.a1-ST.a0)/ST.a0*100):0;
+  H('h1',`That leaves <b>${nf_(USED.length)} records</b> in ${nf_(cells)} grid cells. Next, each of those cells needs a description of its climate.`);
+  H('h2',sel.length?`Each record is now described by <b>${sel.length} variable${sel.length>1?'s':''}</b> (${sel.map(k=>VARS[k].code).join(', ')}), with the most similar pair at |r| = ${f2(maxR(sel))}. Next, decide which climates to compare them with.`:'<b>No variables are selected</b>, so the analysis stops here. Pick at least one above.');
+  H('h3',`The ${nf_(USED.length)} records will be compared with <b>${nf_(BG.length)} background points</b> drawn from ${nf_(accN)} cells (about ${fmtA(accN*CELL_KM2)} km²) ${S.bg==='all'?'across all of California':'within 50 km of the records'}. Before fitting, set some records aside for testing.`);
+  H('h4',`<b>${nf_(TRAIN.length)} training records</b> go into the model, together with the background and the ${sel.length} variables. The other <b>${nf_(TEST.length)}</b> stay locked away until step 6.`);
+  H('h5',!FIT?'<b>No model</b> could be fitted with the current choices.':FIT.done?`The fitted model (β = ${S.beta}, ${FEAT_NAME[S.feat]} features, <b>${nonzero(FIT)} of ${FIT.nf}</b> kept) gives every cell a 0–1 suitability score: the map. Next, find out whether it predicts records it never saw.`:'The model is still fitting; the map fills in as it goes.');
+  H('h6',ST?`With a testing AUC of <b>${f2(ST.te)}</b> and the <b>${f2(ST.thr)}</b> cutoff (${RULE[S.thr]}), today's map shows ${fmtA(ST.a0)} km² as suitable. That model and that cutoff now go into a warmer climate.`:'Waiting for the model to finish fitting.');
+  H('h7',ST?`From ${nf_(COUNTS.raw)} raw records to a <b>${sgn(ch)}%</b> change in suitable area: the paragraph below writes up every choice you made along the way.`:'Waiting for the model to finish fitting.');
+  $('#carry7').innerHTML=ST?`The cutoff from step 6, <b>${f2(ST.thr)}</b> (${RULE[S.thr]}), is reused unchanged, so today's map and the future map are judged by the same line.`:'The cutoff from step 6 is reused unchanged once the model finishes fitting.';
 }
+/* running results under the map */
 function strip(){
   const sel=selIdx();
-  $('#r1').textContent=`${nf_(USED.length)} records`;
-  $('#r2').textContent=sel.length?`${sel.length} vars · |r| ${f2(maxR(sel))}`:'none';
-  $('#r3').textContent=S.bg==='all'?'All California':'50 km of records';
-  $('#r4').textContent=`${nf_(TRAIN.length)} / ${nf_(TEST.length)}${S.split==='block'?' blocks':''}`;
-  $('#r5').textContent=!FIT?'—':FIT.done?`β ${S.beta} · ${S.feat}`:`fitting ${Math.round(FIT.iter/FIT.maxIter*100)}%`;
-  $('#r6').textContent=ST?`${f2(ST.te)} / ${f2(ST.cur.tss)}`:'…';
-  $('#r7').textContent=ST?(()=>{const ch=ST.a0?Math.round((ST.a1-ST.a0)/ST.a0*100):0;return`${sgn(ch)}% area`})():'…';
-  $('#r8').textContent=ST?'Ready':'…';
+  $('#r1').textContent=`${nf_(USED.length)}`;
+  $('#r2').textContent=sel.length?`${sel.length} · |r| ${f2(maxR(sel))}`:'none';
+  $('#r3').textContent=S.bg==='all'?'All CA':'50 km';
+  $('#r4').textContent=`${nf_(TRAIN.length)} / ${nf_(TEST.length)}`;
+  $('#r5').textContent=!FIT?'—':FIT.done?`β ${S.beta} · ${S.feat}`:`${Math.round(FIT.iter/FIT.maxIter*100)}%`;
+  $('#r6').textContent=ST?`${f2(ST.te)} · ${f2(ST.cur.tss)}`:'…';
+  $('#r7').textContent=ST?(()=>{const ch=ST.a0?Math.round((ST.a1-ST.a0)/ST.a0*100):0;return`${sgn(ch)}%`})():'…';
+  $('#r8').textContent=ST?'written':'…';
 }
 function methods(){
   const el=$('#methods');
@@ -920,7 +951,7 @@ function methods(){
 
 /* ---------- rendering ---------- */
 function renderAll(){
-  drawAllMaps();renderClean();renderMatrix();renderPair();renderEnv();renderSplit();renderRC();renderImp();renderTune();renderROC();renderEval();renderProj();
+  drawMap();renderClean();renderMatrix();renderPair();renderEnv();renderSplit();renderRC();renderImp();renderTune();renderROC();renderEval();renderProj();
   messages();handoffs();strip();methods();
 }
 
@@ -932,7 +963,7 @@ function frame(){
   evalFit(FIT);predictAll();
   $('#badge').textContent=FIT.done?'Model fitted':`Fitting… ${String(Math.round(FIT.iter/FIT.maxIter*100)).padStart(3,' ')}%`;
   if(FIT.done){ST=stats();lastThr=ST.thr;renderAll();startTuning()}
-  else{['s5','s6','s7'].forEach(st=>{if(VISIBLE.has(st))drawMap(st)});if(VISIBLE.has('s5'))renderRC();strip()}
+  else{if(['s5','s6','s7','methods-sec'].includes(CUR))drawMap();if(CUR==='s5')renderRC();strip()}
   if(!FIT.done)raf=requestAnimationFrame(frame);
 }
 const ORDER=['clean','split','bg','fit'];
@@ -942,7 +973,6 @@ function run(from){const i=ORDER.indexOf(from);if(i<=0)clean();if(i<=1)split();i
   renderAll();if(!raf)raf=requestAnimationFrame(frame)}
 
 /* ---------- controls ---------- */
-initMaps();
 const beta=$('#beta');
 function showVals(){$('#betaV').textContent=(+beta.value).toFixed(1)}
 let deb=0,pend=null;
@@ -958,7 +988,7 @@ $('#varAll').onclick=()=>setVars(VARS.map(v=>v.id));
 $('#varSuggest').onclick=()=>{const keep=[];PRIORITY.forEach(id=>{if(keep.every(k=>Math.abs(CORR[VI[id]][VI[k]])<.7))keep.push(id)});setVars(keep)};
 ['axX','axY'].forEach(id=>{const s=$('#'+id);s.innerHTML=VARS.map((v,k)=>`<option value="${k}">${v.code} ${v.name}</option>`).join('');s.value=S[id];s.onchange=()=>{S[id]=+s.value;renderEnv()}});
 $('#rcVar').onchange=e=>{S.rcVar=+e.target.value;renderRC()};
-$('#showBg').addEventListener('change',e=>{S.showBg=e.target.checked;drawMap('s3');renderEnv()});
+$('#showBg').addEventListener('change',e=>{S.showBg=e.target.checked;drawMap();renderEnv()});
 seg('bgSel',v=>{S.bg=v;run('bg')});
 seg('splitSel',v=>{S.split=v;run('split')});
 $('#newSplit').onclick=()=>{S.splitSeed++;run('split')};
@@ -967,22 +997,22 @@ seg('thrSel',v=>{S.thr=v;if(FIT&&FIT.done){ST=stats();lastThr=ST.thr}renderAll()
 $('#copyMethods').onclick=()=>{const t=$('#methods').innerText;const done=ok=>{$('#copyMsg').textContent=ok?'Copied.':'Select the text to copy it.';setTimeout(()=>$('#copyMsg').textContent='',2500)};
   try{navigator.clipboard.writeText(t).then(()=>done(true),()=>done(false))}catch(e){done(false)}};
 /* which step the student last touched, so only that step's message is read aloud */
-['input','change','click'].forEach(ev=>document.addEventListener(ev,e=>{const s=e.target.closest&&e.target.closest('section.step');if(s)lastTouched=s.id},true));
-/* strip: jump to a step, and highlight the step on screen */
-$$('#strip button').forEach(b=>b.onclick=()=>{const t=document.getElementById(b.dataset.jump);if(t){t.scrollIntoView({behavior:'smooth',block:'start'});try{history.replaceState(null,'','#'+b.dataset.jump)}catch(e){}}});
-if('IntersectionObserver' in window){
-  const onNow=new Set();
-  const io=new IntersectionObserver(es=>{es.forEach(e=>{e.isIntersecting?onNow.add(e.target.id):onNow.delete(e.target.id)});
-    const first=['s1','s2','s3','s4','s5','s6','s7','methods-sec'].find(id=>onNow.has(id));
-    $$('#strip button').forEach(b=>{const on=b.dataset.jump===first;b.classList.toggle('on',on);on?b.setAttribute('aria-current','step'):b.removeAttribute('aria-current')})},{rootMargin:'-35% 0px -55% 0px'});
-  $$('section.step').forEach(s=>io.observe(s));
-  const vio=new IntersectionObserver(es=>es.forEach(e=>{const st=e.target.id.slice(4);e.isIntersecting?VISIBLE.add(st):VISIBLE.delete(st)}));
-  MAP_STEPS.forEach(st=>vio.observe(MAPS[st].c));
-}else MAP_STEPS.forEach(st=>VISIBLE.add(st));
+['input','change','click'].forEach(ev=>document.addEventListener(ev,e=>{const s=e.target.closest&&e.target.closest('section.step');if(s){lastTouched=s.id;setCur(s.id)}},true));
+/* running results: tap a row to jump to that step */
+$$('#ledger button').forEach(b=>b.onclick=()=>{const t=document.getElementById(b.dataset.jump);if(t){t.scrollIntoView({behavior:'smooth',block:'start'});try{history.replaceState(null,'','#'+b.dataset.jump)}catch(e){}}});
+/* the step whose heading has crossed a line a little above the middle of the screen is the current one */
+function pickCur(){
+  const narrow=matchMedia('(max-width:820px)').matches,pb=narrow?Math.max(0,$('#pane').getBoundingClientRect().bottom):0,line=pb+(innerHeight-pb)*0.35;
+  let best=STEPS[0];STEPS.forEach(id=>{if(document.getElementById(id).getBoundingClientRect().top<=line)best=id});
+  if(innerHeight+scrollY>=document.documentElement.scrollHeight-4)best=STEPS[STEPS.length-1];
+  setCur(best)}
+let scT=0;addEventListener('scroll',()=>{if(!scT)scT=setTimeout(()=>{scT=0;pickCur()},60)},{passive:true});addEventListener('resize',pickCur);
+$('#paneToggle').onclick=()=>{const p=$('#pane'),m=p.classList.toggle('min');$('#paneToggle').textContent=m?'Show map':'Hide map';$('#paneToggle').setAttribute('aria-expanded',m?'false':'true')};
 showVals();
 run('clean');
+{const c=CUR;CUR=null;setCur(c)}
 const h0=location.hash.slice(1);
-if(/^(s[1-7]|methods-sec)$/.test(h0))setTimeout(()=>{const t=document.getElementById(h0);if(t)t.scrollIntoView()},0);
+if(/^(s[1-7]|methods-sec)$/.test(h0))setTimeout(()=>{const t=document.getElementById(h0);if(t)t.scrollIntoView();pickCur()},0);
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',renderAll);
 </script>
 
