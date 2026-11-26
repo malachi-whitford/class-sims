@@ -32,7 +32,7 @@ p.sub{margin:0 0 14px;color:var(--muted);font-size:.93rem;max-width:900px}
 .ptog{display:none}
 .stage{position:relative;width:fit-content;max-width:100%;margin:0 auto}
 #map{display:block;height:min(52vh,470px);width:auto;max-width:100%;aspect-ratio:576/656;border-radius:8px}
-.badge{position:absolute;left:8px;bottom:8px;border-radius:999px;padding:3px 10px;font-size:.74rem;font-weight:700;background:rgba(0,0,0,.62);color:#fff;font-variant-numeric:tabular-nums;pointer-events:none;width:10.8em;text-align:center}
+.badge{position:absolute;left:8px;bottom:8px;border-radius:999px;padding:3px 10px;font-size:.74rem;font-weight:700;background:rgba(0,0,0,.62);color:#fff;font-variant-numeric:tabular-nums;pointer-events:none;width:11.6em;text-align:center;white-space:nowrap}
 .cbar{display:flex;align-items:center;gap:8px;font-size:.76rem;color:var(--muted);margin-top:6px}
 .cbar span{width:7.6em;flex:none}
 .cbar span:last-child{text-align:right}
@@ -316,7 +316,7 @@ table.ref td.live{font-weight:700;font-variant-numeric:tabular-nums}
   </div>
   <div class="folds">
     <details class="fold"><summary>Features: linear, quadratic, hinge</summary><div><p>A feature is a transformed copy of a climate variable that the model can give a weight. <b>Linear</b> (x) lets suitability rise or fall steadily. <b>Quadratic</b> (x²) allows a hill: best in the middle, worse at both ends. <b>Hinge</b> features are flat up to a knot and then rise; with several knots the curve can bend almost any way. More feature types means more flexible curves and more risk of overfitting.</p></div></details>
-    <details class="fold"><summary>Weights (λ) and why some are zero</summary><div><p>Every feature gets a weight λ. Positive λ: suitability rises with that feature. Negative: it falls. Zero: the model ignores it. Regularization charges a cost for every nonzero weight, so a feature only keeps its weight if it improves the fit by more than its cost. That is why the model "keeps" only some of its features.</p></div></details>
+    <details class="fold"><summary>Weights (λ) and why some are zero</summary><div><p>Every feature gets a weight λ. Positive λ: suitability rises with that feature. Negative: it falls. Zero: the model ignores it. Regularization charges a cost for every nonzero weight, so a feature only keeps its weight if it improves the fit by more than its cost. That is why the model "keeps" only some of its features. The fit runs until the weights stop improving and the same features stay in for 15 steps in a row; the badge on the map counts the steps.</p></div></details>
     <details class="fold"><summary>Regularization multiplier (β)</summary><div><p>β scales that cost. β = 1 is the MaxEnt default. Raising β makes every weight more expensive, so fewer features survive and the curves smooth out. Lowering it lets the model fit fine wiggles in the training records, which often don't hold for new records. Tuning β means fitting several versions and comparing them on held-out data.</p></div></details>
     <details class="fold"><summary>Maximum entropy</summary><div><p>Entropy measures how spread out a distribution is. Many suitability maps could match the average climate of the training records. MaxEnt picks the one that is as even as possible across the background while still matching those averages (within the tolerance β allows). It makes no claim the records don't support.</p></div></details>
     <details class="fold"><summary>The 0–1 output (cloglog)</summary><div><p>MaxEnt's raw output is a relative density: how much more likely each background cell is to hold a record than average, summing to 1 across the study area. The cloglog transform rescales it to a 0–1 score. Read it as <i>relative</i> suitability, not a true probability of presence, because presence-only data can't tell how common the species really is.</p></div></details>
@@ -645,7 +645,7 @@ function newFit(P,beta,warm){
   const{nf,m,mu,m2,M}=P,reg=new Float64Array(nf),cm={L:m<10?1:m<30?0.5:m<100?0.25:0.05,Q:m<10?1:m<30?0.5:m<100?0.25:0.05,H:0.5};
   for(let j=0;j<nf;j++){const s=Math.sqrt(Math.max(0,m2[j]-mu[j]*mu[j]));reg[j]=beta*cm[M.cls[j]]*Math.max(s,1/Math.sqrt(m))/Math.sqrt(m)}
   const lam=warm?Float64Array.from(warm):new Float64Array(nf);
-  const F={P,M,FB:P.FB,mu,reg,nb:P.nb,nf,beta,lam,y:Float64Array.from(lam),tk:1,eta:1,iter:0,maxIter:warm?90:200,done:false,H:0,logZ:0};
+  const F={P,M,FB:P.FB,mu,reg,nb:P.nb,nf,beta,lam,y:Float64Array.from(lam),tk:1,eta:1,iter:0,maxIter:warm?1500:3000,done:false,H:0,logZ:0,obj:null,stall:0,sig:-1};
   evalFit(F);return F;
 }
 function startFit(){
@@ -665,16 +665,26 @@ function lossAt(F,lam,wantGrad){
   if(wantGrad){const g=new Float64Array(nf);let H=0;for(let k=0;k<nb;k++){const q=sc[k]/Z,o=k*nf;if(q>0)H-=q*Math.log(q);for(let j=0;j<nf;j++)g[j]+=q*FB[o+j]}for(let j=0;j<nf;j++)g[j]-=mu[j];out.g=g;out.H=H}
   return out}
 function evalFit(F){const r=lossAt(F,F.lam,true);F.logZ=r.logZ;F.H=r.H}
+/* one proximal-gradient (FISTA) step on the L1-regularized MaxEnt objective.
+   Momentum restarts whenever the objective goes up, and the fit stops once the objective has stopped
+   improving and the set of kept features has stayed the same for 15 steps in a row (or at maxIter). */
 function fitStep(F){
   const{nf,reg}=F;if(F.done)return;
-  const base=lossAt(F,F.y,true);let eta=F.eta*1.5,next;
+  const base=lossAt(F,F.y,true);let eta=F.eta*1.5,next,nl;
   for(let bt=0;bt<30;bt++){next=new Float64Array(nf);
     for(let j=0;j<nf;j++){const v=F.y[j]-eta*base.g[j],t=eta*reg[j];next[j]=v>t?v-t:v<-t?v+t:0}
-    const nl=lossAt(F,next,false).loss;let q=base.loss;for(let j=0;j<nf;j++){const d=next[j]-F.y[j];q+=base.g[j]*d+d*d/(2*eta)}
+    nl=lossAt(F,next,false).loss;let q=base.loss;for(let j=0;j<nf;j++){const d=next[j]-F.y[j];q+=base.g[j]*d+d*d/(2*eta)}
     if(nl<=q+1e-12)break;eta*=0.5}
-  F.eta=eta;const tk1=(1+Math.sqrt(1+4*F.tk*F.tk))/2;
+  F.eta=eta;let pen=0;for(let j=0;j<nf;j++)pen+=reg[j]*Math.abs(next[j]);const obj=nl+pen;
+  F.iter++;
+  if(F.obj!=null&&obj>F.obj){F.tk=1;F.y=Float64Array.from(F.lam);F.stall=0;if(F.iter>=F.maxIter)F.done=true;return}
+  let sig=0;for(let j=0;j<nf;j++)if(next[j]!==0)sig=(sig*31+j+1)>>>0;
+  const tiny=F.obj!=null&&F.obj-obj<1e-7*Math.max(1,Math.abs(obj));
+  F.stall=(tiny&&sig===F.sig)?F.stall+1:0;F.sig=sig;
+  const tk1=(1+Math.sqrt(1+4*F.tk*F.tk))/2;
   for(let j=0;j<nf;j++)F.y[j]=next[j]+((F.tk-1)/tk1)*(next[j]-F.lam[j]);
-  F.lam=next;F.tk=tk1;F.iter++;if(F.iter>=F.maxIter)F.done=true;
+  F.lam=next;F.tk=tk1;F.obj=obj;
+  if(F.iter>=F.maxIter||F.stall>=15)F.done=true;
 }
 function predictF(F,vals){if(!F)return 0;F.M.feats(vals,fbuf);let s=0;for(let j=0;j<F.nf;j++)s+=F.lam[j]*fbuf[j];return 1-Math.exp(-Math.exp(F.H+s-F.logZ))}
 const predictVals=vals=>predictF(FIT,vals);
@@ -1043,7 +1053,7 @@ function strip(){
   $('#r2').textContent=sel.length?`${sel.length} · |r| ${f2(maxR(sel))}`:'none';
   $('#r3').textContent=S.bg==='all'?'All CA':'50 km';
   $('#r4').textContent=`${nf_(TRAIN.length)} / ${nf_(TEST.length)}`;
-  $('#r5').textContent=!FIT?'—':FIT.done?`β ${S.beta} · ${S.feat}`:`${Math.round(FIT.iter/FIT.maxIter*100)}%`;
+  $('#r5').textContent=!FIT?'—':FIT.done?`β ${S.beta} · ${S.feat}`:'fitting…';
   $('#r6').textContent=ST?`${f2(ST.te)} · ${f2(ST.cur.tss)}`:'…';
   $('#r7').textContent=ST?(()=>{const ch=ST.a0?Math.round((ST.a1-ST.a0)/ST.a0*100):0;return`${sgn(ch)}%`})():'…';
   $('#r8').textContent=ST?'written':'…';
@@ -1097,7 +1107,7 @@ function fit1(k,beta){
   BG.forEach((c,i)=>{v[0]=ENV0[k][c];M.feats(v,tmp);for(let j=0;j<nf;j++)FB[i*nf+j]=tmp[j]});
   const mu=new Float64Array(nf),m2=new Float64Array(nf);
   TRAIN.forEach(c=>{v[0]=ENV0[k][c];M.feats(v,tmp);for(let j=0;j<nf;j++){mu[j]+=tmp[j]/m;m2[j]+=tmp[j]*tmp[j]/m}});
-  const F=newFit({M,FB,mu,m2,nb,nf,m,key:'L1'},beta,null);F.maxIter=600;while(!F.done)fitStep(F);evalFit(F);return F;
+  const F=newFit({M,FB,mu,m2,nb,nf,m,key:'L1'},beta,null);while(!F.done)fitStep(F);evalFit(F);return F;
 }
 function hist(vals,lo,hi,nb){const h=new Array(nb).fill(0);vals.forEach(v=>{const b=Math.min(nb-1,Math.max(0,Math.floor((v-lo)/(hi-lo)*nb)));h[b]++});return h}
 function renderBeta(){
@@ -1220,9 +1230,9 @@ function renderAll(){
 let raf=0;
 function frame(){
   raf=0;if(!FIT){predictAll();renderAll();return}
-  for(let k=0;k<3&&!FIT.done;k++)fitStep(FIT);
+  const t0=performance.now();while(!FIT.done&&performance.now()-t0<14)fitStep(FIT);
   evalFit(FIT);predictAll();
-  $('#badge').textContent=FIT.done?'Model fitted':`Fitting… ${String(Math.round(FIT.iter/FIT.maxIter*100)).padStart(3,' ')}%`;
+  $('#badge').textContent=FIT.done?'Model fitted':`Fitting… step ${FIT.iter}`;
   if(FIT.done){ST=stats();lastThr=ST.thr;renderAll();startTuning()}
   else{if(['s5','s6','s7','methods-sec'].includes(CUR))drawMap();if(CUR==='s5')renderRC();strip()}
   if(!FIT.done)raf=requestAnimationFrame(frame);
@@ -1230,7 +1240,7 @@ function frame(){
 const ORDER=['clean','split','bg','fit'];
 function run(from){const i=ORDER.indexOf(from);if(i<=0)clean();if(i<=1)split();if(i<=2){buildBackground();dataGen++}
   startFit();computeMESS();ST=null;
-  if(FIT)$('#badge').textContent='Fitting…   0%';else $('#badge').textContent='No model';
+  if(FIT)$('#badge').textContent='Fitting… step 0';else $('#badge').textContent='No model';
   renderAll();if(!raf)raf=requestAnimationFrame(frame)}
 
 /* ---------- controls ---------- */
